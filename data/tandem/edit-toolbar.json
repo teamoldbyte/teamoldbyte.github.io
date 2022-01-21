@@ -92,7 +92,7 @@
 					},
 					{
 						"type": "btn",
-						"mode": "role",
+						"mode": "wrap",
 						"title": "접속사 (R)",
 						"html": "접속사",
 						"value": "conj"
@@ -105,14 +105,14 @@
 				[
 					{
 						"type": "btn",
-						"mode": "role",
+						"mode": "wrap",
 						"title": "전치사구 (T)",
 						"html": "전치사구",
 						"value": "phr"
 					},
 					{
 						"type": "btn",
-						"mode": "role",
+						"mode": "wrap",
 						"title": "형용사구 (Y)",
 						"html": "형용사구",
 						"value": "adjphr"
@@ -132,7 +132,7 @@
 				[
 					{
 						"type": "btn",
-						"mode": "role",
+						"mode": "wrap",
 						"title": "등위절 (A)",
 						"html": "등위절",
 						"value": "ccls"
