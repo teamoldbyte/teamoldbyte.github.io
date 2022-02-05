@@ -1,0 +1,151 @@
+.feature-section{
+	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
+	background-color:  #f9f9ff;
+}
+/* 멤버십 안내 블록 */
+.feature-block{
+	padding: 1rem 0.5rem;
+	border-radius: .25rem;
+}
+/* 멤버십 안내 블록 배경색 */
+/**/
+/* 멤버십 안내에서 각 특징별 아이콘 */
+.feature .feature-icon{
+	font-size: 5rem;
+}
+.feature:nth-child(1) .feature-icon{
+	width: 5rem;
+	filter: opacity(0.5) drop-shadow(0 0 0 blue);
+}
+.feature:nth-child(2) .feature-icon{
+	color: #ffc107;
+}
+.feature:nth-child(3) .feature-icon{
+	color: #8f1a5a;
+}
+.feature:nth-child(4) .feature-icon{
+	color: #005083;
+}
+/* 멤버십 안내에서 특징별 텍스트 강조 색상 */
+.feature:nth-child(1) .feature-block b{
+	color: rgb(59, 63, 123);
+}
+.feature:nth-child(2) .feature-block b{
+	color: #ffc107;
+}
+.feature:nth-child(3) .feature-block b{
+	color: #8f1a5a;
+}
+.feature:nth-child(4) .feature-block b{
+	color: #005083;
+}
+
+/* 멤버십 상품 */
+.membership-list{
+	position: absolute;
+	top: 0;
+	height: calc(100% - 12rem);
+}
+.membership-block.selected{
+	border: 3px solid var(--fc-purple);
+}
+.membership-info-parent:nth-child(1),
+.membership-info-parent:nth-child(2){
+	margin-bottom: 1rem;
+}
+.membership-info-parent:nth-child(2n-1) .membership-block{
+	margin-right: 0.5rem;
+	background-color: aliceblue;
+	height: 100%;
+}
+.membership-info-parent:nth-child(2n) .membership-block{
+	margin-left: 0.5rem;
+	background-color: #f1f0ff;
+	height: 100%;
+}
+/* 멤버십 이미지 */
+.membership-info .membership-image img{
+	width: 5rem;
+	height: 5rem;
+}
+/*.membership-info-parent:nth-child(3) .membership-image::after,
+.membership-info-parent:nth-child(4) .membership-image::after{
+	display: inline-block;
+	font-style: normal;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	border-radius: 5px;
+	font-variant: normal;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	font-size: 1.5rem;
+	content: "\f108";
+	background-color: #f9d37a;
+	color: var(--fc-purple);
+	padding: 0.25rem 0.5rem;
+}*/
+@media (max-width: 992px) {
+	.membership-list{
+		position: static;
+		top: 0;
+	}
+
+	.membership-info-parent:nth-child(1),
+	.membership-info-parent:nth-child(2){
+		margin-bottom: 0.25rem;
+	}
+
+	.membership-info-parent:nth-child(2n-1) .membership-block{
+		margin-right: .125rem;
+	}
+	.membership-info-parent:nth-child(2n) .membership-block{
+		margin-left: .125rem;
+	}
+}
+
+.membership-section .need-donation{
+	background-color: #fff0f0;
+	color: #403838;
+	position: absolute;
+	bottom: 0;
+	/*width: calc(100% - 3rem);*/
+	height: 11rem;
+}
+.membership-section .need-donation .text{
+	width: 90%;
+}
+/*.membership-section .need-donation b{
+	font-family: 'RIDIBatang';
+	font-size: 1.3rem;
+}*/
+.membership-section .service-core{
+	text-align: center;
+}
+@media (max-width: 992px) {
+	.membership-section .need-donation{
+		position: static;
+		width: 100%;
+		height: auto;
+	}
+	
+	.membership-section .need-donation .text{
+		width: 100%;
+	}
+	
+	.membership-section .service-core{
+		text-align: left;
+	}
+}
+
+.membership-feature-title{
+	color:#005083;
+}
+
+.membership-section .feature-block .feature-text .comment{
+	margin-top: 1rem;
+	color:#005083;
+	font-size: .8rem;
+}
