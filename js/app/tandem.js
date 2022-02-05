@@ -964,7 +964,7 @@ async function drawConnections(div){
         drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
         break;  
       }else{
-		console.warn('수식선 그리기 실패');
+	// 선을 이을 수 있는 요소가 아님.
         continue;
       }
     }
