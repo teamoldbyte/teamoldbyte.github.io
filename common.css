@@ -1,0 +1,479 @@
+/**********************************************************
+ *				색상  
+ **********************************************************/
+:root {
+	--fc-purple: #585174;
+	--fc-yellow: #f9d37a;
+	
+	
+	--fc-logo-head: url(https://teamoldbyte.github.io/images/logo/main_logo_headonly.svg);
+}
+
+/**********************************************************
+ *					폰트 
+ **********************************************************/
+html{
+	font-family: 'RIDIBatang_ENG', 'HCRDotum';
+	font-size: 14px;
+	word-break: keep-all;
+}
+@media (min-width: 768px) {
+   html{
+		font-size: 14px;
+	}
+}
+@media (max-width: 768px) {
+   html{
+		font-size: 16px;
+	}
+}
+@media (max-width: 320px) {
+   html{
+		font-size: 14px;
+	}
+}
+
+/**********************************************************
+ *					a 태그 
+ **********************************************************/
+a {
+	text-decoration: none; 
+	cursor: pointer; 
+	/*color: inherit;*/
+	color:#0a58ca;
+	-webkit-transition: color .25s ease-in-out;
+    transition: color .25s ease-in-out;
+}
+a:hover, a:active {text-decoration: none !important;}
+a:hover {
+    color: #4696ff;
+}
+
+
+/**********************************************************
+ *				top  
+ **********************************************************/
+.top-2{
+	top: 0.5rem !important;
+}
+.top-3{
+	top: 1rem !important;
+}
+/**********************************************************
+ *				end  
+ **********************************************************/
+.end-3{
+	right: 1rem !important;
+}
+/**********************************************************
+ *				padding  
+ **********************************************************/
+.pt-8rem{
+	padding-top: 8rem !important;
+}
+
+/**********************************************************
+ *				margin  
+ **********************************************************/
+.mb-2rem{
+	margin-bottom: 2rem !important;
+}
+.mt-2rem{
+	margin-top: 2rem !important;
+}
+/**********************************************************
+ *				width  
+ **********************************************************/
+.w-90{
+	width: 90% !important;
+}
+.w-40{
+	width: 40% !important;
+}
+/**********************************************************
+ *				height  
+ **********************************************************/
+.h-px{
+	height: 1px !important;
+}
+/**********************************************************
+ *				min-height  
+ **********************************************************/
+.mh-2rem{
+	min-height: 2rem !important;
+}
+/**********************************************************
+ *				opacity 
+ **********************************************************/
+.opacity-50{ opacity: .5 !important; }
+
+/**********************************************************
+ *				font-size  
+ **********************************************************/
+.text-xs{
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+.text-sm{
+	font-size: 0.875rem !important;
+	line-height: 1.25rem !important;
+}
+.text-smd{
+	font-size: 0.95rem !important;
+	line-height: 1.4rem !important;
+}
+.text-base{
+	font-size: 1rem !important;
+	line-height: 1.5rem !important;
+}
+.text-lmd{
+	font-size: 1.1rem !important;
+	line-height: 1.55rem !important;
+}
+.text-lg{
+	font-size: 1.125rem !important;
+	line-height: 1.75rem !important;
+}
+.text-xl{
+	font-size: 1.25rem !important;
+	line-height: 1.75rem !important;
+}
+.text-2xl{
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+}
+.text-3xl{
+	font-size: 1.875rem !important;
+	line-height: 2.25rem !important;
+}
+.text-4xl{
+	font-size: 2.25rem !important;
+	line-height: 2.5rem !important;
+}
+
+/**********************************************************
+ *				text-color 
+ **********************************************************/
+.text-fc-purple{
+	color: var(--fc-purple) !important;
+}
+.text-fc-red{
+	color: #a91461 !important;
+}
+
+.text-orange-500{
+	color: rgb(249 115 22) !important;	
+}
+
+.text-yellow-400{
+	color: rgb(251, 191, 36) !important;
+}
+.text-yellow-500{
+	color: rgb(234, 179, 8) !important;
+}
+
+.text-green-600{
+	color: rgb(5, 150, 105) !important;
+}
+
+.text-red-600{
+	color: rgb(220, 38, 38) !important;
+}
+.text-red-700{
+	color: rgb(185, 28, 28) !important;
+}
+
+.text-gray-400{
+	color: rgb(156 163 175) !important;
+}
+.text-gray-500{
+	color: rgb(107 114 128) !important;
+}
+.text-gray-700{
+	color: #424250 !important;
+}
+
+.text-blue-700{
+	color: #30386e !important;
+}
+
+.text-bluegray-300{
+	color: #5d6a85 !important;
+}
+.text-bluegray-400{
+	color: #5c68b6 !important;
+}
+
+.text-fico{
+	color: #585174!important;
+}
+.text-liverchestnut{
+	color: #5D4037 !important;
+}
+.text-palegreen{
+	color: #41a099 !important;
+}
+.text-palered{
+	color: #C0504D !important;
+}
+.text-bittersweetshimmer{
+	color: #a91461 !important;
+}
+.text-violet{
+	color: #7e04b5 !important;
+}
+/**********************************************************
+ *			background-color 
+ **********************************************************/
+.bg-fc-logo-head {
+  background: var(--fc-logo-head) center/cover no-repeat;
+}
+
+.bg-fc-purple{
+	background-color: var(--fc-purple) !important;
+}
+.bg-fc-beige{
+	background-color: bisque !important;
+} 
+.bg-fc-light-purple{
+	background-color: #ececfa !important;
+} 
+
+.bg-jazzberryjam{
+	background-color: #C0504D !important;
+}
+.bg-bittersweetshimmer{
+	background-color: #a91461 !important;
+}	
+.bg-coolblack{
+	background-color: #002060 !important;
+}	
+.bg-violet{
+	background-color: #7e04b5 !important;
+}	
+
+.bg-gray-100{
+	background-color: #f6f6f6 !important;
+}
+.bg-gray-700{
+	background-color: #424250 !important;
+}
+
+.bg-orange-100{
+	background-color: rgb(255 237 213) !important;
+}
+.bg-orange-105{
+	background-color: rgba(255, 237, 213, .5) !important;
+}
+.bg-yellow-150{
+	background-color: #fdfc70 !important;
+}
+
+.bg-blue-100{
+	background-color: rgb(219, 234, 254) !important;
+}
+.bg-blue-105{
+	background-color: #baeff66e !important;
+}
+.bg-blue-200{
+	background-color: rgb(191, 219, 254) !important;
+}
+
+.bg-indigo-100{
+	background-color: rgb(224, 231, 255) !important;
+}
+/**********************************************************
+ *			border 
+ **********************************************************/
+.border-fc-navy-2{
+	border: 2px solid #002060!important;
+	border-radius: 5px!important;
+}
+
+.border-color-navy{
+	border-color: rgb(0, 32, 96)!important;
+}
+.border-color-bluegray{
+	border-color: #b4c0d8!important;
+}
+
+/**********************************************************
+ *			border-radius 
+ **********************************************************/
+.rounded-4 {
+	border-radius: .5rem!important;
+}
+.rounded-5 {
+	border-radius: .75rem!important;
+}
+.rounded-6 {
+	border-radius: 1rem!important;
+}
+.rounded-7 {
+	border-radius: 1.5rem!important;
+}
+.rounded-8 {
+	border-radius: 2rem!important;
+}
+/**********************************************************
+ *			부트스트랩 tooltip 
+ **********************************************************/
+.tooltip-inner{
+	background-color: #1b1f40;;
+}
+/* 화살표 4가지 */
+.bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before, .bs-tooltip-top .tooltip-arrow::before{
+	border-top-color:  #1b1f40;
+}
+.bs-tooltip-auto[data-popper-placement^=right] .tooltip-arrow::before, .bs-tooltip-end .tooltip-arrow::before{
+	border-right-color: #1b1f40;
+}
+.bs-tooltip-auto[data-popper-placement^=bottom] .tooltip-arrow::before, .bs-tooltip-bottom .tooltip-arrow::before{
+	border-bottom-color: #1b1f40;
+}
+.bs-tooltip-auto[data-popper-placement^=left] .tooltip-arrow::before, .bs-tooltip-start .tooltip-arrow::before{
+	border-left-color: #1b1f40;
+}
+
+/**********************************************************
+ *			버튼 
+ **********************************************************/
+.btn-fico{
+	background-color: #585174;
+	border-color: #4e476a;
+	color: #fff;
+}
+.btn-fico:hover{
+	color: #fff;
+	background-color: #6c6588;
+	border-color: #585174;
+}
+.btn-outline-fico{
+	background-color: #fff;
+	border-color: #585174;
+	color: #585174;
+}
+.btn-outline-fico:hover{
+	background-color: #6c6588;
+	border-color: #585174;
+	color: #fff;
+}
+
+.btn-fico:disabled, .btn-outline-fico:disabled {
+  opacity: 0.3;
+}
+/**********************************************************
+ *			애니메이션 
+ **********************************************************/
+/* Bootstrap 5.1 로딩중 효과 */
+.placeholder-wave {
+  mask-image: linear-gradient(130deg, black 55%, rgba(0, 0, 0, .25) 75%, black 95%);
+  -webkit-mask-image: linear-gradient(130deg, black 55%, rgba(0, 0, 0, .25) 75%, black 95%);
+  mask-size: 200% 100%;
+  -webkit-mask-size: 200% 100%;
+  animation: placeholder-wave 1s linear infinite;
+  -webkit-animation: placeholder-wave 1s linear infinite;
+}
+
+@keyframes placeholder-wave {
+  100% {
+    mask-position: -200% 0%;
+    -webkit-mask-position: -200% 0%;
+  }
+}
+
+
+
+/**********************************************************
+ *			접기 아이콘
+ **********************************************************/
+/* 접기 아이콘(접힘) */
+.fold-icon::before {
+   content: '';
+   display: inline-block;
+   width: 1em;
+   height: 1em;
+   transition: transform .2s ease-in-out;
+   background-color: currentColor;
+   mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M7 10l5 5 5-5H7z'/%3e%3c/svg%3e") center/cover no-repeat;
+   -webkit-mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M7 10l5 5 5-5H7z'/%3e%3c/svg%3e") center/cover no-repeat;
+}
+/* 접기 아이콘(펼침) */
+.fold-icon.expanded::before,
+[aria-expanded=true] .fold-icon::before {
+   transform: rotate(180deg);
+}
+
+/*********6************************************************
+ *					logo.html
+ **********************************************************/
+.logo-section{
+	margin-bottom: 2rem;
+}
+
+.logo-section a{
+	text-decoration: none;
+}
+/* 왼쪽 상단 고정 로고 */
+.top-left-logo-sm{
+	position: absolute;
+	width: 50px;
+	top: 80px;
+	left: 100px;
+	cursor: pointer;
+	z-index: 1;
+}
+.top-left-logo-md{
+	position: absolute;
+	width: 120px;
+	top: 80px;
+	left: 100px;
+	cursor: pointer;
+	z-index: 1;
+}
+.top-left-logo-lg{
+	position: absolute;
+	width: 200px;
+	top: 80px;
+	left: 100px;
+	cursor: pointer;
+	z-index: 1;
+}
+
+/**/
+.logo-sm{
+	width: 50px;
+	cursor: pointer;
+	z-index: 1;
+	vertical-align: text-bottom;
+}
+.logo-md{
+	width: 120px;
+	cursor: pointer;
+	z-index: 1;
+	vertical-align: text-bottom;
+}
+.logo-lg{
+	width: 200px;
+	cursor: pointer;
+	z-index: 1;
+	vertical-align: text-bottom;
+}
+@media (max-width: 991px) {
+	/* 로고 */
+	.top-left-logo-sm{
+		width: 20vw;
+		top: 10px;
+		left: 40px;
+	}
+	.top-left-logo-md{
+		width: 100px;
+		top: 10px;
+		left: 40px;
+	}
+	.top-left-logo-lg{
+		width: 200px;
+		top: 10px;
+		left: 40px;
+	}
+}
