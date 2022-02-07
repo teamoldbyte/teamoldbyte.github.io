@@ -1,0 +1,56 @@
+.order-nav .nav-link{
+	color: #585174;
+}
+.order-nav .nav-link.active{
+	color: #fff;
+	background-color: #585174;
+}
+
+/*------------------------------------------------------------------------------
+                                 list_questions.html
+ -----------------------------------------------------------------------------*/
+/**/
+@media (max-width: 1199.5px) {
+   .list-question-section .qna-unit .question-title{
+		margin-right: 0;
+		/*margin-left: 0.5rem;*/
+	}
+	
+	.accordion-button {
+		padding: 0.5rem 1rem;
+	}
+}
+
+/* 질문, 답변 수정 에디터 */
+.note-editing-area{
+	min-height: 20vh;
+	background-color: #fff;
+}
+/* 답변 목록 */
+.answer-section{
+	margin-bottom: 1rem;
+}
+.answer-section .info-section{
+	text-align: right;
+}
+.answer-section:hover .satis-btns:not(.inactive) {
+	display: inline-flex;
+}
+.satis-btns:not(.active) {
+	display: none;
+}
+@media (max-width: 1199.5px) {
+   .satis-btns:not(.active) {
+      display: inline-flex;
+   }
+}
+
+/* 질문 목록 */
+.qna-list .qna-unit{
+	background-color: #f6faff;
+	border: none;
+}
+.qna-unit .content-block .target-section{
+	border-radius: 5px;
+	background-color: #fff;
+}

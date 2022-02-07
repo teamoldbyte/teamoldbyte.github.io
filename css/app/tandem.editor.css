@@ -1,0 +1,85 @@
+@charset "UTF-8";
+.edit-svoc {
+	position: relative;
+	border-style: outset;
+	border-radius: 1rem;
+	padding-bottom: 10px;
+	-ms-user-select: text; 
+	-moz-user-select: text;
+	-khtml-user-select: text;
+	-webkit-user-select: text;
+	user-select: text;
+}
+/* 편집기의 종류(추가 혹은 수정)에 따른 스타일 */
+.svoc-editor-badge {
+	background-color: #B71C1C;
+}
+
+/* 편집 상태에 들어간 분석은 왼쪽 들여쓰기 */
+.edit-svoc .semantics-result {
+	margin-left: 7px;
+}
+/* 삭제 모드시 마우스 커서 변환 */
+.shift .edit-svoc[data-mode="erasing"] {
+	cursor: url('https://static.findsvoc.com/images/app/tandem/eraser32_all.png') 9 31, pointer;
+}
+.edit-svoc[data-mode="erasing"] {
+	cursor: url('https://static.findsvoc.com/images/app/tandem/eraser24_normal.png') 9 23, pointer;
+}
+/* 각종 기능별 힌트 메세지 */
+.semantic-edit-guide-msg {
+	font-family: 'NanumSquare';
+	text-align: center;
+	font-size: 0.8rem;
+	border-left: #e91e63 12px double;
+	border-right: #e91e63 12px double;
+	width: fit-content;
+}
+.erasing-target,
+.erasing-target::before,
+.erasing-target::after {
+	color: orangered!important;
+}
+.erasing-target.curved_arrow {
+	background: orangered;
+}
+
+.mod-indicator, .mod-start {
+	position: absolute;
+    font-weight: 100;
+    color: #ffcc99;
+    font-size: 2.5rem;
+    text-shadow: 0 0 1px darkgoldenrod;
+    z-index: 5;
+}
+.svoc-toolbar {
+	border: solid 2px #dddd;
+	border-radius: 10px;
+	padding: 5px;
+	background: #f5f5f5;
+	width: 100%;
+	margin: 0 0 1rem 0;
+}
+/* 편집 버튼들 스타일 */
+.svoc-toolbar button{
+	font-family: 'NanumBarunGothic';
+	font-weight: 600;
+	font-size: 0.75rem;
+	background: #fff;
+	border-color: #ddd!important;
+}
+.svoc-toolbar [disabled] {
+	opacity: 0.5;
+}
+.edit-svoc .sem::before, .edit-svoc .sem::after {
+	pointer-events: auto!important;
+}
+.edit-svoc:not([data-mode="erasing"]) .sem::before,
+.edit-svoc:not([data-mode="erasing"]) .sem::after {
+	cursor: text;
+}
+
+.cls-role-menu,.edit-comment {
+	margin: 5px 0;
+	z-index: 5;
+}
