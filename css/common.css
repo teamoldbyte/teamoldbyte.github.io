@@ -6,7 +6,7 @@
 	--fc-yellow: #f9d37a;
 	
 	
-	--fc-logo-head: url(https://static.findsvoc.com/images/logo/main_logo_headonly.svg);
+	--fc-logo-head: url(https://teamoldbyte.github.io/images/logo/main_logo_headonly.svg);
 }
 
 /**********************************************************
@@ -94,13 +94,13 @@ a:hover {
  *				height  
  **********************************************************/
 .h-px{
-	height: 1px;	
+	height: 1px !important;
 }
 /**********************************************************
  *				min-height  
  **********************************************************/
 .mh-2rem{
-	min-height: 2rem;	
+	min-height: 2rem !important;
 }
 /**********************************************************
  *				opacity 
@@ -193,9 +193,17 @@ a:hover {
 	color: #424250 !important;
 }
 
+.text-blue-700{
+	color: #30386e !important;
+}
+
 .text-bluegray-300{
 	color: #5d6a85 !important;
 }
+.text-bluegray-400{
+	color: #5c68b6 !important;
+}
+
 .text-fico{
 	color: #585174!important;
 }
