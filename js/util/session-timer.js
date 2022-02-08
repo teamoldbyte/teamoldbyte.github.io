@@ -6,13 +6,15 @@
 (() => {
 const max = 1800 * 1000; // 세션 최대 유지 시간; 밀리초 단위
 const userAct = 'keypress.session click.session scroll.session';
-let lastAccessdTime, timeleft = max, sessionTimer;
+let lastAccessdTime, timeleft = max, sessionTimer, detectingUserActs = false;
 $.getJSON('/session/valid', valid => {if(valid) {
   lastAccessdTime = new Date().getTime();
   // 25분 뒤 최초 1회 세션 자동연장(=> 기본 55분이 주어짐)
   sessionTimer = setInterval(() => {
 	let now = new Date().getTime();
-	if(lastAccessdTime + 1000*1500 <= now) {
+	if(lastAccessdTime + max < now) 
+	  sessionExpiredConfirm();
+	else if(lastAccessdTime + 1000 * 1500 <= now) {
 	  clearInterval(sessionTimer);
 	  updateSession();
 	  // 타이머 설정
@@ -21,16 +23,20 @@ $.getJSON('/session/valid', valid => {if(valid) {
 		if(lastAccessdTime + max > now) {
 		  timeleft = lastAccessdTime + max - now;
 		  // 세션 만료 10분전부터 사용자의 입력 활동이 있으면 세션 자동갱신
-		  if(timeleft <= 600000 && timeleft > 599000) {
+		  if(timeleft <= 600000 && !detectingUserActs) {
+			detectingUserActs = true;
 			$(document).on(userAct, updateSession);
 		  }
 		  // 세션 만료 5분전 세션 연장 모달 표시
-		  else if(timeleft <= 300000 && timeleft > 299000) {
+		  else if(timeleft <= 300000) {
 			// 세션 유효 시간을 초단위로 표시
-			$('#sessionTimeLeft').text(Math.floor(timeleft/60000)+'분 '+Math.floor(timeleft%60000/1000)+'초');
+			$('#sessionTimeLeft').text(Math.floor(timeleft / 60000) + '분 '
+									+ Math.floor(timeleft % 60000 / 1000) + '초');
 			
-			$(document).off(userAct);
-			$('#sessionAlert').modal('show');
+			if(!$('#sessionAlert').is('.show')) {
+				$(document).off(userAct);
+				$('#sessionAlert').modal('show');
+			}
 		  }
 		}else {
 		  sessionExpiredConfirm();
