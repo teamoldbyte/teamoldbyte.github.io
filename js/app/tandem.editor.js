@@ -25,7 +25,7 @@
 		ctrlY:'[value="redo"]:not([disabled])',
 	};
 	
-	var modifier;
+	let modifier, currX = 0, currY = 0;
 	
 	let settings = {};
 	/**
@@ -122,7 +122,7 @@
 				// 			[메뉴 클릭에 따른 상태 및 힌트 메세지 변경]
 				.on('click', '[data-mode]:not([disabled])', function() {
 					if(this.dataset.mode == 'undo') return true;
-					var	sel = getSelection();
+					let	sel = getSelection(), range;
 					$('.svoc-toolbar .active').add(this).toggleClass('active');
 					$('.erasing-target').toggleClass('erasing-target');
 					$('.mod-start,.mod-indicator').remove();
@@ -150,6 +150,22 @@
 							break;
 						default:
 							break;
+						}
+						if(sel.isCollapsed) {
+						  if (document.caretPositionFromPoint) {
+							range = document.caretPositionFromPoint(currX, currY);
+						  } else if (document.caretRangeFromPoint) {
+							range = document.caretRangeFromPoint(currX, currY);
+						  } else {
+							console.error("[This browser supports neither document.caretRangeFromPoint"
+									 + " nor document.caretPositionFromPoint.]");
+							return(false);
+						  }
+						  let containerElement = range.startContainer;
+						  while(containerElement.nodeType != 1) {
+							containerElement = containerElement.parentNode;
+						  }
+						  $(containerElement).trigger('mouseover');
 						}
 					}
 					// 버튼 비활성화
@@ -453,18 +469,20 @@
 					document.body.appendChild(indicator);
 				})
 				// 'mod-end' 상태일 때 수식 종료 화살표 표시
-				.on('mousemove', '[data-mode="mod-end"] .semantics-result', function(e){
+				.on('mousemove', '.edit-svoc .semantics-result', function(e){
+					currX = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
+				   	currY = (e.type == 'touchstart') ? e.touches[0].clientY : e.clientY;
+				   	let sel, range, rect;
+				   	if($(e.target).closest('[data-mode="mod-end"] .semantics-result').length == 0)
+				   		return(false);
 					$('.mod-indicator').remove();
 					const indicator = document.createElement('div');
 					indicator.className = 'mod-indicator';
 					indicator.style.position = 'absolute';
-					const x = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX,
-				   		  y = (e.type == 'touchstart') ? e.touches[0].clientY : e.clientY;
-				   	let sel, range, rect;
 				   	if (document.caretPositionFromPoint) {
-						range = document.caretPositionFromPoint(x, y);
+						range = document.caretPositionFromPoint(currX, currY);
 					} else if (document.caretRangeFromPoint) {
-						range = document.caretRangeFromPoint(x, y);
+						range = document.caretRangeFromPoint(currX, currY);
 					} else {
 						console.error("[This browser supports neither document.caretRangeFromPoint"
 					 				 + " nor document.caretPositionFromPoint.]");
@@ -483,7 +501,7 @@
 						}
 						rect = sel.getRangeAt(0).getClientRects()[0];
 						sel.removeAllRanges();
-						if(rect.y > y || y > (rect.y + rect.height)){
+						if(rect.y > currY || currY > (rect.y + rect.height)){
 							return(false);
 						}
 					}else if(typeof Range.prototype.expand === 'function') {
@@ -493,7 +511,7 @@
 						}
 						rect = range.getClientRects()[0];
 						range.detach();
-						if(rect.y > y || y > (rect.y + rect.height)){
+						if(rect.y > currY || currY > (rect.y + rect.height)){
 							return(false)
 						}
 					} else {
