@@ -414,24 +414,24 @@
 					   							- editText.offsetHeight - 10 + 'px';
 					   			}
 					   			editText.firstChild.firstChild.focus();
-								$(document).on('click', editCommentMenu);
+								$(document).on('mousedown', editCommentMenu);
 								
 					   			$(editText).find('form').on('submit',function(ee){
 					   				ee.preventDefault();
 					   				pushEditHistory(target.closest('.semantics-result'));
 					   				var text = $(this).find('input').val().trim();
 					   				target.dataset[type.data] = text;
-									$(document).off('click', editCommentMenu);
+									$(document).off('mousedown', editCommentMenu);
 									$(editText).remove();
 									checkGCDepth(target.closest('.semantics-result'));
 					   			});
 					   			$(editText).find('button:eq(1)').on('click',function(){
-									$(document).off('click', editCommentMenu);
+									$(document).off('mousedown', editCommentMenu);
 									$(editText).remove();		   				
 					   			});
 								function editCommentMenu(e1){
 									if((editText.compareDocumentPosition(e1.target) & 16) != 16){
-										$(document).off('click', editCommentMenu);
+										$(document).off('mousedown', editCommentMenu);
 										$(editText).remove();
 									}
 								}
