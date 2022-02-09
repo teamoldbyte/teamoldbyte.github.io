@@ -386,7 +386,7 @@
 					   			editText.style.position = 'absolute';
 					   			editText.insertAdjacentHTML('afterbegin','<form class="btn-group">'
 								   + '<input class="form-control" type="text" '
-								   + 'placeholder="코멘트 입력" '
+								   + 'placeholder="↵" '
 								   + 'value="' + target.dataset[type.data]
 								   + '"/><div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>'
 								   + '<button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>');
@@ -725,7 +725,7 @@
 	function wrapBracket(selection, wrapper){
 		const rcomments = {s:'subj', o:'obj',c:'comp', oc:'o.c.', m:'mod'},
 			  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
-						acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'전치사구(adj)',ccls:'등위절'};
+						acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',ccls:'등위절'};
 		const range = selection.getRangeAt(0);
 		const container = $(range.startContainer).closest('.semantics-result')[0];
 		switch (wrapper) {
@@ -795,7 +795,7 @@
 		default:
 			const el2 = document.createElement('span');
 			el2.className = 'sem ' + wrapper;
-			el2.dataset.gc = gcomments[wrapper]||'코멘트 입력';
+			el2.dataset.gc = gcomments[wrapper]||'기본 코멘트';
 			try {
 				range.surroundContents(el2);
 			} catch (e) {
