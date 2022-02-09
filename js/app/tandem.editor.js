@@ -473,8 +473,7 @@
 					currX = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
 				   	currY = (e.type == 'touchstart') ? e.touches[0].clientY : e.clientY;
 				   	let sel, range, rect;
-				   	if($(e.target).closest('[data-mode="mod-end"] .semantics-result').length == 0)
-				   		return(false);
+				   	if($(e.target).closest('[data-mode="mod-end"] .semantics-result').length > 0) {
 					$('.mod-indicator').remove();
 					const indicator = document.createElement('div');
 					indicator.className = 'mod-indicator';
@@ -522,6 +521,7 @@
 					indicator.style.left = scrollX + rect.right - rem + 'px'; 
 					indicator.textContent = '↓';
 					document.body.appendChild(indicator);
+					}
 				})
 				// 'mod' 상태일 때 클릭 시 수식 시작 화살표를 고정하고 'mod-end' 상태로 전환
 				.on('click', '[data-mode="mod"] .semantics-result *', function(e){
