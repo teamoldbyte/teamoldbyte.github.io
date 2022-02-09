@@ -430,7 +430,7 @@
 				// 'mod' 상태일 때 수식 시작 화살표 표시
 				.on('mouseover', '[data-mode="mod"] .semantics-result *', function(e){
 					$('.mod-indicator').remove();
-					const wrapperClasses = '.cls,.acls,.ncls,.advcls,.phr,.tor,.ger,.adjphr';
+					const wrapperClasses = '.cls,.acls,.ncls,.advcls,.phr,.tor,.ger,.adjphr,.ptc';
 					let wrapper = $(this).is(wrapperClasses)
 						? this : ($(this).closest(wrapperClasses).length == 0 
 							? (this.dataset.lv != null ? this : null)
