@@ -498,8 +498,12 @@ function wrapWithBracket(div){
         brackets = ['{', '}'];
         break;
       case 'conj': 
-      case 'phr': case 'adjphr': case 'advphr': case 'ptcphr':
+      case 'phr': case 'adjphr': 
         type = clsType; 
+        brackets = ['(', ')'];
+        break;
+      case 'advphr': case 'ptcphr':
+        type = 'phr'
         brackets = ['(', ')'];
         break;
       case 'acls': case 'advcls': case 'ncls': case 'cls':
@@ -968,7 +972,7 @@ async function drawConnections(div){
         drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
         break;  
       }else{
-	// 선을 이을 수 있는 요소가 아님.
+		// 선을 이을 수 있는 요소가 아님.
         continue;
       }
     }
