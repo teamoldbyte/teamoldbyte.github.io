@@ -2175,8 +2175,7 @@ body{
 /* 									문법마크 									  */
 /*	<구현 문법 태그>
 	문장 필수 성분:	s(주어), v(동사), o(목적어), c(보어), oc(목적보어)
-	말뭉치:	tor(to부정사), ptc(분사), conj(접속사)
-			phr(전치사구), adjphr(형용사구), advphr(부사구), ptcphr(분사구문)
+	말뭉치:	tor(to부정사), ptc(분사), conj(접속사), phr(전치사구), adjphr(형용사구)
 			cls(절), ncls(명사절), acls(형용사절), advcls(부사절), ccls(등위절)
 	기타:		rcm(선행사. 수식어와 세트)		
 ------------------------------------------------------------------------------*/
@@ -2304,20 +2303,19 @@ body{
 	background-clip: content-box;
 }
 
-/* data-lv 1(자식svoc를 가짐)부터는  */
-.sem[data-lv="1"][data-rc],.sem[data-lv="1"][data-rc]::after {
+.sem[data-lv="1"][data-rc] {
 	padding-bottom: 1.05rem;
 }
-.sem[data-lv="2"][data-rc],.sem[data-lv="2"][data-rc]::after {
+.sem[data-lv="2"][data-rc] {
 	padding-bottom: 2.35rem;
 }
-.sem[data-lv="3"][data-rc],.sem[data-lv="3"][data-rc]::after {
+.sem[data-lv="3"][data-rc] {
 	padding-bottom: 3.55rem;
 }
-.sem[data-lv="4"][data-rc],.sem[data-lv="4"][data-rc]::after {
+.sem[data-lv="4"][data-rc] {
 	padding-bottom: 4.75rem;
 }
-.sem[data-lv="5"][data-rc],.sem[data-lv="5"][data-rc]::after {
+.sem[data-lv="5"][data-rc] {
 	padding-bottom: 5.95rem;
 }
 /* data-gc가 있으면 gcomment표시 */
@@ -2370,8 +2368,8 @@ body{
 .sem.oc.inner, .sem.oc.outer[data-rc]::before {color: #8080c0;}
 /* 수식어(+수식어부 rcomment) 글자색 */
 .sem.m.inner, .sem.m.outer[data-rc]::before {color: #0080ff;}
-/* to부정사,동명사 글자색 */
-.sem.tor, .sem.ger {color: #795548;}
+/* to부정사 글자색 */
+.sem.tor {color: #795548;}
 /* 분사 글자색 */
 .sem.ptc {color: #794865;}
 
@@ -2563,7 +2561,6 @@ body{
 	font-family: 'NanumBarunpen'/* 'Nanum Gothic' */;
 	color: #2440a8;/* #24a8a8; */
 }
-/* 자신이 두 줄 이상에 걸쳐 있고, gcomment가 두 번째 줄의 시작에 위치할 때*/
 .sem:not(.s,.v,.o,.c,.oc,.m).odd[data-gc]::after {
 	left: calc(0.5rem + var(--indent))!important;
 	top: auto!important;
