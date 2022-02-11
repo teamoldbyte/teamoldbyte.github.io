@@ -98,6 +98,33 @@
 						"value": "conj"
 					}
 				]
+			}
+		]
+	},
+	{
+		"type": "div",
+		"class": "col-auto d-inline",
+		"children":
+		[
+			{
+				"type": "group",
+				"children":
+				[
+					{
+						"type": "btn",
+						"mode": "wrap",
+						"title": "단축키: A",
+						"html": "전치사구",
+						"value": "phr"
+					},
+					{
+						"type": "btn",
+						"mode": "wrap",
+						"title": "단축키: S",
+						"html": "형용사구",
+						"value": "adjphr"
+					}
+				]
 			},
 			{
 				"type": "group",
@@ -106,16 +133,16 @@
 					{
 						"type": "btn",
 						"mode": "wrap",
-						"title": "단축키: T",
-						"html": "전치사구",
-						"value": "phr"
+						"title": "단축키: D",
+						"html": "부사구",
+						"value": "advphr"
 					},
 					{
 						"type": "btn",
 						"mode": "wrap",
-						"title": "단축키: Y",
-						"html": "형용사구",
-						"value": "adjphr"
+						"title": "단축키: F",
+						"html": "분사구문",
+						"value": "ptcphr"
 					}
 				]
 			}
@@ -133,14 +160,14 @@
 					{
 						"type": "btn",
 						"mode": "wrap",
-						"title": "단축키: A",
+						"title": "단축키: T",
 						"html": "등위절",
 						"value": "ccls"
 					},
 					{
 						"type": "btn",
 						"mode": "wrap",
-						"title": "단축키: S",
+						"title": "단축키: Y",
 						"html": "명사절",
 						"value": "ncls"
 					}
@@ -153,14 +180,14 @@
 					{
 						"type": "btn",
 						"mode": "wrap",
-						"title": "단축키: D",
+						"title": "단축키: G",
 						"html": "형용사절",
 						"value": "acls"
 					},
 					{
 						"type": "btn",
 						"mode": "wrap",
-						"title": "단축키: F",
+						"title": "단축키: H",
 						"html": "부사절",
 						"value": "advcls"
 					}
