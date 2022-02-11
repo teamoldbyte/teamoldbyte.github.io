@@ -13,12 +13,14 @@
 		87:'[value="ptc"]',
 		69:'[value="ger"]',
 		82:'[value="conj"]',
-		84:'[value="phr"]',
-		89:'[value="adjphr"]',
-		65:'[value="ccls"]',
-		83:'[value="ncls"]',
-		68:'[value="acls"]',
-		70:'[value="advcls"]',
+		65:'[value="phr"]',
+		83:'[value="adjphr"]',
+		68:'[value="advphr"]',
+		70:'[value="ptcphr"]',
+		84:'[value="ccls"]',
+		89:'[value="ncls"]',
+		71:'[value="acls"]',
+		72:'[value="advcls"]',
 		90:'[value="mod"]',
 		88:'[value="erasing"]',
 		ctrlZ:'[value="undo"]:not([disabled])',
@@ -420,7 +422,9 @@
 					   				ee.preventDefault();
 					   				pushEditHistory(target.closest('.semantics-result'));
 					   				var text = $(this).find('input').val().trim();
-					   				target.dataset[type.data] = text;
+					   				// 코멘트 길이가 0이면 삭제, 아니면 수정 적용.
+					   				if(text.length == 0) delete target.dataset[type.data];
+					   				else target.dataset[type.data] = text;
 									$(document).off('mousedown', editCommentMenu);
 									$(editText).remove();
 									checkGCDepth(target.closest('.semantics-result'));
@@ -743,7 +747,7 @@
 	function wrapBracket(selection, wrapper){
 		const rcomments = {s:'subj', o:'obj',c:'comp', oc:'o.c.', m:'mod'},
 			  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
-						acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',ccls:'등위절'};
+						acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절'};
 		const range = selection.getRangeAt(0);
 		const container = $(range.startContainer).closest('.semantics-result')[0];
 		switch (wrapper) {

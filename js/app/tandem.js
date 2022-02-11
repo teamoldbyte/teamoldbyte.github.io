@@ -84,6 +84,9 @@ const keywordTable = {
 "\u0433" : "\"GER\"",
 "\u0434" : "\"PTC\"",
 "\u0435" : "\"RCM\"",            //선행사
+"\u0436" : "\"ADVPHR\"",
+"\u0437" : "\"PTCPHR\"",
+
 
 
 //rcomment - 성분 (조지아 문자)
@@ -121,6 +124,7 @@ const keywordTable = {
 "\u13A4" : "\"전치사구\"",
 "\u13A5" : "\"전치사구(adj)\"",
 "\u13A6" : "\"분사\"",
+"\u13A7" : "\"부사구\"",
 
 //modificant or gcomment의 값 (캐나다 원주민 문자)
 "\u1400" : "true",
@@ -143,7 +147,7 @@ async function svocArr2Text(svocList) {
 }
 /* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
 function svocDom2Arr(node, arr) {
-	const markTypes = /\b(s|v|o|c|oc|m|rcm|tor|ger|ptc|conj|phr|adjphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
+	const markTypes = /\b(s|v|o|c|oc|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
 	// 탐색 위치 초기화
 	svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 	arr = arr ? arr : [];
@@ -326,7 +330,7 @@ function paintBasicDOMs(text, svocList, div) {
   // 겹치는 태그에 rcomment가 있으면 구,종속절의 괄호를 크게, 
   // rcomment가 없이 겹치는 태그는 제거.(미표시)
   let prior = null;
-  const markTypesNeedBrackets = ['CONJ','PHR','ADJPHR','CLS','ACLS','NCLS','ADVCLS','CCLS','PCLS'];
+  const markTypesNeedBrackets = ['CONJ','PHR','ADJPHR','ADVPHR','PTCPHR','CLS','ACLS','NCLS','ADVCLS','CCLS','PCLS'];
   uniqTags.forEach(function(tag) {
     if(prior != null && tag.start == prior.start && tag.end == prior.end){
       // 성분태그의 rcomment,gcomment가 없거나 절이 등위절일 경우, 겹치는 성분 태그를 제거.
@@ -480,12 +484,12 @@ function wrapWithBracket(div){
   // 괄호 적용할 대상을 trim
   trimTextContent(div);
   
-  $(div).find('.acls, .ncls, .advcls, .cls, .ccls, .pcls, .phr, .adjphr, .conj')
+  $(div).find('.acls, .ncls, .advcls, .cls, .ccls, .pcls, .phr, .adjphr, .advphr, .ptcphr, .conj')
   .add($(div).find('.sem[data-lv]').filter(function(){
     return (this.textContent.length != this.parentElement.textContent.length
         || $(this.parentElement).is('.ptc, .tor'));
   })).get().reverse().forEach(function(el) {
-	let clsType = el.className.match(/\bacls\b|\bncls\b|\badvcls\b|\bcls\b|\bccls\b|pcls\b|\bphr\b|\badjphr\b|\bconj\b/);
+	let clsType = el.className.match(/\bacls\b|\bncls\b|\badvcls\b|\bcls\b|\bccls\b|pcls\b|\bphr\b|\badjphr\b|\badvphr\b|\bptcphr\b|\bconj\b/);
 	clsType = (clsType != null && clsType.length > 0) ? clsType[0] : '';
     let brackets, type = 'etc';
 	switch(clsType) {
@@ -494,7 +498,7 @@ function wrapWithBracket(div){
         brackets = ['{', '}'];
         break;
       case 'conj': 
-      case 'phr': case 'adjphr':
+      case 'phr': case 'adjphr': case 'advphr': case 'ptcphr':
         type = clsType; 
         brackets = ['(', ')'];
         break;
@@ -1021,7 +1025,7 @@ async function drawConnections(div){
              curve: false, lineWidth: 1, header: false, size: 2,
              className: 'gc_line', strokeStyle:'rgb(158,175,234)'};
     // 괄호를 가지는 품사들은 gcomment의 위치가 다름을 인식.
-    if($(this).is('.cls,.ncls,.acls,.advcls,.phr,.adjphr,.tor')) {
+    if($(this).is('.cls,.ncls,.acls,.advcls,.phr,.adjphr,.advphr,.ptcphr')) {
       const prevRects = this.previousElementSibling.getClientRects(),
             prevLastRect = prevRects[prevRects.length - 1];
       options.p1x = scrolledDivLeft + rect.left - 0.25 * rem;
