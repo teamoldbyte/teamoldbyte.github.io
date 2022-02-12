@@ -815,7 +815,7 @@ body{
 	border-radius: 10px;
     box-shadow: inset 0 4px 8px 0 rgb(0 0 0 / 2%), 0 6px 20px 0 rgb(0 0 0 / 1%);
 	margin: 4rem 0;
-	padding: 3rem 1rem;
+	padding: 1.5rem 1rem;
 }
 .demo-result-section .one-sentence-unit-section{
 	font-family: 'HCRDotum';
