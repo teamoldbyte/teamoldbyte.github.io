@@ -820,10 +820,10 @@ body{
 .demo-result-section .one-sentence-unit-section{
 	font-family: 'HCRDotum';
 }
-.demo-result-section .title-section .title-text{
+/*.demo-result-section .title-section .title-text{
     font-size: 3rem;
 	font-family: 'Open Sans';
-}
+}*/
 /* 설문 조사 영역 */
 .result-survey-section{
 	padding: 10px;
@@ -1382,7 +1382,7 @@ body{
 .title-section{
     color: #1b1f40;
 	font-weight: 400;
-	letter-spacing: -1px;
+	/*letter-spacing: -1px;*/
 	/*font-size: 3.5rem;*/
 }
 .title-section .title-text{
