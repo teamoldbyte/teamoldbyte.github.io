@@ -243,6 +243,9 @@ a:hover {
 .bg-fc-purple{
 	background-color: var(--fc-purple) !important;
 }
+.bg-fc-yellow{
+	background-color: var(--fc-yellow) !important;
+}
 .bg-fc-beige{
 	background-color: bisque !important;
 } 
