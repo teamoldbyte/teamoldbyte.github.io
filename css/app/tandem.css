@@ -1871,6 +1871,11 @@ body{
 	padding-right: 3px;
 	padding-left: 15px;
 }
+@media (max-width: 576px) {
+	.word-section .title{
+	    font-weight: 700;
+	}
+}
 .word-section .title:first-child{
 	padding-left: 0px;
 }
