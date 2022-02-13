@@ -153,6 +153,8 @@
 						default:
 							break;
 						}
+						
+						// (단축키로 실행됐을 경우) 현재의 마우스 위치에서 '커서 가리키기' 이벤트 발동
 						if(sel.isCollapsed) {
 						  if (document.caretPositionFromPoint) {
 							range = document.caretPositionFromPoint(currX, currY);
@@ -363,6 +365,10 @@
 							wrapBracket(sel, forceRole ? forceRole : val);
 						}
 					}
+					// 지정 완료 후 메뉴 활성화 해제
+					$('.edit-svoc').attr('data-mode', null);
+					$svocEditor.find('.active').removeClass('active');
+					$svocEditorHint.empty();
 				})
 				// =========================================================== /
 				//						코멘트 수정							   /
@@ -599,8 +605,12 @@
 					sel.removeAllRanges();
 					
 					modifier = null;
-					this.closest('.edit-svoc').dataset.mode = 'mod';
-					$('.semantic-edit-guide-msg').text('수식어 위치를 클릭 하세요.');
+					$('.mod-indicator').remove();
+					$('.edit-svoc').attr('data-mode', null);
+					$svocEditor.find('[data-mode="mod"].active').removeClass('active');
+					$svocEditorHint.empty();
+					// this.closest('.edit-svoc').dataset.mode = 'mod';
+					// $('.semantic-edit-guide-msg').text('수식어 위치를 클릭 하세요.');
 					
 					checkGCDepth(this);
 				});									
@@ -615,7 +625,7 @@
 		this.wrap($('<div class="edit-svoc"></div>'))
 			.before($('<span class="svoc-editor-badge badge fs-6 rounded-pill">'
 					+ (forNew ? 'New' : 'Edit') + '</span>'))
-			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
+			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 p-1 pb-0 bg-white rounded-pill pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
 			.before($svocEditor)
 			.after($svocEditorHint);
 		
