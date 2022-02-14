@@ -71,7 +71,7 @@ function getTextWidth(text, font) {
 		// lookbehind 정규식 동작을 스크립트로 구현
 		for(let point of ends) {
 		  const prev = this.charAt(point.index - 1);
-		  if(/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev) || / [A-Z]\./.test(prev)) {
+		  if(/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev) || / [A-Z]\./.test(prev))) {
 			sentences.push(this.substring(start, point.index));
 			start = point.index + 1;
 		  } else continue;
