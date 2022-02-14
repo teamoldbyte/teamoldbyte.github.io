@@ -117,8 +117,8 @@
 /* 이미지 타입의 아이콘(나의 서재) 스타일 지정*/
 .workbook-menu-section .menu-icon-section .mylibrary-icon::before{
 	content: '';
-    mask: url(https://static.findsvoc.com/images/app/icons/mylibrary.svg) center/cover no-repeat;
-    -webkit-mask: url(https://static.findsvoc.com/images/app/icons/mylibrary.svg) center/cover no-repeat;
+    mask: url(https://teamoldbyte.github.io/images/app/icons/mylibrary.svg) center/cover no-repeat;
+    -webkit-mask: url(https://teamoldbyte.github.io/images/app/icons/mylibrary.svg) center/cover no-repeat;
     background-color: currentColor;
     display: inline-block;
     width: inherit;
@@ -289,6 +289,13 @@
 		transform: translateX(calc(50px * 7 + 9px));
 	}
 }
+@media (max-width: 992px) {
+	.workbook-menu-section .menu-icon-section ul li:hover a .icon,
+	.workbook-menu-section .menu-icon-section ul li:hover form .icon{
+		transform: translateY(-20px);
+		color: #5c68b6!important;
+	}
+}
 .workbook-menu-section .mylibrary-icon{
 	position: relative;
 	width: 1.75rem;
@@ -368,7 +375,10 @@
 		padding: 0;
 		margin-left: 0.5rem;
 	}
+	
 }
+
+
 
 /*------------------------------------------------------------------------------
                                  index.html
@@ -633,7 +643,7 @@
 .workbook-section .shelf{
 	height: 20px;
 	box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-	background-image: url('https://static.findsvoc.com/images/app/tandem/wood.jpg');
+	background-image: url('https://teamoldbyte.github.io/images/app/tandem/wood.jpg');
 }
 .workbook-section .bookshelf-section{
 	margin-bottom: 4rem;
@@ -795,7 +805,7 @@
 .add-workbook-section .add-workbook-area {
    width: 200px;
    height: 300px; 
-   background: white url(https://static.findsvoc.com/images/logo/main_logo_headonly.svg) center/cover no-repeat;
+   background: white url(https://teamoldbyte.github.io/images/logo/main_logo_headonly.svg) center/cover no-repeat;
 	opacity: 0.6;
 	border: 2px dashed #9d9d9d;
    margin: auto;
@@ -1263,7 +1273,7 @@
 	color: #41a099;
 }
 .view-passage-section .text-section{
-	font-family: 'HCRDotum';
+	font-family: 'CorbelHCRDotum';
 	font-size: 14px;
 	margin-top: auto;
 	margin-bottom: auto;
@@ -1460,6 +1470,26 @@
 		height: -webkit-fit-content;
 	}
 }
+
+/* 해석 에디터 */
+.trans-editor{
+	min-width: 50vw;
+}
+.trans-editor textarea{
+	height: 10vh;
+}
+@media (max-width: 992px) {
+	.trans-editor{
+		width: 100%;
+	}
+	.ai-translation-block .trans-editor{
+		width: 90%;
+	}
+	.trans-editor textarea{
+		height: 20vh;
+	}
+}
+
 /*------------------------------------------------------------------------------
                               add_passage.html
  -----------------------------------------------------------------------------*/
