@@ -58,9 +58,11 @@ function getTextWidth(text, font) {
 	  return this.quoteNormalize().concatLines().shrinkSpaces().capitalize1st();
 	}
 	// 문장 구분 지점을 기준으로 문장 자르기(출처: https://regex101.com/r/nG1gU7/1173)
+	// 설명: 공백문자 앞의 글자가 p.m.이나 a.m. 혹은 Mr.나 Dr. 같은 형태가 아닌 구두점(.!?)이면 문장의 끝으로 인식.
+	// #이슈: 얼마든지 규격 외의 약자나 호칭 줄임말 등이 있을 수 있다. 
 	str.splitSentences = function() {
 	  try {
-		return this.split(new RegExp('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?"])\\s','gm'));  
+		return this.split(new RegExp('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s','gm'));  
 	  } catch (e) {
 		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
 		if(!this.match(/\s/)) return [this];
@@ -69,7 +71,7 @@ function getTextWidth(text, font) {
 		// lookbehind 정규식 동작을 스크립트로 구현
 		for(let point of ends) {
 		  const prev = this.charAt(point.index - 1);
-		  if(/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev))) {
+		  if(/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev) || / [A-Z]\./.test(prev)) {
 			sentences.push(this.substring(start, point.index));
 			start = point.index + 1;
 		  } else continue;
