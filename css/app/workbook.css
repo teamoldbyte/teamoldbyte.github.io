@@ -1492,3 +1492,14 @@
 .divided-sentence:not(:last-child) .input-group > *{
 	border-bottom: none;
 }
+/*------------------------------------------------------------------------------
+                              edit_passage.html
+ -----------------------------------------------------------------------------*/
+@media (max-width: 991px) {
+	edit-passage-section .list-passage-section .passage{
+		width: 100%;
+		height: auto;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+}
