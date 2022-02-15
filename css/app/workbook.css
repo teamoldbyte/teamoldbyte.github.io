@@ -450,6 +450,13 @@
 	font-weight: 600;
 	color: #3E2723;
 }
+@media (max-width: 991px) {
+    .workbook-index-section .book-section {
+		width: calc(100vw - 7rem);
+		border: none;
+		padding: 5px;
+	}
+}
 @media (max-width: 768px) {
     .workbook-index-section .book-section {
 		width: calc(100vw - 1rem);
