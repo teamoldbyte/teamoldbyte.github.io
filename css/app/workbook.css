@@ -1492,6 +1492,10 @@
 .divided-sentence:not(:last-child) .input-group > *{
 	border-bottom: none;
 }
+.workbook-content-section .reset-textarea {
+    top: 4rem;
+    right: 25px;
+}
 /*------------------------------------------------------------------------------
                               edit_passage.html
  -----------------------------------------------------------------------------*/
