@@ -322,6 +322,15 @@
 	font-size: 1.5rem;
 	vertical-align: middle;
 }
+@media (max-width: 991px) {
+    .workbook-menu-section{
+		top: 3rem;
+		right: 3.5rem;
+		width: calc(100% - 7rem);
+		padding: 0;
+		z-index: 1000;
+	}
+}
 @media (max-width: 768px) {
     .workbook-menu-section{
 		top: 2rem;
@@ -1422,13 +1431,13 @@
 	border: 2px solid #b4c0d8;
 	border-radius: 5px;
 }
-@media (max-width: 1199.5px) {
+@media (max-width: 991px) {
 	/* 구문분석 결과영역 */
 	.view-passage-section .result-section .one-sentence-unit-section{
 		box-shadow: none;
 		margin-bottom: 0.5rem;
 		border-bottom: 1px solid #dee2e6;
-		padding: 0.125rem 0.25rem;
+		padding: 0.25rem 0.5rem;
 		background-color: #fff;
 	}
 	.view-passage-section .result-section .one-sentence-unit-section:first-child{

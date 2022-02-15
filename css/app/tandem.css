@@ -309,6 +309,12 @@ body{
 .version-section{
     height: 30px;
 }
+@media (max-width: 991px){
+    .tandem-layout-content-section {
+        min-height: 100vh;
+        padding: 0.5rem;
+    }
+}
 @media (max-width: 768px){
     .tandem-layout-content-section {
         min-height: 100vh;
