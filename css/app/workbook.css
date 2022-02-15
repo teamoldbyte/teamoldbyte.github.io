@@ -1492,3 +1492,18 @@
 .divided-sentence:not(:last-child) .input-group > *{
 	border-bottom: none;
 }
+.workbook-content-section .reset-textarea {
+    top: 4rem;
+    right: 25px;
+}
+/*------------------------------------------------------------------------------
+                              edit_passage.html
+ -----------------------------------------------------------------------------*/
+@media (max-width: 991px) {
+	edit-passage-section .list-passage-section .passage{
+		width: 100%;
+		height: auto;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+}

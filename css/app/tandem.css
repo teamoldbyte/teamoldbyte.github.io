@@ -401,8 +401,8 @@ body{
 }
 .reset-textarea {
     position: absolute;
-    top: calc(50% - 0.75em);
-    right: 53px;
+    top: 3.5rem;
+    right: 25px;
     padding: 0;
     border: none;
     background: none;
