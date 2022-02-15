@@ -1496,11 +1496,8 @@
     top: 4rem;
     right: 25px;
 }
-/*------------------------------------------------------------------------------
-                              edit_passage.html
- -----------------------------------------------------------------------------*/
 @media (max-width: 991px) {
-	edit-passage-section .list-passage-section .passage{
+	.workbook-content-section .list-passage-section .passage{
 		width: 100%;
 		height: auto;
 		padding: 10px;
