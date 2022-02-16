@@ -364,11 +364,11 @@
 						}else if(this.dataset.mode == 'wrap') {
 							wrapBracket(sel, forceRole ? forceRole : val);
 						}
+						// 지정 완료 후 메뉴 활성화 해제
+						$('.edit-svoc').attr('data-mode', null);
+						$svocEditor.find('.active').removeClass('active');
+						$svocEditorHint.empty();
 					}
-					// 지정 완료 후 메뉴 활성화 해제
-					$('.edit-svoc').attr('data-mode', null);
-					$svocEditor.find('.active').removeClass('active');
-					$svocEditorHint.empty();
 				})
 				// =========================================================== /
 				//						코멘트 수정							   /
