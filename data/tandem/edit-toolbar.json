@@ -257,10 +257,10 @@
 			
 			{
 				"type": "btn",
-				"class": "btn btn-outline-fico col-auto btn-sm",
+				"class": "btn btn-outline-fico col-auto btn-sm lh-1",
 				"title": "저장",
 				"value": "save",
-				"html": "<i class=\"fas fa-save\"></i>"
+				"html": "<i class=\"far fa-arrow-alt-circle-down fa-lg\"></i>"
 			}
 		]
 	},
@@ -272,10 +272,10 @@
 			
 			{
 				"type": "btn",
-				"class": "btn btn-outline-danger col-auto btn-sm",
+				"class": "btn btn-outline-danger col-auto btn-sm lh-1",
 				"title": "편집 초기화 후 닫기",
 				"value": "close",
-				"html": "<i class=\"fas fa-times\"></i>"
+				"html": "<i class=\"fas fa-times fa-lg\"></i>"
 			}
 		]
 	}
