@@ -32,7 +32,7 @@ async function openSummernote($input) {
 		lang: 'ko-KR',
 		callbacks: {
 			onPaste: function(e) {
-				var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+				let bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
 				if(bufferText != null && bufferText.length > 0) {
 					e.preventDefault();
 					// Firefox fix
@@ -45,8 +45,9 @@ async function openSummernote($input) {
 			onChange: function (contents, $editable) {
 				const maxContents = 65000,
 					popover = bootstrap.Popover.getOrCreateInstance($editable[0], 
-									{content:'본문 내용이 너무 길어 '
-										+ maxContents + '자를 초과한 글자는 제거되었습니다.'});
+									{html: true, title: '<span class="fw-bold">※ 경고</span>',
+									content: '<span class="fw-bold text-danger">본문 내용이 너무 길어 '
+										+ maxContents + '자를 초과한 글자는 제거되었습니다.</span>'});
 				if(contents.length > maxContents) {
 					$(this).summernote('code',contents.substring(0, maxContents));
 					popover.show();
@@ -54,7 +55,7 @@ async function openSummernote($input) {
 			},			
 			onImageUpload: function(files) {
 				const _this = this;
-				var formData = new FormData();
+				let formData = new FormData();
 				for(let i = 0, filesLen = files.length; i < filesLen;i++) {
 					if(files[i].size > 1024 * 1024) {
 						alert('업로드 용량 초과: ' + Math.ceil(files[i].size / 1024) + 'KB\n(최대 용량: 1024KB)');
@@ -80,9 +81,9 @@ async function openSummernote($input) {
 			        	}
 			        },
 			        error: function (xhr) {
-						//-----------------------------------
-						alert('파일을 업로드하지 못했습니다. 다시 시도해 주세요.')
-						//-----------------------------------
+					//-----------------------------------
+					alert('파일을 업로드하지 못했습니다. 다시 시도해 주세요.')
+					//-----------------------------------
 			        }
 			    });
 			}
