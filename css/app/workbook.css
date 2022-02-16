@@ -384,6 +384,12 @@
 		padding: 0;
 		margin-left: 0.5rem;
 	}
+	
+	.workbook-menu-section .menu-icon-section ul li:hover a .icon,
+	.workbook-menu-section .menu-icon-section ul li:hover form .icon{
+		transform: translateY(0);
+		color: #5c68b6!important;
+	}
 }
 
 /*------------------------------------------------------------------------------
