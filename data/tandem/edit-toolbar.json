@@ -207,14 +207,14 @@
 					{
 						"type": "btn",
 						"mode": "mod",
-						"title": "단축키: Z",
+						"title": "수식 (단축키: Z)",
 						"html": "<i class=\"fas fa-level-down-alt fa-flip-horizontal\"></i>",
 						"value": "mod"
 					},
 					{
 						"type": "btn",
 						"mode": "erasing",
-						"title": "단축키: X",
+						"title": "지우기 (단축키: X)",
 						"html": "<i class=\"fas fa-eraser\"></i>",
 						"value": "erasing"
 					}
@@ -234,14 +234,14 @@
 					{
 						"type": "btn",
 						"mode": "undo",
-						"title": "단축키: Ctrl + Z",
+						"title": "실행취소 (단축키: Ctrl + Z)",
 						"html": "<i class=\"fas fa-undo-alt\"></i>",
 						"value": "undo"
 					},
 					{
 						"type": "btn",
 						"mode": "redo",
-						"title": "단축키: Ctrl + Y",
+						"title": "재실행 (단축키: Ctrl + Y)",
 						"html": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
 						"value": "redo"
 					}
