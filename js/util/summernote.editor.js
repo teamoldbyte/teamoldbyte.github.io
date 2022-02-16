@@ -42,6 +42,16 @@ async function openSummernote($input) {
 					}, 10);
 				}
 			},
+			onChange: function (contents, $editable) {
+				const maxContents = 65000,
+					popover = bootstrap.Popover.getOrCreateInstance($editable[0], 
+									{content:'본문 내용이 너무 길어 '
+										+ maxContents + '자를 초과한 글자는 제거되었습니다.'});
+				if(contents.length > maxContents) {
+					$(this).summernote('code',contents.substring(0, maxContents));
+					popover.show();
+				}else popover.hide();
+			},			
 			onImageUpload: function(files) {
 				const _this = this;
 				var formData = new FormData();
