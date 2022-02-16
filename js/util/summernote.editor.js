@@ -38,7 +38,6 @@ async function openSummernote($input) {
 					// Firefox fix
 					setTimeout(function () {
 						$input.summernote('pasteHTML', bufferText.replaceAll(/\n/g,'<br/>'));
-						// document.execCommand('insertText', false, bufferText);
 					}, 10);
 				}
 			},
@@ -46,11 +45,13 @@ async function openSummernote($input) {
 				const maxContents = 65000,
 					popover = bootstrap.Popover.getOrCreateInstance($editable[0], 
 									{html: true, title: '<span class="fw-bold">※ 경고</span>',
+									trigger: 'manual',
 									content: '<span class="fw-bold text-danger">본문 내용이 너무 길어 '
-										+ maxContents + '자를 초과한 글자는 제거되었습니다.</span>'});
+										+ '마지막 입력이 취소되었습니다.</span>'});
 				if(contents.length > maxContents) {
-					$(this).summernote('code',contents.substring(0, maxContents));
-					popover.show();
+					$(this).summernote('undo');
+					setTimeout(() => popover.show(), 150);
+					$editable.blur();
 				}else popover.hide();
 			},			
 			onImageUpload: function(files) {
