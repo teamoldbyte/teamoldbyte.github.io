@@ -14,7 +14,8 @@ function getTextWidth(text, font) {
   context.font = font;
   return context.measureText(text).width;
 }
-
+const invalidEnglishRegex = /[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A0|\u2028|\u2029|\u2018-\u201A|\u201C-\u201D)]/gi;
+const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A0|\u2028|\u2029|\u2018-\u201A|\u201C-\u201D)]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(str) {
 	/**
@@ -36,7 +37,9 @@ function getTextWidth(text, font) {
 	  return this.charAt(0).toUpperCase() + this.slice(1);
 	};
 	
-	// 문자열을 정규화된 영어 문장 배열로 반환
+	/** 문자열을 정규화된 영어 문장 배열로 반환
+	 @deprecated sbd 라이브러리 사용
+	*/
 	str.parseToSentences = function() {
 	  return this.quoteNormalize().concatLines().insertSpace().shrinkSpaces().splitSentences();
 	};
@@ -57,9 +60,12 @@ function getTextWidth(text, font) {
 	str.sentenceNormalize = function() {
 	  return this.quoteNormalize().concatLines().shrinkSpaces().capitalize1st();
 	}
+	/**
 	// 문장 구분 지점을 기준으로 문장 자르기(출처: https://regex101.com/r/nG1gU7/1173)
 	// 설명: 공백문자 앞의 글자가 p.m.이나 a.m. 혹은 Mr.나 Dr. 같은 형태가 아닌 구두점(.!?)이면 문장의 끝으로 인식.
 	// #이슈: 얼마든지 규격 외의 약자나 호칭 줄임말 등이 있을 수 있다. 
+	@deprecated sbd 라이브러리 사용
+	 */
 	str.splitSentences = function() {
 	  try {
 		return this.split(new RegExp('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s','gm'));  
