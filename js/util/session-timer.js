@@ -89,6 +89,7 @@ $.getJSON('/session/valid', valid => {if(valid) {
   // 타이머가 만료되면 POST 방식 전송을 막고 로그인 유도
   $.ajaxPrefilter((options, originalOptions, jqXHR) => {
 	const ajaxurl = options.url;
+	let now = new Date().getTime();
 	if(options.type == 'POST' && lastAccessdTime + max <= now
 	&& (ajaxurl.startsWith('/') || ajaxurl.startsWith('https://www.findsvoc.com') || ajaxurl.startsWith('https://findsvoc.com'))) {
 	  jqXHR.abort();
