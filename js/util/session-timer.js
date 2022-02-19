@@ -49,17 +49,7 @@ $.getJSON('/session/valid', valid => {if(valid) {
 		}
 	  }, 1000);
 	  
-	  // 서버로의 ajax 호출이 있으면 타이머 초기화
-	  $(document).ajaxComplete((event,xhr,settings) => {
-		const ajaxurl = settings.url;
-		if(ajaxurl.startsWith('/') || ajaxurl.startsWith('https://www.findsvoc.com') || ajaxurl.startsWith('https://findsvoc.com'))
-		  // 세션갱신 호출은 세션의 유효/무효를 반환. 무효일 경우 즉시 타이머 종료
-		  if(ajaxurl == '/session/valid') 
-			lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0)
-		  else if(lastAccessdTime + max > new Date().getTime()) {
-			lastAccessdTime = new Date().getTime()
-		  } else exsessionExpiredConfirm()
-	  });
+
 	  
 	  // 세션 만료 알림 모달 등록
 	  $(document.body).append('<div class="modal fade" id="sessionAlert" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">'
@@ -83,6 +73,30 @@ $.getJSON('/session/valid', valid => {if(valid) {
 	  });
 	}
   }, 1000);
+  
+  // 서버로의 ajax 호출이 있으면 타이머 초기화
+  $(document).ajaxComplete((event,xhr,settings) => {
+	const ajaxurl = settings.url;
+	if(ajaxurl.startsWith('/') || ajaxurl.startsWith('https://www.findsvoc.com') || ajaxurl.startsWith('https://findsvoc.com'))
+	  // 세션갱신 호출은 세션의 유효/무효를 반환. 무효일 경우 즉시 타이머 종료
+	  if(ajaxurl == '/session/valid') 
+		lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0)
+	  else if(lastAccessdTime + max > new Date().getTime()) {
+		lastAccessdTime = new Date().getTime()
+	  } else sessionExpiredConfirm()
+  });
+  
+  // 타이머가 만료되면 POST 방식 전송을 막고 로그인 유도
+  $.ajaxPrefilter((options, originalOptions, jqXHR) => {
+	const ajaxurl = options.url;
+	if(options.type == 'POST' && lastAccessdTime + max <= now
+	&& (ajaxurl.startsWith('/') || ajaxurl.startsWith('https://www.findsvoc.com') || ajaxurl.startsWith('https://findsvoc.com'))) {
+	  jqXHR.abort();
+	  if(confirm('유효 시간이 만료되어 요청을 수행할 수 없습니다. 다시 로그인하시겠습니까?')) {
+		location.assign('/auth/login');
+	  }
+	}
+  });
 }});
 
 // 세션 자동갱신. 세션이 10분 넘게 남게 되므로 동작 인식 해제.
