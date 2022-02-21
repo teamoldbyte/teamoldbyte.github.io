@@ -315,7 +315,7 @@ body{
         padding: 0.5rem;
     }
 }
-@media (max-width: 768px){
+@media (max-width: 767px){
     .tandem-layout-content-section {
         min-height: 100vh;
         padding: 0px;
@@ -585,14 +585,14 @@ body{
 	right: 10px;
 	display: inline-block;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.index-section .donation-btn{
 		position: fixed;
 		bottom: 2vh;
 	}
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	/* 로고와 문장 입력칸이 있는 영역 */
 	.logo-input-section{	
 		height: 100%;
@@ -1077,7 +1077,7 @@ body{
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border: none;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	
     .block-section {
 		/*padding-top: 6rem;
@@ -1366,7 +1366,7 @@ body{
 		left: 0;
 	}
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .index-section{
         top: 0;
 		padding-top: 0;
@@ -1781,7 +1781,7 @@ body{
 	display: flex;
 	word-break: keep-all;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.translation-section .translation-text{
 		border-top: 1px solid #e7dbdd;
 		padding: 3px 0;

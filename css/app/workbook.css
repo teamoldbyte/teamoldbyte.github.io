@@ -70,7 +70,7 @@
 .block-section{
 	padding-top: 8rem!important;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .block-section{
 		padding-top: 6rem!important;
 	}
@@ -130,7 +130,7 @@
 .workbook-menu-section .menu-icon-section ul .nav-item.active form .icon{
 	color: #5c68b6!important;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.workbook-menu-section .menu-icon-section ul .nav-item.active a .text,
 	.workbook-menu-section .menu-icon-section ul .nav-item.active form .text{
 		color: #5c68b6!important;
@@ -331,7 +331,7 @@
 		z-index: 1000;
 	}
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .workbook-menu-section{
 		top: 2rem;
 		right: 0rem;
@@ -463,7 +463,7 @@
 		padding: 5px;
 	}
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .workbook-index-section .book-section {
 		width: calc(100vw - 1rem);
 		border: none;
@@ -498,7 +498,7 @@
 	width: 10rem;
 	height: 15rem;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .workbook-overview-section .image-section img{
 		width: 8rem;
 		height: 12rem;
@@ -578,7 +578,7 @@
 	right: 0;
 	bottom: 20px;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.workbook-overview-section .workbook-info-section .text-section .button-section{
 		position: static;
 	}
@@ -779,7 +779,7 @@
 	left: -6px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.workbook-section .book {
 		width: 7rem;
 		height: 10rem;
@@ -841,7 +841,7 @@
 .input-phase > div{
 	margin-bottom: 0.5rem;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .add-workbook-section .add-workbook-area {
 	   width: 10rem;
 	   height: 15rem; 
@@ -1119,7 +1119,7 @@
 	opacity: .5;
 	right: -6rem;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.full-text-section .js-prev-passage{
 		color: var(--fc-yellow);
 		opacity: .75;
@@ -1480,7 +1480,7 @@
 		bottom: 0;
 	} */
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	/* 분석결과 수정 */
 	.view-passage-section .result-semantic-section .svoc-mdf-btns{
 		bottom: 1rem;
