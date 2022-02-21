@@ -1119,7 +1119,7 @@
 	opacity: .5;
 	right: -6rem;
 }
-@media (max-width: 767px) {
+@media (max-width: 991px) {
 	.full-text-section .js-prev-passage{
 		color: var(--fc-yellow);
 		opacity: .75;
