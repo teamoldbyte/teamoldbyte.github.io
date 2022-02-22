@@ -18,16 +18,19 @@
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.010" data-dimm-y="0.120" data-dimm-w="0.980" data-dimm-h="0.580" src="https://static.findsvoc.com/images/app/tutorial/8.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.020" data-dimm-y="0.240" data-dimm-w="0.960" data-dimm-h="0.110" src="https://static.findsvoc.com/images/app/tutorial/9.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.010" data-dimm-y="0.590" data-dimm-w="0.980" data-dimm-h="0.410" data-finger-x="25%" data-finger-y="77%" src="https://static.findsvoc.com/images/app/tutorial/10.png" style="display:none;">'
-		+ '<img class="tutorial-step w-100 h-100" data-dimm-x="0.500" data-dimm-y="0.500" data-dimm-w="0.0" data-dimm-h="0.0"/>'
-		+ '<div class="button-dimm rounded" role="button" style="position:absolute;left:0;top:0;width:100%;height:100%;box-shadow:0 0 0 200vh #0003;"></div>'
+		+ '<img class="tutorial-step w-100 h-100" data-img-loaded="true" data-dimm-x="0.500" data-dimm-y="0.500" data-dimm-w="0.0" data-dimm-h="0.0"/>'
+		+ '<div class="button-dimm rounded pe-none" role="button" style="position:absolute;left:0;top:0;width:100%;height:100%;box-shadow:0 0 0 200vh #0003;"></div>'
 		+ '</div>'
 		+ '</div></div></div>');
 
 	// 집중 영역 클릭 시 다음 화면으로
+	let imgLoadTimer
 	$('.button-dimm').click(function() {
+		clearInterval(imgLoadTimer);
 		const $curr = $('.tutorial-step:visible'),
 		$next = $curr.next('.tutorial-step');
 		$curr.add($next).toggle();
+		$(this).addClass('pe-none').empty();
 		
 		// 마지막 화면이면 튜토리얼 완료 기록을 남기고 모달을 종료한다.
 		if($next.length == 0) {
@@ -35,15 +38,22 @@
 			$('#workbookTutorial').modal('hide');
 			return;
 		}
-		moveDimm($next);
+		// 100ms마다 이미지가 로드됐는지 체크 후 다음 화면으로
+		checkImgLoadedAndGo($next);
 	});
 	
+	// 이미지가 로드완료됨을 표시
+	$('img.tutorial-step[src]').on('load', function() {
+		this.dataset.imgLoaded = true;
+	})
 	// 모달 표시가 완료되면 튜토리얼 진행 시작
 	$('#workbookTutorial').on('shown.bs.modal', () => {
+		clearInterval(imgLoadTimer);
+		// 100ms마다 이미지가 로드됐는지 체크 후 다음 화면으로
 		const $first = $('.tutorial-step:eq(0)');
-		moveDimm($first);
-	}).on('hidden.bs.modal', () => $('#workbookTutorial').modal('dispose').remove()
-	).modal('show');
+		checkImgLoadedAndGo($first);
+	}).on('hidden.bs.modal', () => $('#workbookTutorial').modal('dispose').remove());
+	$('#workbookTutorial').modal('show');
 	
 	$('.button-dimm').on('hidden.bs.tooltip', function() {
 		$(this).tooltip('dispose');
@@ -62,22 +72,33 @@
 					'등록을 완료한 내 워크북을 찾아 봅시다. "나의 서재" 메뉴로 들어갑니다.',
 					'"작성 중인 워크북"에 내 워크북이 생겼습니다. 목록이 접혀있다면 "작성 중인 워크북"을 누르면 다시 펼쳐집니다.',
 					'튜토리얼이 종료되었습니다. 나만의 워크북을 만들어 문장들을 체계적으로 관리해보세요.'];
+					
+	// 100ms마다 이미지가 로드됐는지 체크 후 다음 화면으로
+	function checkImgLoadedAndGo($targetImg) {
+		imgLoadTimer = setInterval(() => {
+			if($targetImg[0].dataset.imgLoaded) {
+				clearInterval(imgLoadTimer);
+				moveDimm($targetImg);
+			}
+		}, 100);		
+	}
+	
 	function moveDimm($targetImg) {
 		const $dimm = $('.button-dimm');
 		const oldTooltip = bootstrap.Tooltip.getInstance($dimm[0]);
 		oldTooltip?.hide();
 		$dimm.offset($targetImg.offset())
-						.outerWidth($targetImg.outerWidth())
-						.outerHeight($targetImg.outerHeight())
-						.addClass('pe-none').empty();
+			.outerWidth($targetImg.outerWidth())
+			.outerHeight($targetImg.outerHeight());
 		setTimeout(()=> {
-			const btnPos = $targetImg.get(0).dataset;
+			const imgElem = $targetImg.get(0);
+			const btnPos = imgElem.dataset;
 			$dimm.animate(
 					{
-						left: $targetImg.offset().left + $targetImg.outerWidth() * Number(btnPos.dimmX), 
-						top: $targetImg.offset().top + $targetImg.outerHeight() * Number(btnPos.dimmY), 
-						width: $targetImg.outerWidth() * Number(btnPos.dimmW), 
-						height: $targetImg.outerHeight() * Number(btnPos.dimmH)
+						left: imgElem.offsetLeft + imgElem.offsetWidth * Number(btnPos.dimmX), 
+						top: imgElem.offsetTop + imgElem.offsetHeight * Number(btnPos.dimmY), 
+						width: imgElem.offsetWidth * Number(btnPos.dimmW), 
+						height: imgElem.offsetHeight * Number(btnPos.dimmH)
 					}, () => {
 					const newTooltip = new bootstrap.Tooltip($dimm[0], {
 						placement: 'auto', trigger: 'manual', html: true, customClass: 'text-lg', 
@@ -95,6 +116,6 @@
 						$targetImg.css('cursor','pointer').click(()=>$dimm.trigger('click'));
 					}
 				});
-		},0);
+		}, 100);
 	}
 })();
