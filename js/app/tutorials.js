@@ -35,13 +35,13 @@
 			$('#workbookTutorial').modal('hide');
 			return;
 		}
-		moveDimm($next);
+		moveDimm($next, 0);
 	});
 	
 	// 모달 표시가 완료되면 튜토리얼 진행 시작
 	$('#workbookTutorial').on('shown.bs.modal', () => {
 		const $first = $('.tutorial-step:eq(0)');
-		moveDimm($first);
+		moveDimm($first, 500);
 	}).on('hidden.bs.modal', () => $('#workbookTutorial').modal('dispose').remove()
 	).modal('show');
 	
@@ -62,7 +62,7 @@
 					'등록을 완료한 내 워크북을 찾아 봅시다. "나의 서재" 메뉴로 들어갑니다.',
 					'"작성 중인 워크북"에 내 워크북이 생겼습니다. 목록이 접혀있다면 "작성 중인 워크북"을 누르면 다시 펼쳐집니다.',
 					'튜토리얼이 종료되었습니다. 나만의 워크북을 만들어 문장들을 체계적으로 관리해보세요.'];
-	function moveDimm($targetImg) {
+	function moveDimm($targetImg, delay) {
 		const $dimm = $('.button-dimm');
 		const oldTooltip = bootstrap.Tooltip.getInstance($dimm[0]);
 		oldTooltip?.hide();
@@ -95,6 +95,6 @@
 						$targetImg.css('cursor','pointer').click(()=>$dimm.trigger('click'));
 					}
 				});
-		},0);
+		}, delay);
 	}
 })();
