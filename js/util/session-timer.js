@@ -40,7 +40,7 @@ $.getJSON('/session/valid', valid => {if(valid) {
 			if(!document.hasFocus()) {
 				const orgTitle = document.title;
 				document.title = '💢💢세션 경고💢💢';
-				alert(new Date().toLocaleTimeString() + '\n세션 만료 경고를 확인해 주세요.');
+				alert(new Date().toLocaleTimeString() + '\n경고 메세지를 확인해 주세요.');
 				document.title = orgTitle;
 			}
 		  }
