@@ -109,10 +109,8 @@ function updateSession() {
 // 세션 만료. 로그인 페이지로 가거나 현재 페이지에 남기를 선택
 function sessionExpiredConfirm() {
   clearInterval(sessionTimer);
-  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.')) {
+  $('#sessionAlert')?.modal('hide');
+  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.'))
 	location.assign('/auth/login');
-  }else {
-	$('#sessionAlert').modal('hide');
-  }	
 }
 })();
