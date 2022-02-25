@@ -975,13 +975,17 @@
       opacity: 0.7;
    }
 }
-/* 지문 수정 */
+/* 워크북 수정 및 개요보기 */
 .edit-workbook-section .passage,
 .overview-workbook-section .passage {
 	counter-increment: psgCounter;
 	word-break: break-all;
 }
-.edit-workbook-section .passage::before,
+.edit-workbook-section .passage-text {
+	display: 'block';
+}
+/* 지문 번호 표시(수정화면엔 지문 수정메뉴 툴팁이 있으므로, 자식요소에 적용) */
+.edit-workbook-section .passage-text::before,
 .overview-workbook-section .passage::before { 
 	content: counter(psgCounter);
 	color: white;
