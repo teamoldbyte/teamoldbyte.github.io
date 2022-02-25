@@ -982,7 +982,7 @@
 	word-break: break-all;
 }
 .edit-workbook-section .passage-text {
-	display: 'block';
+	display: inline-block;
 }
 /* 지문 번호 표시(수정화면엔 지문 수정메뉴 툴팁이 있으므로, 자식요소에 적용) */
 .edit-workbook-section .passage-text::before,
