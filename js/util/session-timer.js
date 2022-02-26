@@ -10,46 +10,19 @@ let lastAccessdTime, timeleft = max, sessionTimer, detectingUserActs = false;
 $.getJSON('/session/valid', valid => {if(valid) {
   lastAccessdTime = new Date().getTime();
   // 25분 뒤 최초 1회 세션 자동연장(=> 기본 55분이 주어짐)
+  /* setTimeout(...,1500000)을 안쓰고 setInterval(...,1000) 쓰는 이유:
+     OS 로그오프 등의 개입으로 타이머는 언제든 일시중지될 수 있기 때문
+   */
   sessionTimer = setInterval(() => {
-	let now = new Date().getTime();
+	const now = new Date().getTime();
 	if(lastAccessdTime + max < now) 
 	  sessionExpiredConfirm();
+	// 마지막 사용자 활성 시간부터 25분 경과
 	else if(lastAccessdTime + 1000 * 1500 <= now) {
 	  clearInterval(sessionTimer);
 	  updateSession();
 	  // 타이머 설정
-	  sessionTimer = setInterval(() => {
-		now = new Date().getTime();
-		if(lastAccessdTime + max > now) {
-		  timeleft = lastAccessdTime + max - now;
-		  // 세션 만료 10분전부터 사용자의 입력 활동이 있으면 세션 자동갱신
-		  if(timeleft <= 600000 && !detectingUserActs) {
-			detectingUserActs = true;
-			$(document).on(userAct, updateSession);
-		  }
-		  // 세션 만료 5분전 세션 연장 모달 표시
-		  else if(timeleft <= 300000) {
-			// 세션 유효 시간을 초단위로 표시
-			$('#sessionTimeLeft').text(Math.floor(timeleft / 60000) + '분 '
-									+ Math.floor(timeleft % 60000 / 1000) + '초');
-			
-			if(!$('#sessionAlert').is('.show')) {
-				$(document).off(userAct);
-				$('#sessionAlert').modal('show');
-			}
-			if(!document.hasFocus()) {
-				const orgTitle = document.title;
-				document.title = '💢💢세션 경고💢💢';
-				alert(new Date().toLocaleTimeString() + '\n경고 메세지를 확인해 주세요.');
-				document.title = orgTitle;
-			}
-		  }
-		}else {
-		  sessionExpiredConfirm();
-		}
-	  }, 1000);
-	  
-
+	  sessionTimer = setInterval(checkSessionValid, 1000);
 	  
 	  // 세션 만료 알림 모달 등록
 	  $(document.body).append('<div class="modal fade" id="sessionAlert" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">'
@@ -99,6 +72,38 @@ $.getJSON('/session/valid', valid => {if(valid) {
 	}
   });
 }});
+
+// 세션 유효시간 체크
+function checkSessionValid() {
+  const now = new Date().getTime();
+  if(lastAccessdTime + max > now) {
+	timeleft = lastAccessdTime + max - now;
+	// 세션 만료 10분전부터 사용자의 입력 활동이 있으면 세션 자동갱신
+	if(timeleft <= 600000 && !detectingUserActs) {
+	  detectingUserActs = true;
+	  $(document).on(userAct, updateSession);
+	}
+	// 세션 만료 5분전 세션 연장 모달 표시
+	else if(timeleft <= 300000) {
+	  // 세션 유효 시간을 초단위로 표시
+	  $('#sessionTimeLeft').text(Math.floor(timeleft / 60000) + '분 '
+							+ Math.floor(timeleft % 60000 / 1000) + '초');
+	
+	  if(!$('#sessionAlert').is('.show')) {
+		$(document).off(userAct);
+		$('#sessionAlert').modal('show');
+	  }
+	  if(!document.hasFocus()) {
+		const orgTitle = document.title;
+		document.title = '💢💢세션 경고💢💢';
+		alert(new Date().toLocaleTimeString() + '\n경고 메세지를 확인해 주세요.');
+		// 사용자가 메세지 확인하는 즉시 타이틀 원래대로, 세션 다시 체크
+		document.title = orgTitle;
+		checkSessionValid();
+	  }
+	}
+  }else sessionExpiredConfirm();
+}
 
 // 세션 자동갱신. 세션이 10분 넘게 남게 되므로 동작 인식 해제.
 function updateSession() {
