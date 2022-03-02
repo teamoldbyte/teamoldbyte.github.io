@@ -6,7 +6,7 @@
 (() => {
 const max = 1800 * 1000; // 세션 최대 유지 시간; 밀리초 단위
 const userAct = 'keypress.session click.session scroll.session';
-let lastAccessdTime, timeleft = max, sessionTimer, detectingUserActs = false;
+let lastAccessdTime, timeleft = max, sessionTimer, detectingUserActs = false, focusOutAlerted = false;
 $.getJSON('/session/valid', valid => {if(valid) {
   lastAccessdTime = new Date().getTime();
   // 25분 뒤 최초 1회 세션 자동연장(=> 기본 55분이 주어짐)
@@ -78,8 +78,16 @@ function checkSessionValid() {
   const now = new Date().getTime();
   if(lastAccessdTime + max > now) {
 	timeleft = lastAccessdTime + max - now;
+	
+	if(timeleft > 60000) {
+	  focusOutAlerted = false;
+	  if(detectingUserActs) {
+	    detectingUserActs = false;
+	    $(document).off(userAct);
+	  }
+	}
 	// 세션 만료 10분전부터 사용자의 입력 활동이 있으면 세션 자동갱신
-	if(timeleft <= 600000 && !detectingUserActs) {
+	else if(timeleft <= 600000 && !detectingUserActs) {
 	  detectingUserActs = true;
 	  $(document).on(userAct, updateSession);
 	}
@@ -93,9 +101,10 @@ function checkSessionValid() {
 		$(document).off(userAct);
 		$('#sessionAlert').modal('show');
 	  }
-	  if(!document.hasFocus()) {
+	  if(!document.hasFocus() && !focusOutAlerted) {
 		const orgTitle = document.title;
 		document.title = '💢💢세션 경고💢💢';
+		focusOutAlerted = true;
 		alert(new Date().toLocaleTimeString() + '\n경고 메세지를 확인해 주세요.');
 		// 사용자가 메세지 확인하는 즉시 타이틀 원래대로, 세션 다시 체크
 		document.title = orgTitle;
