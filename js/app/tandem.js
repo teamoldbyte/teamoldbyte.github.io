@@ -152,9 +152,10 @@ function svocDom2Arr(node, arr) {
 	svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 	arr = arr ? arr : [];
 	if(node.classList != null && node.classList.contains('semantics-result')) {
-		node.childNodes.forEach((n, i, array) => {
-        arr = svocDom2Arr(n, arr);
-      });
+		const childNodes = node.childNodes;
+		for(let i = 0, len = childNodes.length; i < len; i++) {
+	        arr = svocDom2Arr(childNodes[i], arr);
+		}
 		return arr;
 	}
 	// 괄호가 아닌 태그이면서 자식노드(텍스트노드 포함)를 가진 span 태그일 경우 배열에 추가
@@ -264,74 +265,90 @@ function paintBasicDOMs(text, svocList, div) {
   svocList = svocList.filter(function(tag){
     return !!(tag.markType) && tag.markType.length > 0;
   })
+  /** 문장 필수성분*/
   const roleTypes = ['S','V','O','C','OC','M'];
-  svocList.forEach(function(tag, i, array){
-    // 전명구,형용사구,to부정사,분사(PHR,TOR,PTC)끼리의 시작점이 겹치면 삭제.
+  let i = 0;
+  while(svocList[i + 1] != null) {
+	let tag = svocList[i], second = svocList[i + 1], third = svocList[i + 2];
+	// 시작과 끝이 겹치는 태그가 3개일 경우 3번째는 일단 삭제.
+	if(third != null && tag.start == third.start && tag.end == third.end) {
+	  svocList.splice(i + 2, 1);
+	}
+    // 소괄호끼리(전명구:PHR, 형용사구:ADJPHR, to부정사:TOR, 분사:PTC)의 시작점이 겹치면 뒤의 것을 삭제.
     // PHR과 ADJPHR이 겹치면 PHR을 삭제.
-    if(array[i + 1] != null && ['PHR','ADJPHR','TOR','PTC'].indexOf(tag.markType) > -1){
-	  const phrsLen = Math.min(i + 3, array.length);
+    else if(['PHR','ADJPHR','TOR','PTC'].indexOf(tag.markType) > -1){
+	  const phrsLen = Math.min(i + 3, svocList.length); // 무한정 검사하지 않고 최대 3개까지 검사
       for(let j = i + 1; j < phrsLen; j++) {
-        if(array[j] != null && tag.start == array[j].start) {
-          if(tag.markType == array[j].markType
-          || (array[j].markType == 'PHR' && tag.markType == 'ADJPHR')){
-            array.splice(j, 1);
-          }else if(tag.markType == 'PHR' && array[j].markType == 'ADJPHR'){
-            array.splice(i, 1);
+		let next = svocList[j];
+        if(next != null && tag.start == next.start) {
+          if(tag.markType == next.markType
+          || (next.markType == 'PHR' && tag.markType == 'ADJPHR')){
+            svocList.splice(j, 1);
+          }else if(tag.markType == 'PHR' && next.markType == 'ADJPHR'){
+            svocList.splice(i, 1);
             break;
           }
         }
       }
+    } 
     // 형용사절,부사절은 위치가 겹치는 성분을 들고 오지 않을 경우 rcomment로 대신함.
     // -> rcomment를 보고 성분 태그를 생성.
-    } else if((['ACLS','ADVCLS'].indexOf(tag.markType) > -1) && tag.rcomment != null){
+    else if((['ACLS','ADVCLS'].indexOf(tag.markType) > -1) && tag.rcomment != null){
       // 겹치는 성분이 V면 삭제.
-      if(array[i + 1].start == tag.start && array[i + 1].end == tag.end
-      && array[i + 1].markType == 'V'){
-        array.splice(i + 1, 1);
+      if(second.start == tag.start && second.end == tag.end && second.markType == 'V'){
+        svocList.splice(i + 1, 1);
       // 완전히 겹치는 태그가 없을 경우 m 태그 삽입
       } else {
-        array.splice(i + 1, 0, 
+        svocList.splice(i + 1, 0, 
           {markType : 'M', rcomment : tag.rcomment, start : tag.start, end : tag.end});
       }
-    // 동사부 내부의 동사는 표시에서 제외.
-    } else if(tag.markType == 'V'){
-	  const arrayLen = array.length;
-      for(let j = i + 1; j < arrayLen && array[j] != null && tag.start <= array[j].start && array[j].end <= tag.end; j++){
-        if(array[j].markType == 'V'){
-          array.splice(j, 1);
-        }
-      }
     }
-  })
+    // 동사부 내부의 동사는 표시에서 제외.
+    else if(tag.markType == 'V'){
+	  let j = i + 1, next = second;
+	  while(next != null && next.start >= tag.start && next.end <= tag.end) {
+		if(next.markType == 'V') svocList.splice(j, 1);
+		next = svocList[++j];
+	  }
+    }
+    i++;
+  }
   // [항상 문장 필수 성분과 절/구 등이 겹치면 필수 성분을 안쪽으로 넣는다.]
   // 필수 성분끼리 겹칠 경우 먼저 등장한 성분을 남기고 삭제.
-  svocList.forEach(function(tag, i, array){
-    if(array[i + 1] != null 
-    && tag.start == array[i + 1].start && tag.end == array[i + 1].end){
-      if(roleTypes.indexOf(tag.markType) > -1
-      && roleTypes.indexOf(array[i + 1].markType) == -1){
-        array.splice(i, 2, array[i + 1], tag);
-      }else if(roleTypes.indexOf(tag.markType) > -1
-      && roleTypes.indexOf(array[i + 1].markType) > -1){
-        array.splice(i + 1, 1);
+  i = 0;
+  while(svocList[i + 1] != null) {
+	let tag = svocList[i], second = svocList[i + 1];
+	// 시작/끝 위치가 동일한 두 태그가 있을 때
+	if(tag.start == second.start && tag.end == second.end) {
+	  // 앞의 태그가 필수성분이고, 뒤의 태그가 그렇지 않으면 순서 바꿈 
+      if(roleTypes.indexOf(tag.markType) > -1 && roleTypes.indexOf(second.markType) == -1){
+        svocList.splice(i, 2, second, tag);
+      // 앞뒤 태그 둘 다 필수성분이면 뒤의 태그 삭제
+      }else if(roleTypes.indexOf(tag.markType) > -1 && roleTypes.indexOf(second.markType) > -1){
+        svocList.splice(i + 1, 1);
       }
-    }
-  })
+	}
+	i++;
+  }
   // [시작,끝,종류가 같은 중복 태그들 제외하고 태그를 모음.]
   const uniqTags = [svocList[0]];
-  svocList.forEach(function(tag){
-    const lastUniq = uniqTags.slice(-1)[0];
+  i = 1;
+  while(svocList[i] != null) {
+	const lastUniq = uniqTags.slice(-1)[0], tag = svocList[i];
     if(lastUniq.start != tag.start || lastUniq.end != tag.end 
     || lastUniq.markType != tag.markType) {
       uniqTags.push(tag);
     }
-  });
+    i++;
+  }
   // [구,종속절과 시작+끝이 겹치는 태그 처리]
   // 겹치는 태그에 rcomment가 있으면 구,종속절의 괄호를 크게, 
   // rcomment가 없이 겹치는 태그는 제거.(미표시)
   let prior = null;
   const markTypesNeedBrackets = ['CONJ','PHR','ADJPHR','ADVPHR','PTCPHR','CLS','ACLS','NCLS','ADVCLS','CCLS','PCLS'];
-  uniqTags.forEach(function(tag) {
+  i = 0;
+  while(uniqTags[i] != null) {
+	const tag = uniqTags[i];
     if(prior != null && tag.start == prior.start && tag.end == prior.end){
       // 성분태그의 rcomment,gcomment가 없거나 절이 등위절일 경우, 겹치는 성분 태그를 제거.
       if(markTypesNeedBrackets.indexOf(prior.markType) > -1){
@@ -362,11 +379,14 @@ function paintBasicDOMs(text, svocList, div) {
     }else{
       prior = tag;
     }
-  });
+    i++;
+  }
   // [마킹 태그 배열 생성]-------------------------------------------------
   // 마킹 태그는 토큰별로 2개가 한 쌍(시작,종료)으로 존재한다.
   let tagPairs = [];const openTags = [], closeTags = [];
-  uniqTags.forEach(function(tag) {    
+  i = 0;
+  while(uniqTags[i] != null) {
+	const tag = uniqTags[i];    
     // 시작태그들을 뽑아서 저장.
     // '수식'일 경우 수식대상에 대한 정보도 시작태그에 추가한다.(종료태그에 속성을 추가할 순 없으니)
     openTags.push({mark : tag.markType, type : 'start', index : tag.start, 
@@ -374,7 +394,8 @@ function paintBasicDOMs(text, svocList, div) {
           rcomment : tag.rcomment, gcomment : tag.gcomment});
     // 종료태그들을 뽑아서 저장
     closeTags.push({mark : tag.markType, type : 'end', index : tag.end, brkt : tag.brkt});
-  })
+    i++;
+  }
   // 종료태그들은 offset의 내림차순으로 정렬 후 역순으로 뒤집는다.
   // 처음부터 offset의 오름차순으로 정렬하는 것과는 다르다.
   // (동일한 위치의 토큰 중 길이가 긴 것이 먼저 나왔으니, 끝나는 것은 더 늦어야 한다.)
@@ -400,8 +421,9 @@ function paintBasicDOMs(text, svocList, div) {
   // [배열 속 태그들을 순서대로 표시]------------------------------------------
   let increasement = 0;
   let modificandIndex = 0;
-  tagPairs.forEach(function(tag) {
-    let htmlTag = "";
+  i = 0;
+  while(tagPairs[i] != null) {
+    let htmlTag = "", tag = tagPairs[i];
     if(tag.type == 'start'){
       // 구/절 태그의 경우 구/절 시작 부호'(','[' 태그 삽입 후 시작태그 삽입 
       htmlTag += '<span class="sem '+ tag.mark.toLowerCase();
@@ -426,7 +448,8 @@ function paintBasicDOMs(text, svocList, div) {
     text = text.substring(0, increasement + tag.index) 
           + htmlTag + text.substring(increasement + tag.index);
     increasement += htmlTag.length;
-  });
+    i++;
+  }
   // [태그들을 html로 표시]
   div.insertAdjacentHTML('afterbegin', text);
   
