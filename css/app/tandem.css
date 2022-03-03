@@ -2201,6 +2201,11 @@ body{
 	display: block;
 	width: calc(100% - 2rem);
 }
+@media (max-width: 767px) {
+	.semantics-result {
+		width: 100%;
+	}
+}
 /* @media (max-width: 1199.5px) {
 	.semantics-result {
 		margin: 0 0.5rem;
