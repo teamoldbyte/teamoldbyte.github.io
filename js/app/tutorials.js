@@ -101,7 +101,7 @@
 						height: imgElem.offsetHeight * Number(btnPos.dimmH)
 					}, () => {
 					const newTooltip = new bootstrap.Tooltip($dimm[0], {
-						placement: 'auto', trigger: 'manual', html: true, customClass: 'text-lg', 
+						placement: imgElem.src.length>0?'auto':'top', trigger: 'manual', html: true, customClass: 'text-lg', 
 						title: tooltips[$targetImg.index('.tutorial-step')]
 					});
 					
@@ -109,7 +109,7 @@
 					const fingerX = btnPos.fingerX||'50%', fingerY = btnPos.fingerY||'50%';
 		
 					$dimm.removeClass('pe-none')
-						.append('<span class="material-icons position-absolute" style="'
+						.append('<span class="material-icons position-absolute text-fc-red" style="'
 						+ 'left:' + fingerX + ';top:' + fingerY + ';filter: drop-shadow(2px 2px 4px white);">touch_app</span>')
 					if($targetImg.index('.tutorial-step') == 10) {
 						$dimm.css('filter','invert(1)'); 
