@@ -1438,6 +1438,22 @@
 	padding: 1rem 0.5rem;
 	margin-bottom: 0.5rem;
 }
+@media (max-width: 767px) {
+	.view-passage-section .result-section .result-semantic-section{
+		width: calc(100% + 1rem);
+		left: -0.5rem;
+		border-radius: 0;
+	}
+
+	.view-passage-section .result-section .svoc-section{
+		padding: 0;
+	}
+	
+	.view-passage-section .result-section .svoc-block{
+		padding: 0.25rem 0.5rem;
+	}
+}
+
 /* 분석결과 수정 */
 .view-passage-section .result-semantic-section .svoc-mdf-btns{
 	position: absolute;
