@@ -23,6 +23,7 @@
 		72:'[value="advcls"]',
 		90:'[value="mod"]',
 		88:'[value="erasing"]',
+		ctrlS:'[value="save"]',
 		ctrlZ:'[value="undo"]:not([disabled])',
 		ctrlY:'[value="redo"]:not([disabled])',
 	};
@@ -63,22 +64,29 @@
 				const rem = parseFloat(getComputedStyle(document.body).fontSize);
 				//=============================================================/
 				// 						[단축키 설정]
-				$(document).on('keyup', function(e){
-					if($('.edit-svoc').length == 0) return;
-					if(e.type == 'keyup') {
-						if((e.ctrlKey || e.metaKey) && (e.keyCode == 90 || e.keyCode == 89)){
+				$(document).on('keydown', function(e){
+					if($(e.target).is('input') 
+					&& $(e.target).closest('.edit-comment').length > 0
+					&& e.keyCode == 27/*ESC*/) {
+						$(e.target.form).find('button:eq(1)').trigger('click');
+						return;
+					}
+					if(!$('.edit-svoc')?.is(':focus')) return;
+					//if(e.type == 'keyup') {
+						if((e.ctrlKey || e.metaKey) 
+						&& (e.keyCode == 83 || e.keyCode == 90 || e.keyCode == 89)){
 							e.preventDefault();
 							$svocEditor.find(keyset['ctrl' + e.key.toUpperCase()]).trigger('click');
 						}
 						else if(!$(e.target).is('input') && keyset[e.keyCode] != null){
 							$svocEditor.find(keyset[e.keyCode]).trigger('click');
 						}
-					}else if(e.type == 'keydown') {
+					/*}else if(e.type == 'keydown') {
 						if(!$('.edit-svoc').is('[data-mode="erasing"]') 
 						&& !$(e.target).is('input') && e.keyCode == 88){
 							$svocEditor.find(keyset[e.keyCode]).trigger('click');
 						}
-					}
+					}*/
 				});		
 				//=============================================================/
 				// 						[편집 저장]
@@ -434,15 +442,18 @@
 									$(document).off('mousedown', editCommentMenu);
 									$(editText).remove();
 									checkGCDepth(target.closest('.semantics-result'));
+									$('.edit-svoc').focus();
 					   			});
 					   			$(editText).find('button:eq(1)').on('click',function(){
 									$(document).off('mousedown', editCommentMenu);
-									$(editText).remove();		   				
+									$(editText).remove();
+									$('.edit-svoc').focus();		   				
 					   			});
 								function editCommentMenu(e1){
 									if((editText.compareDocumentPosition(e1.target) & 16) != 16){
 										$(document).off('mousedown', editCommentMenu);
 										$(editText).remove();
+										$('.edit-svoc').focus();
 									}
 								}
 					   			
@@ -622,13 +633,13 @@
 			$svocEditorHint = $('<div class="semantic-edit-guide-msg mx-auto"></div>');
 		}
 		// [구문분석 div에 .edit-svoc 클래스 추가 후 편집 툴바와 힌트 메세지 표시]
-		this.wrap($('<div class="edit-svoc"></div>'))
+		this.wrap($('<div class="edit-svoc" tabindex="0"></div>'))
 			.before($('<span class="svoc-editor-badge badge fs-6 rounded-pill">'
 					+ (forNew ? 'New' : 'Edit') + '</span>'))
 			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 p-1 pb-0 bg-white rounded-pill pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
 			.before($svocEditor)
 			.after($svocEditorHint);
-		
+		$('.edit-svoc').focus();
 		return this;
 	}
 
