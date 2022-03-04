@@ -381,6 +381,18 @@ a:hover {
   opacity: 0.3;
 }
 /**********************************************************
+ *			pagination
+ **********************************************************/
+.pagination .page-item .page-link{
+	color: var(--fc-purple);
+}
+
+.pagination .page-item.active .page-link{
+	color: white;
+	background: var(--fc-purple);
+	border-color: var(--fc-purple);
+}
+/**********************************************************
  *			애니메이션 
  **********************************************************/
 /* Bootstrap 5.1 로딩중 효과 */
