@@ -9,6 +9,7 @@
 	-khtml-user-select: text;
 	-webkit-user-select: text;
 	user-select: text;
+	outline: none;
 }
 /* 편집기의 종류(추가 혹은 수정)에 따른 스타일 */
 .svoc-editor-badge {
