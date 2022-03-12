@@ -79,7 +79,8 @@ function checkSessionValid() {
   if(lastAccessdTime + max > now) {
 	timeleft = lastAccessdTime + max - now;
 	
-	if(timeleft > 60000) {
+	// 세션 만료까지 10분 넘게 남았다면 브라우저 비활성화 경고 대기, 사용자 입력 감지 해제
+	if(timeleft > 600000) {
 	  focusOutAlerted = false;
 	  if(detectingUserActs) {
 	    detectingUserActs = false;
@@ -87,20 +88,21 @@ function checkSessionValid() {
 	  }
 	}
 	// 세션 만료 10분전부터 사용자의 입력 활동이 있으면 세션 자동갱신
-	else if(timeleft <= 600000 && !detectingUserActs) {
+	else if(!detectingUserActs) {
 	  detectingUserActs = true;
 	  $(document).on(userAct, updateSession);
 	}
-	// 세션 만료 5분전 세션 연장 모달 표시
+	// 사용자 입력 감지 중이고, 세션 만료 5분전 세션 연장 모달 표시
 	else if(timeleft <= 300000) {
 	  // 세션 유효 시간을 초단위로 표시
 	  $('#sessionTimeLeft').text(Math.floor(timeleft / 60000) + '분 '
 							+ Math.floor(timeleft % 60000 / 1000) + '초');
-	
+	  // 사용자 입력 감지 해제, 세션연장 모달이 표시되지 않았다면 표시
 	  if(!$('#sessionAlert').is('.show')) {
 		$(document).off(userAct);
 		$('#sessionAlert').modal('show');
 	  }
+	  // 브라우저 비활성화 경고가 떠있지 않은 상태에서 브라우저가 비활성화면 경고 표시
 	  if(!document.hasFocus() && !focusOutAlerted) {
 		const orgTitle = document.title;
 		document.title = '💢💢세션 경고💢💢';
