@@ -17,7 +17,7 @@
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.840" data-dimm-y="0.915" data-dimm-w="0.160" data-dimm-h="0.090" src="https://static.findsvoc.com/images/app/tutorial/7.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.010" data-dimm-y="0.175" data-dimm-w="0.980" data-dimm-h="0.580" src="https://static.findsvoc.com/images/app/tutorial/8.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.020" data-dimm-y="0.300" data-dimm-w="0.960" data-dimm-h="0.110" src="https://static.findsvoc.com/images/app/tutorial/9.png" style="display:none;">'
-		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.005" data-dimm-y="0.625" data-dimm-w="0.980" data-dimm-h="0.410" src="https://static.findsvoc.com/images/app/tutorial/10.png" style="display:none;">'
+		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.005" data-dimm-y="0.625" data-dimm-w="0.980" data-dimm-h="0.410" data-finger-x="25%" data-finger-y="77%" src="https://static.findsvoc.com/images/app/tutorial/10.png" style="display:none;">'
 		+ '<img class="tutorial-step w-100 h-100" data-img-loaded="true" data-dimm-x="0.500" data-dimm-y="0.575" data-dimm-w="0.0" data-dimm-h="0.0"/>'
 		+ '<div class="button-dimm rounded pe-none" role="button" style="position:absolute;left:0;top:0;width:100%;height:100%;box-shadow:0 0 0 200vh #0003;"></div>'
 		+ '</div>'
