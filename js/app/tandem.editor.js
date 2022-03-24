@@ -9,6 +9,7 @@
 		51:'[value="o"]',
 		52:'[value="c"]',
 		53:'[value="oc"]',
+		54:'[value="a"]',
 		81:'[value="tor"]',
 		87:'[value="ptc"]',
 		69:'[value="ger"]',
@@ -733,8 +734,8 @@
 	 */
 	function applyRoles(selection, role) {
 		const rcomments = {s : 'subj', v : 'verb', o : 'obj', 
-						c : 'comp', oc : 'o.c.', m : 'mod'},
-			  gcomments = {tor : 'to부정사', ger : '동명사', ptc : '분사'};
+				c : 'comp', oc : 'o.c.', a : 'A', m : 'mod'},
+			  gcomments = {a: '부사적 보충어', tor : 'to부정사', ger : '동명사', ptc : '분사'};
 		const range = selection.getRangeAt(0);
 		const el = document.createElement('span');
 		el.className = 'sem ' + role;
