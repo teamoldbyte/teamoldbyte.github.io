@@ -1,5 +1,9 @@
 /* jquery.curvedarrow.min.js */
-(function(e){function t(e2,t2,a){let i=e2,o=a;for(let n=1e-4;n<=1;n+=1e-4){const r=(1-n)*(1-n)*e2+2*(1-n)*n*t2+n*n*a;if(r<i){i=r;}if(r>o){o=r;}}return[Math.round(i),Math.round(o)];}e.fn.curvedArrow=function(a){const i=e.extend({p0x:50,p0y:50,p1x:70,p1y:10,p2x:100,p2y:100,size:30,lineWidth:10,strokeStyle:"rgb(245,238,49)",header:!0,curve:!0,className:"curved_arrow"},a),o=document.createElement("canvas");e(o).appendTo(this);const n=i.curve?t(i.p0x,i.p1x,i.p2x):[Math.min(i.p0x,i.p1x,i.p2x),Math.max(i.p0x,i.p1x,i.p2x)],r=i.curve?t(i.p0y,i.p1y,i.p2y):[Math.min(i.p0y,i.p1y,i.p2y),Math.max(i.p0y,i.p1y,i.p2y)],p=i.size-i.lineWidth,s=n[0]-p,l=n[1]+p,x=r[0]-p,c=r[1]+p,h=i.p0x-s,y=i.p0y-x,d=i.p1x-s,u=i.p1y-x,k=i.p2x-s,m=i.p2y-x;o.style.position="absolute";o.style.top=x+"px";o.style.left=s+"px";const g=o.getContext("2d"),v=(window.devicePixelRatio||1)/(g.webkitBackingStorePixelRatio||g.mozBackingStorePixelRatio||g.msBackingStorePixelRatio||g.oBackingStorePixelRatio||g.backingStorePixelRatio||1);if(o.style.width=l-s+"px",o.style.height=c-x+"px",o.width=(l-s)*v,o.height=(c-x)*v,g.scale(v,v),g.strokeStyle=i.strokeStyle,g.lineWidth=i.lineWidth,g.lineJoin="round",g.lineCap="round",g.beginPath(),g.moveTo(h,y),Math.abs(d-h)>Math.abs(u-m)&&g.lineTo(d>h?d-Math.abs(u-m):d+Math.abs(u-m),u),i.curve?g.quadraticCurveTo(d,u,k,m):(g.lineTo(d,u),g.lineTo(k,m)),g.stroke(),i.header){const e3=Math.atan2(m-u,k-d);g.translate(k,m);g.rotate(e3+1);g.beginPath();g.moveTo(0,i.size);g.lineTo(0,0);g.stroke();g.rotate(-2);g.lineTo(0,-i.size);g.stroke();g.rotate(1-e3);g.translate(-k,-m);}return e(o).addClass(i.className);};})(jQuery);
+var drawCurvedArrow=(function(){function t(e2,t2,a){let i=e2,o=a;for(let n=1e-4;n<=1;n+=1e-4){const r=(1-n)*(1-n)*e2+2*(1-n)*n*t2+n*n*a;if(r<i){i=r;}
+if(r>o){o=r;}}
+return[Math.round(i),Math.round(o)];}
+function tt(e,b){const i=$.extend({p0x:50,p0y:50,p1x:70,p1y:10,p2x:100,p2y:100,size:30,lineWidth:10,strokeStyle:"rgb(245,238,49)",header:!0,curve:!0,className:"curved_arrow"},b),o=document.createElement("canvas");const n=i.curve?t(i.p0x,i.p1x,i.p2x):[Math.min(i.p0x,i.p1x,i.p2x),Math.max(i.p0x,i.p1x,i.p2x)],r=i.curve?t(i.p0y,i.p1y,i.p2y):[Math.min(i.p0y,i.p1y,i.p2y),Math.max(i.p0y,i.p1y,i.p2y)],p=i.size-i.lineWidth,s=n[0]-p,l=n[1]+p,x=r[0]-p,c=r[1]+p,h=i.p0x-s,y=i.p0y-x,d=i.p1x-s,u=i.p1y-x,k=i.p2x-s,m=i.p2y-x;o.className=i.className;o.style.position="absolute";o.style.top=x+"px";o.style.left=s+"px";const g=o.getContext("2d"),v=window.devicePixelRatio||1;if(o.style.width=l-s+"px",o.style.height=c-x+"px",o.width=(l-s)*v,o.height=(c-x)*v,g.scale(v,v),g.strokeStyle=i.strokeStyle,g.lineWidth=i.lineWidth,g.lineJoin="round",g.lineCap="round",g.beginPath(),g.moveTo(h,y),Math.abs(d-h)>Math.abs(u-m)&&g.lineTo(d>h?d-Math.abs(u-m):d+Math.abs(u-m),u),i.curve?g.quadraticCurveTo(d,u,k,m):(g.lineTo(d,u),g.lineTo(k,m)),g.stroke(),i.header){const e3=Math.atan2(m-u,k-d);g.translate(k,m);g.rotate(e3+1);g.beginPath();g.moveTo(0,i.size);g.lineTo(0,0);g.stroke();g.rotate(-2);g.lineTo(0,-i.size);g.stroke();g.rotate(1-e3);g.translate(-k,-m);}
+e.appendChild(o);}return tt;}());
 
 /**=============================================================================
  * 구문분석 결과를 스타일링 입혀서 대상 요소 내부에 표시
@@ -32,8 +36,8 @@ async function showSemanticAnalysis(text, svocBytes, $container){
   
   let div = $container[0].ownerDocument.createElement('div');
   div.className = 'semantics-result';
-  $container.append(div);
   paintBasicDOMs(text, await svocText2Arr(svocBytes) || [], div);
+  $container.append(div);
   
   /**
    * div 속 내용들을 화면에 나타난 위치를 기반으로 꾸밈 요소 적용.
@@ -68,6 +72,7 @@ const keywordTable = {
 "\u03A6" : "\"C\"",
 "\u03A7" : "\"OC\"",
 "\u03A9" : "\"M\"",
+"\u03AA" : "\"A\"",
 //table.put("\"I\"", (char)0x00e1);
 	
 //markType 2 - 절 (키릴 문자)
@@ -125,6 +130,7 @@ const keywordTable = {
 "\u13A5" : "\"전치사구(adj)\"",
 "\u13A6" : "\"분사\"",
 "\u13A7" : "\"부사구\"",
+"\u13A8" : "\"부사적 보충어\"",
 
 //modificant or gcomment의 값 (캐나다 원주민 문자)
 "\u1400" : "true",
@@ -138,8 +144,7 @@ const keywordTable = {
 
 /* svoc인코딩 문자열을 MarkingTag[]로 반환*/
 async function svocText2Arr(svocText) {
-	const inflated = await inflateSvoc(str2ab(atob(svocText)));
-	return JSON.parse(decSvoc(inflated));
+	return JSON.parse(decSvoc(await inflateSvoc(str2ab(atob(svocText)))));
 }
 /* MarkingTag[]를 svoc인코딩 문자열로 반환 */
 async function svocArr2Text(svocList) {
@@ -147,7 +152,7 @@ async function svocArr2Text(svocList) {
 }
 /* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
 function svocDom2Arr(node, arr) {
-	const markTypes = /\b(s|v|o|c|oc|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
+	const markTypes = /\b(s|v|o|c|oc|a|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
 	// 탐색 위치 초기화
 	svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 	arr = arr ? arr : [];
@@ -255,6 +260,31 @@ async function deflateSvoc(svoc) {
  */
 function paintBasicDOMs(text, svocList, div) {
   div.innerHTML = '';
+
+  createBasicDOMs(text, svocList, div);
+  
+  checkPOSDepth(div);
+  
+  splitInners(div);
+  
+  trimTextContent(div);
+  
+  shrinkRComment(div);
+  
+  wrapWithBracket(div);
+  
+}
+
+/**
+svocList를 기반으로 한 DOM 생성
+@param text 원문장
+@param svocList svocTags
+ */
+var createBasicDOMs = (function() {
+  /** 문장 필수성분*/
+  const roleTypes = ['S','V','O','C','OC','A','M'];
+  const markTypesNeedBrackets = ['CONJ','PHR','ADJPHR','ADVPHR','PTCPHR','CLS','ACLS','NCLS','ADVCLS','CCLS','PCLS'];
+  function privFunc(text, svocList, div) {
   // [태그 정렬]---------------------------------------------------------
   // 1차:시작 offset이 빠른 순. 2차:끝 offset이 느린 순으로 정렬
   //(동일한 위치에 마킹이 있을 경우 길이가 긴 것이 바깥쪽, 즉 먼저 나와야 한다.)
@@ -265,8 +295,6 @@ function paintBasicDOMs(text, svocList, div) {
   svocList = svocList.filter(function(tag){
     return !!(tag.markType) && tag.markType.length > 0;
   })
-  /** 문장 필수성분*/
-  const roleTypes = ['S','V','O','C','OC','M'];
   let i = 0;
   while(svocList[i + 1] != null) {
 	let tag = svocList[i], second = svocList[i + 1], third = svocList[i + 2];
@@ -345,7 +373,6 @@ function paintBasicDOMs(text, svocList, div) {
   // 겹치는 태그에 rcomment가 있으면 구,종속절의 괄호를 크게, 
   // rcomment가 없이 겹치는 태그는 제거.(미표시)
   let prior = null;
-  const markTypesNeedBrackets = ['CONJ','PHR','ADJPHR','ADVPHR','PTCPHR','CLS','ACLS','NCLS','ADVCLS','CCLS','PCLS'];
   i = 0;
   while(uniqTags[i] != null) {
 	const tag = uniqTags[i];
@@ -452,19 +479,178 @@ function paintBasicDOMs(text, svocList, div) {
   }
   // [태그들을 html로 표시]
   div.insertAdjacentHTML('afterbegin', text);
-  
-  checkPOSDepth(div);
-  
-  splitInners(div);
-  
-  trimTextContent(div);
-  
-  shrinkRComment(div);
-  
-  wrapWithBracket(div);
-  
+  }
+  return privFunc;
+}());
+
+/**
+.semantic-result DOM을 정리하여 반환(괄호, 화살표 등을 정리. 원본은 수정하지 않음.)
+ */
+function cleanSvocDOMs(div) {
+	const parent = div.cloneNode(true);
+	const extras = parent.querySelectorAll('.brkt,.line-end,canvas.curved_arrow');
+	for(let i = 0, len = extras.length; i < len; i++) extras[i].remove();
+	
+	return parent;
 }
 
+/**
+DOM을 분석하여 문법 특징 파악
+ */
+var semanticsFromDOMs = (function() {
+	const allTypes = ['s','v','o','c','a','oc','m','rcm','tor','ger','ptc','conj',
+			'phr','adjphr','advphr','ptcphr','cls','ncls','acls','advcls','ccls','pcls'];
+	const formComponents = ['s','v','o','c','a','oc','m']; // 문장형식 요소들
+	const prepKeywords = ['aboard', 'about', 'above', 'according', 'across', 'after', 'against', 'ahead of', 'along with', 'alongside', 'along', 'amidst', 'amid', 'amongst', 'among', 'anti', 'apart from', 'around', 'as for', 'as per', 'as to', 'as well as', 'as of', 'aside', 'astride', 'as', 'atop', 'at', 'away from', 'barring', 'bar', 'because of', 'before', 'behind', 'below', 'beneath', 'besides', 'beside', 'between', 'beyond', 'but for', 'but', 'by means of', 'by', 'circa', 'close to', 'concerning', 'considering', 'contrary to', 'counting', 'cum', 'despite', 'depending on', 'down', 'due to', 'during', 'except for', 'excepting', 'except', 'excluding', 'following', 'forward of', 'for', 'from', 'further to', 'given', 'gone', 'in addition to', 'in between', 'in case of', 'in face of', 'in favour of', 'in front of', 'in lieu of', 'in spite of', 'in view of', 'into', 'including', 'inside', 'instead of', 'in', 'less', 'like', 'minus', 'near to', 'near', 'next to', 'notwithstanding', 'off', 'of', 'on account of', 'on behalf of', 'on board', 'on to', 'onto', 'on top of', 'on', 'opposite to', 'opposite', 'other than', 'out of', 'out', 'outside of', 'outside', 'over', 'owing to', 'past', 'pending', 'per', 'plus', 'preparatory to', 'prior to', 'pro', 're', 'regarding', 'regardless of', 'respecting', 'round', 'save', 'save for', 'saving', 'since', 'through', 'thru', 'throughout', 'till', 'together with', 'touching', 'toward', 'towards', 'to', 'than', 'thanks to', 'underneath', 'under', 'unlike', 'until', 'up against', 'up to', 'up until', 'upon', 'up', 'versus', 'via', 'with reference to', 'with regard to', 'without', 'within', 'with']
+	function findClassIn(element, classes) {
+		return classes.find(one => element.classList.contains(one));
+	}
+	function findPrepKeyword(element) {
+		let prepKeyword = null;
+		for(let j = 0, len2 = prepKeywords.length; j < len2; j++) {
+			const keyword = prepKeywords[j];
+			if(element.textContent.length > 0 
+			&& element.textContent.toLowerCase().startsWith(keyword)) {
+				prepKeyword = keyword;
+				break;
+			}
+		}
+		return prepKeyword;		
+	}
+	function privFunc(div) {
+		const children = div.children;
+		let semantics = [];
+		for(let i = 0, len = children.length; i < len; i++) {
+			const child = children[i], grandChild = child.firstElementChild;
+			let oneRole;
+			
+			// key에 해당하는 성분인지 검사
+			if(child.childElementCount > 0 && grandChild.textContent == child.textContent) {
+				const outerClass = findClassIn(child, allTypes),
+					innerClass =  findClassIn(grandChild, allTypes);
+				let type;
+				if(findClassIn(grandChild, formComponents)) {
+					oneRole = innerClass; type = outerClass;
+				}else {
+					oneRole = outerClass; type = innerClass;
+				}
+				child.parentElement.replaceChild(grandChild,child)
+				if(oneRole) {
+					const sem = {key: oneRole, type: type, children: privFunc(grandChild)};
+					if(sem.type == 'phr') {
+						const prep = findPrepKeyword(grandChild);
+						if(prep) sem.prep = prep;
+					}
+					semantics.push(sem);
+				}
+			}else {
+				oneRole = findClassIn(child, allTypes);
+				if(oneRole) {
+					const sem = {key: oneRole, children: privFunc(child)};
+					if(sem.key == 'phr') {
+						const prep = findPrepKeyword(child);
+						if(prep) sem.prep = prep;
+					}
+					semantics.push(sem);
+				}
+			}
+		}
+		return semantics;
+	}
+	return privFunc;
+}());
+/**
+semantics 배열로부터 GramMeta 정보 생성
+ */
+var gramMetaFromSemantics = (function() {
+	// GramMeta에 없는 값은 소문자로 구별
+	const roleTable = {s: 'SUBJ', v: 'VERB', o: 'OBJ', c: 'COMP', oc: 'OC', a: 'A', m: 'MODI',
+			rcm: 'rcm', tor: 'TO', ger: 'GER', ptc: 'PTC', conj: 'conj', phr: 'PREP', 
+			adjphr: 'adjphr', advphr: 'advphr', ptcphr: 'ptcphr', cls: 'CLAUSE',
+			ncls: 'NCLS', acls: 'ACLS', advcls: 'ADVCLS', ccls: 'CCLS', pcls: 'PCLS'};
+			
+	function hasKey(arr, keyName, keyValue) {
+		return arr.some(el => el[keyName] == keyValue);
+	}		
+	function privFunc(semantics, gramDepth) {
+		let formType, metaSet = [], depth = gramDepth || 1;
+		// 5형식
+		if(hasKey(semantics, 'key', 'oc')) {
+			formType = 'FORM_FIVE';
+		}
+		// 4형식
+		else if(semantics.filter(sem => sem.key == 'o').length > 1) {
+			formType = 'FORM_FOUR';
+		}
+		// 3형식
+		else if(hasKey(semantics, 'key', 'o')) {
+			formType = 'FORM_THREE';
+		}
+		// 2형식
+		else if(hasKey(semantics, 'key', 'c')) {
+			formType = 'FORM_TWO';
+		}else if(hasKey(semantics, 'key', 'v')) {
+			formType = 'FORM_ONE';
+		}
+		// 성분이 준동사 혹은 구,절의 형태일 경우(type 존재) GramMeta 이름에 이어붙인다.
+		const hasTypes = semantics.filter(sem => sem.type != null);
+		for(let i = 0, len = hasTypes.length; i < len; i++) {
+			const key = roleTable[hasTypes[i].key],
+				type = roleTable[hasTypes[i].type],
+				twoMixed = `${type}_${key}`, 
+				threeMixed = (formType?`${formType}_`:'')+ twoMixed;
+				
+			if(!hasKey(metaSet, 'name', threeMixed)) 
+				metaSet.push({depth, name: threeMixed});
+			if(!hasKey(metaSet, 'name', twoMixed)) 
+				metaSet.push({depth, name: twoMixed});
+			if(!hasKey(metaSet, 'name', type)) 
+				metaSet.push({depth: depth + 1, name: type});
+			if(!hasKey(metaSet, 'name', key)) 
+				metaSet.push({depth: depth + 1, name: key});
+			// '절'이 있으면 태그 추가
+			if(type.includes('CLS') && !hasKey(metaSet, 'name', 'CLAUSE')) {
+				metaSet.push({depth: depth + 1, name: 'CLAUSE'});
+			}
+		}
+		if(formType != undefined && !hasKey(metaSet, 'name', formType)) 
+			metaSet.push({depth: depth + 1, name: formType});
+		
+		// 자식 태그를 다시 순회
+		for(let i = 0, len = semantics.length; i < len; i++) {
+			const child = semantics[i], key = roleTable[child.key];
+			if(!hasKey(metaSet, 'name', key)) 
+				metaSet.push({depth: depth + 1, name: key});
+			if(child.prep) {
+				const prepMeta = ('phr ' + child.prep).toUpperCase().replaceAll(' ','_');
+				if(!hasKey(metaSet, 'name', prepMeta))
+					metaSet.push({depth: depth + 1, name: prepMeta});
+			}
+			if(child.children.length > 0) {
+				const childMetas = gramMetaFromSemantics(child.children, depth + 2);
+				for(let j = 0, len2 = childMetas.length; j < len2; j++) {
+					const childMeta = childMetas[j];
+					if(!hasKey(metaSet, 'name', childMeta.name)) 
+						metaSet.push({depth: childMeta.depth, name: childMeta.name});
+				}
+			}
+		}
+		return metaSet;
+	}
+	return privFunc;
+}());
+
+
+var gramMetaArr2Str = (function() {
+	const nonKeywords = ['SUBJ','VERB','OBJ','COMP','OC','A'];
+	
+	function privFunc(gramMetaArr) {
+		return gramMetaArr.filter(meta => !nonKeywords.includes(meta.name))
+								.sort((a,b) => a.depth - b.depth)
+								.map(meta => meta.name).join(' ');
+	}
+	return privFunc;
+}());
 
 /**
  * 성분 태그(동사 제외)가 자식으로 성분 태그(동사 포함)를 지니면 .outer, 지니지 앖으면 .inner 지정.
@@ -473,24 +659,24 @@ function paintBasicDOMs(text, svocList, div) {
  * 성분: s v o c oc m
  */
 function checkPOSDepth(element){
-  const posClasses = '.s, .v, .o, .c, .oc, .m',
-        $children = $(element).find(posClasses);
+  const posClasses = '.s, .v, .o, .c, .oc, .a, .m',
+        children = element.querySelectorAll(posClasses);
   let base = 0;
   
   // 자신의 depth 초기화
-  $(element).removeAttr('data-lv');
+  element.removeAttribute('data-lv');
   
-  if($children.length > 0 && !$(element).is('.sem.v')) {
-    $children.each(function() {
-      base = Math.max(base, checkPOSDepth(this) + 1);
-    });
-    if($(element).is(posClasses) && base > 0) $(element).attr('data-lv', base);
+  if(children.length > 0 && !element.matches('.sem.v')) {
+	for(let i = 0, len = children.length; i < len; i++) {
+      base = Math.max(base, checkPOSDepth(children[i]) + 1);
+	}
+    if(element.matches(posClasses) && base > 0) element.setAttribute('data-lv', base);
 
-    $(element).removeClass('inner');
-    if($(element).is(posClasses)) $(element).addClass('outer');
+    element.classList.remove('inner');
+    if(element.matches(posClasses)) element.classList.add('outer');
   } else {
-    $(element).removeClass('outer');
-    if($(element).is(posClasses)) $(element).addClass('inner');
+    element.classList.remove('outer');
+    if(element.matches(posClasses)) element.classList.add('inner');
   }
   return base;
 }
@@ -502,8 +688,8 @@ function checkPOSDepth(element){
  */
 function wrapWithBracket(div){
   // 기존 괄호 제거
-  $(div).find('.cls-start,.cls-end,.ccls-start,.ccls-end,.phr-start,.phr-end,'
-  + '.adjphr-start,.adjphr-end,.conj-start,.conj-end,.etc-start,.etc-end').remove();
+  $(div.querySelectorAll('.cls-start,.cls-end,.ccls-start,.ccls-end,.phr-start,.phr-end,'
+  + '.adjphr-start,.adjphr-end,.conj-start,.conj-end,.etc-start,.etc-end')).remove();
   // 괄호 적용할 대상을 trim
   trimTextContent(div);
   
@@ -699,19 +885,20 @@ function checkGCDepth(div) {
  */
 function splitInners(div){
   const inners = div.getElementsByClassName('sem inner'),
-        innerSvocRegex = /\b([svc]|oc)\b inner/;
-  for(let i = 0; i < inners.length; i++){
+        innerSvocRegex = /\b([svca]|oc)\b inner/;
+  for(let i = 0, len = inners.length; i < len; i++){
     let one = inners[i];
     // inner 내부에 inner가 있는 경우
     if(one.getElementsByClassName('sem inner').length > 0){
       let range = new Range();
-      one.childNodes.forEach(function(child) {
+      const childNodes = one.childNodes;
+      for(let j = 0, len2 = childNodes.length; j < len2; j++) {
+      	const child = childNodes[j];
         // 자식의 자식이 inner일 경우
         if(child.nodeType == 1
         && child.getElementsByClassName('inner').length > 0) {
           child.childNodes.forEach(function(desc) {
-            if(desc.nodeType != 1 
-            || !desc.classList.contains('inner')) {
+            if(desc.nodeType != 1 || !desc.matches('.inner')) {
               let clone = div.ownerDocument.createElement('span');
               clone.className = 'sem v inner';
               clone.dataset.rc = one.dataset.rc;
@@ -722,8 +909,7 @@ function splitInners(div){
           });
         }
         // 자식이 inner일 경우
-        else if(child.nodeType != 1 
-        || !child.classList.contains('inner')) {
+        else if(child.nodeType != 1 || !child.matches('.inner')) {
           let clone = div.ownerDocument.createElement('span');
           clone.className = 'sem v inner';
           clone.dataset.rc = one.dataset.rc;
@@ -731,12 +917,12 @@ function splitInners(div){
           range.selectNode(child);
           range.surroundContents(clone);
         }
-      });
+      }
       one.outerHTML = one.innerHTML;
     }
     // inner 내부에 inner는 없고, 바로 다음 element와 동일한 성분이면 묶어주기.
     // 목적어-목적어는 제외.
-    else if($(one).is('.s,.v,.c,.oc')){
+    else if(one.matches('.s,.v,.c,.oc')){
       let next = one.nextSibling;
       if(next != null){
         let nextToNext = next.nextSibling;
@@ -794,16 +980,17 @@ function trimTextContent(div){
  * inner 태그 중 성분 표시 텍스트 길이가 3자 이하면 
  * 성분 표시를 1글자로 줄인다.(소문자로 표시)
  */
-function shrinkRComment(div){
-  const inners = div.getElementsByClassName('sem inner');
-  for(let one of inners){
-    if(one.dataset.rc != null && !(one.dataset.rc.indexOf('.') > 0)
-    && getTextWidth(one.textContent, getComputedStyle(one).font) 
-	< getTextWidth(one.dataset.rc, getComputedStyle(one,'::before').font) - 4){
-      one.dataset.rc = one.dataset.rc[0].toLowerCase();
-    }
+var shrinkRComment = (function() { 
+  function prv(div){
+	  const inners = div.getElementsByClassName('sem inner');
+	  for(let one of inners){
+	    if(one.dataset.rc != null && one.dataset.rc.indexOf('.') <= 0
+	    && prv_getTextWidth(one.textContent, getComputedStyle(one).font, div) 
+		< prv_getTextWidth(one.dataset.rc, getComputedStyle(one,'::before').font, div) - 4){
+	      one.dataset.rc = one.dataset.rc[0].toLowerCase();
+	    }
+	  }
   }
-  
   /**
    * HTML5 기능인 canvas.measureText를 사용하여 주어진 텍스트의 가로길이(px단위)를 계산하여 반환
    * (예: 글자수에 따른 단어 선택지 크기를 계산하여 표시할 갯수 지정.)
@@ -813,53 +1000,58 @@ function shrinkRComment(div){
    * 
    * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
    */
-  function getTextWidth(text, font) {
+  function prv_getTextWidth(text, font, div) {
       // getTextWidth.canvas가 없으면 생성, 있으면 재사용
-      const canvas = getTextWidth.canvas || (getTextWidth.canvas = div.ownerDocument.createElement("canvas"));
+      const canvas = prv_getTextWidth.canvas || (prv_getTextWidth.canvas = div.ownerDocument.createElement("canvas"));
       const context = canvas.getContext("2d");
       context.font = font;
       return context.measureText(text).width;
   }
-}
+  
+  return prv;
+}());
 /**
  * 요소의 텍스트가 한 줄인지, 여러 줄인지에 따라 코멘트의 정렬을 수정.
  */
 function correctMarkLine(div){
   div.removeAttribute('style');
-  $(div).find('.cmnt-align-center,.cmnt-align-start')
-      .removeClass('cmnt-align-center cmnt-align-start odd');
-  $(div).find('.sem:not(.line-end)'/*'.s,.o,.c,.v,.oc,.m,.cls'*/).each(function(){
+  const elementsHaveAlign = div.querySelectorAll('.cmnt-align-center,.cmnt-align-start');
+  for(let i = 0, len = elementsHaveAlign.length; i < len; i++) {
+	elementsHaveAlign[i].classList.remove('cmnt-align-center','cmnt-align-start','odd');
+  }
+  const elements = div.querySelectorAll('.sem:not(.line-end)'/*'.s,.o,.c,.v,.oc,.m,.cls'*/);
+  for(let i = 0, len = elements.length; i < len; i++) {
+	const el = elements[i];
     /*  단어가 위 아래 두 그룹으로 분리되었으나 첫번째 그룹의 너비가 한 글자 미만인 경우
       첫 번째 그룹은 무시하고 두 번째 그룹에 가운데 정렬 적용.  
       left위치는 첫번째 그룹을 기준으로 적용되므로 
       첫 번째, 두 번째 그룹의 left값 차이만큼 왼쪽으로 이동. */
-    if(this.getClientRects().length > 1 
-    && ($(this).is('.rcm') || this.getClientRects()[0].width < 10)){
-      const rects = this.getClientRects();
-      const indent = $(this).is('.rcm') 
-        ? (rects[rects.length - 1].right - rects[0].left)
-        : (rects[1].left - rects[0].left);
-	  const indentMin = $(this).is('.rcm')? indent : (indent + rects[1].width / 2);
-      this.style.setProperty('--indent', indent + 'px');
-	    this.style.setProperty('--indent-min', indentMin + 'px');
-      $(this).removeClass('cmnt-align-start');
-      $(this).addClass('cmnt-align-center odd');
-    }
-    else if(this.getClientRects().length > 1){
-      this.style.setProperty('--indent', null);
-      this.style.setProperty('--indent-min', null);
-      $(this).removeClass('cmnt-align-center odd');
-      $(this).addClass('cmnt-align-start');
+	const rects = el.getClientRects();
+    if(rects.length > 1) {
+	  if((el.matches('.rcm') || rects[0].width < 10)) {
+		const indent = el.matches('.rcm') ? (rects[rects.length - 1].right - rects[0].left)
+										: (rects[1].left - rects[0].left);
+		const indentMin = el.matches('.rcm') ? indent : (indent + rects[1].width / 2);
+		el.style.setProperty('--indent', indent + 'px');
+		el.style.setProperty('--indent-min', indentMin + 'px');
+		el.classList.remove('cmnt-align-start');
+		el.classList.add('cmnt-align-center','odd');
+	  } else {
+		el.style.setProperty('--indent', null);
+		el.style.setProperty('--indent-min', null);
+		el.classList.remove('cmnt-align-center','odd');
+		el.classList.add('cmnt-align-start');
+	  }
     }else{
-      this.style.setProperty('--indent', null);
-      this.style.setProperty('--indent-min', null);
-      $(this).removeClass('cmnt-align-start odd');
-      $(this).addClass('cmnt-align-center');
-    }
-    });
-    requestAnimationFrame(function(){
-      checkGCDepth(div);
-    });
+      el.style.setProperty('--indent', null);
+      el.style.setProperty('--indent-min', null);
+      el.classList.remove('cmnt-align-start','odd');
+      el.classList.add('cmnt-align-center');
+    }	
+  }
+  requestAnimationFrame(function(){
+	checkGCDepth(div);
+  });
 }
 /**
  * 수식 관계에 대한 화살표를 표시한다.
@@ -869,207 +1061,204 @@ function correctMarkLine(div){
  *
  * @param div 수식태그와 수식대상을 포함하는 부모 element(jQuery Object)
  */
-async function drawConnections(div){
-  
-  $(div).find('.curved_arrow,.gc_line').remove();
-  const ownerDocument = div.ownerDocument;
-  
-  const rem = parseFloat(getComputedStyle(ownerDocument.documentElement).fontSize);
-  const divOffset = $(div).offset(), divLeft = divOffset.left, divTop = divOffset.top,
-    ownerWindow = ownerDocument.defaultView,
-    scrolledDivLeft = ownerWindow.scrollX - divLeft, 
-    scrolledDivTop = ownerWindow.scrollY - divTop;
-  let drawSettings1 = {lineWidth: rem/8, size: rem/3, strokeStyle: '#FFCC99', header:false},
-    drawSettings2 = {lineWidth: rem/8, size: rem/3, strokeStyle: '#FFCC99'};
-  let eachLineRects = [], currentLineTop = (div.getClientRects()[0] == null) ? 0 :div.getClientRects()[0].top;
-  $(div).find('.line-end').each(function(){
-    const bottom = currentLineTop + parseFloat(getComputedStyle(this).lineHeight);
-    eachLineRects.push({top:currentLineTop, bottom}); 
-    currentLineTop = bottom;
-  });
-  $(div).find('[data-mfd]').each(function() {
-    // 수식어
-    const modifierChildNodes = getLeafNodes([this]);
-    // 수식 대상
-    const modificand = $(div).find('.sem.mfd-' + this.dataset.mfd)[0];
-    if(modificand == null) {
-      return true;
-    }
-    const modificandChildNodes = getLeafNodes([modificand]);
-    const mdfChildLen = modifierChildNodes.length,
-      mdfdChildLen = modificandChildNodes.length;
-    let i_mb = 0, i_me = mdfChildLen - 1, i_tb = 0, i_te = mdfdChildLen - 1;
-    let modBeginNode = modifierChildNodes[i_mb++],
-      modEndNode = modifierChildNodes[i_me--],
-      targetBeginNode = modificandChildNodes[i_tb++],
-	  targetEndNode = modificandChildNodes[i_te--];
-    // 줄바꿈 기호가 수식 대상의 마지막 노드면, 그 앞 노드를 선택.
-    if(targetEndNode.parentElement.classList.contains('line-end')){
-      targetEndNode = modificandChildNodes[i_te--];
-    }
-    // 해당 노드가 실제하지 않는 노드일 경우 다음(앞/뒤) 노드 선택
-    while(modBeginNode.length == 0 && i_mb < mdfChildLen) {
-	  modBeginNode = modifierChildNodes[i_mb++];
-	}
-    while(modEndNode.length == 0 && i_me >= 0) {
-	  modEndNode = modifierChildNodes[i_me--];
-	}
-    while(targetBeginNode.length == 0 && i_tb < mdfdChildLen) {
-	  targetBeginNode = modificandChildNodes[i_tb++];
-	}
-    while(targetEndNode.length == 0 && i_te >= 0) {
-	  targetEndNode = modificandChildNodes[i_te--];
-	}
-    // 수식어구와 수식 대상의 coordinates(top,left,right)
-    const modBeginCoord = getCoord(modBeginNode),
-      modEndCoord = getCoord(modEndNode),
-      targetBeginCoord = getCoord(targetBeginNode),
-      targetEndCoord = getCoord(targetEndNode);
-    if(!(modBeginCoord && modEndCoord && targetBeginCoord && targetEndCoord)){
-      return true;
-    }  
-    // 수식어구와 수식 대상의 화살표 위치 높이 보정값(폰트 top, size에 의한 변경치)
-    const modBeginTop = modBeginCoord.top + getTextTopMove(modBeginNode),
-      modEndTop = modEndCoord.top + getTextTopMove(modEndNode),
-      targetBeginTop = targetBeginCoord.top + getTextTopMove(targetBeginNode),
-      targetEndTop = targetEndCoord.top + getTextTopMove(targetEndNode);
-    
-    // 문장이 포함된 전체 영역
-    const textareaWidth = parseFloat(getComputedStyle(div).width) || 0;
-    // 화살표의 높이
-    let arrowHeight = 0;
-    // 좌측 상단을 기준으로 한 처음과 마지막 노드의 Coord
-    let first, last, 
-    // 화살표의 시작,끝 {x,y}좌표
-      startX = scrolledDivLeft, startY = scrolledDivTop, 
-      endX = scrolledDivLeft, endY = scrolledDivTop;
-    // 수식어와 피수식어가 다른 줄에 있음 여부.
-    let isDiffLine = false;
-    // 수식어와 피수식어을 포함한 줄에서 첫 줄과 마지막 줄을 제외한 줄.
-    let interLines = [];
-
-    for(let i=0,len=eachLineRects.length;i<len;i++){
-      // 피수식어가 윗줄
-      if(targetEndCoord.top + targetEndCoord.height < modBeginCoord.top){
-        isDiffLine = true;
-        first = targetEndCoord; last = modBeginCoord;
-        startX += modBeginCoord.left + rem / 3;  startY += modBeginTop - rem;
-        endX += targetEndCoord.right - rem / 3;  endY += targetEndTop - rem;
-  
-        drawSettings1.p0x =  0;  drawSettings2.p0y =  endY;
-        drawSettings2.p0x =  textareaWidth;  drawSettings2.p1y =  endY;
-        break;  
-      }
-      // 피수식어가 아랫줄
-      else if(targetBeginCoord.top > modEndCoord.top + modEndCoord.height){
-        isDiffLine = true;
-        first = modEndCoord; last = targetBeginCoord;
-        startX += modEndCoord.right - rem / 3;   startY += modEndTop - rem;
-        endX += targetBeginCoord.left + rem / 3; endY += targetBeginTop - rem;
-        
-        drawSettings1.p0x =  textareaWidth;  drawSettings2.p0y =  endY;
-        drawSettings2.p0x =  0;  drawSettings2.p1y =  endY;        
-        break;  
-      }
-      // 수식 대상이 같은 줄 && 왼쪽
-      else if(/*targetEndCoord.top > line.top && modBeginCoord.top > line.top
-      && targetEndCoord.top < line.bottom && modBeginCoord.top < line.bottom
-      && */targetEndCoord.x < modBeginCoord.x){
-        first = targetEndCoord; last = modBeginCoord;
-        startX += modBeginCoord.left + rem / 3;  startY += modBeginTop - rem;
-        endX += targetEndCoord.right - rem / 3;  endY += targetEndTop - rem;
-        
-        drawSettings1.p0x =  (startX + endX) / 2; drawSettings2.p0y = startY;
-        drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
-        break;  
-      }
-      // 수식 대상이 같은 줄 && 오른쪽
-      else if(/*targetBeginCoord.top > line.top && modEndCoord.top > line.top
-      && targetBeginCoord.top < line.bottom && modEndCoord.top < line.bottom
-      && */targetBeginCoord.x > modEndCoord.x){
-        first = modEndCoord; last = targetBeginCoord;
-        startX += modEndCoord.right - rem / 3;   startY += modEndTop - rem;
-        endX += targetBeginCoord.left + rem / 3; endY += targetBeginTop - rem;
-        
-        drawSettings1.p0x =  (startX + endX) / 2; drawSettings2.p0y = startY;
-        drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
-        break;  
-      }else{
-		// 선을 이을 수 있는 요소가 아님.
-        continue;
-      }
-    }
-    // 처음과 끝을 제외한 사이 줄 계산
-    if(!(first && last)){
-      return true;
-    }
-    const yMin = Math.min(first.top, last.top), 
-          yMax = Math.max(first.top, last.top);
-    eachLineRects.forEach(function(line){
-      if(line.top > yMin && line.bottom < yMax){
-        interLines.push(line.bottom - div.getClientRects()[0].top - rem);
-      }
-    });
-    
-    // 처음과 끝 사이의 거리에 따른 화살표 높이 계산
-    // distance: 수식어와 피수식어 사이의 거리(가로). 여러 줄이면 거쳐가는 줄의 길이까지 포함
-    const distance = last.left + 2 * rem / 3 - first.right
-          + (isDiffLine ? (textareaWidth * (interLines.length + 1)) : 0) ;
-    arrowHeight = 15 + (0.03 * distance);
-    
-    // 각 화살표의 아이디 할당
-    drawSettings1.className = 'curved_arrow start mfd' + this.dataset.mfd;
-    drawSettings2.className = 'curved_arrow end mfd' + this.dataset.mfd;
-    
-    // 계산된 화살표 높이를 적용한 최종 화살표 canvas 좌표 설정
-    drawSettings1.p0y = startY - arrowHeight;
-    drawSettings1.p1x = startX;  drawSettings1.p1y = startY - arrowHeight;
-    drawSettings1.p2x = startX; drawSettings1.p2y = startY;
-    
-    drawSettings2.p0y -= arrowHeight;
-    drawSettings2.p1x =  endX;  drawSettings2.p1y -= arrowHeight; 
-    drawSettings2.p2x = endX;  drawSettings2.p2y = endY;
-    /* 화살표 시작 */
-    $(div).curvedArrow(drawSettings1);
-    /* 화살표 끝 */
-    $(div).curvedArrow(drawSettings2);
-    /* 사이 행 줄 긋기 */
-    interLines.forEach(function(yPos) {
-      requestAnimationFrame(function(){
-        drawHorizontal(0, yPos,arrowHeight, textareaWidth);
-      })
-    });
-  });
-
-  // [gcomment 이음선 표시]
-  $(div).find('[data-gc-lv]').each(function() {
-    const commentCss = getComputedStyle(this,'::after'),
-          rect = this.getClientRects()[$(this).is('.odd') ? 1 : 0],
-          commentTop = parseFloat(commentCss.top) + scrolledDivTop + rect.top,
-          commentLeft = parseFloat(commentCss.left) + scrolledDivLeft + rect.left;
-    let options = {p0x: commentLeft, p0y: commentTop + 0.35 * rem,
-             p1y: commentTop + 0.35 * rem,
-             curve: false, lineWidth: 1, header: false, size: 2,
-             className: 'gc_line', strokeStyle:'rgb(158,175,234)'};
-    // 괄호를 가지는 품사들은 gcomment의 위치가 다름을 인식.
-    if($(this).is('.cls,.ncls,.acls,.advcls,.phr,.adjphr,.advphr,.ptcphr')) {
-      const prevRects = this.previousElementSibling.getClientRects(),
-            prevLastRect = prevRects[prevRects.length - 1];
-      options.p1x = scrolledDivLeft + rect.left - 0.25 * rem;
-      options.p2x = options.p1x;
-      // 앞에 위치한 괄호 상단에 이음선이 끝나도록
-      options.p2y = scrolledDivTop + prevLastRect.top  
-                     + prevLastRect.height * 0.17;
-    }
-    // 문장 필수성분의 gcomment 높이 차이
-    else {
-      options.p1x = scrolledDivLeft + rect.left + 0.25 * rem;
-      options.p2x = options.p1x;
-      // 텍스트 박스 상단 첫글자 위치에 이음선이 끝나도록.
-      options.p2y = scrolledDivTop + rect.top;
-    }
-    $(div).curvedArrow(options);
-  });
+var drawConnections = (function() {
+	async function prv(div){
+	  const lines = div.querySelectorAll('.curved_arrow,.gc_line');
+	  for(let i = 0, len = lines.length; i < len; i++) {
+		if(lines[i].parentNode) lines[i].parentNode.removeChild(lines[i]);
+	  }
+	  const ownerDocument = div.ownerDocument;
+	  
+	  const rem = parseFloat(getComputedStyle(ownerDocument.documentElement).fontSize);
+	  const divOffset = $(div).offset(), divLeft = divOffset.left, divTop = divOffset.top,
+	    ownerWindow = ownerDocument.defaultView,
+	    scrolledDivLeft = ownerWindow.scrollX - divLeft, 
+	    scrolledDivTop = ownerWindow.scrollY - divTop;
+	  let drawSettings1 = {lineWidth: rem/8, size: rem/3, strokeStyle: '#FFCC99', header:false},
+	    drawSettings2 = {lineWidth: rem/8, size: rem/3, strokeStyle: '#FFCC99'};
+	  let eachLineRects = [], currentLineTop = (div.getClientRects()[0] == null) ? 0 :div.getClientRects()[0].top;
+	  const lineEnds = div.querySelectorAll('.line-end');
+	  for(let i = 0, len = lineEnds.length; i < len; i++) {
+	    const bottom = currentLineTop + parseFloat(getComputedStyle(lineEnds[i]).lineHeight);
+	    eachLineRects.push({top:currentLineTop, bottom}); 
+	    currentLineTop = bottom;
+	  }
+	  const modifiers = div.querySelectorAll('[data-mfd]');
+	  for(let i = 0, len = modifiers.length; i < len; i++) {
+		const modifier = modifiers[i];
+	    // 수식어 자식들
+	    const modifierChildNodes = getLeafNodes([modifier]);
+	    // 수식 대상
+	    const modificand = div.querySelector('.sem.mfd-' + modifier.dataset.mfd);
+	    if(modificand == null) continue;
+	    
+	    const modificandChildNodes = getLeafNodes([modificand]);
+	    const mdfChildLen = modifierChildNodes.length,
+	      mdfdChildLen = modificandChildNodes.length;
+	    let i_mb = 0, i_me = mdfChildLen - 1, i_tb = 0, i_te = mdfdChildLen - 1;
+	    let modBeginNode = modifierChildNodes[i_mb++],
+	      modEndNode = modifierChildNodes[i_me--],
+	      targetBeginNode = modificandChildNodes[i_tb++],
+		  targetEndNode = modificandChildNodes[i_te--];
+	    // 줄바꿈 기호가 수식 대상의 마지막 노드면, 그 앞 노드를 선택.
+	    if(targetEndNode.parentElement.classList.contains('line-end')){
+	      targetEndNode = modificandChildNodes[i_te--];
+	    }
+	    // 해당 노드가 실제하지 않는 노드일 경우 다음(앞/뒤) 노드 선택
+	    while(modBeginNode.length == 0 && i_mb < mdfChildLen) {
+		  modBeginNode = modifierChildNodes[i_mb++];
+		}
+	    while(modEndNode.length == 0 && i_me >= 0) {
+		  modEndNode = modifierChildNodes[i_me--];
+		}
+	    while(targetBeginNode.length == 0 && i_tb < mdfdChildLen) {
+		  targetBeginNode = modificandChildNodes[i_tb++];
+		}
+	    while(targetEndNode.length == 0 && i_te >= 0) {
+		  targetEndNode = modificandChildNodes[i_te--];
+		}
+	    // 수식어구와 수식 대상의 coordinates(top,left,right)
+	    const modBeginCoord = getCoord(modBeginNode),
+	      modEndCoord = getCoord(modEndNode),
+	      targetBeginCoord = getCoord(targetBeginNode),
+	      targetEndCoord = getCoord(targetEndNode);
+	    if(!(modBeginCoord && modEndCoord && targetBeginCoord && targetEndCoord)){
+	      continue;
+	    }  
+	    // 수식어구와 수식 대상의 화살표 위치 높이 보정값(폰트 top, size에 의한 변경치)
+	    const modBeginTop = modBeginCoord.top + getTextTopMove(modBeginNode),
+	      modEndTop = modEndCoord.top + getTextTopMove(modEndNode),
+	      targetBeginTop = targetBeginCoord.top + getTextTopMove(targetBeginNode),
+	      targetEndTop = targetEndCoord.top + getTextTopMove(targetEndNode);
+	    
+	    // 문장이 포함된 전체 영역
+	    const textareaWidth = parseFloat(getComputedStyle(div).width) || 0;
+	    // 화살표의 높이
+	    let arrowHeight = 0;
+	    // 좌측 상단을 기준으로 한 처음과 마지막 노드의 Coord
+	    let first, last, 
+	    // 화살표의 시작,끝 {x,y}좌표
+	      startX = scrolledDivLeft, startY = scrolledDivTop, 
+	      endX = scrolledDivLeft, endY = scrolledDivTop;
+	    // 수식어와 피수식어가 다른 줄에 있음 여부.
+	    let isDiffLine = false;
+	    // 수식어와 피수식어을 포함한 줄에서 첫 줄과 마지막 줄을 제외한 줄.
+	    let interLines = [];
+	
+		// 피수식어가 윗줄
+		if(targetEndCoord.top + targetEndCoord.height < modBeginCoord.top){
+		  isDiffLine = true;
+		  first = targetEndCoord; last = modBeginCoord;
+		  startX += modBeginCoord.left + rem / 3;  startY += modBeginTop - rem;
+		  endX += targetEndCoord.right - rem / 3;  endY += targetEndTop - rem;
+	  
+		  drawSettings1.p0x =  0;  drawSettings2.p0y =  endY;
+		  drawSettings2.p0x =  textareaWidth;  drawSettings2.p1y =  endY;
+		}
+		// 피수식어가 아랫줄
+		else if(targetBeginCoord.top > modEndCoord.top + modEndCoord.height){
+		  isDiffLine = true;
+		  first = modEndCoord; last = targetBeginCoord;
+		  startX += modEndCoord.right - rem / 3;   startY += modEndTop - rem;
+		  endX += targetBeginCoord.left + rem / 3; endY += targetBeginTop - rem;
+	        
+		  drawSettings1.p0x =  textareaWidth;  drawSettings2.p0y =  endY;
+		  drawSettings2.p0x =  0;  drawSettings2.p1y =  endY;        
+		}
+		// 수식 대상이 같은 줄 && 왼쪽
+		else if(targetEndCoord.x < modBeginCoord.x){
+		  first = targetEndCoord; last = modBeginCoord;
+		  startX += modBeginCoord.left + rem / 3;  startY += modBeginTop - rem;
+		  endX += targetEndCoord.right - rem / 3;  endY += targetEndTop - rem;
+	        
+		  drawSettings1.p0x =  (startX + endX) / 2; drawSettings2.p0y = startY;
+		  drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
+		}
+		// 수식 대상이 같은 줄 && 오른쪽
+		else if(targetBeginCoord.x > modEndCoord.x){
+		  first = modEndCoord; last = targetBeginCoord;
+		  startX += modEndCoord.right - rem / 3;   startY += modEndTop - rem;
+		  endX += targetBeginCoord.left + rem / 3; endY += targetBeginTop - rem;
+	        
+		  drawSettings1.p0x =  (startX + endX) / 2; drawSettings2.p0y = startY;
+		  drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
+		}
+	    // 처음과 끝을 제외한 사이 줄 계산
+	    if(!(first && last)) continue;
+	    const yMin = Math.min(first.top, last.top), 
+	          yMax = Math.max(first.top, last.top);
+		for(let j = 0, len2 = eachLineRects.length; j < len2; j++) {
+		  const rect = eachLineRects[j];
+	      if(rect.top > yMin && rect.bottom < yMax){
+	        interLines.push(rect.bottom - div.getClientRects()[0].top - rem);
+	      }
+		}
+	    
+	    // 처음과 끝 사이의 거리에 따른 화살표 높이 계산
+	    // distance: 수식어와 피수식어 사이의 거리(가로). 여러 줄이면 거쳐가는 줄의 길이까지 포함
+	    const distance = last.left + 2 * rem / 3 - first.right
+	          + (isDiffLine ? (textareaWidth * (interLines.length + 1)) : 0) ;
+	    arrowHeight = 15 + (0.03 * distance);
+	    
+	    // 각 화살표의 아이디 할당
+	    drawSettings1.className = 'curved_arrow start mfd' + modifier.dataset.mfd;
+	    drawSettings2.className = 'curved_arrow end mfd' + modifier.dataset.mfd;
+	    
+	    // 계산된 화살표 높이를 적용한 최종 화살표 canvas 좌표 설정
+	    drawSettings1.p0y = startY - arrowHeight;
+	    drawSettings1.p1x = startX;  drawSettings1.p1y = startY - arrowHeight;
+	    drawSettings1.p2x = startX; drawSettings1.p2y = startY;
+	    
+	    drawSettings2.p0y -= arrowHeight;
+	    drawSettings2.p1x =  endX;  drawSettings2.p1y -= arrowHeight; 
+	    drawSettings2.p2x = endX;  drawSettings2.p2y = endY;
+	    /* 화살표 시작 */
+	    //$(div).curvedArrow(drawSettings1);
+	    drawCurvedArrow(div, drawSettings1);
+	    /* 화살표 끝 */
+	    drawCurvedArrow(div, drawSettings2);
+	    //$(div).curvedArrow(drawSettings2);
+	    /* 사이 행 줄 긋기 */
+	    for(let j = 0, len2 = interLines.length; j < len2; j++) {
+	      requestAnimationFrame(function(){
+	        drawHorizontal(0, interLines[j],arrowHeight, textareaWidth, ownerDocument, drawSettings1);
+	      });
+		}
+	  }
+	
+	  // [gcomment 이음선 표시]
+	  const elementsHaveGcLv = div.querySelectorAll('[data-gc-lv]');
+	  for(let i = 0, len = elementsHaveGcLv.length; i < len; i++) {
+		const el = elementsHaveGcLv[i];
+	    const commentCss = getComputedStyle(el,'::after'),
+	          rect = el.getClientRects()[el.matches('.odd') ? 1 : 0],
+	          commentTop = parseFloat(commentCss.top) + scrolledDivTop + rect.top,
+	          commentLeft = parseFloat(commentCss.left) + scrolledDivLeft + rect.left;
+	    let options = {p0x: commentLeft, p0y: commentTop + 0.35 * rem,
+	             p1y: commentTop + 0.35 * rem,
+	             curve: false, lineWidth: 1, header: false, size: 2,
+	             className: 'gc_line', strokeStyle:'rgb(158,175,234)'};
+	    // 괄호를 가지는 품사들은 gcomment의 위치가 다름을 인식.
+	    if(el.matches('.cls,.ncls,.acls,.advcls,.phr,.adjphr,.advphr,.ptcphr')) {
+	      const prevRects = el.previousElementSibling.getClientRects(),
+	            prevLastRect = prevRects[prevRects.length - 1];
+	      options.p1x = scrolledDivLeft + rect.left - 0.25 * rem;
+	      options.p2x = options.p1x;
+	      // 앞에 위치한 괄호 상단에 이음선이 끝나도록
+	      options.p2y = scrolledDivTop + prevLastRect.top  
+	                     + prevLastRect.height * 0.17;
+	    }
+	    // 문장 필수성분의 gcomment 높이 차이
+	    else {
+	      options.p1x = scrolledDivLeft + rect.left + 0.25 * rem;
+	      options.p2x = options.p1x;
+	      // 텍스트 박스 상단 첫글자 위치에 이음선이 끝나도록.
+	      options.p2y = scrolledDivTop + rect.top;
+	    }
+	    drawCurvedArrow(div, options);
+	    //$(div).curvedArrow(options);
+	  }
+  }
   /**
    * 대상 노드(텍스트노드 포함)의 실제 사각 정보(top,left,right,width 등)를 반환
    */
@@ -1093,146 +1282,146 @@ async function drawConnections(div){
   /**
    * 주어진 시작지점부터 일정 길이의 수평의 직선을 그린다.
    */
-  function drawHorizontal(xPos, yPos, height, length){
-    const padding = drawSettings1.size - drawSettings1.lineWidth;
+  function drawHorizontal(xPos, yPos, height, length, ownerDocument, settings){
+    const padding = settings.size - settings.lineWidth;
     let canvas = ownerDocument.createElement('canvas');
-    div.append(canvas);
-    canvas.className = drawSettings1.className.replace('start','btwn');
-      canvas.style.position = 'absolute';
-      canvas.style.top = (yPos - height - padding) + 'px';
-      canvas.style.left = (xPos - padding) +'px';
+    canvas.className = settings.className.replace('start','btwn');
+    canvas.style.position = 'absolute';
+    canvas.style.top = (yPos - height - padding) + 'px';
+    canvas.style.left = (xPos - padding) +'px';
     canvas.dataset.height = height;
     
-      let ctx = canvas.getContext('2d');
+    let ctx = canvas.getContext('2d');
     canvas.style.width = 2 * padding + length + 'px';
-    canvas.style.height = 2 * padding + drawSettings1.lineWidth + 'px';
+    canvas.style.height = 2 * padding + settings.lineWidth + 'px';
     // 디바이스 픽셀 비율에 의한 흐릿함 보정
     const dpr = window.devicePixelRatio || 1;
     canvas.width = (2 * padding + length) * dpr;
-      canvas.height = (2 * padding + drawSettings1.lineWidth) * dpr; 
-      ctx.scale(dpr, dpr);
+    canvas.height = (2 * padding + settings.lineWidth) * dpr; 
+    ctx.scale(dpr, dpr);
       
-    ctx.strokeStyle = drawSettings1.strokeStyle;
-    ctx.lineWidth = drawSettings1.lineWidth;
+    ctx.strokeStyle = settings.strokeStyle;
+    ctx.lineWidth = settings.lineWidth;
     ctx.moveTo(padding, padding);
     ctx.lineTo(length + padding, padding);
     ctx.stroke();
-    
+    div.append(canvas);
   }
-  
-}  
+  return prv;
+}());
 /**
  * 각 줄마다 높이를 컨텐츠들 높이에 맞춘다.
  * line-height: 윗줄과 아랫줄의 offset 차이. 0이면 완전히 겹쳐진다.
  */
-function adjustLineHeight(div) {
-  const rem = parseFloat(getComputedStyle(div.ownerDocument.documentElement).fontSize);
-  
-  // 미리 기본 줄 높이를 부족할 정도로 낮춘다.
-  div.style.lineHeight = '1rem';
-  // 말단 텍스트 노드들을 선택
-  const textNodes = getLeafNodes([div]).filter(function(v){
-    return v.nodeType == 3;
-  });
-  let lineNumber = 0, pos = 0;
-  let prevLineLowerHeight = 0, 
-    maxContentHeight = 0, maxUpperHeight = 0, maxLowerHeight = 0;
-  // 각 줄의 최고 높이에 해당하는 줄높이를 갖는 span을 줄 끝에 삽입.
-  for(let i = 0, len = textNodes.length; i < len; i++) {
-    let n = textNodes[i];
-    let range = new Range();
-    range.selectNode(n);
-    const nodeFirstRect = range.getClientRects()[0];
-    // 공백이 아닌 노드면 높이를 측정 후 최고 높이를 갱신.
-    if(nodeFirstRect != null && n.data != null && n.data.match(/[^\s]/) != null){
-      let contentHeight = nodeFirstRect.height;
-      // 괄호의 경우 contentHeight 따로 계산
-      if($(n.parentElement).is('.etc-start,.etc-end,.cls-start,.cls-end')){
-        // 괄호 실질크기: height의 66%, 윗부분: 84%, 아래부분: 16%, 
-        // 중심: 텍스트 bottom(top 0 기준)
-        contentHeight = rem * 1.35;
-        const top = parseFloat(getComputedStyle(n.parentElement).top),
-              brktHeight = nodeFirstRect.height * 0.66,
-              brktTop = brktHeight * 0.84 - top - contentHeight * 0.77,
-              brktBottom = brktHeight * 0.16 + top - contentHeight * 0.23;
-        maxUpperHeight = Math.max(maxUpperHeight, brktTop);
-        maxLowerHeight = Math.max(maxLowerHeight, brktBottom);
-      }
-      // 마지막 노드(line-end)가 아닐 경우 최고 높이 갱신.
-      if(n.parentElement == null ||!n.parentElement.classList.contains('line-end')){
-        maxContentHeight = Math.max(maxContentHeight, contentHeight);
-        
-        const pseudoHeights = getPseudoHeights(n, nodeFirstRect);
-        maxUpperHeight = Math.max(maxUpperHeight, pseudoHeights.upperHeight);
-        maxLowerHeight = Math.max(maxLowerHeight, pseudoHeights.lowerHeight);
-      }
-      // 계산된 최대높이를 line-end에 적용
-      else{
-        // line-height 조정의 목적은 윗줄의 lower 요소들과 현재줄의 upper요소들의 겹침 방지이다.
-        // 따라서 '윗줄 lower 높이 + 현재줄 upper 높이 + 텍스트 높이'만큼의 차이 필요.
-        n.parentElement.style.lineHeight 
-          = Math.max(maxContentHeight, rem * 1.35
-          + maxUpperHeight + prevLineLowerHeight
-          + (lineNumber > 0 ? (rem * 0.5/*여유 간격*/) : 0)) + 'px';
-        prevLineLowerHeight = maxLowerHeight;
-        if(i == len - 1) {
-          // 마지막의 하단부 크기만큼 아랫쪽 간격 추가.
-          div.style.paddingBottom = maxLowerHeight + 'px';
-        }else {
-          // 줄의 마지막이 되면 변수들 초기화
-          maxContentHeight = 0;
-          maxUpperHeight = 0;
-          maxLowerHeight = 0;
-        }
-        lineNumber++;
-      }
-    }  
+var adjustLineHeight = (function() {
+  function prv(div) {
+	  const rem = parseFloat(getComputedStyle(div.ownerDocument.documentElement).fontSize);
+	  
+	  // 미리 기본 줄 높이를 부족할 정도로 낮춘다.
+	  div.style.lineHeight = '1rem';
+	  // 말단 텍스트 노드들을 선택
+	  const textNodes = getLeafNodes([div]).filter(function(v){
+	    return v.nodeType == 3;
+	  });
+	  let lineNumber = 0;
+	  let prevLineLowerHeight = 0, 
+	    maxContentHeight = 0, maxUpperHeight = 0, maxLowerHeight = 0;
+	  // 각 줄의 최고 높이에 해당하는 줄높이를 갖는 span을 줄 끝에 삽입.
+	  for(let i = 0, len = textNodes.length; i < len; i++) {
+	    let n = textNodes[i];
+	    let range = new Range();
+	    range.selectNode(n);
+	    const nodeFirstRect = range.getClientRects()[0];
+	    // 공백이 아닌 노드면 높이를 측정 후 최고 높이를 갱신.
+	    if(nodeFirstRect != null && n.data != null && n.data.match(/[^\s]/) != null){
+	      let contentHeight = nodeFirstRect.height;
+	      // 괄호의 경우 contentHeight 따로 계산
+	      if(n.parentElement.matches('.etc-start,.etc-end,.cls-start,.cls-end')){
+	        // 괄호 실질크기: height의 66%, 윗부분: 84%, 아래부분: 16%, 
+	        // 중심: 텍스트 bottom(top 0 기준)
+	        contentHeight = rem * 1.35;
+	        const top = parseFloat(getComputedStyle(n.parentElement).top),
+	              brktHeight = nodeFirstRect.height * 0.66,
+	              brktTop = brktHeight * 0.84 - top - contentHeight * 0.77,
+	              brktBottom = brktHeight * 0.16 + top - contentHeight * 0.23;
+	        maxUpperHeight = Math.max(maxUpperHeight, brktTop);
+	        maxLowerHeight = Math.max(maxLowerHeight, brktBottom);
+	      }
+	      // 마지막 노드(line-end)가 아닐 경우 최고 높이 갱신.
+	      if(n.parentElement == null ||!n.parentElement.classList.contains('line-end')){
+	        maxContentHeight = Math.max(maxContentHeight, contentHeight);
+	        
+	        const pseudoHeights = getPseudoHeights(n, nodeFirstRect, rem);
+	        maxUpperHeight = Math.max(maxUpperHeight, pseudoHeights.upperHeight);
+	        maxLowerHeight = Math.max(maxLowerHeight, pseudoHeights.lowerHeight);
+	      }
+	      // 계산된 최대높이를 line-end에 적용
+	      else{
+	        // line-height 조정의 목적은 윗줄의 lower 요소들과 현재줄의 upper요소들의 겹침 방지이다.
+	        // 따라서 '윗줄 lower 높이 + 현재줄 upper 높이 + 텍스트 높이'만큼의 차이 필요.
+	        n.parentElement.style.lineHeight 
+	          = Math.max(maxContentHeight, rem * 1.35
+	          + maxUpperHeight + prevLineLowerHeight
+	          + (lineNumber > 0 ? (rem * 0.5/*여유 간격*/) : 0)) + 'px';
+	        prevLineLowerHeight = maxLowerHeight;
+	        if(i == len - 1) {
+	          // 마지막의 하단부 크기만큼 아랫쪽 간격 추가.
+	          div.style.paddingBottom = maxLowerHeight + 'px';
+	        }else {
+	          // 줄의 마지막이 되면 변수들 초기화
+	          maxContentHeight = 0;
+	          maxUpperHeight = 0;
+	          maxLowerHeight = 0;
+	        }
+	        lineNumber++;
+	      }
+	    }  
+	  }
+	  requestAnimationFrame(function(){
+	    // 줄높이 조정이 끝나면 인쇄용 페이지 나눔 적용
+	    /*var ownerDocument = div.ownerDocument;
+	    if(ownerDocument.querySelector('.print-section') != null) {
+	      $(ownerDocument).find('.page-breaker').removeClass('page-breaker');
+	      var printHeight = parseFloat(getComputedStyle(ownerDocument.querySelector('.print-section')).height)
+	              - parseFloat(getComputedStyle(ownerDocument.querySelector('.page-header')).height)
+	              - parseFloat(getComputedStyle(ownerDocument.querySelector('.page-footer')).height);
+	      var nextPageBoundary = ownerDocument.querySelector('.page-body').getClientRects()[0].top + printHeight;
+	      
+	      $(ownerDocument).find('p,div,.line-end').filter(function() {
+	        return (this.getClientRects().length > 0) && $(this).find('p,div,.line-end').length == 0;
+	      }).each(function() {
+	        if(this.getClientRects()[0].bottom > nextPageBoundary) {
+	          this.classList.add('page-breaker');
+	          nextPageBoundary = this.getClientRects()[0].top + printHeight;
+	        }
+	      })
+	      
+	    }*/
+	    drawConnections(div);  
+	  });
   }
-  requestAnimationFrame(function(){
-    // 줄높이 조정이 끝나면 인쇄용 페이지 나눔 적용
-    /*var ownerDocument = div.ownerDocument;
-    if(ownerDocument.querySelector('.print-section') != null) {
-      $(ownerDocument).find('.page-breaker').removeClass('page-breaker');
-      var printHeight = parseFloat(getComputedStyle(ownerDocument.querySelector('.print-section')).height)
-              - parseFloat(getComputedStyle(ownerDocument.querySelector('.page-header')).height)
-              - parseFloat(getComputedStyle(ownerDocument.querySelector('.page-footer')).height);
-      var nextPageBoundary = ownerDocument.querySelector('.page-body').getClientRects()[0].top + printHeight;
-      
-      $(ownerDocument).find('p,div,.line-end').filter(function() {
-        return (this.getClientRects().length > 0) && $(this).find('p,div,.line-end').length == 0;
-      }).each(function() {
-        if(this.getClientRects()[0].bottom > nextPageBoundary) {
-          this.classList.add('page-breaker');
-          nextPageBoundary = this.getClientRects()[0].top + printHeight;
-        }
-      })
-      
-    }*/
-    drawConnections(div);  
-  });
-  
   //--------------------------- Embeded functions --------------------------//
   // pseudo element(::before, ::after)를 갖고 있으면 높이에 포함.
-  function getPseudoHeights(node, rect) {
+  function getPseudoHeights(node, rect, rem) {
     const parent = node.parentElement;
     const $parents = $(parent).parents('.sem')
-                .add($(parent).is('.sem') ? parent : null), 
+                .add(parent.matches('.sem') ? parent : null), 
           parentsLen = $parents.length;
     let upperHeight = 0, lowerHeight = 0;
     for(let i = 0; i < parentsLen; i++) {
       const oneParent = $parents.get(i);
       const parentRects = oneParent.getClientRects(),
         firstRect = parentRects[0], oddRect = parentRects[1];
-      const nearFirstNode = (!$(oneParent).is('.odd') && Math.max(
+      const nearFirstNode = (!oneParent.matches('.odd') && Math.max(
                     Math.abs(firstRect.left - rect.left),
                     Math.abs(firstRect.top - rect.top)) < 16);
-      const nearOddNode = ($(oneParent).is('.odd') && (oddRect != null) && Math.max(
+      const nearOddNode = (oneParent.matches('.odd') && (oddRect != null) && Math.max(
                     Math.abs(oddRect.left - rect.left),
                     Math.abs(oddRect.top - rect.top)) < 16);
       // [1. 성분표시 밑줄 높이 적용.(최상위 부모의 것 적용)]
       // ORL: OutmostRcommentLine
       const ORL = $(oneParent).parents('[data-rc]').get(0)
-            || ($(oneParent).is('[data-rc]') ? oneParent : null); 
+            || (oneParent.matches('[data-rc]') ? oneParent : null); 
       let underlineHeight;
       if(ORL != null) {
         underlineHeight = parseFloat(getComputedStyle(ORL).paddingBottom);
@@ -1241,7 +1430,7 @@ function adjustLineHeight(div) {
       // [2. 부모 요소(this) rcomment의 높이 적용.]
       const beforeStyle = getComputedStyle(oneParent, '::before');
 
-      if($(oneParent).is('[data-rc]') && nearOddNode 
+      if(oneParent.matches('[data-rc]') && nearOddNode 
       && isFinite(parseFloat(beforeStyle.bottom))) {
         lowerHeight = Math.max(lowerHeight, underlineHeight, 0 
                 - parseFloat(beforeStyle.bottom)
@@ -1249,7 +1438,7 @@ function adjustLineHeight(div) {
 				+ (portraitList.matches? parseFloat(beforeStyle.paddingBottom):0)
                 - parseFloat(beforeStyle.lineHeight) * 0.5 
                 + parseFloat(beforeStyle.fontSize) * 0.5);
-      }else if($(oneParent).is('[data-rc]') && nearFirstNode 
+      }else if(oneParent.matches('[data-rc]') && nearFirstNode 
       && isFinite(parseFloat(beforeStyle.top))) {
         lowerHeight = Math.max(lowerHeight, underlineHeight, 
                 parseFloat(beforeStyle.top) - rem * 1.35
@@ -1260,10 +1449,10 @@ function adjustLineHeight(div) {
       }
       
       // [3. 부모 요소(this)가 자신(node,rect)과 가깝다면 부모 gcomment 높이 적용.]
-      if($(oneParent).is('[data-gc]') && (nearFirstNode || nearOddNode)){
+      if(oneParent.matches('[data-gc]') && (nearFirstNode || nearOddNode)){
         const afterStyle = getComputedStyle(oneParent, '::after');
         upperHeight = Math.max(upperHeight,
-            $(oneParent).is('.odd') ?
+            oneParent.matches('.odd') ?
             ((parseFloat(afterStyle.bottom) || 0)
             + parseFloat(afterStyle.lineHeight) * 0.5
             + parseFloat(afterStyle.fontSize) * 0.5)
@@ -1275,7 +1464,8 @@ function adjustLineHeight(div) {
     }
     return {upperHeight, lowerHeight};
   }
-}
+  return prv;
+}());
 /**
 * 자식을 더이상 갖지 않는 노드들을 모두 선택하여 반환.
 */
