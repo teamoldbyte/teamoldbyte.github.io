@@ -884,7 +884,7 @@ function checkGCDepth(div) {
  * (목적어는 간접목적어 직접목적어일 수 있다.)
  */
 function splitInners(div){
-  const inners = div.getElementsByClassName('sem inner'),
+  const inners = div.querySelectorAll('.sem.inner'),
         innerSvocRegex = /\b([svca]|oc)\b inner/;
   for(let i = 0, len = inners.length; i < len; i++){
     let one = inners[i];
