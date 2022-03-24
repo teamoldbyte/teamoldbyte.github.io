@@ -48,7 +48,14 @@
 						"title": "단축키: 5",
 						"html": "목적보어",
 						"value": "oc"
-					}
+					},
+					{
+						"type": "btn",
+						"mode": "role",
+						"title": "단축키: 6",
+						"html": "(부)보충어",
+						"value": "a"
+					}					
 				]
 			}
 			
