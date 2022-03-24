@@ -884,10 +884,11 @@ function checkGCDepth(div) {
  * (목적어는 간접목적어 직접목적어일 수 있다.)
  */
 function splitInners(div){
-  const inners = div.querySelectorAll('.sem.inner'),
+  const inners = div.getElementsByClassName('sem inner'),
         innerSvocRegex = /\b([svca]|oc)\b inner/;
   for(let i = 0, len = inners.length; i < len; i++){
     let one = inners[i];
+    if(one == null) continue;
     // inner 내부에 inner가 있는 경우
     if(one.getElementsByClassName('sem inner').length > 0){
       let range = new Range();
@@ -922,7 +923,7 @@ function splitInners(div){
     }
     // inner 내부에 inner는 없고, 바로 다음 element와 동일한 성분이면 묶어주기.
     // 목적어-목적어는 제외.
-    else if(one.matches('.s,.v,.c,.oc')){
+    else if(one.matches('.s,.v,.c,.oc,.a')){
       let next = one.nextSibling;
       if(next != null){
         let nextToNext = next.nextSibling;
