@@ -814,6 +814,7 @@
 						selection.removeAllRanges();
 						
 						refreshDOMs(container);
+						$('.edit-svoc').focus();
 					}
 					$(document).off('click', exitClsRoleMenu);
 					$(assistant).remove();
