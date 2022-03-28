@@ -166,7 +166,7 @@ function svocDom2Arr(node, arr) {
 	// 괄호가 아닌 태그이면서 자식노드(텍스트노드 포함)를 가진 span 태그일 경우 배열에 추가
 	if(node.hasChildNodes() && node.nodeName == 'SPAN' 
   && !node.classList.contains('line-end') && !node.classList.contains('brkt')){
-		const markType = node.className.match(markTypes);
+	  const markType = node.className.match(markTypes);
 	  if(markType != null) {
 		const brktNodesCount = node.querySelectorAll('.brkt').length;
 		  arr.push({markType: markType[0].toUpperCase(), 
@@ -175,10 +175,10 @@ function svocDom2Arr(node, arr) {
 			  rcomment: node.dataset.rc, gcomment: node.dataset.gc,
 			  hasModificand: (node.dataset.mfd != null)});
 	  }
-		// 자식노드에 대해 순환탐색
-		for(let child of node.childNodes) {
-			arr = svocDom2Arr(child, arr);
-		}
+	  // 자식노드에 대해 순환탐색
+	  for(let child of node.childNodes) {
+		arr = svocDom2Arr(child, arr);
+	  }
 	// 텍스트 노드일 경우 글자 길이만큼 탐색 위치를 옮김
 	}else if(node.nodeType == 3){
 		svocDom2Arr.pos += node.textContent.replaceAll('\n','').length;
@@ -1208,7 +1208,7 @@ var drawConnections = (function() {
 	    // distance: 수식어와 피수식어 사이의 거리(가로). 여러 줄이면 거쳐가는 줄의 길이까지 포함
 	    const distance = last.left + 2 * rem / 3 - first.right
 	          + (isDiffLine ? (textareaWidth * (interLines.length + 1)) : 0) ;
-	    arrowHeight = 15 + (0.03 * distance);
+	    arrowHeight = 15 + (0.1 * Math.log(distance));
 	    
 	    // 각 화살표의 아이디 할당
 	    drawSettings1.className = 'curved_arrow start mfd' + modifier.dataset.mfd;
@@ -1231,7 +1231,7 @@ var drawConnections = (function() {
 	    /* 사이 행 줄 긋기 */
 	    for(let j = 0, len2 = interLines.length; j < len2; j++) {
 	      requestAnimationFrame(function(){
-	        drawHorizontal(0, interLines[j],arrowHeight, textareaWidth, ownerDocument, drawSettings1);
+	        drawHorizontal(0, interLines[j],arrowHeight, textareaWidth, div, drawSettings1);
 	      });
 		}
 	  }
@@ -1292,9 +1292,9 @@ var drawConnections = (function() {
   /**
    * 주어진 시작지점부터 일정 길이의 수평의 직선을 그린다.
    */
-  function drawHorizontal(xPos, yPos, height, length, ownerDocument, settings){
+  function drawHorizontal(xPos, yPos, height, length, div, settings){
     const padding = settings.size - settings.lineWidth;
-    let canvas = ownerDocument.createElement('canvas');
+    let canvas = div.ownerDocument.createElement('canvas');
     canvas.className = settings.className.replace('start','btwn');
     canvas.style.position = 'absolute';
     canvas.style.top = (yPos - height - padding) + 'px';
