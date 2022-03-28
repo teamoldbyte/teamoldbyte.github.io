@@ -83,9 +83,9 @@ function editPassageSentece(editPassageCommand, callback, errCallback) {
 /** 지문에서 문장 삭제
  */
 function delPassageSentence(command, callback) {
-	$.post('/workbook/mybook/del/sentence?passageId='+command.passageId+'&sentenceId='+command.sentenceId, callback)
-	.fail(() => alert('문장 삭제에 실패했습니다.'));
-	//postJSON('/workbook/mybook/del/sentence', command, callback, () => alert('문장 삭제에 실패했습니다.'));
+	//$.post('/workbook/mybook/del/sentence?passageId='+command.passageId+'&sentenceId='+command.sentenceId, callback)
+	//.fail(() => alert('문장 삭제에 실패했습니다.'));
+	postJSON('/workbook/mybook/del/sentence', command, callback, () => alert('문장 삭제에 실패했습니다.'));
 }
 /*------------------------------------------------------------------------------
 							view_passage.html
