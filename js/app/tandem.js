@@ -269,7 +269,7 @@ function paintBasicDOMs(text, svocList, div) {
   
   trimTextContent(div);
   
-  shrinkRComment(div);
+  //shrinkRComment(div);
   
   wrapWithBracket(div);
   
@@ -457,16 +457,23 @@ var createBasicDOMs = (function() {
       // 선행사일 경우 인덱스를 남김
       if(tag.mark == 'RCM')
         htmlTag += ' mfd-' + semanticSequence + '-' + ++modificandIndex;
+      htmlTag += '"';
       
       if(tag.modifier)
-        htmlTag += '" data-mfd="' + semanticSequence + '-' + modificandIndex;
+        htmlTag += ' data-mfd="' + semanticSequence + '-' + modificandIndex + '"';
       
-      htmlTag += ((tag.rcomment) ? ('" data-rc="' + tag.rcomment 
-			+ '" data-rc-min="'+ tag.rcomment.substring(0,
-				tag.rcomment.indexOf('.') > 0 ? tag.rcomment.length : 1)
-			+ '"') : '')
-        + ((tag.gcomment) ? ('" data-gc="' + tag.gcomment) : '') 
-		+ '">';
+      if(tag.rcomment) {
+		htmlTag += ' data-rc=';
+      	if(tag.rcomment.indexOf('.') > 0)
+		  htmlTag += '"' + tag.rcomment + '"';
+		else 
+		  htmlTag += '"' + tag.rcomment.substring(0,1).toUpperCase() + '"';
+	  }
+	  
+	  if(tag.gcomment)
+		htmlTag += ' data-gc="' + tag.gcomment + '"';
+	  
+	  htmlTag += '>';
     }else{
       // 구/절 태그의 경우 구/절 종료태그 삽입 후 절 끝 부호')',']' 태그 삽입
       htmlTag += '</span>';

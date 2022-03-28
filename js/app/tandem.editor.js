@@ -733,8 +733,8 @@
 	 * 선택 영역에 지정한 성분의 태그로 감싼다.
 	 */
 	function applyRoles(selection, role) {
-		const rcomments = {s : 'subj', v : 'verb', o : 'obj', 
-				c : 'comp', oc : 'o.c.', a : 'A', m : 'mod'},
+		const rcomments = {s : 'S', v : 'V', o : 'O', 
+						c : 'C', oc : 'o.c.', m : 'M', a : 'A'},
 			  gcomments = {a: '부사적 보충어', tor : 'to부정사', ger : '동명사', ptc : '분사'};
 		const range = selection.getRangeAt(0);
 		const el = document.createElement('span');
@@ -767,7 +767,7 @@
 	 * 선택 영역을 괄호로 감싼 후 성분 태그까지 겹쳐서 추가한다.
 	 */
 	function wrapBracket(selection, wrapper){
-		const rcomments = {s:'subj', o:'obj',c:'comp', oc:'o.c.', m:'mod'},
+		const rcomments = {s:'S', o:'O',c:'C', oc:'o.c.', m:'M', a:'A'},
 			  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
 						acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절'};
 		const range = selection.getRangeAt(0);
@@ -840,7 +840,7 @@
 		default:
 			const el2 = document.createElement('span');
 			el2.className = 'sem ' + wrapper;
-			el2.dataset.gc = gcomments[wrapper]||'기본 코멘트';
+			if(gcomments[wrapper]) el2.dataset.gc = gcomments[wrapper];
 			try {
 				range.surroundContents(el2);
 			} catch (e) {

@@ -2655,9 +2655,9 @@ body{
 	.sem[data-rc].inner::before,
 	.sem[data-rc].outer::before{
 		position: absolute;
-		content: attr(data-rc-min);
+		/*content: attr(data-rc-min);*/
 		border: solid 0px;
-		padding: 1px 0px 6px 0px;
+		padding: 3px;
 		text-align: center!important;
 		line-height: .75rem;
 		font-size: 1.125rem!important;
