@@ -814,7 +814,6 @@
 						selection.removeAllRanges();
 						
 						refreshDOMs(container);
-						$('.edit-svoc').focus();
 					}
 					$(document).off('click', exitClsRoleMenu);
 					$(assistant).remove();
@@ -868,5 +867,7 @@
 		trimTextContent(container);
 		
 		correctMarkLine(container);
+		
+		$('.edit-svoc').focus();
 	}
 }(jQuery));
