@@ -166,15 +166,17 @@ function svocDom2Arr(node, arr) {
 	// 괄호가 아닌 태그이면서 자식노드(텍스트노드 포함)를 가진 span 태그일 경우 배열에 추가
 	if(node.hasChildNodes() && node.nodeName == 'SPAN' 
   && !node.classList.contains('line-end') && !node.classList.contains('brkt')){
-		var markType = node.className.match(markTypes);
-		markType = markType  != null ? markType[0].toUpperCase() : null;
-		arr.push({markType: markType, 
-      start: svocDom2Arr.pos,
-      end: (svocDom2Arr.pos + node.textContent.replaceAll(/[\u200B\n\(\)\[\]\{\}]/gm,'').length),
-      rcomment: node.dataset.rc, gcomment: node.dataset.gc,
-      hasModificand: (node.dataset.mfd != null)});
+		const markType = node.className.match(markTypes);
+	  if(markType != null) {
+		const brktNodesCount = node.querySelectorAll('.brkt').length;
+		  arr.push({markType: markType[0].toUpperCase(), 
+			  start: svocDom2Arr.pos,
+			  end: (svocDom2Arr.pos + node.textContent.length - brktNodesCount),
+			  rcomment: node.dataset.rc, gcomment: node.dataset.gc,
+			  hasModificand: (node.dataset.mfd != null)});
+	  }
 		// 자식노드에 대해 순환탐색
-		for(var child of node.childNodes) {
+		for(let child of node.childNodes) {
 			arr = svocDom2Arr(child, arr);
 		}
 	// 텍스트 노드일 경우 글자 길이만큼 탐색 위치를 옮김
