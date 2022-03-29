@@ -224,6 +224,13 @@
 						"title": "지우기 (단축키: X)",
 						"html": "<i class=\"fas fa-eraser\"></i>",
 						"value": "erasing"
+					},
+					{
+						"type": "btn",
+						"mode": "comment",
+						"title": "문법 코멘트 (단축키: C)",
+						"html": "<i class=\"far fa-comment-dots\"></i>",
+						"value": "comment"
 					}
 				]
 			}
