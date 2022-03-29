@@ -44,6 +44,19 @@
 .erasing-target.curved_arrow {
 	background: orangered;
 }
+.comment-target::after {
+	content: '문법 코멘트';
+	position: absolute;
+	top: calc(-0.625rem - 2px);
+	height: 1rem;
+	width: max-content;
+	line-height: 0.625rem;
+	font-size: 0.5rem;
+	font-family: 'NanumBarunpen';
+	color: #2440a8;
+	left: 0;
+	border: dashed 2px red;
+}
 
 .mod-indicator, .mod-start {
 	position: absolute;

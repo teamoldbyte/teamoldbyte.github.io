@@ -24,6 +24,7 @@
 		72:'[value="advcls"]',
 		90:'[value="mod"]',
 		88:'[value="erasing"]',
+		67:'[value="comment"]',
 		ctrlS:'[value="save"]',
 		ctrlZ:'[value="undo"]:not([disabled])',
 		ctrlY:'[value="redo"]:not([disabled])',
@@ -73,21 +74,17 @@
 						return;
 					}
 					if(!$('.edit-svoc')?.is(':focus')) return;
-					//if(e.type == 'keyup') {
-						if((e.ctrlKey || e.metaKey) 
-						&& (e.keyCode == 83 || e.keyCode == 90 || e.keyCode == 89)){
+					if((e.ctrlKey || e.metaKey) && e.keyCode >= 65 && e.keyCode <= 90) {
+						if(keyset['ctrl' + e.key.toUpperCase()]) {
 							e.preventDefault();
 							$svocEditor.find(keyset['ctrl' + e.key.toUpperCase()]).trigger('click');
+						}else {
+							return;
 						}
-						else if(!$(e.target).is('input') && keyset[e.keyCode] != null){
-							$svocEditor.find(keyset[e.keyCode]).trigger('click');
-						}
-					/*}else if(e.type == 'keydown') {
-						if(!$('.edit-svoc').is('[data-mode="erasing"]') 
-						&& !$(e.target).is('input') && e.keyCode == 88){
-							$svocEditor.find(keyset[e.keyCode]).trigger('click');
-						}
-					}*/
+					}
+					else if(!$(e.target).is('input') && keyset[e.keyCode] != null){
+						$svocEditor.find(keyset[e.keyCode]).trigger('click');
+					}
 				});		
 				//=============================================================/
 				// 						[편집 저장]
@@ -135,7 +132,7 @@
 					if(this.dataset.mode == 'undo') return true;
 					let	sel = getSelection(), range;
 					$('.svoc-toolbar .active').add(this).toggleClass('active');
-					$('.erasing-target').toggleClass('erasing-target');
+					$('.erasing-target, .comment-target').removeClass('erasing-target comment-target');
 					$('.mod-start,.mod-indicator').remove();
 					// 버튼 활성화
 					if($(this).is('.active')){
@@ -157,6 +154,10 @@
 							break;
 						case 'mod':
 							$svocEditorHint.text('수식어 위치를 클릭 하세요.');
+							sel.removeAllRanges();
+							break;
+						case 'comment':
+							$svocEditorHint.text('문법 코멘트를 추가할 요소를 선택하세요.');
 							sel.removeAllRanges();
 							break;
 						default:
@@ -272,7 +273,7 @@
 					
 					// 지정된 제거 대상에게 표식 적용
 					erasingSets.forEach(function(elt) {
-						$(elt).addClass('erasing-target');
+						elt.classList.add('erasing-target');
 					})
 					
 					// 구,절 표시태그와 성분 표시태그가 겹치는 경우, 겹치는 태그까지 포함.
@@ -320,8 +321,8 @@
 				})
 				// 타겟 요소들의 마킹태그를 해제.
 				.on('click', '.erasing-target', function(e){
-					var container = $(e.target).closest('.semantics-result')[0] || e.target;
-					if($(container).closest('[data-mode="erasing"]').length > 0){
+					const container = e.target.closest('.semantics-result') || e.target;
+					if(container.closest('[data-mode="erasing"]')){
 						pushEditHistory(container);
 						erasingSets.forEach(function(elt) {
 							// 괄호 태그나 문자가 없는 태그는 바로 삭제.
@@ -381,7 +382,7 @@
 				})
 				// =========================================================== /
 				//						코멘트 수정							   /
-				.on('click', '.edit-svoc:not([data-mode="erasing"]):not([data-mode="mod"]) .sem', function(e){
+				.on('click', '.edit-svoc:not([data-mode="erasing"]):not([data-mode="mod"]):not([data-mode="comment"]) .sem', function(e){
 					$('.edit-comment').remove();
 					var target = this;
 					/* 마우스 위치 */
@@ -625,7 +626,102 @@
 					// $('.semantic-edit-guide-msg').text('수식어 위치를 클릭 하세요.');
 					
 					checkGCDepth(this);
-				});									
+				})
+				// =========================================================== /
+				//						 gcomment 추가 기능					   /
+				.on('click', '.comment-target', function(e) {
+					const container = e.target.closest('.semantics-result') || e.target;
+					const target = this;
+					gCommentCreateHintOff();
+					$('.edit-comment').remove();
+					// 코멘트 위치
+			   		const rects = target.getClientRects(),
+				   		isOdd = target.matches('.odd') ? 1 : 0, 
+				   		isRcm = target.matches('.rcm') ? 1 : 0,
+				   		toUp = isOdd ? -1 : 1, toLeft = isRcm ? -1 : 1,
+				   		topOrBottm = ['top','bottom'][isOdd], leftOrRight = ['left','right'][isRcm];
+				   	
+			   		const pseudoStyle = getComputedStyle(target, '::after');
+					// 코멘트의 위치 및 크기
+			   		const pseudoVpos = parseFloat(pseudoStyle[topOrBottm]),
+			   			pseudoHpos = parseFloat(pseudoStyle[leftOrRight]),
+			   			pseudoWidth = parseFloat(pseudoStyle.width),
+			   			pseudoHeight = parseFloat(pseudoStyle.height);
+					// 코멘트의 4꼭지점 위치
+			   		const y1 = rects[isOdd][topOrBottm] + toUp * pseudoVpos,
+			   			y2 = y1 + toUp * pseudoHeight,
+			   			x1 = rects[isRcm ? rects.length - 1 : 0][leftOrRight] 
+			   					+ toLeft * pseudoHpos,
+			   			x2 = x1 + toLeft * pseudoWidth;
+					
+		   			const editText = document.createElement('div');
+		   			editText.className = 'edit-comment text-end';
+		   			editText.style.position = 'absolute';
+		   			editText.style.top = scrollY + Math.max(y1,y2) + 'px';
+		   			editText.style.left = scrollX + Math.min(x1,x2) + 'px';
+		   			editText.insertAdjacentHTML('afterbegin','<form class="btn-group">'
+					   + '<input class="form-control" type="text" placeholder="↵"/>'
+					   + '<div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>'
+					   + '<button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>');
+		   			document.body.appendChild(editText);
+	   				editText.style.top = scrollY + Math.min(y1,y2) 
+		   							- editText.offsetHeight - 10 + 'px';
+		   			editText.firstChild.firstChild.focus();
+					$(document).on('mousedown', editCommentMenu);
+					
+		   			$(editText).find('form').on('submit',function(e1){
+		   				e1.preventDefault();
+						target.classList.remove('comment-target');
+						if(container.closest('[data-mode="comment"]')){
+							pushEditHistory(container);
+						}
+						gCommentCreateHintOn();
+		   				const text = $(this).find('input').val().trim();
+		   				// 코멘트 길이가 0이면 삭제, 아니면 수정 적용.
+		   				if(text.length == 0) delete target.dataset.gc;
+		   				else target.dataset.gc = text;
+						$(document).off('mousedown', editCommentMenu);
+						$(editText).remove();
+						checkGCDepth(target.closest('.semantics-result'));
+						$('.edit-svoc').focus();
+						container.closest('.edit-svoc').removeAttribute('data-mode');
+						$svocEditor.find('[data-mode="comment"].active').removeClass('active');
+						$svocEditorHint.empty();
+		   			});
+		   			$(editText).find('button:eq(1)').on('click',function(){
+						$(document).off('mousedown', editCommentMenu);
+						$(editText).remove();
+						gCommentCreateHintOn();
+						$('.edit-svoc').focus();		   				
+		   			});
+		   			
+		   			
+					function editCommentMenu(e1){
+						if((editText.compareDocumentPosition(e1.target) & 16) != 16){
+							$(document).off('mousedown', editCommentMenu);
+							$(editText).remove();
+							$('.edit-svoc').focus();
+							gCommentCreateHintOn();
+						}
+					}
+				});
+				gCommentCreateHintOn();
+				
+				function gCommentCreateHintOn() {
+					$(document).on('mouseover', '[data-mode="comment"] .semantics-result .sem', function(e){
+						if(this.dataset.gc == null || this.dataset.gc.length == 0) {
+							e.stopPropagation();
+							this.classList.add('comment-target');
+						}
+					}).on('mouseout', '[data-mode="comment"] .semantics-result *', function(){
+						$('.comment-target').removeClass('comment-target');
+					})
+				}			
+				
+				function gCommentCreateHintOff() {
+					$(document).off('mouseover', '[data-mode="comment"] .semantics-result .sem')
+							.off('mouseout', '[data-mode="comment"] .semantics-result *');
+				}
 			});
 		}
 		
