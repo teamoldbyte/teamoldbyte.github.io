@@ -840,10 +840,17 @@ function checkGCDepth(div) {
   const rem = parseFloat(getComputedStyle(div.ownerDocument.documentElement).fontSize);
   const tagsWithGComment = div.querySelectorAll('.sem[data-gc]'),
         tagsLen = tagsWithGComment.length;
-  let i = 0, el = tagsWithGComment[0];
-  function sequentialFunc() {
+  
+  for(let i = 0; i < tagsLen; i++) {
+	requestAnimationFrame(() => checkDepth(i));
+  }
+  requestAnimationFrame(() => checkLineEnds(div));
+  
+  function checkDepth(i) {
+	const el = tagsWithGComment[i];
     let priorTop, priorLeft, base = 0;
-    for(let j = i; j < tagsLen; j++){
+    delete el.dataset.gcLv;
+    for(let j = i; j < tagsLen; j++) {
       const curr = tagsWithGComment[j], rects = curr.getClientRects();
       const currRect = (curr.classList.contains('odd') && rects.length > 1) ? rects[1] : rects[0]; 
       const currTop = currRect == null ? 0 : currRect.top;
@@ -876,17 +883,7 @@ function checkGCDepth(div) {
       priorTop = currTop;
       priorLeft = currLeft;
     }
-    i++;
-    el = tagsWithGComment[i];
-    if(i < tagsLen){
-      requestAnimationFrame(sequentialFunc);
-    }else{
-      requestAnimationFrame(function(){
-        checkLineEnds(div);
-      });
-    }
   }
-  sequentialFunc();
 }
 /**
  * inner 태그끼리의 겹침을 없앤다. (V(S)V) -> (V)(S)(V)
