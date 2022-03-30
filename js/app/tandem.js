@@ -168,10 +168,11 @@ function svocDom2Arr(node, arr) {
   && !node.classList.contains('line-end') && !node.classList.contains('brkt')){
 	  const markType = node.className.match(markTypes);
 	  if(markType != null) {
-		const brktNodesCount = node.querySelectorAll('.brkt').length;
+		const brktNodesCount = node.querySelectorAll('.brkt').length,
+			textLength = node.textContent.replaceAll(/[\n\u200b]/gm,'').length;
 		  arr.push({markType: markType[0].toUpperCase(), 
 			  start: svocDom2Arr.pos,
-			  end: (svocDom2Arr.pos + node.textContent.length - brktNodesCount),
+			  end: (svocDom2Arr.pos + textLength - brktNodesCount),
 			  rcomment: node.dataset.rc, gcomment: node.dataset.gc,
 			  hasModificand: (node.dataset.mfd != null)});
 	  }
@@ -181,7 +182,7 @@ function svocDom2Arr(node, arr) {
 	  }
 	// 텍스트 노드일 경우 글자 길이만큼 탐색 위치를 옮김
 	}else if(node.nodeType == 3){
-		svocDom2Arr.pos += node.textContent.replaceAll('\n','').length;
+		svocDom2Arr.pos += node.textContent.replaceAll(/[\n\u200b]/gm,'').length;
 	}
 	return arr;
 }
@@ -1072,7 +1073,7 @@ function correctMarkLine(div){
  * @param div 수식태그와 수식대상을 포함하는 부모 element(jQuery Object)
  */
 var drawConnections = (function() {
-	async function prv(div){
+	function prv(div){
 	  const lines = div.querySelectorAll('.curved_arrow,.gc_line');
 	  for(let i = 0, len = lines.length; i < len; i++) {
 		if(lines[i].parentNode) lines[i].parentNode.removeChild(lines[i]);
@@ -1128,18 +1129,18 @@ var drawConnections = (function() {
 		  targetEndNode = modificandChildNodes[i_te--];
 		}
 	    // 수식어구와 수식 대상의 coordinates(top,left,right)
-	    const modBeginCoord = getCoord(modBeginNode),
-	      modEndCoord = getCoord(modEndNode),
-	      targetBeginCoord = getCoord(targetBeginNode),
-	      targetEndCoord = getCoord(targetEndNode);
-	    if(!(modBeginCoord && modEndCoord && targetBeginCoord && targetEndCoord)){
+	    const modLeftCoord = getCoords(modBeginNode)[0],
+	      modRightCoord = getCoords(modEndNode)[1],
+	      targetLeftCoord = getCoords(targetBeginNode)[0],
+	      targetRightCoord = getCoords(targetEndNode)[1];
+	    if(!(modLeftCoord && modRightCoord && targetLeftCoord && targetRightCoord)){
 	      continue;
 	    }  
 	    // 수식어구와 수식 대상의 화살표 위치 높이 보정값(폰트 top, size에 의한 변경치)
-	    const modBeginTop = modBeginCoord.top + getTextTopMove(modBeginNode),
-	      modEndTop = modEndCoord.top + getTextTopMove(modEndNode),
-	      targetBeginTop = targetBeginCoord.top + getTextTopMove(targetBeginNode),
-	      targetEndTop = targetEndCoord.top + getTextTopMove(targetEndNode);
+	    const modLeftTop = modLeftCoord.top + getTextTopMove(modBeginNode),
+	      modRightTop = modRightCoord.top + getTextTopMove(modEndNode),
+	      targetLeftTop = targetLeftCoord.top + getTextTopMove(targetBeginNode),
+	      targetRightTop = targetRightCoord.top + getTextTopMove(targetEndNode);
 	    
 	    // 문장이 포함된 전체 영역
 	    const textareaWidth = parseFloat(getComputedStyle(div).width) || 0;
@@ -1156,39 +1157,39 @@ var drawConnections = (function() {
 	    let interLines = [];
 	
 		// 피수식어가 윗줄
-		if(targetEndCoord.top + targetEndCoord.height < modBeginCoord.top){
+		if(targetRightTop + targetRightCoord.height < modLeftTop){
 		  isDiffLine = true;
-		  first = targetEndCoord; last = modBeginCoord;
-		  startX += modBeginCoord.left + rem / 3;  startY += modBeginTop - rem;
-		  endX += targetEndCoord.right - rem / 3;  endY += targetEndTop - rem;
+		  first = targetRightCoord; last = modLeftCoord;
+		  startX += modLeftCoord.left + rem / 3;  startY += modLeftTop - rem;
+		  endX += targetRightCoord.right - rem / 3;  endY += targetRightTop - rem;
 	  
 		  drawSettings1.p0x =  0;  drawSettings2.p0y =  endY;
 		  drawSettings2.p0x =  textareaWidth;  drawSettings2.p1y =  endY;
 		}
 		// 피수식어가 아랫줄
-		else if(targetBeginCoord.top > modEndCoord.top + modEndCoord.height){
+		else if(targetLeftTop > modRightTop + modRightCoord.height){
 		  isDiffLine = true;
-		  first = modEndCoord; last = targetBeginCoord;
-		  startX += modEndCoord.right - rem / 3;   startY += modEndTop - rem;
-		  endX += targetBeginCoord.left + rem / 3; endY += targetBeginTop - rem;
+		  first = modRightCoord; last = targetLeftCoord;
+		  startX += modRightCoord.right - rem / 3;   startY += modRightTop - rem;
+		  endX += targetLeftCoord.left + rem / 3; endY += targetLeftTop - rem;
 	        
 		  drawSettings1.p0x =  textareaWidth;  drawSettings2.p0y =  endY;
 		  drawSettings2.p0x =  0;  drawSettings2.p1y =  endY;        
 		}
 		// 수식 대상이 같은 줄 && 왼쪽
-		else if(targetEndCoord.x < modBeginCoord.x){
-		  first = targetEndCoord; last = modBeginCoord;
-		  startX += modBeginCoord.left + rem / 3;  startY += modBeginTop - rem;
-		  endX += targetEndCoord.right - rem / 3;  endY += targetEndTop - rem;
+		else if(targetRightCoord.x < modLeftCoord.x){
+		  first = targetRightCoord; last = modLeftCoord;
+		  startX += modLeftCoord.left + rem / 3;  startY += modLeftTop - rem;
+		  endX += targetRightCoord.right - rem / 3;  endY += targetRightTop - rem;
 	        
 		  drawSettings1.p0x =  (startX + endX) / 2; drawSettings2.p0y = startY;
 		  drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
 		}
 		// 수식 대상이 같은 줄 && 오른쪽
-		else if(targetBeginCoord.x > modEndCoord.x){
-		  first = modEndCoord; last = targetBeginCoord;
-		  startX += modEndCoord.right - rem / 3;   startY += modEndTop - rem;
-		  endX += targetBeginCoord.left + rem / 3; endY += targetBeginTop - rem;
+		else if(targetLeftCoord.x > modRightCoord.x){
+		  first = modRightCoord; last = targetLeftCoord;
+		  startX += modRightCoord.right - rem / 3;   startY += modRightTop - rem;
+		  endX += targetLeftCoord.left + rem / 3; endY += targetLeftTop - rem;
 	        
 		  drawSettings1.p0x =  (startX + endX) / 2; drawSettings2.p0y = startY;
 		  drawSettings2.p0x =  (startX + endX) / 2; drawSettings2.p1y = startY;        
@@ -1272,13 +1273,13 @@ var drawConnections = (function() {
   /**
    * 대상 노드(텍스트노드 포함)의 실제 사각 정보(top,left,right,width 등)를 반환
    */
-  function getCoord(node){
+  function getCoords(node){
     let range = node.ownerDocument.createRange();
     range.selectNodeContents(node);
     const rects = range.getClientRects();
     if(rects.length > 0){
-      return rects[0];
-    }
+      return [rects[0], rects[rects.length - 1]];
+    }else return null;
   }
   
   /**
