@@ -2592,10 +2592,10 @@ body{
 	bottom: 1.25rem;
 }
 .sem.odd[data-gc-lv="1"]::after {
-	bottom: 2.25rem!important;
+	bottom: 2.4rem!important;
 }
 .sem.odd[data-gc-lv="2"]::after {
-	bottom: 3.0rem!important;
+	bottom: 3.15rem!important;
 }
 .sem.odd[data-gc-lv="3"]::after {
 	bottom: 3.75rem!important;
