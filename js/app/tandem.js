@@ -791,27 +791,22 @@ function checkLineEnds(div) {
     return v.nodeType == 3;
   });
   let pos = 0, prevNode;
-  const basisDistance = rem / 2;
+  const basisDistance = div.clientWidth / 2;
   textNodes.forEach(function(n, i){
     let range = new Range();
     range.selectNode(n);
     const nodeFirstRect = range.getClientRects()[0];
     // 이전 노드보다 왼쪽에 있거나 마지막 노드일 경우 line-end 추가.
-    if((nodeFirstRect != null && nodeFirstRect.x  < (pos - 1/* basisDistance */)) 
+    if((nodeFirstRect != null && nodeFirstRect.x  < (pos - basisDistance)) 
     /* || (textNodes.length == i + 1) */){
       let endWrapper = div.ownerDocument.createElement('span');
       endWrapper.className = 'sem line-end';
       endWrapper.insertAdjacentHTML('afterbegin', '&#8203;\n');  // zeroWidthSpace
-      // if(i < textNodes.length - 1){
         if(prevNode.data != null && prevNode.data.match(/[\S]/) != null){
           prevNode.replaceWith(prevNode,endWrapper);
         }else{
           prevNode.replaceWith(endWrapper,prevNode);
         }
-      // }else {
-      // if(textNodes.length == i + 1){
-      //   n.replaceWith(n, endWrapper.cloneNode(true));
-      // }
     }
     prevNode = n
     range.selectNode(prevNode);
@@ -855,16 +850,17 @@ function checkGCDepth(div) {
       const currRect = (curr.classList.contains('odd') && rects.length > 1) ? rects[1] : rects[0]; 
       const currTop = currRect == null ? 0 : currRect.top;
       let currLeft = currRect == null ? 0 :currRect.left;
+      
+      const currGCommentStyle = getComputedStyle(curr, '::after');
       if(curr.classList.contains('rcm')){
         if(curr.classList.contains('cmnt-align-start')){
           currLeft -= rem;
         }else{
-          currLeft += currRect.width 
-                - parseFloat(getComputedStyle(curr, '::after').width)
-                - parseFloat(getComputedStyle(curr, '::after').right);
+          currLeft += currRect.width - parseFloat(currGCommentStyle.width)
+                - parseFloat(currGCommentStyle.right);
         }
       }else{
-        currLeft += parseFloat(getComputedStyle(curr, '::after').left); // ::after left값+
+        currLeft += Math.max(0, parseFloat(currGCommentStyle.left)); // ::after left값+
       }
       
       if(j > i) {
@@ -1240,8 +1236,9 @@ var drawConnections = (function() {
 		const el = elementsHaveGcLv[i];
 	    const commentCss = getComputedStyle(el,'::after'),
 	          rect = el.getClientRects()[el.matches('.odd') ? 1 : 0],
-	          commentTop = parseFloat(commentCss.top) + scrolledDivTop + rect.top,
-	          commentLeft = parseFloat(commentCss.left) + scrolledDivLeft + rect.left;
+	          commentTop = (el.matches('.odd') ? (rem - parseFloat(commentCss.bottom)) 
+          				: parseFloat(commentCss.top)) + scrolledDivTop + rect.top,
+	          commentLeft = Math.max(7,parseFloat(commentCss.left)) + scrolledDivLeft + rect.left;
 	    let options = {p0x: commentLeft, p0y: commentTop + 0.35 * rem,
 	             p1y: commentTop + 0.35 * rem,
 	             curve: false, lineWidth: 1, header: false, size: 2,
@@ -1253,8 +1250,9 @@ var drawConnections = (function() {
 	      options.p1x = scrolledDivLeft + rect.left - 0.25 * rem;
 	      options.p2x = options.p1x;
 	      // 앞에 위치한 괄호 상단에 이음선이 끝나도록
-	      options.p2y = scrolledDivTop + prevLastRect.top  
-	                     + prevLastRect.height * 0.17;
+	      options.p2y = scrolledDivTop + 
+	      				(el.matches('.odd') ? (rect.top)
+	      				: (prevLastRect.top + prevLastRect.height * 0.17));
 	    }
 	    // 문장 필수성분의 gcomment 높이 차이
 	    else {
@@ -1263,7 +1261,7 @@ var drawConnections = (function() {
 	      // 텍스트 박스 상단 첫글자 위치에 이음선이 끝나도록.
 	      options.p2y = scrolledDivTop + rect.top;
 	    }
-	    drawCurvedArrow(div, options);
+	    requestAnimationFrame(() => drawCurvedArrow(div, options));
 	    //$(div).curvedArrow(options);
 	  }
   }
@@ -1319,7 +1317,27 @@ var drawConnections = (function() {
 }());
 /**
  * 각 줄마다 높이를 컨텐츠들 높이에 맞춘다.
- * line-height: 윗줄과 아랫줄의 offset 차이. 0이면 완전히 겹쳐진다.
+ * line-height: 윗줄과 아랫줄의 DOMRect offset 차이. 0이면 완전히 겹쳐진다.
+ 
+ Tandem에서 쓰인 글꼴들 주요 크기 정보(font-size:1000px 기준. baseLine으로부터의 거리)
+ ※ 특수상단 및 특수하단: 특정 기호 표시만을 위해 사용한 폰트의 경우 해당 기호의 크기 따로 필요.
+ 	
+ 	폰트명					|Box상단	|Box하단		|대문자상단	|소문자상단	|특수상단	|특수하단
+ ------------------------------------------------------------------------------
+ *	Corbel(문장텍스트)			|952	|-269		|653		|464
+ 
+ *	Heebo(대괄호)				|1048	|-421		|711		|575		|811	|-152
+ 
+ *	Raleway Dots(점대괄호)		|918	|-213		|710		|520		|726	|-29
+ 
+ *	Cardo(중괄호)				|990	|-364		|688		|449		|847	|-184
+ 
+ *	Poller One(소괄호)		|938	|-251		|726		|484		|825	|-238
+ 
+ *	Nanumbarunpen(gcomment)	|970	|-304		|724		|437
+ 
+ *	Nanum Gothic(rcomment)	|850	|-300		|700		|500
+ 
  */
 var adjustLineHeight = (function() {
   function prv(div) {
@@ -1339,24 +1357,33 @@ var adjustLineHeight = (function() {
 	    let n = textNodes[i];
 	    let range = new Range();
 	    range.selectNode(n);
-	    const nodeFirstRect = range.getClientRects()[0];
+	    const nodeFirstRect = range.getClientRects()[0],
+	    	parentEl = n.parentElement;
 	    // 공백이 아닌 노드면 높이를 측정 후 최고 높이를 갱신.
 	    if(nodeFirstRect != null && n.data != null && n.data.match(/[^\s]/) != null){
 	      let contentHeight = nodeFirstRect.height;
-	      // 괄호의 경우 contentHeight 따로 계산
-	      if(n.parentElement.matches('.etc-start,.etc-end,.cls-start,.cls-end')){
+	      // 대괄호의 경우 contentHeight 따로 계산
+	      if(parentEl.matches('.etc-start,.etc-end,.cls-start,.cls-end')){
 	        // 괄호 실질크기: height의 66%, 윗부분: 84%, 아래부분: 16%, 
 	        // 중심: 텍스트 bottom(top 0 기준)
 	        contentHeight = rem * 1.35;
-	        const top = parseFloat(getComputedStyle(n.parentElement).top),
-	              brktHeight = nodeFirstRect.height * 0.66,
-	              brktTop = brktHeight * 0.84 - top - contentHeight * 0.77,
-	              brktBottom = brktHeight * 0.16 + top - contentHeight * 0.23;
+	        const top = parseFloat(getComputedStyle(parentEl).top)
+	        let brktHeight,brktTop,brktBottom;
+	        if(parentEl.matches('.cls-start,.cls-end')) {
+              brktHeight = nodeFirstRect.height * 963 / 1469;
+              brktTop = brktHeight * 811 / 963 - top - contentHeight;
+              brktBottom = brktHeight * 152 / 963 + top;		  
+			} else {
+              brktHeight = nodeFirstRect.height * 755 / 1131;
+              brktTop = brktHeight * 726 / 755 - top - contentHeight;
+              brktBottom = brktHeight * 29 / 755 + top;		  
+			}
+
 	        maxUpperHeight = Math.max(maxUpperHeight, brktTop);
 	        maxLowerHeight = Math.max(maxLowerHeight, brktBottom);
 	      }
 	      // 마지막 노드(line-end)가 아닐 경우 최고 높이 갱신.
-	      if(n.parentElement == null ||!n.parentElement.classList.contains('line-end')){
+	      if(parentEl == null ||!parentEl.classList.contains('line-end')){
 	        maxContentHeight = Math.max(maxContentHeight, contentHeight);
 	        
 	        const pseudoHeights = getPseudoHeights(n, nodeFirstRect, rem);
@@ -1367,7 +1394,7 @@ var adjustLineHeight = (function() {
 	      else{
 	        // line-height 조정의 목적은 윗줄의 lower 요소들과 현재줄의 upper요소들의 겹침 방지이다.
 	        // 따라서 '윗줄 lower 높이 + 현재줄 upper 높이 + 텍스트 높이'만큼의 차이 필요.
-	        n.parentElement.style.lineHeight 
+	        parentEl.style.lineHeight 
 	          = Math.max(maxContentHeight, rem * 1.35
 	          + maxUpperHeight + prevLineLowerHeight
 	          + (lineNumber > 0 ? (rem * 0.5/*여유 간격*/) : 0)) + 'px';
