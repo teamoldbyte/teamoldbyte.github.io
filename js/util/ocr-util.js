@@ -8,8 +8,9 @@ var imgFile2Text = (() => {
 		apiKey = 'AIzaSyDaB537mMH2usYvkbdWDFqkmVkW8D22yE8'; // this API Key works only on fico
 		
 	function readOCR(file, successCallback, failCallback) {
-		if(file.size == 0 || file.size > 20000000) {
-			alert(file.size == 0 ? '파일을 선택해 주세요.':'최대 파일 크기는 20MB입니다.');
+		if(file == null || file.size == 0 || file.size > 20000000) {
+			alert((file == null || file.size == 0) ? '파일을 선택해 주세요.':'최대 파일 크기는 20MB입니다.');
+			failCallback();
 			return;
 		}
 		const reader = new FileReader();
