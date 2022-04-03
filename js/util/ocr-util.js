@@ -33,7 +33,7 @@ var imgFile2Text = (() => {
 		return imgUri.replace(/data:image\/.+;base64,/, '');
 	}
 	function joinResults(data) {
-		return Array.from(data.responses,r => r.fullTextAnnotation.text).join('\n');
+		return Array.from(data.responses,r => r.fullTextAnnotation?.text).join('\n');
 	} 
 	
 	return readOCR;
