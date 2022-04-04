@@ -12,12 +12,13 @@ var imgFile2Text = (() => {
 			alert((file == null || file.size == 0) ? '파일을 선택해 주세요.':'최대 파일 크기는 20MB입니다.');
 			failCallback();
 			return;
+		} else {
+			const reader = new FileReader();
+			reader.onloadend = function(e) {
+				callVision(removePrefix(e.target.result),successCallback, failCallback);
+			}
+			reader.readAsDataURL(file);
 		}
-		const reader = new FileReader();
-		reader.onloadend = function(e) {
-			callVision(removePrefix(e.target.result),successCallback, failCallback);
-		}
-		reader.readAsDataURL(file);
 	}
 	
 	// Cloud Vision ajax 호출
