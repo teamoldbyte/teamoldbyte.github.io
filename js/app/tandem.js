@@ -574,7 +574,7 @@ semantics 배열로부터 GramMeta 정보 생성
  */
 var gramMetaFromSemantics = (function() {
 	// GramMeta에 없는 값은 소문자로 구별
-	const roleTable = {s: 'SUBJ', v: 'VERB', o: 'OBJ', c: 'COMP', oc: 'OC', a: 'A', m: 'MODI',
+	const roleTable = {s: 'SUBJ', v: 'VERB', o: 'OBJ', c: 'COMP', oc: 'OC', a: 'ADV', m: 'MODI',
 			rcm: 'rcm', tor: 'TO', ger: 'GER', ptc: 'PTC', conj: 'conj', phr: 'PREP', 
 			adjphr: 'adjphr', advphr: 'advphr', ptcphr: 'ptcphr', cls: 'CLAUSE',
 			ncls: 'NCLS', acls: 'ACLS', advcls: 'ADVCLS', ccls: 'CCLS', pcls: 'PCLS'};
@@ -600,7 +600,7 @@ var gramMetaFromSemantics = (function() {
 		else if(hasKey(semantics, 'key', 'c')) {
 			formType = 'FORM_TWO';
 		}else if(hasKey(semantics, 'key', 'v')) {
-			formType = 'FORM_ONE';
+			formType = 'FORM_ONE' + (hasKey(semantics, 'key', 'a')?'_ADV':'');
 		}
 		// 성분이 준동사 혹은 구,절의 형태일 경우(type 존재) GramMeta 이름에 이어붙인다.
 		const hasTypes = semantics.filter(sem => sem.type != null);
@@ -652,7 +652,7 @@ var gramMetaFromSemantics = (function() {
 
 
 var gramMetaArr2Str = (function() {
-	const nonKeywords = ['SUBJ','VERB','OBJ','COMP','OC','A'];
+	const nonKeywords = ['SUBJ','VERB','OBJ','COMP','OC','ADV'];
 	
 	function privFunc(gramMetaArr) {
 		return gramMetaArr.filter(meta => !nonKeywords.includes(meta.name))
@@ -811,7 +811,7 @@ function checkLineEnds(div) {
     prevNode = n
     range.selectNode(prevNode);
     if(range.getClientRects().length > 0) {
-      pos = range.getClientRects()[0].x;
+      pos = range.getClientRects()[0].x + range.getClientRects()[0].width;
     }  
   });
   const lastEndWrapper = div.ownerDocument.createElement('span');
