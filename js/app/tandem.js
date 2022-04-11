@@ -811,7 +811,8 @@ function checkLineEnds(div) {
     prevNode = n
     range.selectNode(prevNode);
     if(range.getClientRects().length > 0) {
-      pos = range.getClientRects()[0].x + range.getClientRects()[0].width;
+	  const endRect = Array.from(range.getClientRects()).slice(-1)[0];
+      pos = endRect.x + endRect.width;
     }  
   });
   const lastEndWrapper = div.ownerDocument.createElement('span');
