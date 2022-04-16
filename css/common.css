@@ -1,3 +1,12 @@
+/* 복사 금지 */
+.tandem-layout-section{
+	-ms-user-select: none; 
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
 /**********************************************************
  *				색상  
  **********************************************************/
@@ -16,6 +25,11 @@ html{
 	font-family: 'RIDIBatang_ENG', 'HCRDotum';
 	font-size: 14px;
 	word-break: keep-all;
+}
+body{
+	/*font-family: 'Open Sans', 'NanumBarunGothic';*/
+	font-family: 'RIDIBatang_ENG', 'HCRDotum';
+	background-color: #f9d37a;
 }
 @media (min-width: 768px) {
    html{
@@ -59,6 +73,12 @@ a:hover {
 .top-3{
 	top: 1rem !important;
 }
+.t-n10px{
+	top: -10px!important;
+}
+.t-n5vh{
+	top: -5vh!important;
+}
 /**********************************************************
  *				end  
  **********************************************************/
@@ -68,10 +88,49 @@ a:hover {
 /**********************************************************
  *				padding  
  **********************************************************/
+.p-100px{
+	padding: 100px!important;
+}
 .pt-8rem{
 	padding-top: 8rem !important;
 }
-
+.pt-25px{
+	padding-top: 25px!important;
+}
+.pt-50px{
+	padding-top: 50px!important;
+}
+.pt-100px{
+	padding-top: 100px!important;
+}
+.pt-2rem{
+	padding-top: 2rem!important;
+}
+.pt-5rem{
+	padding-top: 5rem!important;
+}
+.pb-2rem{
+    padding-bottom: 2rem;
+}
+.pb-100px{
+	padding-bottom: 100px!important;
+}
+.pb-150px{
+	padding-bottom: 150px!important;
+}
+.ps-50px{
+	padding-left: 50px!important;
+}
+.pe-50px{
+	padding-right: 50px!important;
+}
+.pb-50px{
+	padding-bottom: 50px!important;
+}
+.py-50px{
+	padding-top: 50px!important;
+	padding-bottom: 50px!important;
+}
 /**********************************************************
  *				margin  
  **********************************************************/
@@ -80,6 +139,12 @@ a:hover {
 }
 .mt-2rem{
 	margin-top: 2rem !important;
+}
+.mt-3d5rem{
+	margin-top: 3.5rem!important;
+}
+.mb-50px{
+	margin-bottom: 50px!important;
 }
 /**********************************************************
  *				width  
@@ -90,11 +155,35 @@ a:hover {
 .w-40{
 	width: 40% !important;
 }
+.w-300px{
+	width:300px!important;
+}
+.w-400px{
+	width:400px!important;
+}
+.w-30vw{
+	width: 30vw!important;
+}
+.w-80vw{
+	width: 80vw!important;
+}
 /**********************************************************
  *				height  
  **********************************************************/
 .h-px{
 	height: 1px !important;
+}
+.h-30vh{
+    height:30vh!important;
+}
+.h-80vh{
+	height:80vh!important;
+}
+.h-300px{
+	height:300px!important;
+}
+.h-400px{
+	height:400px!important;
 }
 /**********************************************************
  *				min-height  
@@ -150,7 +239,24 @@ a:hover {
 	font-size: 2.25rem !important;
 	line-height: 2.5rem !important;
 }
-
+.fs-7{
+	font-size: 0.75rem!important;
+}
+.fs-5px{
+	font-size: 5px!important;
+}
+.fs-13px{
+	font-size: 13px!important;
+}
+.fs-14px{
+	font-size: 14px!important;
+}
+.fs-16px{
+	font-size: 16px!important;
+}
+.fs-30px{
+	font-size:30px!important;
+}
 /**********************************************************
  *				text-position 
  **********************************************************/
@@ -167,6 +273,9 @@ a:hover {
  **********************************************************/
 .text-fc-purple{
 	color: var(--fc-purple) !important;
+}
+.text-fc-yellow{
+	color: var(--fc-yellow) !important;
 }
 .text-fc-red{
 	color: #a91461 !important;
@@ -333,6 +442,9 @@ a:hover {
 .rounded-8 {
 	border-radius: 2rem!important;
 }
+.border-r-all-10px{
+    border-radius: 10px!important;
+}
 /**********************************************************
  *			부트스트랩 tooltip 
  **********************************************************/
@@ -386,7 +498,6 @@ a:hover {
 .pagination .page-item .page-link{
 	color: var(--fc-purple);
 }
-
 .pagination .page-item.active .page-link{
 	color: white;
 	background: var(--fc-purple);
@@ -411,7 +522,20 @@ a:hover {
     -webkit-mask-position: -200% 0%;
   }
 }
+/* 슬라이드 애니메이션 */
+.sr-slideup-row {
+	display: block;
+}
+.sr-slideup-container {
+    display: inline-block;
+    overflow-y: hidden;
+    padding: 5px 0;
+    margin: -5px 0;
+}
 
+.sr-slideup, .sr-slideup * {
+	position: relative;
+}
 
 
 /**********************************************************
