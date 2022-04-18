@@ -172,7 +172,7 @@
 /* 자식 S,V,O,C를 갖는 S,V,O,C의 gcomment */
 .sem.outer[data-gc]::after {
 	position: absolute;
-	top: 1.9rem;
+	top: -0.625rem; /*1.9rem;*/
 	width: 9.375rem;
 	font-size: 0.625rem;
 }
