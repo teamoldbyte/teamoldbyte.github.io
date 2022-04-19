@@ -16,11 +16,22 @@ class FicoOCR {
 		if(typeof EXIF == 'undefined') {
 			await $.getScript('https://cdn.jsdelivr.net/npm/exif-js');
 		}
+		// 특정 영역만 핀치줌 라이브러리
+		if(typeof PinchZoom == 'undefined') {
+			await $.getScript('https://static.findsvoc.com/js/public/pinch-zoom.js');
+		}
+		if(typeof Dimmer == 'undefined') {
+			await $.getScript('https://static.findsvoc.com/js/public/dimmer.js');
+		}
 		// 드래그 선택 라이브러리
 		if(typeof SelectionArea == 'undefined') {
 			await $.getScript('https://cdn.jsdelivr.net/npm/@viselect/vanilla/lib/viselect.cjs.min.js');
 		}
 		$(document.head).append($(`<style>
+			/* 핀치줌 컨테이너 스타일 */
+			.pinch-zoom-container {
+				background: #000;
+			}
 			/* 드래그 상자가 올려지는 가상 레이어. 부트스트랩모달의 높이(1060)보다 높아야 함. */
 			.selection-area-container { z-index: 1061!important;}
 			.selection-area {
@@ -30,13 +41,11 @@ class FicoOCR {
 			}
 			/* 선택 가능 단어 스타일 */
 			#ocrResultModal .candidate-text {
-				border: dashed 1px #fffa;
+			    border: solid 1px #ddd7;
+				border-radius: 1px;
 			}
 			/* 선택이 완료된 단어 스타일 */
-			#ocrResultModal .candidate-text.selected-text {
-				background: #ffc64180;
-				border: solid 2px #ffb30066;
-			}
+			#ocrResultModal .candidate-text.selected-text {border: solid 1px #7f73;}
 			/* 추가 선택될 단어 스타일 */
 			#ocrResultModal .will-selected {border: solid 2px #0f0!important;}
 			/* 선택 제외될 단어 스타일 */
@@ -71,8 +80,8 @@ class FicoOCR {
 				</div></div>
 				<div class="touch-msg bg-dark text-white text-center">두 손가락을 사용하여 스크롤하거나 확대하세요.</div>
 				<div class="modal-body bg-dark p-0" style="user-select:none;">
-				<img class="img-fluid position-relative pe-none" alt="OCR 이미지" style="filter:brightness(0.8);
-				-webkit-filter:brightness(0.8);touch-action:none;user-select:none;-webkit-user-select: none;-webkit-user-drag: none;">
+				<img class="img-fluid position-relative pe-none" alt="OCR 이미지" style="filter:brightness(1.3) saturate(2);
+				-webkit-filter:brightness(1.3) saturate(2);touch-action:none;user-select:none;-webkit-user-select: none;-webkit-user-drag: none;">
 				</div></div></div></div>`);
 			$(document.body).append(this.#$resultModal);
 		}
@@ -82,22 +91,14 @@ class FicoOCR {
 			this.#$resultModal.find('.touch-msg').remove();
 		// OCR 결과창이 표시되면 아이폰을 제외한 기기에  화면 확대 허용.
 		this.#$resultModal.on('shown.bs.modal', () => {
-			if(!(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-				const $viewport = $('meta[name="viewport"]');
-				$viewport.data('org', $viewport.attr('content'));
-				$viewport.attr('content','user-scalable=yes, initial-scale=1.0, minimum-scale=1.0, width=device-width');
-			}else {
+			if((/iPad|iPhone|iPod/.test(navigator.userAgent) || window.MSStream)) {
 				this.#$resultModal[0].style.touchAction = 'none';
 			}
 		})
-		// OCR 결과창이 닫히면 화면 확대 다시 제한. 파일 입력 초기화.
+		// OCR 결과창이 닫히면 파일 입력 초기화.
 		.on('hidden.bs.modal', () => {
-			if(!(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-				const $viewport = $('meta[name="viewport"]');
-				$viewport.attr('content', $viewport.data('org'));
-			}
 			this.#$resultModal.find('#addArea').prop('checked',true);
-			this.#$resultModal.find('.modal-body div').remove();
+			this.#$resultModal.find('.modal-body .candidate-text').remove();
 		});
 		// [선택 완료. textarea에 값을 옮기고 커서를 제일 앞으로 이동.]
 		this.#$resultModal.on('click','#selectArea',() => {
@@ -197,7 +198,7 @@ class FicoOCR {
 		}				
 	}
 	#removePrefix(imgUri) {
-		return imgUri.replace(/data:image\/.+;base64,/, '');
+		return imgUri.replace(/data:image\/\w+;base64,/, '');
 	}
 	#joinResults(data) {
 		return Array.from(data.responses,r => r.fullTextAnnotation?.text).join('\n');
@@ -215,7 +216,7 @@ class FicoOCR {
 			this.#preview.src = previewImg;
 		});		
 		// 이미지의 렌더링 크기를 측정하기 위해 load를 기다림.
-		this.#preview.onload = () => {
+		this.#preview.onload = () => { this.#preview.decode().finally(() => {
 			const naturalWidth = this.#preview.naturalWidth, 
 				naturalHeight = this.#preview.naturalHeight, 
 				imgWidth = this.#preview.width,
@@ -289,42 +290,25 @@ class FicoOCR {
 					}
 				}
 			}
-			this.#$resultModal.find('.modal-body').append(bounds);
-			// 드래그 선택 활성화
-			const selection = new SelectionArea({
+			requestAnimationFrame(() =>
+				this.#$resultModal.find('.modal-body').append(bounds)
+			);
+			// [드래그 선택 활성화]
+			this.selection = new SelectionArea({
 				selectionContainerClass: 'selection-area-container',
 			    // Query selectors for elements which can be selected.
 			    selectables: ['#ocrResultModal .modal-body>.candidate-text'],
 			    boundaries: ['#ocrResultModal .modal-body'],
 			    behavior: { overlap: 'keep'}
 			});
-			// 아이폰을 제외하고 드래그 선택 중에 핀치 줌, 스크롤 활성화
-			if(!(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-				selection.on('beforestart', (() => {
-				    let timeout = null;
-				    return ({event}) => {
-				        // Check if user already tapped inside of a selection-area.
-				        if (timeout !== null) {
-				            // A second pointer-event occured, ignore that one.
-				            clearTimeout(timeout);
-				            timeout = null;
-				        } else {
-				            // Wait 50ms in case the user uses two fingers to scroll.
-				            timeout = setTimeout(() => {
-				                // OK User used only one finger, we can safely initiate a selection and reset the timer.
-				                selection.trigger(event);
-				                timeout = null;
-				            }, 50);
-				        }
-				        // Never start automatically.
-				        return false;
-				    };
-				})())
-			}
-			selection.on('start', () => {
+			this.selection
+			.on('start', () => {
 				// 이전의 선택 정보 초기화
-				selection.clearSelection();
+				this.selection.clearSelection();
+				this.dimmer.resize();
+				this.#transformCanvas();
 			})
+			// 드래그 선택 중 클래스명 변경
 			.on('move', ({store: {changed: {added, removed}}}) => {
 				if(this.#$resultModal.find('#addArea').is(':checked')) {
 				    for (const el of added) {
@@ -344,6 +328,7 @@ class FicoOCR {
 				    }
 				}
 			})
+			// 드래그 선택 완료 후 클래스명 변경
 			.on('stop', ({store: {selected}}) => {
 				if(this.#$resultModal.find('#addArea').is(':checked')) {
 				    for (const el of selected) {
@@ -356,10 +341,57 @@ class FicoOCR {
 				        el.classList.remove('selected-text');
 				    }
 				}
-				selection.clearSelection();
-			})
-		}
+				this.selection.clearSelection();
+				//this.dimmer.resize();
+				this.dimmer.highlight('.selected-text');
+				//this.#transformCanvas();			
+			});
+
+			// [Dimm 효과 활성화]
+			requestAnimationFrame(() => {
+				if(typeof this.dimmer == 'undefined') {
+					this.dimmer = new Dimmer({opacity: 0.5, padding: 0, borderRadius: 1,
+						parent: this.#$resultModal.find('.modal-body')[0], fadeDuration: 300,
+						easing: 'none', transitionDuration: 0});
+					requestAnimationFrame(() => {
+						this.dimmer.highlight('.selected-text');
+					})
+				}else {
+					this.dimmer.clear();
+					this.dimmer.highlight('.selected-text');
+				}
+			});
+			// [터치기기에 한해 핀치줌 활성화]
+			if(('ontouchstart' in window ) || ( navigator.maxTouchPoints > 0 ) || ( navigator.msMaxTouchPoints > 0 )) {
+				requestAnimationFrame(() => {
+					if(typeof this.pz == 'undefined') {
+						this.pz = new PinchZoom(this.#$resultModal.find('.modal-body')[0], {
+							draggableUnzoomed: false,
+							setOffsetsOnce: true,
+							onZoomUpdate: (obj, event) => {
+								// 핀치줌 중에 드래그 선택은 취소
+								this.selection.cancel(true);
+							},
+							use2d: false,
+						});
+					}
+				})
+			}
+		})}
 	}
+	/** [Dimmer] canvas 대상(부모)에 zoom이 적용됨에 따른 canvas 크기와 배율 변화 
+	부모에게 적용된 transform 속성은 canvas에 한 번, canvas 내의 그리기 요소에 다시 한 번 추가적용된다.
+	따라서 canvas를 부모의 Rect 크기에 맞추고, 그리기 요소에는 transform 값을 반대로 한 번 적용한다.
+	*/
+	#transformCanvas() {
+		this.parentTransform = getComputedStyle(this.#$resultModal.find('.modal-body')[0]).transform.match(/matrix\(([-\.\w\d]+), [-\.\w\d]+, [-\.\w\d]+, ([-\.\w\d]+), ([-\.\w\d]+), ([-\.\w\d]+)\)/)?.slice(1);
+		if(this.parentTransform != null) {
+			this.dimmer.canvas.width = this.dimmer.parent.getBoundingClientRect().width * 1.5;
+			this.dimmer.canvas.height = this.dimmer.parent.getBoundingClientRect().height * 1.5;
+			this.dimmer.canvas.getContext('2d').transform(1/parseFloat(this.parentTransform[0]), 0, 0, 1/parseFloat(this.parentTransform[1]), 0, 0);
+		}			
+	}
+	
 	/* 시계방향으로 좌표를 회전 */
 	#rotate(cx, cy, x, y, angle) {
 		const radians = (Math.PI / 180) * angle, cos = Math.cos(radians), sin = Math.sin(radians),
