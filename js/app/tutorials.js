@@ -8,6 +8,7 @@
 		+ '<div class="modal-dialog modal-fullscreen m-0">'
 		+ '<div class="modal-content fw-bold border-0">'
 		+ '<div class="modal-body text-center bg-dark p-0">'
+		+ '<button id="closeWorkbookTutorial" type="button" class="position-absolute end-0 p-3 fs-2 btn-close btn-close-white" aria-label="Close"></button>'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.820" data-dimm-y="0.105" data-dimm-w="0.172" data-dimm-h="0.094" src="https://static.findsvoc.com/images/app/tutorial/1.png">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.020" data-dimm-y="0.365" data-dimm-w="0.960" data-dimm-h="0.125" src="https://static.findsvoc.com/images/app/tutorial/2.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.266" data-dimm-y="0.304" data-dimm-w="0.467" data-dimm-h="0.400" src="https://static.findsvoc.com/images/app/tutorial/3.png" style="display:none;">'
@@ -18,7 +19,7 @@
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.010" data-dimm-y="0.175" data-dimm-w="0.980" data-dimm-h="0.580" src="https://static.findsvoc.com/images/app/tutorial/8.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.020" data-dimm-y="0.300" data-dimm-w="0.960" data-dimm-h="0.110" src="https://static.findsvoc.com/images/app/tutorial/9.png" style="display:none;">'
 		+ '<img class="tutorial-step mh-100 mw-100" data-dimm-x="0.005" data-dimm-y="0.625" data-dimm-w="0.980" data-dimm-h="0.410" data-finger-x="25%" data-finger-y="77%" src="https://static.findsvoc.com/images/app/tutorial/10.png" style="display:none;">'
-		+ '<img class="tutorial-step w-100 h-100" data-img-loaded="true" data-dimm-x="0.500" data-dimm-y="0.575" data-dimm-w="0.0" data-dimm-h="0.0"/>'
+		+ '<img class="tutorial-step w-100 h-100" data-img-loaded="true" data-dimm-x="0.500" data-dimm-y="0.575" data-dimm-w="0.0" data-dimm-h="0.0" style="display:none;"/>'
 		+ '<div class="button-dimm rounded pe-none" role="button" style="position:absolute;left:0;top:0;width:100%;height:100%;box-shadow:0 0 0 200vh #0003;"></div>'
 		+ '</div>'
 		+ '</div></div></div>');
@@ -47,7 +48,8 @@
 		this.dataset.imgLoaded = true;
 	})
 	// 모달 표시가 완료되면 튜토리얼 진행 시작
-	$('#workbookTutorial').on('shown.bs.modal', () => {
+	$('#workbookTutorial')
+	.on('shown.bs.modal', () => {
 		clearInterval(imgLoadTimer);
 		// 100ms마다 이미지가 로드됐는지 체크 후 다음 화면으로
 		const $first = $('.tutorial-step:eq(0)');
@@ -55,6 +57,13 @@
 	}).on('hidden.bs.modal', () => $('#workbookTutorial').modal('dispose').remove());
 	$('#workbookTutorial').modal('show');
 	
+	// 튜토리얼 임의 종료
+	$('#closeWorkbookTutorial').on('click', function() {
+		if(!confirm('튜토리얼을 종료하시겠습니까?\n튜토리얼은 "워크북"페이지의 "워크북 작성방법"에서 다시 보실 수 있습니다')) return;
+		localStorage.setItem('tutorialEnds', true);
+		$('#workbookTutorial').modal('hide');
+		return;		
+	});
 	$('.button-dimm').on('hidden.bs.tooltip', function() {
 		$(this).tooltip('dispose');
 	});
