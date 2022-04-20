@@ -77,7 +77,7 @@
 					if((e.ctrlKey || e.metaKey) && e.keyCode >= 65 && e.keyCode <= 90) {
 						if(keyset['ctrl' + e.key.toUpperCase()]) {
 							e.preventDefault();
-							$svocEditor.find(keyset['ctrl' + e.key.toUpperCase()]).trigger('click');
+							$svocEditor.find(keyset[`ctrl${e.key.toUpperCase()}`]).trigger('click');
 						}else {
 							return;
 						}
@@ -196,7 +196,7 @@
 					|| (this.value == 'redo' && redoList.length > 0)){
 						this.classList.add('active');
 						var history = (this.value == 'undo') ? undoList.pop() : redoList.pop();
-						var $container = $('.edit-svoc .semantics-result[data-seq="' + history[0] + '"]');
+						var $container = $(`.edit-svoc .semantics-result[data-seq="${history[0]}"]`);
 						(this.value == 'undo' ? redoList : undoList)
 								.push([$container.attr('data-seq'), $container.html()]);
 						$container.html(history[1]);
@@ -230,11 +230,11 @@
 						for(let className of target.classList){
 							if(className.indexOf('mfd') > -1){
 								// 쌍이 되는 수식선 제거.
-								$(this).siblings('.curved_arrow.' + className).each(function() {
+								$(this).siblings(`.curved_arrow.${className}`).each(function() {
 									erasingSets.push(this);
 								});
 								// 피수식어 태그 해제.
-								erasingSets.push($('.rcm.mfd-' + className.substring(3))[0]);
+								erasingSets.push($(`.rcm.mfd-${className.substring(3)}`)[0]);
 							}
 						}
 					}
@@ -326,7 +326,7 @@
 						pushEditHistory(container);
 						erasingSets.forEach(function(elt) {
 							// 괄호 태그나 문자가 없는 태그는 바로 삭제.
-							if(elt.textContent.length == 0 || elt.textContent.match(/[\w ]/) == null){
+							if(elt.textContent.length == 0 || elt.matches('.brkt')){
 								$(elt).remove();
 							}else{
 								$(elt).contents().unwrap();
@@ -337,8 +337,7 @@
 					var $rcmLefts = $(container).find('.rcm');
 					$rcmLefts.each(function() {
 						for(let className of this.classList){
-							if(className.indexOf('mfd') > -1 
-							&& $('[data-mfd="' + className.substring(4) + '"]').length == 0){
+							if(className.indexOf('mfd') > -1 && $(`[data-mfd="${className.substring(4)}"]`).length == 0){
 								$(this).contents().unwrap();
 							}
 						}
@@ -418,18 +417,17 @@
 					   			var editText = document.createElement('div');
 					   			editText.className = 'edit-comment text-end';
 					   			editText.style.position = 'absolute';
-					   			editText.insertAdjacentHTML('afterbegin','<form class="btn-group">'
-								   + '<input class="form-control" type="text" '
-								   + 'placeholder="↵" '
-								   + 'value="' + target.dataset[type.data]
-								   + '"/><div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>'
-								   + '<button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>');
+					   			editText.insertAdjacentHTML('afterbegin',`<form class="btn-group"><input class="form-control" type="text"
+									placeholder="↵" value="${target.dataset[type.data]}"/>
+									<div class="btn-group ms-1">
+										<button class="btn btn-sm btn-fico" type="submit">확인</button>
+								   		<button class="btn btn-sm btn-outline-fico" type="button">취소</button>
+							   		</div></form>`);
 					   			document.body.appendChild(editText);
-					   			editText.style.top = scrollY + Math.max(y1,y2) + 'px';
-					   			editText.style.left = scrollX + Math.min(x1,x2) + 'px';
+					   			editText.style.top = `${scrollY + Math.max(y1,y2)}px`;
+					   			editText.style.left = `${scrollX + Math.min(x1,x2)}px`;
 					   			if(type.data == 'gc'){
-					   				editText.style.top = scrollY + Math.min(y1,y2) 
-					   							- editText.offsetHeight - 10 + 'px';
+					   				editText.style.top = `${scrollY + Math.min(y1,y2) - editText.offsetHeight - 10}px`;
 					   			}
 					   			editText.firstChild.firstChild.focus();
 								$(document).on('mousedown', editCommentMenu);
@@ -485,8 +483,8 @@
 					const indicator = document.createElement('div');
 					indicator.className = 'mod-indicator';
 					indicator.style.position = 'absolute';
-					indicator.style.top = scrollY + wrapper.getClientRects()[0].top - rem * 3 + 'px';
-					indicator.style.left = scrollX + wrapper.getClientRects()[0].left - 0.8 * rem + 'px'; 
+					indicator.style.top = `${scrollY + wrapper.getClientRects()[0].top - rem * 3}px`;
+					indicator.style.left = `${scrollX + wrapper.getClientRects()[0].left - 0.8 * rem}px`; 
 					indicator.textContent = '↑'
 					
 					document.body.appendChild(indicator);
@@ -540,8 +538,8 @@
 						console.error('[This browser supports neither Selection.modify nor Range.expand.]');
 					}
 					e.stopPropagation();
-					indicator.style.top = scrollY + rect.top - rem * 3 + 'px';
-					indicator.style.left = scrollX + rect.right - rem + 'px'; 
+					indicator.style.top = `${scrollY + rect.top - rem * 3}px`;
+					indicator.style.left = `${scrollX + rect.right - rem}px`; 
 					indicator.textContent = '↓';
 					document.body.appendChild(indicator);
 					}
@@ -573,11 +571,11 @@
 						}
 					});
 					// 수식어 표시
-					modifier.dataset.mfd = containerSequence + '-' + (rcmMaxNum + 1);
+					modifier.dataset.mfd = `${containerSequence}-${rcmMaxNum + 1}`;
 					
 					// 피수식어 표시
 					var rcm = document.createElement('span');
-					rcm.className = 'sem rcm mfd-' + containerSequence + '-' + (rcmMaxNum + 1);
+					rcm.className = `sem rcm mfd-${containerSequence}-${rcmMaxNum + 1}`;
 					rcm.dataset.gc = '수식';
 					// 커서가 위치한 문자열 선택
 					var x = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
@@ -657,12 +655,12 @@
 		   			const editText = document.createElement('div');
 		   			editText.className = 'edit-comment text-end';
 		   			editText.style.position = 'absolute';
-		   			editText.style.top = scrollY + Math.max(y1,y2) + 'px';
-		   			editText.style.left = scrollX + Math.min(x1,x2) + 'px';
-		   			editText.insertAdjacentHTML('afterbegin','<form class="btn-group">'
-					   + '<input class="form-control" type="text" placeholder="↵"/>'
-					   + '<div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>'
-					   + '<button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>');
+		   			editText.style.top = `${scrollY + Math.max(y1,y2)}px`;
+		   			editText.style.left = `${scrollX + Math.min(x1,x2)}px`;
+		   			editText.insertAdjacentHTML('afterbegin',`<form class="btn-group">
+					   <input class="form-control" type="text" placeholder="↵"/>
+					   <div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>
+					   <button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>`);
 		   			document.body.appendChild(editText);
 	   				editText.style.top = scrollY + Math.min(y1,y2) 
 		   							- editText.offsetHeight - 10 + 'px';
@@ -731,8 +729,7 @@
 		}
 		// [구문분석 div에 .edit-svoc 클래스 추가 후 편집 툴바와 힌트 메세지 표시]
 		this.wrap($('<div class="edit-svoc" tabindex="0"></div>'))
-			.before($('<span class="svoc-editor-badge badge fs-6 rounded-pill">'
-					+ (forNew ? 'New' : 'Edit') + '</span>'))
+			.before($(`<span class="svoc-editor-badge badge fs-6 rounded-pill">${forNew ? 'New' : 'Edit'}</span>`))
 			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 p-1 pb-0 bg-white rounded-pill pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
 			.before($svocEditor)
 			.after($svocEditorHint);
@@ -873,14 +870,13 @@
 			const assistant = document.createElement('div');
 			assistant.className = 'cls-role-menu';
 			assistant.style.position = 'absolute';
-			assistant.style.top = scrollY + range.getClientRects()[0].top 
-								+ range.getClientRects()[0].height + 'px';
-			assistant.style.left = scrollX + range.getClientRects()[0].left + 'px';
+			assistant.style.top = `${scrollY + range.getClientRects()[0].top + range.getClientRects()[0].height}px`;
+			assistant.style.left = `${scrollX + range.getClientRects()[0].left}px`;
 			assistant.insertAdjacentHTML('afterbegin', 
-								'<button class="cls-role-btn" value="s">s</button>'
-								+ '<button class="cls-role-btn" value="o">o</button>'
-								+ '<button class="cls-role-btn" value="c">c</button>'
-								+ '<button class="cls-role-btn" value="oc">oc</button>');
+				`<button class="cls-role-btn" value="s">s</button>
+				<button class="cls-role-btn" value="o">o</button>
+				<button class="cls-role-btn" value="c">c</button>
+				<button class="cls-role-btn" value="oc">oc</button>`);
 			document.body.appendChild(assistant);
 			let once = false;
 			$(document).on('click', function exitClsRoleMenu(e){
@@ -888,7 +884,7 @@
 					// 성분 지정 메뉴 영역 내부 클릭
 					if((assistant.compareDocumentPosition(e.target) & 16) == 16){
 						var el1 = document.createElement('span');
-						el1.className = 'sem ' + e.target.value;
+						el1.className = `sem ${e.target.value}`;
 						if(rcomments[e.target.value] != null) 
 							el1.dataset.rc = rcomments[e.target.value];
 						try {
@@ -898,7 +894,7 @@
 							range.insertNode(el1);
 						}
 						var el2 = document.createElement('span');
-						el2.className = 'sem ' + wrapper;
+						el2.className = `sem ${wrapper}`;
 						el2.dataset.gc = gcomments[wrapper][e.target.value];
 						try {
 							range.surroundContents(el2);
@@ -934,7 +930,7 @@
 			range.selectNode(el);
 		default:
 			const el2 = document.createElement('span');
-			el2.className = 'sem ' + wrapper;
+			el2.className = `sem ${wrapper}`;
 			if(gcomments[wrapper]) el2.dataset.gc = gcomments[wrapper];
 			try {
 				range.surroundContents(el2);
