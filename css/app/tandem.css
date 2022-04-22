@@ -137,19 +137,19 @@
 }
 
 /* data-lv 1(자식svoc를 가짐)부터는  */
-.sem[data-lv="1"][data-rc],.sem[data-lv="1"][data-rc]::after {
+.sem[data-lv="1"][data-rc]/*,.sem[data-lv="1"][data-rc]::after*/ {
 	padding-bottom: 1.05rem;
 }
-.sem[data-lv="2"][data-rc],.sem[data-lv="2"][data-rc]::after {
+.sem[data-lv="2"][data-rc]/*,.sem[data-lv="2"][data-rc]::after*/ {
 	padding-bottom: 2.35rem;
 }
-.sem[data-lv="3"][data-rc],.sem[data-lv="3"][data-rc]::after {
+.sem[data-lv="3"][data-rc]/*,.sem[data-lv="3"][data-rc]::after*/ {
 	padding-bottom: 3.55rem;
 }
-.sem[data-lv="4"][data-rc],.sem[data-lv="4"][data-rc]::after {
+.sem[data-lv="4"][data-rc]/*,.sem[data-lv="4"][data-rc]::after*/ {
 	padding-bottom: 4.75rem;
 }
-.sem[data-lv="5"][data-rc],.sem[data-lv="5"][data-rc]::after {
+.sem[data-lv="5"][data-rc]/*,.sem[data-lv="5"][data-rc]::after*/ {
 	padding-bottom: 5.95rem;
 }
 /* data-gc가 있으면 gcomment표시 */
