@@ -403,7 +403,7 @@
 				   			pseudoHeight = parseFloat(pseudoStyle.height);
 				   		// 해당 코멘트에 실제 내용이 있고, 코멘트 위치나 크기가 있을 경우
 				   		if(target.dataset[type.data] != null 
-						&& !isNaN(pseudoVpos) && !isNaN(pseudoHpos)) {
+						&& !isNaN(pseudoWidth) && !isNaN(pseudoHeight)) {
 							// 코멘트의 4꼭지점 위치
 					   		var y1 = rects[isOdd][topOrBottm] + toUp * pseudoVpos;
 					   		var	y2 = y1 + toUp * pseudoHeight;
