@@ -497,7 +497,7 @@ a:hover {
 /**********************************************************
  *			체크 박스 
  **********************************************************/
-.btn-check:active+.btn-primary, .btn-check:checked+.btn-primary, .btn-primary.active, .btn-primary:active, .show>.btn-primary.dropdown-toggle {
+.btn-check:active+.btn-fico, .btn-check:checked+.btn-fico, .btn-fico.active, .btn-fico:active, .show>.btn-fico.dropdown-toggle {
     color: #fff;
     background-color: rgb(88, 81, 116);
     border-color: rgb(68, 61, 96);
