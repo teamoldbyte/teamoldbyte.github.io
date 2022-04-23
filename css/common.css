@@ -492,6 +492,21 @@ a:hover {
 .btn-fico:disabled, .btn-outline-fico:disabled {
   opacity: 0.3;
 }
+
+
+/**********************************************************
+ *			체크 박스 
+ **********************************************************/
+.btn-check:active+.btn-primary, .btn-check:checked+.btn-primary, .btn-primary.active, .btn-primary:active, .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: rgb(88, 81, 116);
+    border-color: rgb(68, 61, 96);
+}
+.btn-check:active+.btn-outline-fico, .btn-check:checked+.btn-outline-fico, .btn-outline-fico.active, .btn-outline-fico.dropdown-toggle.show, .btn-outline-fico:active {
+    color: #fff;
+    background-color: #6c6588;
+    border-color: var(--fc-purple);
+}
 /**********************************************************
  *			pagination
  **********************************************************/
