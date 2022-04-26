@@ -1,0 +1,71 @@
+{	// Mobile browsers including mobile chrome are not supported.
+	
+  // Android Webview
+  "en-au-x-aub-network": "",
+  "en-au-x-aud-network": "",
+  "en-au-x-afh-network": "",
+  "en-au-x-auc-network": "",
+  "en-au-x-aua-network": "",
+  "en-gb-x-gbb-network": "",
+  "en-gb-x-gbd-network": "",
+  "en-gb-x-fis-network": "",
+  "en-gb-x-gba-network": "",
+  "en-gb-x-gbc-network": "",
+  "en-gb-x-rjs-network": "",
+  "en-gb-x-gbg-network": "",
+  "en-in-x-ene-network": "",
+  "en-in-x-enc-network": "",
+  "en-in-x-ena-network": "",
+  "en-in-x-ahp-network": "",
+  "en-in-x-cxx-network": "",
+  "en-in-x-end-network": "",
+  "en-ng-x-tfn-network": "",
+  "en-us-x-sfg-network": "",
+  "en-us-x-tpd-network": "",
+  "en-us-x-tpc-network": "",
+  "en-us-x-iob-network": "",
+  "en-us-x-iol-network": "",
+  "en-us-x-iom-network": "",
+  "en-us-x-iog-network": "",
+  "en-us-x-tpf-network": ""
+  
+	// iOS
+	"Karen":	"",
+	"Daniel":	"",
+	"Moira":	"",
+	"Rishi":	"",
+	"Fred":		"",
+	"Samantha":	"",
+	"Tessa":	"",
+
+	// MacOS
+	"Alex":		"",
+	"Daniel":	"",
+	"Fiona":	"",
+	"Fred":		"",
+	"Karen":	"",
+	"Moira":	"",
+	"Rishi":	"",
+	"Samantha":	"",
+	"Tessa":	"",
+	"Veena":	"",
+	"Victoria":	"",
+	
+	// Chrome
+	"Google US English":		"",
+	"Google UK English Female":	"",
+	"Google UK English Male":	"",
+	
+	// Android Webview
+	
+	// Edge
+	"Microsoft Aria Online (Natural) - English (United States)":	"",
+	"Microsoft Guy Online (Natural) - English (United States)":		"",
+	"Microsoft Libby Online (Natural) - English (United Kingdom)":	"",
+	"Microsoft Priya Online - English (India)":						"",
+	"Microsoft Heather Online - English (Canada)":					"",
+	"Microsoft Hayley Online - English (Australia)":				""
+	
+	//Firefox
+	 "Microsoft Zira Desktop - English (United States)":	""
+}
