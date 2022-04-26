@@ -1,71 +1,76 @@
 {	// Mobile browsers including mobile chrome are not supported.
 	
-  // Android Webview
-  "en-au-x-aub-network": "",
-  "en-au-x-aud-network": "",
-  "en-au-x-afh-network": "",
-  "en-au-x-auc-network": "",
-  "en-au-x-aua-network": "",
-  "en-gb-x-gbb-network": "",
-  "en-gb-x-gbd-network": "",
-  "en-gb-x-fis-network": "",
-  "en-gb-x-gba-network": "",
-  "en-gb-x-gbc-network": "",
-  "en-gb-x-rjs-network": "",
-  "en-gb-x-gbg-network": "",
-  "en-in-x-ene-network": "",
-  "en-in-x-enc-network": "",
-  "en-in-x-ena-network": "",
-  "en-in-x-ahp-network": "",
-  "en-in-x-cxx-network": "",
-  "en-in-x-end-network": "",
-  "en-ng-x-tfn-network": "",
-  "en-us-x-sfg-network": "",
-  "en-us-x-tpd-network": "",
-  "en-us-x-tpc-network": "",
-  "en-us-x-iob-network": "",
-  "en-us-x-iol-network": "",
-  "en-us-x-iom-network": "",
-  "en-us-x-iog-network": "",
-  "en-us-x-tpf-network": ""
+	// Android Webview
+	"en-au-x-aub-network": { "nick": "Braith", "pic": ""}, //호주 남자
+	"en-au-x-aud-network": { "nick": "Lachlan", "pic": ""}, //호주 남자
+	"en-au-x-afh-network": { "nick": "Narelle", "pic": ""}, //호주 여자
+	"en-au-x-auc-network": { "nick": "Kayla", "pic": ""}, //호주 여자
+	"en-au-x-aua-network": { "nick": "Abigail", "pic": ""}, //호주 여자
+	"en-gb-x-gbb-network": { "nick": "Taylor", "pic": ""}, //영국 남자
+	"en-gb-x-gbd-network": { "nick": "Nicholas", "pic": ""}, //영국 남자
+	"en-gb-x-fis-network": { "nick": "Keira", "pic": ""}, //영국 여자
+	"en-gb-x-gba-network": { "nick": "Grace", "pic": ""}, //영국 여자
+	"en-gb-x-gbc-network": { "nick": "Lauren", "pic": ""}, //영국 여자
+	"en-gb-x-rjs-network": { "nick": "Peter", "pic": ""}, //영국 남자
+	"en-gb-x-gbg-network": { "nick": "Libby", "pic": ""}, //영국 여자
+	"en-in-x-ene-network": { "nick": "Salah", "pic": ""}, //인도 남자
+	"en-in-x-enc-network": { "nick": "Atika", "pic": ""}, //인도 여자
+	"en-in-x-ena-network": { "nick": "Farah", "pic": ""}, //인도 여자
+	"en-in-x-ahp-network": { "nick": "Sayyar", "pic": ""}, //인도 여자
+	"en-in-x-cxx-network": { "nick": "Bahiya", "pic": ""}, //인도 여자
+	"en-in-x-end-network": { "nick": "Husam", "pic": ""}, //인도 남자
+	"en-ng-x-tfn-network": { "nick": "Jenete", "pic": ""}, //나이지리아 여자
+	"en-us-x-sfg-network": { "nick": "Mary", "pic": ""}, //미국 여자
+	"en-us-x-tpd-network": { "nick": "James", "pic": ""}, //미국 남자
+	"en-us-x-tpc-network": { "nick": "Michelle", "pic": ""}, //미국 여자
+	"en-us-x-iob-network": { "nick": "Josephine", "pic": ""}, //미국 여자
+	"en-us-x-iol-network": { "nick": "Joe", "pic": ""}, //미국 남자
+	"en-us-x-iom-network": { "nick": "Paul", "pic": ""}, //미국 남자
+	"en-us-x-iog-network": { "nick": "Gloria", "pic": ""}, //미국 여자
+	"en-us-x-tpf-network": { "nick": "Cathy", "pic": ""}, //미국 여자
   
 	// iOS
-	"Karen":	"",
-	"Daniel":	"",
-	"Moira":	"",
-	"Rishi":	"",
-	"Fred":		"",
-	"Samantha":	"",
-	"Tessa":	"",
+	"Karen": { "nick":	"Karen", "pic": ""}, //호주 여자
+	"Daniel": { "nick":	"Daniel", "pic": ""}, //영국 남자
+	"Moira": { "nick":	"Moira", "pic": ""}, //아일랜드 여자
+	"Rishi": { "nick":	"Rishi", "pic": ""}, //인도
+	"Fred": { "nick":		"Fred", "pic": ""}, //미국 남자
+	"Samantha": { "nick":	"Samantha", "pic": ""}, //미국 여자
+	"Tessa": { "nick":	"Tessa", "pic": ""}, //남아프리카 여자
 
 	// MacOS
-	"Alex":		"",
-	"Daniel":	"",
-	"Fiona":	"",
-	"Fred":		"",
-	"Karen":	"",
-	"Moira":	"",
-	"Rishi":	"",
-	"Samantha":	"",
-	"Tessa":	"",
-	"Veena":	"",
-	"Victoria":	"",
+	"Alex": { "nick":		"Alex", "pic": ""}, //미국 
+	"Daniel": { "nick":	"Daniel", "pic": ""}, //영국 남자
+	"Fiona": { "nick":	"Fiona", "pic": ""}, //스코틀랜드 여자
+	"Fred": { "nick":		"Fred", "pic": ""}, //미국 남자
+	"Karen": { "nick":	"Karen", "pic": ""}, //호주 여자
+	"Moira": { "nick":	"Moira", "pic": ""}, //아일랜드 여자
+	"Rishi": { "nick":	"Rishi", "pic": ""}, //인도 
+	"Samantha": { "nick":	"Samantha", "pic": ""}, //미국 여자
+	"Tessa": { "nick":	"Tessa", "pic": ""}, //남아프리카 여자
+	"Veena": { "nick":	"Veena", "pic": ""}, //인도 여자
+	"Victoria": { "nick":	"Victoria", "pic": ""}, //미국 여자
 	
 	// Chrome
-	"Google US English":		"",
-	"Google UK English Female":	"",
-	"Google UK English Male":	"",
+	"Google US English": { "nick":		"Cathy" , "pic": ""}, //미국 여자
+	"Google UK English Female": { "nick":	"Abbie", "pic": ""}, //영국 여자
+	"Google UK English Male": { "nick":	"Alexander", "pic": ""}, //영국 남자
 	
 	// Android Webview
 	
 	// Edge
-	"Microsoft Aria Online (Natural) - English (United States)":	"",
-	"Microsoft Guy Online (Natural) - English (United States)":		"",
-	"Microsoft Libby Online (Natural) - English (United Kingdom)":	"",
-	"Microsoft Priya Online - English (India)":						"",
-	"Microsoft Heather Online - English (Canada)":					"",
-	"Microsoft Hayley Online - English (Australia)":				""
+	"Microsoft Natasha Online (Natural) - English (Australia)": { "nick":		"Natasha", "pic": ""}, //호주 여자
+	"Microsoft Clara Online (Natural) - English (Canada)": { "nick":	"Clara", "pic": ""}, //캐나다 여자
+	"Microsoft Neerja Online (Natural) - English (India)": { "nick":	"Neerja", "pic": ""}, //인도 여자
+	"Microsoft Emily Online (Natural) - English (Ireland)": { "nick":	"Emily", "pic": ""}, //아일랜드 여자
+	"Microsoft Abeo Online (Natural) - English (Nigeria)": { "nick":	"Abeo", "pic": ""}, //나이지리아 남자
+	"Microsoft Rosa Online (Natural) - English (Philippines)": { "nick":"Rosa", "pic": ""}, //필리핀 여자
+	"Microsoft Leah Online (Natural) - English (South Africa)": { "nick":"Leah", "pic": ""}, //남아프리카 여자
+	"Microsoft Sonia Online (Natural) - English (United Kingdom)": { "nick":"Sonia", "pic": ""}, //영국 여자
+	"Microsoft Aria Online (Natural) - English (United States)": { "nick":"Aria", "pic": ""}, //미국 여자
+	"Microsoft Guy Online (Natural) - English (United States)": { "nick":"Guy", "pic": ""}, //미국 남자
+	"Microsoft Jenny Online (Natural) - English (United States)": { "nick":"Jenny", "pic": ""}, //미국 여자
 	
 	//Firefox
-	 "Microsoft Zira Desktop - English (United States)":	""
+	 "Microsoft Zira Desktop - English (United States)": { "nick":	"Zira", "pic": ""} //미국 여자
 }
