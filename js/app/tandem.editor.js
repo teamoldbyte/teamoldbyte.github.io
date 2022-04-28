@@ -417,12 +417,13 @@
 					   			var editText = document.createElement('div');
 					   			editText.className = 'edit-comment text-end';
 					   			editText.style.position = 'absolute';
-					   			editText.insertAdjacentHTML('afterbegin',`<form class="btn-group"><input class="form-control" type="text"
-									placeholder="↵" value="${target.dataset[type.data]}"/>
-									<div class="btn-group ms-1">
-										<button class="btn btn-sm btn-fico" type="submit">확인</button>
-								   		<button class="btn btn-sm btn-outline-fico" type="button">취소</button>
-							   		</div></form>`);
+					   			editText.insertAdjacentHTML('afterbegin',
+						   			'<form class="btn-group"><input class="form-control" type="text"' +
+						   			`placeholder="↵" value="${target.dataset[type.data]}"/>` +
+						   			'<div class="btn-group ms-1">' +
+						   			'<button class="btn btn-sm btn-fico" type="submit">확인</button>' +
+						   			'<button class="btn btn-sm btn-outline-fico" type="button">취소</button>' +
+						   			'</div></form>');
 					   			document.body.appendChild(editText);
 					   			editText.style.top = `${scrollY + Math.max(y1,y2)}px`;
 					   			editText.style.left = `${scrollX + Math.min(x1,x2)}px`;
@@ -657,10 +658,10 @@
 		   			editText.style.position = 'absolute';
 		   			editText.style.top = `${scrollY + Math.max(y1,y2)}px`;
 		   			editText.style.left = `${scrollX + Math.min(x1,x2)}px`;
-		   			editText.insertAdjacentHTML('afterbegin',`<form class="btn-group">
-					   <input class="form-control" type="text" placeholder="↵"/>
-					   <div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>
-					   <button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>`);
+		   			editText.insertAdjacentHTML('afterbegin','<form class="btn-group">' +
+		   				'<input class="form-control" type="text" placeholder="↵"/>' +
+		   				'<div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>' +
+		   				'<button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>');
 		   			document.body.appendChild(editText);
 	   				editText.style.top = scrollY + Math.min(y1,y2) 
 		   							- editText.offsetHeight - 10 + 'px';
@@ -873,10 +874,10 @@
 			assistant.style.top = `${scrollY + range.getClientRects()[0].top + range.getClientRects()[0].height}px`;
 			assistant.style.left = `${scrollX + range.getClientRects()[0].left}px`;
 			assistant.insertAdjacentHTML('afterbegin', 
-				`<button class="cls-role-btn" value="s">s</button>
-				<button class="cls-role-btn" value="o">o</button>
-				<button class="cls-role-btn" value="c">c</button>
-				<button class="cls-role-btn" value="oc">oc</button>`);
+				'<button class="cls-role-btn" value="s">s</button>' +
+				'<button class="cls-role-btn" value="o">o</button>' +
+				'<button class="cls-role-btn" value="c">c</button>' +
+				'<button class="cls-role-btn" value="oc">oc</button>');
 			document.body.appendChild(assistant);
 			let once = false;
 			$(document).on('click', function exitClsRoleMenu(e){
