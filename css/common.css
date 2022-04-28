@@ -499,8 +499,8 @@ a:hover {
  **********************************************************/
 .btn-check:active+.btn-fico, .btn-check:checked+.btn-fico, .btn-fico.active, .btn-fico:active, .show>.btn-fico.dropdown-toggle {
     color: #fff;
-    background-color: rgb(88, 81, 116);
-    border-color: rgb(68, 61, 96);
+    background-color: rgb(68, 61, 96);
+    border-color: rgb(48, 41, 76);
 }
 .btn-check:active+.btn-outline-fico, .btn-check:checked+.btn-outline-fico, .btn-outline-fico.active, .btn-outline-fico.dropdown-toggle.show, .btn-outline-fico:active {
     color: #fff;
@@ -552,6 +552,72 @@ a:hover {
 	position: relative;
 }
 
+
+/* 버튼 애니메이션 */
+button:focus,.btn:focus {
+   -webkit-animation: jello-horizontal-common 0.6s ease-in-out both;
+           animation: jello-horizontal-common 0.6s ease-in-out both;
+}
+@-webkit-keyframes jello-horizontal-common {
+  0% {
+    -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+  }
+  30% {
+    -webkit-transform: scale3d(1.25, 0.75, 1);
+            transform: scale3d(1.25, 0.75, 1);
+  }
+  40% {
+    -webkit-transform: scale3d(0.75, 1.25, 1);
+            transform: scale3d(0.75, 1.25, 1);
+  }
+  50% {
+    -webkit-transform: scale3d(1.15, 0.85, 1);
+            transform: scale3d(1.15, 0.85, 1);
+  }
+  65% {
+    -webkit-transform: scale3d(0.95, 1.05, 1);
+            transform: scale3d(0.95, 1.05, 1);
+  }
+  75% {
+    -webkit-transform: scale3d(1.05, 0.95, 1);
+            transform: scale3d(1.05, 0.95, 1);
+  }
+  100% {
+    -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+  }
+}
+@keyframes jello-horizontal-common {
+  0% {
+    -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+  }
+  30% {
+    -webkit-transform: scale3d(1.25, 0.75, 1);
+            transform: scale3d(1.25, 0.75, 1);
+  }
+  40% {
+    -webkit-transform: scale3d(0.75, 1.25, 1);
+            transform: scale3d(0.75, 1.25, 1);
+  }
+  50% {
+    -webkit-transform: scale3d(1.15, 0.85, 1);
+            transform: scale3d(1.15, 0.85, 1);
+  }
+  65% {
+    -webkit-transform: scale3d(0.95, 1.05, 1);
+            transform: scale3d(0.95, 1.05, 1);
+  }
+  75% {
+    -webkit-transform: scale3d(1.05, 0.95, 1);
+            transform: scale3d(1.05, 0.95, 1);
+  }
+  100% {
+    -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+  }
+}
 
 /**********************************************************
  *			접기 아이콘
