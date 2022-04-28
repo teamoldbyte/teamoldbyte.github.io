@@ -27,7 +27,7 @@
 	})
 	
 	/* [bouncing on click button] ------------------------------------------- */
-	.on('click','a,button,.btn,[role=button]', function() {
+	.on('click','a,button,.btn', function() {
 		let orgTransform = getComputedStyle(this).transform;
 		orgTransform = (orgTransform != null && orgTransform.includes('matrix'))? (orgTransform + ' ') : '';
 		const scaleArr = [orgTransform + 'scale3d(1, 1, 1)', orgTransform + 'scale3d(1.25, 0.75, 1)',
