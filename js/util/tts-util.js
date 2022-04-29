@@ -211,6 +211,7 @@
 				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
 				utterance.text = text;
+				console.log(callback);
 				if(callback.length > 0) endCallback = callback[0];
 				
 				speechSynthesis.speak(utterance);
