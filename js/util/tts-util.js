@@ -97,6 +97,15 @@
 	(function() {
 		// ANI(App Native Interface)가 구현돼있을 경우 흐름
 		if(typeof ANI != 'undefined' && typeof ANI.ttsSpeak != 'undefined') {
+			// ANI에서 evaluateJavascript 실행이 가능한 형태의 코드로 반환
+			const makeFunc2Callback = (func = () => {}) => {
+				const randId = Math.random().toString().substring(2);
+				window[`TTSCallback${randId}`] = () => {
+					delete window[`speakCallback${randId}`];
+					func();
+				}
+				return `window.TTSCallback${randId}();`;
+			}			
 			let ANI_Initialized = makeFunc2Callback(() => {
 				console.info('initialize success')
 				voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
@@ -179,15 +188,6 @@
 					waitVoices = null;
 					showLists();
 				}
-			}
-			// ANI에서 evaluateJavascript 실행이 가능한 형태의 코드로 반환
-			const makeFunc2Callback = (func = () => {}) => {
-				const randId = Math.random().toString().substring(2);
-				window[`TTSCallback${randId}`] = () => {
-					delete window[`speakCallback${randId}`];
-					func();
-				}
-				return `window.TTSCallback${randId}();`;
 			}
 		}
 		// Web SpeechSynthesis API 사용 가능한 브라우저일 경우 흐름
