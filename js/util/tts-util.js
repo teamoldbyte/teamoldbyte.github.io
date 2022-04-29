@@ -97,14 +97,15 @@
 	(function() {
 		// ANI(App Native Interface)가 구현돼있을 경우 흐름
 		if(typeof ANI != 'undefined' && typeof ANI.ttsSpeak != 'undefined') {
+			let ANI_Initialized = makeFunc2Callback(() => {
+				console.info('initialize success')
+				voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
+				window.addEventListener('pagehide', () => this.stop());
+				_options.initSuccessCallback();
+			});
 			this.init = () => {
 				ANI.textToSpeechInit(_options.lang,
-					makeFunc2Callback(() => {
-						console.info('initialize success')
-						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
-						window.addEventListener('beforeunload', () => this.stop());
-						_options.initSuccessCallback();
-					}), 
+					ANI_Initialized, 
 					makeFunc2Callback(() => {
 						console.info('initialize failed')
 						_options.initFailCallback();
@@ -148,22 +149,31 @@
 			
 			let waitVoices, voiceTryCount = 0;
 			this.openSettings = () => {
+				// 아직 불러올 목소리가 없을 경우
 				if(voices == null || voices.length == 0) {
+					// 타이머 미세팅
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
 						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
 						waitVoices = setInterval(this.openSettings, 250);
-					}else if(typeof window.initAndroidTTSCallback != 'undefined' && voiceTryCount < 20) {
-						voiceTryCount++
-					}else if(voiceTryCount >= 20){
+					}
+					// 아직 초기화 완료 안됐고 재시도 횟수 20회 미만
+					else if(ANI_Initialized in window && voiceTryCount < 20) {
+						voiceTryCount++;
+					}
+					// 재시도 횟수가 20회 이상
+					else if(voiceTryCount >= 20){
 						voiceTryCount = 0;
 						clearInterval(waitVoices);
 						waitVoices = null;
 						alert('목소리 목록을 가져올 수 없습니다.');
 						showLists();
 					}
+					//재시도 실행
 					return false;
-				}else {
+				}
+				// 불러올 목소리가 있을 경우
+				else {
 					voiceTryCount = 0;
 					clearInterval(waitVoices);
 					waitVoices = null;
