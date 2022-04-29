@@ -93,6 +93,7 @@ const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A
 	  try {
 		return /[A-Z\d'"]/.test(this.charAt()) && (this.match(new RegExp('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])','g'))?.index == this.length);
 	  } catch(e) {
+		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
 		if(/[A-Z\d'"]/.test(this.charAt()) && /[\.\?\!]['"]?$/.test(this)) {
 		  const puncts = this.matchAll(/\S+[\.\?\!]['"]?/g);
 		  for(let punct of puncts) {
