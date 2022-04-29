@@ -68,7 +68,7 @@ const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A
 	 */
 	str.splitSentences = function() {
 	  try {
-		return this.split(new RegExp('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s','gm'));  
+		return this.split(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s`,'gm'));  
 	  } catch (e) {
 		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
 		if(!this.match(/\s/)) return [this];
@@ -91,7 +91,7 @@ const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A
 	// 유효한 하나의 영어 문장인지 검사
 	str.isSentence = function() {
 	  try {
-		return /[A-Z\d'"]/.test(this.charAt()) && (this.match(new RegExp('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])','g'))?.index == this.length);
+		return /[A-Z\d'"]/.test(this.charAt()) && (this.match(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])`,'g'))?.index == this.length);
 	  } catch(e) {
 		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
 		if(/[A-Z\d'"]/.test(this.charAt()) && /[\.\?\!]['"]?$/.test(this)) {
