@@ -27,62 +27,58 @@ class FicoOCR {
 		if(typeof SelectionArea == 'undefined') {
 			await $.getScript('https://cdn.jsdelivr.net/npm/@viselect/vanilla/lib/viselect.cjs.min.js');
 		}
-		$(document.head).append($(`<style>
-			/* 핀치줌 컨테이너 스타일 */
-			.pinch-zoom-container {
-				background: #000;
-			}
-			/* 드래그 상자가 올려지는 가상 레이어. 부트스트랩모달의 높이(1060)보다 높아야 함. */
-			.selection-area-container { z-index: 1061!important;}
-			.selection-area {
-			    background: rgba(46, 115, 252, 0.11);
-			    border: 2px solid rgba(98, 155, 255, 0.81);
-			    border-radius: 0.1em;
-			}
-			/* 선택 가능 단어 스타일 */
-			#ocrResultModal .candidate-text {
-			    border: solid 1px #ddd7;
-				border-radius: 1px;
-			}
-			/* 선택이 완료된 단어 스타일 */
-			#ocrResultModal .candidate-text.selected-text {border: solid 1px #7f73;}
-			/* 추가 선택될 단어 스타일 */
-			#ocrResultModal .will-selected {border: solid 2px #0f0!important;}
-			/* 선택 제외될 단어 스타일 */
-			#ocrResultModal .will-removed {border: solid 2px #f00!important;}
-			</style>`));
+		$(document.head).append($('<style>' +
+			'/* 핀치줌 컨테이너 스타일 */' +
+			'.pinch-zoom-container {' +
+			'background: #000;}' +
+			'/* 드래그 상자가 올려지는 가상 레이어. 부트스트랩모달의 높이(1060)보다 높아야 함. */' +
+			'.selection-area-container { z-index: 1061!important;}' +
+			'.selection-area {' +
+			'background: rgba(46, 115, 252, 0.11);' +
+			'border: 2px solid rgba(98, 155, 255, 0.81);' +
+			'border-radius: 0.1em;}' +
+			'/* 선택 가능 단어 스타일 */' +
+			'#ocrResultModal .candidate-text {' +
+			'border: solid 1px #ddd7;border-radius: 1px;}' +
+			'/* 선택이 완료된 단어 스타일 */' +
+			'#ocrResultModal .candidate-text.selected-text {border: solid 1px #7f73;}' +
+			'/* 추가 선택될 단어 스타일 */' +
+			'#ocrResultModal .will-selected {border: solid 2px #0f0!important;}' +
+			'/* 선택 제외될 단어 스타일 */' +
+			'#ocrResultModal .will-removed {border: solid 2px #f00!important;}' +
+			'</style>'));
 		// 로딩 모달
 		if($('#ocrModal').length == 0) {
-			this.#$loadingModal = $(`<div id="ocrModal" class="modal fade" data-bs-backdrop="static" tabindex="-1">
-				<div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
-				<span class="btn btn-light">
-				<span class="spinner-border text-yellow-400" role="status"></span><br>
-				<span style="vertical-align: super;">분석 대상이 아닌 한글, 특수문자 등은<br><mark style="background-color:#f9d37a;">⨂</mark>기호로 바뀝니다.</span>
-				</span></div></div>`);
+			this.#$loadingModal = $('<div id="ocrModal" class="modal fade" data-bs-backdrop="static" tabindex="-1">' +
+			'<div class="modal-dialog modal-dialog-centered d-flex justify-content-center">' +
+			'<span class="btn btn-light">' +
+			'<span class="spinner-border text-yellow-400" role="status"></span><br>' +
+			'<span style="vertical-align: super;">분석 대상이 아닌 한글, 특수문자 등은<br><mark style="background-color:#f9d37a;">⨂</mark>기호로 바뀝니다.</span>' +
+			'</span></div></div>');
 			$(document.body).append(this.#$loadingModal);
 		}
 		// 결과 모달
 		if($('#ocrResultModal').length == 0) {
-			this.#$resultModal = $(`<div id="ocrResultModal" class="modal fade" data-bs-backdrop="static">
-				<div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-scrollable">
-				<div class="modal-content h-100">
-				<div class="modal-header row g-0 p-0">
-				<div class="modal-title row g-0 bg-fc-purple">
-				<span class="title col m-0 p-1 text-center text-white">편집하신 후 <b>완료</b>를 눌러주세요.</span>
-				<button type="button" class="btn-close btn-close-white m-0 ms-auto" data-bs-dismiss="modal" title="취소"></button>
-				</div>
-				<div class="row g-0">
-				<input type="radio" id="addArea" class="btn-check" name="selectArea" checked autocomplete="off">
-				<label class="btn btn-outline-success col-3 ms-auto" for="addArea"><i class="fas fa-plus-square"></i> 추가</label>
-				<input type="radio" id="removeArea" class="btn-check" name="selectArea" autocomplete="off">
-				<label class="btn btn-outline-danger col-3" for="removeArea"><i class="fas fa-minus-square"></i> 제거</label>
-				<button type="button" id="selectArea" class="btn btn-outline-fico col-3 ms-auto"><i class="fas fa-check-square"></i> 완료</button>
-				</div></div>
-				<div class="touch-msg bg-dark text-white text-center">두 손가락을 사용하여 스크롤하거나 확대하세요.</div>
-				<div class="modal-body bg-dark p-0" style="user-select:none;">
-				<img class="img-fluid position-relative pe-none" alt="OCR 이미지" style="filter:brightness(1.3) saturate(2);
-				-webkit-filter:brightness(1.3) saturate(2);touch-action:none;user-select:none;-webkit-user-select: none;-webkit-user-drag: none;">
-				</div></div></div></div>`);
+			this.#$resultModal = $('<div id="ocrResultModal" class="modal fade" data-bs-backdrop="static">' +
+			'<div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-scrollable">' +
+			'<div class="modal-content h-100">' +
+			'<div class="modal-header row g-0 p-0">' +
+			'<div class="modal-title row g-0 bg-fc-purple">' +
+			'<span class="title col m-0 p-1 text-center text-white">편집하신 후 <b>완료</b>를 눌러주세요.</span>' +
+			'<button type="button" class="btn-close btn-close-white m-0 ms-auto" data-bs-dismiss="modal" title="취소"></button>' +
+			'</div>' +
+			'<div class="row g-0">' +
+			'<input type="radio" id="addArea" class="btn-check" name="selectArea" checked autocomplete="off">' +
+			'<label class="btn btn-outline-success col-3 ms-auto" for="addArea"><i class="fas fa-plus-square"></i> 추가</label>' +
+			'<input type="radio" id="removeArea" class="btn-check" name="selectArea" autocomplete="off">' +
+			'<label class="btn btn-outline-danger col-3" for="removeArea"><i class="fas fa-minus-square"></i> 제거</label>' +
+			'<button type="button" id="selectArea" class="btn btn-outline-fico col-3 ms-auto"><i class="fas fa-check-square"></i> 완료</button>' +
+			'</div></div>' +
+			'<div class="touch-msg bg-dark text-white text-center">두 손가락을 사용하여 스크롤하거나 확대하세요.</div>' +
+			'<div class="modal-body bg-dark p-0" style="user-select:none;">' +
+			'<img class="img-fluid position-relative pe-none" alt="OCR 이미지" style="filter:brightness(1.3) saturate(2);' +
+			'-webkit-filter:brightness(1.3) saturate(2);touch-action:none;user-select:none;-webkit-user-select: none;-webkit-user-drag: none;">' +
+			'</div></div></div></div>');
 			$(document.body).append(this.#$resultModal);
 		}
 		// 터치기기가 아니거나 ios 기기는 '두손가락' 안내 삭제

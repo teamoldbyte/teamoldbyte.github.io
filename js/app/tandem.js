@@ -2,7 +2,7 @@
 var drawCurvedArrow=(function(){function t(e2,t2,a){let i=e2,o=a;for(let n=1e-4;n<=1;n+=1e-4){const r=(1-n)*(1-n)*e2+2*(1-n)*n*t2+n*n*a;if(r<i){i=r;}
 if(r>o){o=r;}}
 return[Math.round(i),Math.round(o)];}
-function tt(e,b){const i=$.extend({p0x:50,p0y:50,p1x:70,p1y:10,p2x:100,p2y:100,size:30,lineWidth:10,strokeStyle:"rgb(245,238,49)",header:!0,curve:!0,className:"curved_arrow"},b),o=document.createElement("canvas");const n=i.curve?t(i.p0x,i.p1x,i.p2x):[Math.min(i.p0x,i.p1x,i.p2x),Math.max(i.p0x,i.p1x,i.p2x)],r=i.curve?t(i.p0y,i.p1y,i.p2y):[Math.min(i.p0y,i.p1y,i.p2y),Math.max(i.p0y,i.p1y,i.p2y)],p=i.size-i.lineWidth,s=n[0]-p,l=n[1]+p,x=r[0]-p,c=r[1]+p,h=i.p0x-s,y=i.p0y-x,d=i.p1x-s,u=i.p1y-x,k=i.p2x-s,m=i.p2y-x;o.className=i.className;o.style.position="absolute";o.style.top=x+"px";o.style.left=s+"px";const g=o.getContext("2d"),v=window.devicePixelRatio||1;if(o.style.width=l-s+"px",o.style.height=c-x+"px",o.width=(l-s)*v,o.height=(c-x)*v,g.scale(v,v),g.strokeStyle=i.strokeStyle,g.lineWidth=i.lineWidth,g.lineJoin="round",g.lineCap="round",g.beginPath(),g.moveTo(h,y),Math.abs(d-h)>Math.abs(u-m)&&g.lineTo(d>h?d-Math.abs(u-m):d+Math.abs(u-m),u),i.curve?g.quadraticCurveTo(d,u,k,m):(g.lineTo(d,u),g.lineTo(k,m)),g.stroke(),i.header){const e3=Math.atan2(m-u,k-d);g.translate(k,m);g.rotate(e3+1);g.beginPath();g.moveTo(0,i.size);g.lineTo(0,0);g.stroke();g.rotate(-2);g.lineTo(0,-i.size);g.stroke();g.rotate(1-e3);g.translate(-k,-m);}
+function tt(e,b){const i=$.extend({p0x:50,p0y:50,p1x:70,p1y:10,p2x:100,p2y:100,size:30,lineWidth:10,strokeStyle:"rgb(245,238,49)",header:!0,curve:!0,className:"curved_arrow"},b),o=document.createElement("canvas");const n=i.curve?t(i.p0x,i.p1x,i.p2x):[Math.min(i.p0x,i.p1x,i.p2x),Math.max(i.p0x,i.p1x,i.p2x)],r=i.curve?t(i.p0y,i.p1y,i.p2y):[Math.min(i.p0y,i.p1y,i.p2y),Math.max(i.p0y,i.p1y,i.p2y)],p=i.size-i.lineWidth,s=n[0]-p,l=n[1]+p,x=r[0]-p,c=r[1]+p,h=i.p0x-s,y=i.p0y-x,d=i.p1x-s,u=i.p1y-x,k=i.p2x-s,m=i.p2y-x;o.className=i.className;o.style.position="absolute";o.style.top=`${x}px`;o.style.left=`${s}px`;const g=o.getContext("2d"),v=window.devicePixelRatio||1;if(o.style.width=`${l-s}px`,o.style.height=`${c-x}px`,o.width=(l-s)*v,o.height=(c-x)*v,g.scale(v,v),g.strokeStyle=i.strokeStyle,g.lineWidth=i.lineWidth,g.lineJoin="round",g.lineCap="round",g.beginPath(),g.moveTo(h,y),Math.abs(d-h)>Math.abs(u-m)&&g.lineTo(d>h?d-Math.abs(u-m):d+Math.abs(u-m),u),i.curve?g.quadraticCurveTo(d,u,k,m):(g.lineTo(d,u),g.lineTo(k,m)),g.stroke(),i.header){const e3=Math.atan2(m-u,k-d);g.translate(k,m);g.rotate(e3+1);g.beginPath();g.moveTo(0,i.size);g.lineTo(0,0);g.stroke();g.rotate(-2);g.lineTo(0,-i.size);g.stroke();g.rotate(1-e3);g.translate(-k,-m);}
 e.appendChild(o);}return tt;}());
 
 /**=============================================================================
@@ -456,25 +456,20 @@ var createBasicDOMs = (function() {
     let htmlTag = "", tag = tagPairs[i];
     if(tag.type == 'start'){
       // 구/절 태그의 경우 구/절 시작 부호'(','[' 태그 삽입 후 시작태그 삽입 
-      htmlTag += '<span class="sem '+ tag.mark.toLowerCase();
+      htmlTag += `<span class="sem ${tag.mark.toLowerCase()}`;
       // 선행사일 경우 인덱스를 남김
       if(tag.mark == 'RCM')
-        htmlTag += ' mfd-' + semanticSequence + '-' + ++modificandIndex;
+        htmlTag += ` mfd-${semanticSequence}-${++modificandIndex}`;
       htmlTag += '"';
       
       if(tag.modifier)
-        htmlTag += ' data-mfd="' + semanticSequence + '-' + modificandIndex + '"';
+        htmlTag += ` data-mfd="${semanticSequence}-${modificandIndex}"`;
       
-      if(tag.rcomment) {
-		htmlTag += ' data-rc=';
-      	if(tag.rcomment.indexOf('.') > 0)
-		  htmlTag += '"' + tag.rcomment + '"';
-		else 
-		  htmlTag += '"' + tag.rcomment.substring(0,1).toUpperCase() + '"';
-	  }
+      if(tag.rcomment)
+		htmlTag += ` data-rc="${(tag.rcomment.indexOf('.') > 0) ? tag.rcomment : tag.rcomment.substring(0,1).toUpperCase()}"`;
 	  
 	  if(tag.gcomment)
-		htmlTag += ' data-gc="' + tag.gcomment + '"';
+		htmlTag += ` data-gc="${tag.gcomment}"`;
 	  
 	  htmlTag += '>';
     }else{
@@ -511,14 +506,65 @@ var semanticsFromDOMs = (function() {
 	const allTypes = ['s','v','o','c','a','oc','m','rcm','tor','ger','ptc','conj',
 			'phr','adjphr','advphr','ptcphr','cls','ncls','acls','advcls','ccls','pcls'];
 	const formComponents = ['s','v','o','c','a','oc','m']; // 문장형식 요소들
-	const prepKeywords = ['aboard', 'about', 'above', 'according', 'across', 'after', 'against', 'ahead of', 'along with', 'alongside', 'along', 'amidst', 'amid', 'amongst', 'among', 'anti', 'apart from', 'around', 'as for', 'as per', 'as to', 'as well as', 'as of', 'aside', 'astride', 'as', 'atop', 'at', 'away from', 'barring', 'bar', 'because of', 'before', 'behind', 'below', 'beneath', 'besides', 'beside', 'between', 'beyond', 'but for', 'but', 'by means of', 'by', 'circa', 'close to', 'concerning', 'considering', 'contrary to', 'counting', 'cum', 'despite', 'depending on', 'down', 'due to', 'during', 'except for', 'excepting', 'except', 'excluding', 'following', 'forward of', 'for', 'from', 'further to', 'given', 'gone', 'in addition to', 'in between', 'in case of', 'in face of', 'in favour of', 'in front of', 'in lieu of', 'in spite of', 'in view of', 'into', 'including', 'inside', 'instead of', 'in', 'less', 'like', 'minus', 'near to', 'near', 'next to', 'notwithstanding', 'off', 'of', 'on account of', 'on behalf of', 'on board', 'on to', 'onto', 'on top of', 'on', 'opposite to', 'opposite', 'other than', 'out of', 'out', 'outside of', 'outside', 'over', 'owing to', 'past', 'pending', 'per', 'plus', 'preparatory to', 'prior to', 'pro', 're', 'regarding', 'regardless of', 'respecting', 'round', 'save', 'save for', 'saving', 'since', 'through', 'thru', 'throughout', 'till', 'together with', 'touching', 'toward', 'towards', 'to', 'than', 'thanks to', 'underneath', 'under', 'unlike', 'until', 'up against', 'up to', 'up until', 'upon', 'up', 'versus', 'via', 'with reference to', 'with regard to', 'without', 'within', 'with']
+	const relPronounKeywords = ['who','whose','whom','which','that']; // 관계대명사
+	// 부사절 접속사
+	const advConjKeywords = ['if','unless','when','while','until','before','after','because','since','though','although','even though','so that','such that','as if','as','where'];
+	const ccKeywords = ['for','beside','yet','nor'];	// 특수 등위접속사들
+	// 전치사
+	const prepKeywords = ['aboard','about','above','according','across','after','against','ahead of','along with','alongside','along','amidst','amid','amongst','among','anti','apart from','around','as for','as per','as to','as well as','as of','aside','astride','as','atop','at','away from','barring','bar','because of','before','behind','below','beneath','besides','beside','between','beyond','but for','but','by means of','by','circa','close to','concerning','considering','contrary to','counting','cum','despite','depending on','down','due to','during','except for','excepting','except','excluding','following','forward of','for','from','further to','given','gone','in addition to','in between','in case of','in face of','in favour of','in front of','in lieu of','in spite of','in view of','into','including','inside','instead of','in','less','like','minus','near to','near','next to','notwithstanding','off','of','on account of','on behalf of','on board','on to','onto','on top of','on','opposite to','opposite','other than','out of','out','outside of','outside','over','owing to','past','pending','per','plus','preparatory to','prior to','pro','re','regarding','regardless of','respecting','round','save','save for','saving','since','through','thru','throughout','till','together with','touching','toward','towards','to','than','thanks to','underneath','under','unlike','until','up against','up to','up until','upon','up','versus','via','with reference to','with regard to','without','within','with'];
 	function findClassIn(element, classes) {
 		return classes.find(one => element.classList.contains(one));
 	}
+	function findRPKeyword(element, givenKey) {
+		let rpKeyword = null;
+		// 탐색할 관계대명사가 주어진 경우(부모 형용사절의 자식 형용사절에 대한 탐색)
+		if(givenKey != undefined) {
+			// 주어진 관계대명사를 갖고 있다면 true, 아니라면 false를 반환
+			return element.textContent.match(new RegExp(`\\b${givenKey}\\b`,'gi')) != null;
+		}
+		for(let i = 0, len = relPronounKeywords.length; i < len; i++) {
+			const keyword = relPronounKeywords[i];
+			// 특정 관계대명사가 자식 형용사절이 아닌 자신만의 것이라면 관계대명사를 반환
+			// 'OO로 시작'이 아닌 'OO를 포함'이라는 식을 쓰는 이유는, 'most of whom'과 같은 형태가 있을 수 있기 때문 
+			if(element.textContent.match(new RegExp(`\\b${keyword}\\b`,'gi'))?.length > Array.from(element.querySelectorAll('.acls')).filter(child => findRPKeyword(child, keyword)).length) {
+				rpKeyword = keyword;
+				break;
+			}
+		}
+		return rpKeyword;
+	}
+	function findAdvKeyword(element) {
+		let advKeyword = null;
+		for(let i = 0, len = advConjKeywords.length; i < len; i++) {
+			const keyword = advConjKeywords[i];
+			if(element.textContent.length > 0 
+			&& element.textContent.toLowerCase().startsWith(keyword)) {
+				advKeyword = keyword;
+				break;
+			}
+		}
+		return advKeyword;
+	}
+	function findCCKeyword(element) {
+		let ccKeyword = null;
+		for(let i = 0, len = ccKeywords.length; i < len; i++) {
+			const keyword = ccKeywords[i];
+			// 특정 등위접속사가 자신의 앞에 있다면 반환.
+			// 일반적으로 등위접속사에 태그가 적용돼있지 않기 때문에, 자신의 바로 앞은 빈 칸, 그 앞이 등위접속사이다.
+			// .wholeText를 통해 인접 텍스트노드를 모두 읽기 때문에 ' and ' 같은 형태로 읽혀진다.
+			if(element.previousSibling != null &&
+			(new RegExp(`${keyword} $`,'i')).test(element.previousSibling.wholeText)) {
+				ccKeyword = keyword;
+				break;
+			}
+		}
+		return ccKeyword;
+	}
 	function findPrepKeyword(element) {
 		let prepKeyword = null;
-		for(let j = 0, len2 = prepKeywords.length; j < len2; j++) {
-			const keyword = prepKeywords[j];
+		// 전치사구가 어떤 전치사를 시작으로 하고 있는지를 반환.
+		for(let i = 0, len = prepKeywords.length; i < len; i++) {
+			const keyword = prepKeywords[i];
 			if(element.textContent.length > 0 
 			&& element.textContent.toLowerCase().startsWith(keyword)) {
 				prepKeyword = keyword;
@@ -527,6 +573,18 @@ var semanticsFromDOMs = (function() {
 		}
 		return prepKeyword;		
 	}
+	function tenseAppendedPtc(element) {
+		return /^\w+ing\b/.test(element.textContent) ? 'ap' : 'pp';
+	}
+	function getPtcModi(element) {
+		const modifier = document.querySelector(`[data-mfd="${element.className.match(/mfd-(\d+-\d+)/)[1]}"]`);
+		if(modifier.classList.contains('ptc')) {
+			const ptctense = tenseAppendedPtc(modifier);
+			if(element.compareDocumentPosition(modifier) & 2) {
+				return `pre_${ptctense}`;
+			}else return `post_${ptctense}`;
+		}else return null;
+	}
 	function privFunc(div) {
 		const children = div.children;
 		let semantics = [];
@@ -534,32 +592,55 @@ var semanticsFromDOMs = (function() {
 			const child = children[i], grandChild = child.firstElementChild;
 			let oneRole;
 			
-			// key에 해당하는 성분인지 검사
+			// 한 문자열이 2개의 문법태그를 가질 경우
 			if(child.childElementCount > 0 && grandChild.textContent == child.textContent) {
 				const outerClass = findClassIn(child, allTypes),
 					innerClass =  findClassIn(grandChild, allTypes);
 				let type;
+				// 필수성분 태그를 바깥으로, 품사 태그를 안쪽으로 재정렬
 				if(findClassIn(grandChild, formComponents)) {
 					oneRole = innerClass; type = outerClass;
 				}else {
 					oneRole = outerClass; type = innerClass;
 				}
 				child.parentElement.replaceChild(grandChild,child)
+				
+				// 문법요소 목록에 추가하되, type으로써 품사를 추가
 				if(oneRole) {
-					const sem = {key: oneRole, type: type, children: privFunc(grandChild)};
+					const sem = {key: oneRole, type: type, text: child.textContent, children: privFunc(grandChild)};
 					if(sem.type == 'phr') {
 						const prep = findPrepKeyword(grandChild);
 						if(prep) sem.prep = prep;
+					}else if(sem.type == 'acls') {
+						const rp = findRPKeyword(grandChild);
+						if(rp) sem.rp = rp;
+					}else if(sem.type == 'advcls') {
+						const adv = findAdvKeyword(grandChild);
+						if(adv) sem.adv = adv;
+					}else if(sem.type == 'ptc') {
+						const ptctense = tenseAppendedPtc(grandChild);
+						if(ptctense) sem.type = ptctense;
 					}
 					semantics.push(sem);
 				}
-			}else {
+			}
+			// 한 문자열이 하나의 태그로만 이루어진 경우
+			else {
 				oneRole = findClassIn(child, allTypes);
 				if(oneRole) {
-					const sem = {key: oneRole, children: privFunc(child)};
+					const sem = {key: oneRole, text: child.textContent, children: privFunc(child)};
 					if(sem.key == 'phr') {
 						const prep = findPrepKeyword(child);
 						if(prep) sem.prep = prep;
+					}else if(sem.key == 'ccls') {
+						const cc = findCCKeyword(child);
+						if(cc) sem.cc = cc;
+					}else if(sem.key == 'ptc') {
+						const ptctense = tenseAppendedPtc(child);
+						if(ptctense) sem.key = ptctense;
+					}else if(sem.key == 'rcm') {
+						const ptcmodi = getPtcModi(child);
+						if(dir) sem.ptcmodi = ptcmodi;
 					}
 					semantics.push(sem);
 				}
@@ -575,45 +656,60 @@ semantics 배열로부터 GramMeta 정보 생성
 var gramMetaFromSemantics = (function() {
 	// GramMeta에 없는 값은 소문자로 구별
 	const roleTable = {s: 'SUBJ', v: 'VERB', o: 'OBJ', c: 'COMP', oc: 'OC', a: 'ADV', m: 'MODI',
-			rcm: 'rcm', tor: 'TO', ger: 'GER', ptc: 'PTC', conj: 'conj', phr: 'PREP', 
+			rcm: 'MODI', tor: 'TO', ger: 'GER', ptc: 'PTC', ap: 'AP', pp: 'PP', conj: 'conj', phr: 'PREP', 
 			adjphr: 'adjphr', advphr: 'advphr', ptcphr: 'ptcphr', cls: 'CLAUSE',
 			ncls: 'NCLS', acls: 'ACLS', advcls: 'ADVCLS', ccls: 'CCLS', pcls: 'PCLS'};
 			
 	function hasKey(arr, keyName, keyValue) {
 		return arr.some(el => el[keyName] == keyValue);
 	}		
+	function createMeta(name) {
+		return name.toUpperCase().replaceAll(' ','_');
+	}
 	function privFunc(semantics, gramDepth) {
 		let formType, metaSet = [], depth = gramDepth || 1;
-		// 5형식
+		// oc가 있으면 5형식
 		if(hasKey(semantics, 'key', 'oc')) {
 			formType = 'FORM_FIVE';
 		}
-		// 4형식
+		// o가 2개 이상이면 4형식
 		else if(semantics.filter(sem => sem.key == 'o').length > 1) {
 			formType = 'FORM_FOUR';
 		}
-		// 3형식
+		// o가 1개 있으면 3형식
 		else if(hasKey(semantics, 'key', 'o')) {
 			formType = 'FORM_THREE';
 		}
-		// 2형식
+		// c가 있으면 2형식
 		else if(hasKey(semantics, 'key', 'c')) {
 			formType = 'FORM_TWO';
-		}else if(hasKey(semantics, 'key', 'v')) {
-			formType = 'FORM_ONE' + (hasKey(semantics, 'key', 'a')?'_ADV':'');
 		}
-		// 성분이 준동사 혹은 구,절의 형태일 경우(type 존재) GramMeta 이름에 이어붙인다.
+		// 이외에 v가 있으면 1형식(a가 있으면 1a형식)
+		else if(hasKey(semantics, 'key', 'v')) {
+			formType = `FORM_ONE${hasKey(semantics, 'key', 'a')?'_ADV':''}`;
+		}
+		// 인식된 문장 형식을 set에 추가
+		// 중첩태그를 우선하기 위해 단순 문장 형식에는 depth를 1 늘인다.
+		if(formType != undefined && !hasKey(metaSet, 'name', formType)) 
+			metaSet.push({depth: depth + 1, name: formType});
+		// 2개의 태그가 중첩된 형태일 경우(type 존재) GramMeta 이름에 이어붙인다.
+		// 문장형식 이름에도 이어붙인다.
 		const hasTypes = semantics.filter(sem => sem.type != null);
 		for(let i = 0, len = hasTypes.length; i < len; i++) {
-			const key = roleTable[hasTypes[i].key],
-				type = roleTable[hasTypes[i].type],
-				twoMixed = `${type}_${key}`, 
-				threeMixed = (formType?`${formType}_`:'')+ twoMixed;
+			const semantic = hasTypes[i],
+				key = roleTable[semantic.key];
+			let type = roleTable[semantic.type];
+			
+			const twoMixed = `${type}_${key}`;
+			const threeMixed = formType ? `${formType}_${twoMixed}` : twoMixed;
 				
+			// 3항 태그를 우선 인식
 			if(!hasKey(metaSet, 'name', threeMixed)) 
 				metaSet.push({depth, name: threeMixed});
+			// 다음으로 2항 태그 인식
 			if(!hasKey(metaSet, 'name', twoMixed)) 
 				metaSet.push({depth, name: twoMixed});
+			// 다음으로 품사와 성분을 인식(다항 태그보다는 후순위므로 depth 1증가)
 			if(!hasKey(metaSet, 'name', type)) 
 				metaSet.push({depth: depth + 1, name: type});
 			if(!hasKey(metaSet, 'name', key)) 
@@ -622,20 +718,55 @@ var gramMetaFromSemantics = (function() {
 			if(type.includes('CLS') && !hasKey(metaSet, 'name', 'CLAUSE')) {
 				metaSet.push({depth: depth + 1, name: 'CLAUSE'});
 			}
+			// '분사'가 있으면 태그 추가
+			if(['AP','PP'].includes(type) && !hasKey(metaSet, 'name', 'PTC')) {
+				metaSet.push({depth: depth + 1, name: 'PTC'});
+			}
 		}
-		if(formType != undefined && !hasKey(metaSet, 'name', formType)) 
-			metaSet.push({depth: depth + 1, name: formType});
 		
-		// 자식 태그를 다시 순회
+		// 전체 태그별 GramMeta 추가 후, 자식 태그를 다시 순회하며 반복
 		for(let i = 0, len = semantics.length; i < len; i++) {
 			const child = semantics[i], key = roleTable[child.key];
-			if(!hasKey(metaSet, 'name', key)) 
-				metaSet.push({depth: depth + 1, name: key});
+
+			// 전치사를 가졌다면 PHR_OO_OO 형태의 GramMeta를 추가
 			if(child.prep) {
-				const prepMeta = ('phr ' + child.prep).toUpperCase().replaceAll(' ','_');
+				const prepMeta = createMeta(`phr ${child.prep}`);
 				if(!hasKey(metaSet, 'name', prepMeta))
 					metaSet.push({depth: depth + 1, name: prepMeta});
 			}
+			// 등위접속사를 가졌다면 CCLS_OO 형태의 GramMeta를 추가
+			else if(child.cc) {
+				const ccMeta = createMeta(`ccls ${child.cc}`);
+				if(!hasKey(metaSet, 'name', ccMeta))
+					metaSet.push({depth: depth + 1, name: ccMeta});
+			}
+			// 관계접속사를 가졌다면 ACLS_OO 형태의 GramMeta를 추가
+			else if(child.rp) {
+				const rpMeta = createMeta(`acls ${child.rp}`);
+				if(!hasKey(metaSet, 'name', rpMeta))
+					metaSet.push({depth: depth + 1, name: rpMeta});
+			}
+			// 부사절접속사를 가졌다면 ADVCLS_OO 형태의 GramMeta를 추가
+			else if(child.adv) {
+				const advMeta = createMeta(`advcls ${child.adv}`);
+				if(!hasKey(metaSet, 'name', advMeta))
+					metaSet.push({depth: depth + 1, name: advMeta});
+			}
+			// 수식선을 가진 분사를 가졌다면 MODI_OO 형태의 GramMeta를 추가
+			if(child.ptcmodi) {
+				const modiMeta = createMeta(`modi ${child.ptcmodi}`);
+				if(!hasKey(metaSet, 'name', modiMeta))
+					metaSet.push({depth: depth + 1, name: modiMeta});
+			}
+			if(!hasKey(metaSet, 'name', key)) 
+				metaSet.push({depth: depth + 1, name: key});
+			
+			// 분사를(AP,PP) 가졌다면 PTC를 GramMeta에 또 추가
+			if(['AP','PP'].includes(key) && !hasKey(metaSet, 'name', 'PTC')) {
+				metaSet.push({depth: depth + 1, name: 'PTC'});
+			}
+			
+			// 자식 태그들에 대해 다시 수행
 			if(child.children.length > 0) {
 				const childMetas = gramMetaFromSemantics(child.children, depth + 2);
 				for(let j = 0, len2 = childMetas.length; j < len2; j++) {
@@ -652,10 +783,256 @@ var gramMetaFromSemantics = (function() {
 
 
 var gramMetaArr2Str = (function() {
+	const gramMetaCodes = [
+"FORM_ONE",
+"FORM_ONE_ADV",
+"FORM_TWO",
+"FORM_TWO_NOUN_COMP",
+"FORM_TWO_GER_COMP",
+"FORM_TWO_ADJ_COMP",
+"FORM_TWO_TO_COMP",
+"FORM_TWO_PREP_COMP",
+"FORM_TWO_NCLS_COMP",
+"FORM_THREE",
+"FORM_THREE_VI_PREP",
+"FORM_THREE_NOUN_OBJ",
+"FORM_THREE_GER_OBJ",
+"FORM_THREE_TO_OBJ",
+"FORM_THREE_INTERR_OBJ",
+"FORM_THREE_NCLS_OBJ",
+"FORM_FOUR",
+"FORM_FIVE",
+"FORM_FIVE_NOUN_OC",
+"FORM_FIVE_GER_OC",
+"FORM_FIVE_ADJ_OC",
+"FORM_FIVE_AP_OC",
+"FORM_FIVE_PP_OC",
+"FORM_FIVE_TO_OC",
+"FORM_FIVE_RV_OC",
+"FORM_FIVE_INTERR_OBJ",
+"FORM_FIVE_PREP_OC",
+"CLAUSE",
+"CCLS",
+"CCLS_FOR",
+"CCLS_BESIDE",
+"CCLS_YET",
+"CCLS_NOR",
+"NCLS",
+"NCLS_SUBJ",
+"NCLS_OBJ",
+"NCLS_COMP",
+"ACLS",
+"ACLS_WHO",
+"ACLS_WHOSE",
+"ACLS_WHOM",
+"ACLS_WHICH",
+"ACLS_THAT",
+"ADVCLS",
+"ADVCLS_IF",
+"ADVCLS_UNLESS",
+"ADVCLS_WHEN",
+"ADVCLS_WHILE",
+"ADVCLS_UNTIL",
+"ADVCLS_BEFORE",
+"ADVCLS_AFTER",
+"ADVCLS_BECAUSE",
+"ADVCLS_SINCE",
+"ADVCLS_THOUGH",
+"ADVCLS_ALTHOUGH",
+"ADVCLS_EVEN_THOUGH",
+"ADVCLS_SO_THAT",
+"ADVCLS_SUCH_THAT",
+"ADVCLS_AS",
+"ADVCLS_AS_IF",
+"ADVCLS_WHERE",
+"PCLS",
+"TO",
+"TO_SUBJ",
+"TO_OBJ",
+"TO_ACTUAL_OBJ",
+"TO_COMP",
+"TO_ADJ",
+"TO_ADV",
+"GER",
+"GER_SUBJ",
+"GER_SUBJ_PP",
+"GER_OBJ",
+"GER_ACTUAL_OBJ",
+"GER_COMP",
+"PTC",
+"AP",
+"AP_OC",
+"AP_COMP",
+"PP",
+"PP_OC",
+"PP_COMP",
+"MODI",
+"MODI_POST_AP",
+"MODI_PRE_AP",
+"MODI_POST_PP",
+"INTERR",
+"INTERR_SUBJ",
+"INTERR_OBJ",
+"INTERR_COMP",
+"PREP_ADVBIAL",
+"PREP_OBJ_ADVBIAL",
+"PHR",
+"PHR_ABOARD",
+"PHR_ABOUT",
+"PHR_ABOVE",
+"PHR_ACCORDING",
+"PHR_ACROSS",
+"PHR_AFTER",
+"PHR_AGAINST",
+"PHR_AHEAD_OF",
+"PHR_ALONG",
+"PHR_ALONG_WITH",
+"PHR_ALONGSIDE",
+"PHR_AMID",
+"PHR_AMIDST",
+"PHR_AMONG",
+"PHR_AMONGST",
+"PHR_ANTI",
+"PHR_APART_FROM",
+"PHR_AROUND",
+"PHR_AS",
+"PHR_AS_FOR",
+"PHR_AS_PER",
+"PHR_AS_TO",
+"PHR_AS_WELL_AS",
+"PHR_AS_OF",
+"PHR_ASIDE",
+"PHR_ASTRIDE",
+"PHR_AT",
+"PHR_ATOP",
+"PHR_AWAY_FROM",
+"PHR_BAR",
+"PHR_BARRING",
+"PHR_BECAUSE_OF",
+"PHR_BEFORE",
+"PHR_BEHIND",
+"PHR_BELOW",
+"PHR_BENEATH",
+"PHR_BESIDE",
+"PHR_BESIDES",
+"PHR_BETWEEN",
+"PHR_BEYOND",
+"PHR_BUT",
+"PHR_BUT_FOR",
+"PHR_BY",
+"PHR_BY_MEANS_OF",
+"PHR_CIRCA",
+"PHR_CLOSE_TO",
+"PHR_CONCERNING",
+"PHR_CONSIDERING",
+"PHR_CONTRARY_TO",
+"PHR_COUNTING",
+"PHR_CUM",
+"PHR_DESPITE",
+"PHR_DEPENDING_ON",
+"PHR_DOWN",
+"PHR_DUE_TO",
+"PHR_DURING",
+"PHR_EXCEPT",
+"PHR_EXCEPT_FOR",
+"PHR_EXCEPTING",
+"PHR_EXCLUDING",
+"PHR_FOLLOWING",
+"PHR_FOR",
+"PHR_FORWARD_OF",
+"PHR_FROM",
+"PHR_FURTHER_TO",
+"PHR_GIVEN",
+"PHR_GONE",
+"PHR_IN",
+"PHR_IN_ADDITION_TO",
+"PHR_IN_BETWEEN",
+"PHR_IN_CASE_OF",
+"PHR_IN_FACE_OF",
+"PHR_IN_FAVOUR_OF",
+"PHR_IN_FRONT_OF",
+"PHR_IN_LIEU_OF",
+"PHR_IN_SPITE_OF",
+"PHR_IN_VIEW_OF",
+"PHR_INTO",
+"PHR_INCLUDING",
+"PHR_INSIDE",
+"PHR_INSTEAD_OF",
+"PHR_LESS",
+"PHR_LIKE",
+"PHR_MINUS",
+"PHR_NEAR",
+"PHR_NEAR_TO",
+"PHR_NEXT_TO",
+"PHR_NOTWITHSTANDING",
+"PHR_OF",
+"PHR_OFF",
+"PHR_ON",
+"PHR_ON_ACCOUNT_OF",
+"PHR_ON_BEHALF_OF",
+"PHR_ON_BOARD",
+"PHR_ON_TO",
+"PHR_ONTO",
+"PHR_ON_TOP_OF",
+"PHR_OPPOSITE",
+"PHR_OPPOSITE_TO",
+"PHR_OTHER_THAN",
+"PHR_OUT",
+"PHR_OUT_OF",
+"PHR_OUTSIDE",
+"PHR_OUTSIDE_OF",
+"PHR_OVER",
+"PHR_OWING_TO",
+"PHR_PAST",
+"PHR_PENDING",
+"PHR_PER",
+"PHR_PLUS",
+"PHR_PREPARATORY_TO",
+"PHR_PRIOR_TO",
+"PHR_PRO",
+"PHR_RE",
+"PHR_REGARDING",
+"PHR_REGARDLESS_OF",
+"PHR_RESPECTING",
+"PHR_ROUND",
+"PHR_SAVE",
+"PHR_SAVE_FOR",
+"PHR_SAVING",
+"PHR_SINCE",
+"PHR_THROUGH",
+"PHR_THRU",
+"PHR_THROUGHOUT",
+"PHR_TILL",
+"PHR_TO",
+"PHR_TOGETHER_WITH",
+"PHR_TOUCHING",
+"PHR_TOWARD",
+"PHR_TOWARDS",
+"PHR_THAN",
+"PHR_THANKS_TO",
+"PHR_UNDER",
+"PHR_UNDERNEATH",
+"PHR_UNLIKE",
+"PHR_UNTIL",
+"PHR_UP",
+"PHR_UP_AGAINST",
+"PHR_UP_TO",
+"PHR_UP_UNTIL",
+"PHR_UPON",
+"PHR_VERSUS",
+"PHR_VIA",
+"PHR_WITH",
+"PHR_WITH_REFERENCE_TO",
+"PHR_WITH_REGARD_TO",
+"PHR_WITHOUT",
+"PHR_WITHIN",
+"VERB_PHR"
+]
 	const nonKeywords = ['SUBJ','VERB','OBJ','COMP','OC','ADV'];
 	
 	function privFunc(gramMetaArr) {
-		return gramMetaArr.filter(meta => !nonKeywords.includes(meta.name))
+		
+		return gramMetaArr.filter(meta => gramMetaCodes.includes(meta.name) && !nonKeywords.includes(meta.name))
 								.sort((a,b) => a.depth - b.depth)
 								.map(meta => meta.name).join(' ');
 	}
@@ -737,8 +1114,8 @@ function wrapWithBracket(div){
     let openBracket = div.ownerDocument.createElement('span');
     let closeBracket = div.ownerDocument.createElement('span');
     
-    openBracket.className = 'brkt ' + type + '-start';
-    closeBracket.className = 'brkt ' + type + '-end';
+    openBracket.className = `brkt ${type}-start`;
+    closeBracket.className = `brkt  ${type}-end`;
     openBracket.textContent = brackets[0];
     closeBracket.textContent = brackets[1];
     // cls나 etc 타입의 괄호끼리 레이어 처리
@@ -1037,8 +1414,8 @@ function correctMarkLine(div){
 		const indent = el.matches('.rcm') ? (rects[rects.length - 1].right - rects[0].left)
 										: (rects[1].left - rects[0].left);
 		const indentMin = el.matches('.rcm') ? indent : (indent + rects[1].width / 2);
-		el.style.setProperty('--indent', indent + 'px');
-		el.style.setProperty('--indent-min', indentMin + 'px');
+		el.style.setProperty('--indent', `${indent}px`);
+		el.style.setProperty('--indent-min', `${indentMin}px`);
 		el.classList.remove('cmnt-align-start');
 		el.classList.add('cmnt-align-center','odd');
 	  } else {
@@ -1206,8 +1583,8 @@ var drawConnections = (function() {
 	    arrowHeight = 15 + (0.1 * Math.log(distance));
 	    
 	    // 각 화살표의 아이디 할당
-	    drawSettings1.className = 'curved_arrow start mfd' + modifier.dataset.mfd;
-	    drawSettings2.className = 'curved_arrow end mfd' + modifier.dataset.mfd;
+	    drawSettings1.className = `curved_arrow start mfd${modifier.dataset.mfd}`;
+	    drawSettings2.className = `curved_arrow end mfd${modifier.dataset.mfd}`;
 	    
 	    // 계산된 화살표 높이를 적용한 최종 화살표 canvas 좌표 설정
 	    drawSettings1.p0y = startY - arrowHeight;
@@ -1294,13 +1671,13 @@ var drawConnections = (function() {
     let canvas = div.ownerDocument.createElement('canvas');
     canvas.className = settings.className.replace('start','btwn');
     canvas.style.position = 'absolute';
-    canvas.style.top = (yPos - height - padding) + 'px';
-    canvas.style.left = (xPos - padding) +'px';
+    canvas.style.top = `${yPos - height - padding}px`;
+    canvas.style.left = `${xPos - padding}px`;
     canvas.dataset.height = height;
     
     let ctx = canvas.getContext('2d');
-    canvas.style.width = 2 * padding + length + 'px';
-    canvas.style.height = 2 * padding + settings.lineWidth + 'px';
+    canvas.style.width = `${2 * padding + length}px`;
+    canvas.style.height = `${2 * padding + settings.lineWidth}px`;
     // 디바이스 픽셀 비율에 의한 흐릿함 보정
     const dpr = window.devicePixelRatio || 1;
     canvas.width = (2 * padding + length) * dpr;
@@ -1396,13 +1773,11 @@ var adjustLineHeight = (function() {
 	        // line-height 조정의 목적은 윗줄의 lower 요소들과 현재줄의 upper요소들의 겹침 방지이다.
 	        // 따라서 '윗줄 lower 높이 + 현재줄 upper 높이 + 텍스트 높이'만큼의 차이 필요.
 	        parentEl.style.lineHeight 
-	          = Math.max(maxContentHeight, rem * 1.35
-	          + maxUpperHeight + prevLineLowerHeight
-	          + (lineNumber > 0 ? (rem * 0.5/*여유 간격*/) : 0)) + 'px';
+	          = `${Math.max(maxContentHeight, rem * 1.35 + maxUpperHeight + prevLineLowerHeight + (lineNumber > 0 ? (rem * 0.5/*여유 간격*/) : 0))}px`;
 	        prevLineLowerHeight = maxLowerHeight;
 	        if(i == len - 1) {
 	          // 마지막의 하단부 크기만큼 아랫쪽 간격 추가.
-	          div.style.paddingBottom = maxLowerHeight + 'px';
+	          div.style.paddingBottom = `${maxLowerHeight}px`;
 	        }else {
 	          // 줄의 마지막이 되면 변수들 초기화
 	          maxContentHeight = 0;
