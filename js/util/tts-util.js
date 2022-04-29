@@ -204,6 +204,7 @@
 			}
 			this.speak = (text, ...callback) => {
 				if(_options.enabled) {
+				console.log(this.initialized, callback);
 				if(this.initialized == undefined) {
 					setTimeout(() => this.speak(text, callback), 250);
 					return;
@@ -211,7 +212,6 @@
 				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
 				utterance.text = text;
-				console.log(callback);
 				if(callback.length > 0) endCallback = callback[0];
 				
 				speechSynthesis.speak(utterance);
