@@ -92,7 +92,7 @@
 	let utterance;
 	let _options;
 	FicoTTS.defaults = {
-		enabled: true, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0, initSuccessCallback: null, initFailCallback: null
+		enabled: true, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0, initSuccessCallback: () => {}, initFailCallback: () => {}
 	};
 	(function() {
 		// ANI(App Native Interface)가 구현돼있을 경우 흐름
@@ -103,11 +103,11 @@
 						console.info('initialize success')
 						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
 						window.addEventListener('beforeunload', () => this.stop());
-						if(_options.initSuccessCallback) _options.initSuccessCallback.call(this);
+						_options.initSuccessCallback();
 					}), 
 					makeFunc2Callback(() => {
 						console.info('initialize failed')
-						if(_options.initFailCallback) _options.initFailCallback.call(this);
+						_options.initFailCallback();
 					}));
 				appendModal();
 			}
@@ -117,17 +117,17 @@
 				ANI.changeTTSOptions(JSON.stringify(options));
 			}
 			
-			this.speak = (text, ...callback) => {
+			this.speak = (text, callback = () => {}) => {
 				if(_options.enabled) {
-				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
+				callback = [makeFunc2Callback(callback)];
 				
 				ANI.ttsSpeak(text, callback);
 				}
 			}
 			
-			this.speakRepeat = (text, loopNum, interval, ...callback) => {
+			this.speakRepeat = (text, loopNum, interval, callback = () => {}) => {
 				if(_options.enabled) {
-				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
+				callback = [makeFunc2Callback(callback)];
 				ANI.ttsSpeakRepeat(text, loopNum, interval, callback);
 				}
 			}
@@ -140,8 +140,8 @@
 				}
 			}
 			
-			this.stop = (...callback) => {
-				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
+			this.stop = (callback = () => {}) => {
+				callback = [makeFunc2Callback(callback)];
 				ANI.ttsStop(callback);
 			}
 			this.isEnabled = () => _options.enabled;
@@ -171,11 +171,11 @@
 				}
 			}
 			// ANI에서 evaluateJavascript 실행이 가능한 형태의 코드로 반환
-			const makeFunc2Callback = (func) => {
+			const makeFunc2Callback = (func = () => {}) => {
 				const randId = Math.random().toString().substring(2);
 				window[`TTSCallback${randId}`] = () => {
 					delete window[`speakCallback${randId}`];
-					func.call(this);
+					func();
 				}
 				return `window.TTSCallback${randId}();`;
 			}
@@ -185,7 +185,7 @@
 			let loopNum = 1, loopInterval = 200, loopTimer, endCallback;
 			this.init = () => {
 				utterance = new SpeechSynthesisUtterance();
-				utterance.onend = () => {
+				utterance.onend =  function() {
 					if(loopNum > 1) {
 						loopNum--;
 						loopTimer = setTimeout(() => 
@@ -193,7 +193,7 @@
 						,loopInterval);
 					}else {
 						clearTimeout(loopTimer);
-						if(endCallback != null) endCallback.call(this);
+						if(endCallback != null) endCallback();
 						endCallback = null;
 					}
 				}
@@ -202,31 +202,30 @@
 				}else initVoices();
 				appendModal();
 			}
-			this.speak = (text, ...callback) => {
+			this.speak = (text, callback = () => {}) => {
 				if(_options.enabled) {
-				console.log(this.initialized, callback);
-				if(this.initialized == undefined) {
-					setTimeout(() => this.speak(text, callback), 250);
-					return;
-				}
-				speechSynthesis.cancel();
-				clearTimeout(loopTimer);
-				utterance.text = text;
-				if(callback.length > 0) endCallback = callback[0];
-				
-				speechSynthesis.speak(utterance);
+					if(this.initialized == undefined) {
+						setTimeout(() => this.speak(text, callback), 250);
+						return;
+					}
+					speechSynthesis.cancel();
+					clearTimeout(loopTimer);
+					utterance.text = text;
+					endCallback = callback;
+					
+					speechSynthesis.speak(utterance);
 				}
 			}
-			this.speakRepeat = (text, loop, interval, ...callback) => {
+			this.speakRepeat = (text, loop, interval, callback = () => {}) => {
 				if(_options.enabled) {
-				if(speechSynthesis.speaking) speechSynthesis.cancel();
-				clearTimeout(loopTimer);
-				utterance.text = text;
-				loopNum = loop;
-				loopInterval = interval;
-				if(callback.length > 0) endCallback = callback[0];
-				
-				speechSynthesis.speak(utterance);
+					if(speechSynthesis.speaking) speechSynthesis.cancel();
+					clearTimeout(loopTimer);
+					utterance.text = text;
+					loopNum = loop;
+					loopInterval = interval;
+					endCallback = callback;
+					
+					speechSynthesis.speak(utterance);
 				}
 			}
 			this.speakSample = (idx, rate, pitch) => {
@@ -235,14 +234,14 @@
 					utterance.voice = voices[idx];
 					utterance.rate = rate;
 					utterance.pitch = pitch;
-				if(speechSynthesis.speaking) speechSynthesis.cancel();
-				speechSynthesis.speak(utterance);
+					if(speechSynthesis.speaking) speechSynthesis.cancel();
+					speechSynthesis.speak(utterance);
 				}
 			}
-			this.stop = (...callback) => {
+			this.stop = (callback = (() => {})) => {
 				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
-				if(callback.length > 0) callback[0].call(this);
+				callback();
 			}
 			this.isEnabled = () => _options.enabled;
 			this.changeOptions = (options) => {
@@ -281,7 +280,7 @@
 				voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
 				utterance.voice = voices[_options.voiceIndex];
 				this.initialized = true;
-				window.addEventListener('beforeunload', () => this.stop());
+				window.addEventListener('pagehide', () => {this.stop()});
 				if(voices.length > 0 && _options.initSuccessCallback != null) 
 					_options.initSuccessCallback.call(this);
 				else if(voices.length == 0 && _options.initFailCallback != null) 
