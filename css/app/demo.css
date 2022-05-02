@@ -1979,7 +1979,7 @@
 	margin: 0 25px!important
 }
 /* 인쇄시 필수성분 border-image 얇게 */
-.print-section .sem.inner:not(.outer *) {
+.print-section .sem.inner:not(.outer .inner) {
 	border-bottom: solid 0.2rem;
 	padding-bottom: 0.4rem;
 	border-image-width: 0 0.35rem 0.7rem 0.35rem;
