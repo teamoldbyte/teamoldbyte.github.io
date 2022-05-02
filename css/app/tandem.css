@@ -73,7 +73,7 @@
 }
 
 /* 주절의 성분(내부 성분 없음)에는 밑줄 표시*/
-.sem.inner:not(.outer .inner) {
+.sem.inner:not(.outer>.inner) {
 	--dotted-border-svg: url(https://static.findsvoc.com/images/app/tandem/dotted_border_bottom.svg);
     border-bottom: solid 0.3rem;
     border-left: solid 1px;
@@ -429,7 +429,7 @@
 
 /* 모바일 스타일 */
 @media (max-width:767px) {
-	.sem.inner:not(.outer .inner) {border: none;}
+	.sem.inner:not(.outer>.inner) {border: none;}
 	.sem.inner[data-rc]::before {top:1.5rem;}
 	.sem.inner[data-rc].odd::before {bottom:-.5rem;}
 	.sem.outer[data-rc].odd::before {bottom:-1.25rem;}
