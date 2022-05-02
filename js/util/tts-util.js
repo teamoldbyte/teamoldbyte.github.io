@@ -5,7 +5,8 @@
  @donot Don't remove all EventListeners on beforeunload Event.
  @author LGM
  
- @param options{lang, pitch, rate, voiceIndex, initSuccessCallback, initFailCallback}
+ @param options{autoplay, lang, pitch, rate, voiceIndex, initSuccessCallback, initFailCallback}
+ ** autoplay - 자동재생여부. 이 모듈에서 사용하지 않음. 모듈 호출부에서 호출여부 판단시 사용. 값 저장만 모듈이 대신 해줌.
  */
 (function($, window, document) {
 	/**
@@ -92,7 +93,7 @@
 	let utterance;
 	let _options = {initSuccessCallback: function(){}, initFailCallback: function(){}};
 	FicoTTS.defaults = {
-		enabled: true, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0
+		autoplay: false, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0
 	};
 	(function() {
 		// ANI(App Native Interface)가 구현돼있을 경우 흐름
@@ -128,33 +129,27 @@
 			}
 			
 			this.speak = (text, ...callback) => {
-				if(_options.enabled) {
 				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
 				
 				ANI.ttsSpeak(text, callback);
-				}
 			}
 			
 			this.speakRepeat = (text, loopNum, interval, ...callback) => {
-				if(_options.enabled) {
 				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
 				ANI.ttsSpeakRepeat(text, loopNum, interval, callback);
-				}
 			}
 			
 			this.speakSample = (idx, rate, pitch) => {
-				if(_options.enabled) {
 				ANI.ttsSpeakSample(sampleText, idx, rate, pitch, [makeFunc2Callback(()=> {
 					ANI.changeTTSOptions(JSON.stringify(_options));
 				})]);
-				}
 			}
 			
 			this.stop = (...callback) => {
 				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
 				ANI.ttsStop(callback);
 			}
-			this.isEnabled = () => _options.enabled;
+			this.autoEnabled = () => _options.autoplay;
 			
 			let waitVoices, voiceTryCount = 0;
 			this.openSettings = () => {
@@ -213,47 +208,41 @@
 				appendModal();
 			}
 			this.speak = (text, callback = () => {}) => {
-				if(_options.enabled) {
-					if(this.initialized == undefined) {
-						setTimeout(() => this.speak(text, callback), 250);
-						return;
-					}
-					speechSynthesis.cancel();
-					clearTimeout(loopTimer);
-					utterance.text = text;
-					endCallback = callback;
-					
-					speechSynthesis.speak(utterance);
+				if(this.initialized == undefined) {
+					setTimeout(() => this.speak(text, callback), 250);
+					return;
 				}
+				speechSynthesis.cancel();
+				clearTimeout(loopTimer);
+				utterance.text = text;
+				endCallback = callback;
+				
+				speechSynthesis.speak(utterance);
 			}
 			this.speakRepeat = (text, loop, interval, callback = () => {}) => {
-				if(_options.enabled) {
-					if(speechSynthesis.speaking) speechSynthesis.cancel();
-					clearTimeout(loopTimer);
-					utterance.text = text;
-					loopNum = loop;
-					loopInterval = interval;
-					endCallback = callback;
-					
-					speechSynthesis.speak(utterance);
-				}
+				if(speechSynthesis.speaking) speechSynthesis.cancel();
+				clearTimeout(loopTimer);
+				utterance.text = text;
+				loopNum = loop;
+				loopInterval = interval;
+				endCallback = callback;
+				
+				speechSynthesis.speak(utterance);
 			}
 			this.speakSample = (idx, rate, pitch) => {
-				if(_options.enabled) {
-					utterance.text = sampleText;
-					utterance.voice = voices[idx];
-					utterance.rate = rate;
-					utterance.pitch = pitch;
-					if(speechSynthesis.speaking) speechSynthesis.cancel();
-					speechSynthesis.speak(utterance);
-				}
+				utterance.text = sampleText;
+				utterance.voice = voices[idx];
+				utterance.rate = rate;
+				utterance.pitch = pitch;
+				if(speechSynthesis.speaking) speechSynthesis.cancel();
+				speechSynthesis.speak(utterance);
 			}
 			this.stop = (callback = (() => {})) => {
 				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
 				callback();
 			}
-			this.isEnabled = () => _options.enabled;
+			this.autoEnabled = () => _options.autoplay;
 			this.changeOptions = (options) => {
 				_options = Object.assign(_options, options);
 				localStorage.setItem('FicoTTSOptions', JSON.stringify(_options));
@@ -304,7 +293,7 @@
 		
 		const appendModal = () => {
 			if(document.querySelector('#ttsSettings') == null) document.body.insertAdjacentHTML('afterend',
-				'<div class="modal fade" id="ttsSettings" data-bs-backdrop="static" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-8">'
+				'<div class="modal fade" id="ttsSettings" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-8">'
 				+ '<style>'
 				+ '#ttsSettings input[type=range]::-webkit-slider-thumb {background:var(--fc-purple);}'
 				+ '#ttsSettings .form-check-input:checked {'
@@ -328,11 +317,11 @@
 				+ '<div class="modal-header">'
 				+ '<h5 class="modal-title fw-bold text-fc-purple">음성 환경설정</h5>'
 				+ '<div class="ms-auto text-align-end form-check form-switch">'
-				+ `<input class="form-check-input" type="checkbox" id="ttsToggle" ${_options.enabled?'checked':''}>`
-				+ '<label class="form-check-label" for="ttsToggle">음성 켜기</label></div>'
+				+ `<input class="form-check-input" type="checkbox" id="ttsToggle" ${_options.autoplay?'checked':''}>`
+				+ '<label class="form-check-label" for="ttsToggle">자동 재생</label></div>'
 				+ '<button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close" title="닫기"></button>'
 				+ '</div>'
-				+ `<div class="modal-body${_options.enabled?'':' pe-none opacity-50'}">`
+				+ '<div class="modal-body">'
 				+ '<label for="ttsList" class="form-label sub-title fs-6">목소리 선택</label>'
 				+ '<div class="col-12 mb-3 row g-0" id="ttsList"></div>'
 				+ '<label for="ttsRateRange" class="form-label sub-title fs-6">목소리 빠르기 <span class="text-secondary">(기본: 0.8)</span></label>'
@@ -357,9 +346,7 @@
 		$(document)
 		// 음성 켜기/끄기
 		.on('change', '#ttsToggle', e => {
-			$('#ttsSettings').find('.modal-body').toggleClass('pe-none opacity-50', !e.target.checked);
-			_options.enabled = e.target.checked;
-			if(!_options.enabled) this.stop();
+			_options.autoplay = e.target.checked;
 		})
 		// 설정값 변경(변경과 동시에 미리 들어보기)
 		.on('click change','[name=ttsVoice], #ttsRateRange, #ttsPitchRange', () => {
