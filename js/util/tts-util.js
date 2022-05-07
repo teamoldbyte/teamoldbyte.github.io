@@ -5,7 +5,8 @@
  @donot Don't remove all EventListeners on beforeunload Event.
  @author LGM
  
- @param options{lang, pitch, rate, voiceIndex, initSuccessCallback, initFailCallback}
+ @param options{autoplay, lang, pitch, rate, voiceIndex, initSuccessCallback, initFailCallback}
+ ** autoplay - 자동재생여부. 이 모듈에서 사용하지 않음. 모듈 호출부에서 호출여부 판단시 사용. 값 저장만 모듈이 대신 해줌.
  */
 (function($, window, document) {
 	/**
@@ -90,24 +91,34 @@
 	const sampleText = 'Hi. I\'m fico advisor.';
 	let voices;
 	let utterance;
-	let _options;
+	let _options = {initSuccessCallback: function(){}, initFailCallback: function(){}};
 	FicoTTS.defaults = {
-		enabled: true, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0, initSuccessCallback: null, initFailCallback: null
+		autoplay: false, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0
 	};
 	(function() {
 		// ANI(App Native Interface)가 구현돼있을 경우 흐름
 		if(typeof ANI != 'undefined' && typeof ANI.ttsSpeak != 'undefined') {
+			// ANI에서 evaluateJavascript 실행이 가능한 형태의 코드로 반환
+			const makeFunc2Callback = (func) => {
+				const randId = Math.random().toString().substring(2);
+				window[`TTSCallback${randId}`] = () => {
+					delete window[`TTSCallback${randId}`];
+					(func||(()=>{})).call(this);
+				}
+				return `window.TTSCallback${randId}();`;
+			}			
+			let ANI_Initialized = makeFunc2Callback(() => {
+				console.info('initialize success')
+				voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
+				window.addEventListener('pagehide', () => this.stop());
+				if(typeof _options.initSuccessCallback == 'function') _options.initSuccessCallback();
+			});
 			this.init = () => {
 				ANI.textToSpeechInit(_options.lang,
-					makeFunc2Callback(() => {
-						console.info('initialize success')
-						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
-						window.addEventListener('beforeunload', () => this.stop());
-						if(_options.initSuccessCallback) _options.initSuccessCallback.call(this);
-					}), 
+					ANI_Initialized, 
 					makeFunc2Callback(() => {
 						console.info('initialize failed')
-						if(_options.initFailCallback) _options.initFailCallback.call(this);
+						if(typeof _options.initFailCallback == 'function') _options.initFailCallback();
 					}));
 				appendModal();
 			}
@@ -118,66 +129,60 @@
 			}
 			
 			this.speak = (text, ...callback) => {
-				if(_options.enabled) {
 				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
 				
 				ANI.ttsSpeak(text, callback);
-				}
 			}
 			
 			this.speakRepeat = (text, loopNum, interval, ...callback) => {
-				if(_options.enabled) {
 				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
 				ANI.ttsSpeakRepeat(text, loopNum, interval, callback);
-				}
 			}
 			
 			this.speakSample = (idx, rate, pitch) => {
-				if(_options.enabled) {
 				ANI.ttsSpeakSample(sampleText, idx, rate, pitch, [makeFunc2Callback(()=> {
 					ANI.changeTTSOptions(JSON.stringify(_options));
 				})]);
-				}
 			}
 			
 			this.stop = (...callback) => {
 				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
 				ANI.ttsStop(callback);
 			}
-			this.isEnabled = () => _options.enabled;
+			this.autoEnabled = () => _options.autoplay;
 			
 			let waitVoices, voiceTryCount = 0;
 			this.openSettings = () => {
+				// 아직 불러올 목소리가 없을 경우
 				if(voices == null || voices.length == 0) {
+					// 타이머 미세팅
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
 						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
 						waitVoices = setInterval(this.openSettings, 250);
-					}else if(typeof window.initAndroidTTSCallback != 'undefined' && voiceTryCount < 20) {
-						voiceTryCount++
-					}else if(voiceTryCount >= 20){
+					}
+					// 아직 초기화 완료 안됐고 재시도 횟수 20회 미만
+					else if(ANI_Initialized in window && voiceTryCount < 20) {
+						voiceTryCount++;
+					}
+					// 재시도 횟수가 20회 이상
+					else if(voiceTryCount >= 20){
 						voiceTryCount = 0;
 						clearInterval(waitVoices);
 						waitVoices = null;
 						alert('목소리 목록을 가져올 수 없습니다.');
 						showLists();
 					}
+					//재시도 실행
 					return false;
-				}else {
+				}
+				// 불러올 목소리가 있을 경우
+				else {
 					voiceTryCount = 0;
 					clearInterval(waitVoices);
 					waitVoices = null;
 					showLists();
 				}
-			}
-			// ANI에서 evaluateJavascript 실행이 가능한 형태의 코드로 반환
-			const makeFunc2Callback = (func) => {
-				const randId = Math.random().toString().substring(2);
-				window[`TTSCallback${randId}`] = () => {
-					delete window[`speakCallback${randId}`];
-					func.call(this);
-				}
-				return `window.TTSCallback${randId}();`;
 			}
 		}
 		// Web SpeechSynthesis API 사용 가능한 브라우저일 경우 흐름
@@ -185,7 +190,7 @@
 			let loopNum = 1, loopInterval = 200, loopTimer, endCallback;
 			this.init = () => {
 				utterance = new SpeechSynthesisUtterance();
-				utterance.onend = () => {
+				utterance.onend =  function() {
 					if(loopNum > 1) {
 						loopNum--;
 						loopTimer = setTimeout(() => 
@@ -193,7 +198,7 @@
 						,loopInterval);
 					}else {
 						clearTimeout(loopTimer);
-						if(endCallback != null) endCallback.call(this);
+						if(endCallback != null) endCallback();
 						endCallback = null;
 					}
 				}
@@ -202,9 +207,7 @@
 				}else initVoices();
 				appendModal();
 			}
-			this.speak = (text, ...callback) => {
-				if(_options.enabled) {
-				console.log(this.initialized, callback);
+			this.speak = (text, callback = () => {}) => {
 				if(this.initialized == undefined) {
 					setTimeout(() => this.speak(text, callback), 250);
 					return;
@@ -212,39 +215,34 @@
 				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
 				utterance.text = text;
-				if(callback.length > 0) endCallback = callback[0];
+				endCallback = callback;
 				
 				speechSynthesis.speak(utterance);
-				}
 			}
-			this.speakRepeat = (text, loop, interval, ...callback) => {
-				if(_options.enabled) {
+			this.speakRepeat = (text, loop, interval, callback = () => {}) => {
 				if(speechSynthesis.speaking) speechSynthesis.cancel();
 				clearTimeout(loopTimer);
 				utterance.text = text;
 				loopNum = loop;
 				loopInterval = interval;
-				if(callback.length > 0) endCallback = callback[0];
+				endCallback = callback;
 				
 				speechSynthesis.speak(utterance);
-				}
 			}
 			this.speakSample = (idx, rate, pitch) => {
-				if(_options.enabled) {
-					utterance.text = sampleText;
-					utterance.voice = voices[idx];
-					utterance.rate = rate;
-					utterance.pitch = pitch;
+				utterance.text = sampleText;
+				utterance.voice = voices[idx];
+				utterance.rate = rate;
+				utterance.pitch = pitch;
 				if(speechSynthesis.speaking) speechSynthesis.cancel();
 				speechSynthesis.speak(utterance);
-				}
 			}
-			this.stop = (...callback) => {
+			this.stop = (callback = (() => {})) => {
 				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
-				if(callback.length > 0) callback[0].call(this);
+				callback();
 			}
-			this.isEnabled = () => _options.enabled;
+			this.autoEnabled = () => _options.autoplay;
 			this.changeOptions = (options) => {
 				_options = Object.assign(_options, options);
 				localStorage.setItem('FicoTTSOptions', JSON.stringify(_options));
@@ -281,7 +279,7 @@
 				voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
 				utterance.voice = voices[_options.voiceIndex];
 				this.initialized = true;
-				window.addEventListener('beforeunload', () => this.stop());
+				window.addEventListener('pagehide', () => {this.stop()});
 				if(voices.length > 0 && _options.initSuccessCallback != null) 
 					_options.initSuccessCallback.call(this);
 				else if(voices.length == 0 && _options.initFailCallback != null) 
@@ -295,7 +293,7 @@
 		
 		const appendModal = () => {
 			if(document.querySelector('#ttsSettings') == null) document.body.insertAdjacentHTML('afterend',
-				'<div class="modal fade" id="ttsSettings" data-bs-backdrop="static" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-8">'
+				'<div class="modal fade" id="ttsSettings" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-8">'
 				+ '<style>'
 				+ '#ttsSettings input[type=range]::-webkit-slider-thumb {background:var(--fc-purple);}'
 				+ '#ttsSettings .form-check-input:checked {'
@@ -319,11 +317,11 @@
 				+ '<div class="modal-header">'
 				+ '<h5 class="modal-title fw-bold text-fc-purple">음성 환경설정</h5>'
 				+ '<div class="ms-auto text-align-end form-check form-switch">'
-				+ `<input class="form-check-input" type="checkbox" id="ttsToggle" ${_options.enabled?'checked':''}>`
-				+ '<label class="form-check-label" for="ttsToggle">음성 켜기</label></div>'
+				+ `<input class="form-check-input" type="checkbox" id="ttsToggle" ${_options.autoplay?'checked':''}>`
+				+ '<label class="form-check-label" for="ttsToggle">자동 재생</label></div>'
 				+ '<button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close" title="닫기"></button>'
 				+ '</div>'
-				+ `<div class="modal-body${_options.enabled?'':' pe-none opacity-50'}">`
+				+ '<div class="modal-body">'
 				+ '<label for="ttsList" class="form-label sub-title fs-6">목소리 선택</label>'
 				+ '<div class="col-12 mb-3 row g-0" id="ttsList"></div>'
 				+ '<label for="ttsRateRange" class="form-label sub-title fs-6">목소리 빠르기 <span class="text-secondary">(기본: 0.8)</span></label>'
@@ -348,9 +346,7 @@
 		$(document)
 		// 음성 켜기/끄기
 		.on('change', '#ttsToggle', e => {
-			$('#ttsSettings').find('.modal-body').toggleClass('pe-none opacity-50', !e.target.checked);
-			_options.enabled = e.target.checked;
-			if(!_options.enabled) this.stop();
+			_options.autoplay = e.target.checked;
 		})
 		// 설정값 변경(변경과 동시에 미리 들어보기)
 		.on('click change','[name=ttsVoice], #ttsRateRange, #ttsPitchRange', () => {

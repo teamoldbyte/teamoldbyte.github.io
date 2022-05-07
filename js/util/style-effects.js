@@ -1,6 +1,5 @@
 /**
  * 화면을 구성하는 이펙트 처리
- @author LGM
  */
 (function($,document,ScrollReveal) {
 	$(document).ready(function(){
@@ -24,17 +23,23 @@
 			event.stopPropagation();
 		}
 		this.classList.add('was-validated');
-	})
+	});
 	
 	/* [bouncing on click button] ------------------------------------------- */
-	.on('click','a,button,.btn', function() {
-		let orgTransform = getComputedStyle(this).transform;
-		orgTransform = (orgTransform != null && orgTransform.includes('matrix'))? (orgTransform + ' ') : '';
-		const scaleArr = [orgTransform + 'scale3d(1, 1, 1)', orgTransform + 'scale3d(1.25, 0.75, 1)',
-						orgTransform + 'scale3d(0.75, 1.25, 1)', orgTransform + 'scale3d(1.15, 0.85, 1)',
-						orgTransform + 'scale3d(0.95, 1.05, 1)', orgTransform + 'scale3d(1.05, 0.95, 1)'];
-						
-		this.animate({"transform" : scaleArr, "-webkit-transform" : scaleArr}, 600);
+	$.fn.bounce = function() {
+		this.each(function() {
+			let orgTransform = getComputedStyle(this).transform;
+			orgTransform = (orgTransform != null && orgTransform.includes('matrix'))? (orgTransform + ' ') : '';
+			const scaleArr = [orgTransform + 'scale3d(1, 1, 1)', orgTransform + 'scale3d(1.25, 0.75, 1)',
+							orgTransform + 'scale3d(0.75, 1.25, 1)', orgTransform + 'scale3d(1.15, 0.85, 1)',
+							orgTransform + 'scale3d(0.95, 1.05, 1)', orgTransform + 'scale3d(1.05, 0.95, 1)'];
+							
+			this.animate({"transform" : scaleArr, "-webkit-transform" : scaleArr}, 600);
+		})
+		return this;
+	}
+	$(document).on('click','a,button,.btn', function() {
+		$(this).bounce();
 	})
 	/* ---------------------------------------------------------------------- */
 })(jQuery, document, ScrollReveal);
