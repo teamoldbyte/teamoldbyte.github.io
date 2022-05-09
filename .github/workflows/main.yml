@@ -29,6 +29,7 @@ jobs:
         uses: nizarmah/auto-minify@v2.1
         with:
           directory: 'js'
+          js_engine: uglify-js
       - name: Auto Minify
         uses: nizarmah/auto-minify@v2.1
         with:
