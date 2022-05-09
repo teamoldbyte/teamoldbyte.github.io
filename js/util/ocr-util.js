@@ -18,10 +18,10 @@ class FicoOCR {
 		}
 		// 특정 영역만 핀치줌 라이브러리
 		if(typeof PinchZoom == 'undefined') {
-			await $.getScript('https://static.findsvoc.com/js/public/pinch-zoom.js');
+			await $.getScript('https://static.findsvoc.com/js/public/pinch-zoom.min.js');
 		}
 		if(typeof Dimmer == 'undefined') {
-			await $.getScript('https://static.findsvoc.com/js/public/dimmer.js');
+			await $.getScript('https://static.findsvoc.com/js/public/dimmer.min.js');
 		}
 		// 드래그 선택 라이브러리
 		if(typeof SelectionArea == 'undefined') {
