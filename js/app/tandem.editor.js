@@ -1,4 +1,4 @@
-(function($) {
+(function($, document) {
 	var undoList = [], redoList = []; // 편집 내역
 	
 	var $svocEditor, $svocEditorHint;
@@ -963,4 +963,4 @@
 		
 		$('.edit-svoc').focus();
 	}
-}(jQuery));
+}(jQuery, document));
