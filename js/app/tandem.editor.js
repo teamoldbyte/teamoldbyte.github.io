@@ -1,4 +1,4 @@
-(function($, document) {
+(function($, document, tandem) {
 	var undoList = [], redoList = []; // 편집 내역
 	
 	var $svocEditor, $svocEditorHint;
@@ -117,7 +117,7 @@
 							$('.mod-start,.mod-indicator').remove();
 							
 							// canvas 요소는 다시 그려야 함.
-							drawConnections($container[0]);
+							tandem.drawConnections($container[0]);
 							
 							$container.animate({opacity:0.5},100).animate({opacity:1},100);
 						}
@@ -204,7 +204,7 @@
 						$('.mod-start,.mod-indicator').remove();
 						
 						// canvas 요소는 다시 그려야 함.
-						drawConnections($container[0]);
+						tandem.drawConnections($container[0]);
 						
 						$container.animate({opacity:0.5},100).animate({opacity:1},100);
 						
@@ -442,7 +442,7 @@
 					   				else target.dataset[type.data] = text;
 									$(document).off('mousedown', editCommentMenu);
 									$(editText).remove();
-									checkGCDepth(target.closest('.semantics-result'));
+									tandem.checkGCDepth(target.closest('.semantics-result'));
 									$('.edit-svoc').focus();
 					   			});
 					   			$(editText).find('button:eq(1)').on('click',function(){
@@ -747,11 +747,11 @@
 		// DOM 변경을 보장하기 위해 requestAnimationFrame 사용.
 		requestAnimationFrame(async function(){
 			
-			const encSvocText = await svocArr2Text(svocDom2Arr(div));
+			const encSvocText = await tandem.getSvocBytes(div);
 			// 원상태로 복구
-			wrapWithBracket(div);
+			tandem.wrapWithBracket(div);
 			
-			correctMarkLine(div);
+			tandem.correctMarkLine(div);
 			
 			// 편집내역 초기화
 			undoList = []; redoList = [];
@@ -926,7 +926,7 @@
 				range.insertNode(el);
 			}
 			
-			trimTextContent(container);
+			tandem.trimTextContent(container);
 			
 			range.selectNode(el);
 		default:
@@ -951,16 +951,16 @@
 		$(container).find('.sem').filter((i,sem)=>
 			sem.textContent.length == 0).remove();
 			
-		checkPOSDepth(container);
+		tandem.checkPOSDepth(container);
 		
-		wrapWithBracket(container);
+		tandem.wrapWithBracket(container);
 		
-		splitInners(container);
+		tandem.splitInners(container);
 		
-		trimTextContent(container);
+		tandem.trimTextContent(container);
 		
-		correctMarkLine(container);
+		tandem.correctMarkLine(container);
 		
 		$('.edit-svoc').focus();
 	}
-}(jQuery, document));
+}(jQuery, document, tandem));
