@@ -624,7 +624,7 @@
 					// this.closest('.edit-svoc').dataset.mode = 'mod';
 					// $('.semantic-edit-guide-msg').text('수식어 위치를 클릭 하세요.');
 					
-					checkGCDepth(this);
+					tandem.checkGCDepth(this);
 				})
 				// =========================================================== /
 				//						 gcomment 추가 기능					   /
@@ -681,7 +681,7 @@
 		   				else target.dataset.gc = text;
 						$(document).off('mousedown', editCommentMenu);
 						$(editText).remove();
-						checkGCDepth(target.closest('.semantics-result'));
+						tandem.checkGCDepth(target.closest('.semantics-result'));
 						$('.edit-svoc').focus();
 						container.closest('.edit-svoc').removeAttribute('data-mode');
 						$svocEditor.find('[data-mode="comment"].active').removeClass('active');
