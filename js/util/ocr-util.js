@@ -11,21 +11,28 @@ class FicoOCR {
 	#$textFeedback;
 	#preview;
 	
+		/* Allow user to set any option except for dataType, cache, and url
+	Use $.ajax() since it is more flexible than $.getScript
+	Return the jqXHR object so we can chain callbacks */
+	#cachedScript = $.cachedScript || function( url, options ) {
+		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
+	};
+	
 	constructor() {(async () => {
 		// 파일의 EXIF 정보 추출 라이브러리
 		if(typeof EXIF == 'undefined') {
-			await $.getScript('https://cdn.jsdelivr.net/npm/exif-js');
+			await this.#cachedScript('https://cdn.jsdelivr.net/npm/exif-js');
 		}
 		// 특정 영역만 핀치줌 라이브러리
 		if(typeof PinchZoom == 'undefined') {
-			await $.getScript('https://static.findsvoc.com/js/public/pinch-zoom.min.js');
+			await this.#cachedScript('https://static.findsvoc.com/js/public/pinch-zoom.min.js');
 		}
 		if(typeof Dimmer == 'undefined') {
-			await $.getScript('https://static.findsvoc.com/js/public/dimmer.min.js');
+			await this.#cachedScript('https://static.findsvoc.com/js/public/dimmer.min.js');
 		}
 		// 드래그 선택 라이브러리
 		if(typeof SelectionArea == 'undefined') {
-			await $.getScript('https://cdn.jsdelivr.net/npm/@viselect/vanilla/lib/viselect.cjs.min.js');
+			await this.#cachedScript('https://cdn.jsdelivr.net/npm/@viselect/vanilla/lib/viselect.cjs.min.js');
 		}
 		$(document.head).append($('<style>' +
 			'/* 핀치줌 컨테이너 스타일 */' +
@@ -120,11 +127,12 @@ class FicoOCR {
 	readAsPreview(file, textFeedback, failCallback) {
 		$('#ocrModal').modal('show');
 		this.#$textFeedback = textFeedback;
+		const _this = this;
 		this.imgFile2JSON(file, 
-			data => {
+			function(data) {
 				setTimeout(() => {
 					$('#ocrModal').modal('hide');
-					this.#ocrResultDisplay(data.preview, data.result);
+					_this.#ocrResultDisplay(data.preview, data.result);
 				}, 1000);
 			}, 
 			() => {
@@ -139,11 +147,11 @@ class FicoOCR {
 	 */
 	imgFile2Text(file, successCallback, failCallback) {
 		const _this = this;
-		_this.#readFile(file, fileUri => 
+		_this.#readFile(file, function(fileUri) {
 			_this.#callVision(_this.#removePrefix(fileUri), json => 
 				successCallback(_this.#joinResults(json)), failCallback
 			)
-		);
+		}, failCallback);
 	}
 	
 	/**
