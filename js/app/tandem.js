@@ -2,8 +2,16 @@
 @author LGM
  */
 (function($, window, document) {
+	/* Allow user to set any option except for dataType, cache, and url
+	Use $.ajax() since it is more flexible than $.getScript
+	Return the jqXHR object so we can chain callbacks */
+	$.cachedScript = $.cachedScript || function( url, options ) {
+		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
+	};
+	let pakoPromise = null;
 	if (typeof pako == 'undefined' || typeof pako.inflate == 'undefined' || typeof pako.deflate == 'undefined') {
-		$.getScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
+		pakoPromise = $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
+						.then(()=>pakoPromise=null);
 	}
 	/* jquery.curvedarrow.min.js */
 	const drawCurvedArrow = (function() {
@@ -244,27 +252,27 @@
 	}
 	/* svoc byte[] 압축해제(문자열로)*/
 	async function inflateSvoc(svoc) {
-		if (typeof pako == 'undefined' || typeof pako.inflate == 'undefined') {
-			return new Promise((resolve) =>
-				$.getScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
-					.then(() => resolve(pako.inflate(new Uint16Array(svoc), { to: 'string' })))
-					.fail(async () => {
-						await $.getScript('https://static.findsvoc.com/js/public/pako.min.js');
-						resolve(pako.inflate(new Uint16Array(svoc), { to: 'string' }));
-					}));
-		} else return pako.inflate(new Uint16Array(svoc), { to: 'string' });
+		return callPakoFunc(() => pako.inflate(new Uint16Array(svoc), { to: 'string' }));
 	}
 	/* svoc 문자열 압축(byte[]로) */
 	async function deflateSvoc(svoc) {
+		return callPakoFunc(() => pako.deflate(svoc));
+	}
+	async function callPakoFunc(func) {
 		if (typeof pako == 'undefined' || typeof pako.deflate == 'undefined') {
-			return new Promise((resolve) =>
-				$.getScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
-					.then(() => resolve(pako.deflate(svoc)))
+			if(pakoPromise != null) {
+				return pakoPromise.then(() => func.call(this));
+			}else {
+				return new Promise((resolve) =>
+					$.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
+					.then(() => resolve(func.call(this)))
 					.fail(async () => {
-						await $.getScript('https://static.findsvoc.com/js/public/pako.min.js');
-						resolve(pako.deflate(svoc));
-					}));
-		} else return pako.deflate(svoc);
+						await $.cachedScript('https://static.findsvoc.com/js/public/pako.min.js');
+						resolve(func.call(this));
+					})
+				);
+			}
+		} else return func.call(this);
 	}
 
 	/**
@@ -1304,9 +1312,8 @@
 	*/
 	function getLeafNodes(nodes, result = []) {
 		for (let i = 0, length = nodes.length; i < length; i++) {
-			if (nodes[i] == null) {
-				continue;
-			}
+			if (nodes[i] == null) continue;
+			
 			if (!nodes[i].childNodes || nodes[i].childNodes.length === 0) {
 				result.push(nodes[i]);
 			} else {
