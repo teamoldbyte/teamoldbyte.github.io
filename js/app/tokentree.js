@@ -15,7 +15,7 @@
 			return;
 		}
 		if (typeof google == 'undefined' || typeof google.visualization == 'undefined') {
-			await $.getScript('https://www.gstatic.com/charts/loader.js');
+			await $.ajax({dataType: 'script', cache: true, url:'https://www.gstatic.com/charts/loader.js'});
 		}
 		if (!google.visualization || !google.visualization.OrgChart) {
 			await google.charts.load('current', { packages: ['orgchart'] });

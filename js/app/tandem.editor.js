@@ -1,7 +1,7 @@
 (function($, document, tandem) {
-	var undoList = [], redoList = []; // 편집 내역
+	let undoList = [], redoList = []; // 편집 내역
 	
-	var $svocEditor, $svocEditorHint;
+	let $svocEditor, $svocEditorHint;
 	
 	const keyset = {
 		49:'[value="s"]',
@@ -50,7 +50,7 @@
 		}
 		// [편집기 미정의된 상태라면 최초 1회 정의]
 		if(typeof $svocEditor == 'undefined') {
-			await $.get('https://static.findsvoc.com/css/app/tandem.editor.css', (cssResult) =>{
+			await $.get('https://static.findsvoc.com/css/app/tandem.editor.min.css', (cssResult) =>{
 				const editorCss = document.createElement('style');
 				editorCss.innerHTML = cssResult;
 				document.head.append(editorCss);
