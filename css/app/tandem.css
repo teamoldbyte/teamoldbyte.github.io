@@ -476,11 +476,11 @@
 		padding: 3px;
 		text-align: center!important;
 		line-height: .75rem;
-		font-size: 1.125rem!important;
+		font-size: 0.75rem!important;
 		font-weight: 600;
 		font-style: normal;
 		color: white!important;
-		border-radius: 10px;
+		border-radius: 1rem;
 		word-break: keep-all;
 		overflow: hidden;
 		min-width: 1.25rem !important;

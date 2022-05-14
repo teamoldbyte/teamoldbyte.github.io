@@ -1584,6 +1584,9 @@
 	display: flex;
 	word-break: keep-all;
 }
+.translation-section .translator{
+    font-size: 0.9rem;
+}
 @media (max-width: 767px) {
 	.translation-section .translation-text{
 		border-top: 1px solid #e7dbdd;
