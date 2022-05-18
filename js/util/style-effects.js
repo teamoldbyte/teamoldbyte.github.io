@@ -12,7 +12,9 @@
 		}); 
 		/* [activates Scroll Reveals] --------------------------------------- */
 		ScrollReveal({duration: 1000, reset: false, viewOffset:{top:0,bottom:0}});
-		ScrollReveal().reveal('.sr-showup',{delay: 100, distance: '20px', viewOffset:{top:50,bottom:50}});
+		ScrollReveal().reveal('.sr-showup', {delay: 100, distance: '20px', 
+			viewOffset:{top:50,bottom:50},
+			beforeReveal: function(el) { $(el).animate({opacity:1}); }});
 		ScrollReveal().reveal('.sr-slideup',{delay: 400, interval: 100, opacity: 1, distance: '100%'});
 		/* ------------------------------------------------------------------ */	
 	})
