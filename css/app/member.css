@@ -121,7 +121,7 @@
 @media (max-width: 768px) {
 	.signin-section .content-section .animation-section lottie-player{
 		width: 60vw;
-		height: auto;
+		height: 60vw;
 	}
 }
 @media (max-width: 320px) {
@@ -141,7 +141,7 @@
 	margin-right: auto;
 	margin-left: auto;
 	width: 350px;
-	height: auto;
+	height: 350px;
 }
 
 .signup-section .sns-login-button-section {
