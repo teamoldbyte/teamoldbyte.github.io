@@ -10,7 +10,8 @@
 	};
 	let pakoPromise = null;
 	if (typeof pako == 'undefined' || typeof pako.inflate == 'undefined' || typeof pako.deflate == 'undefined') {
-		pakoPromise = $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
+		pakoPromise = $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
+						.then(()=>pakoPromise=null);
 	}
 	/* jquery.curvedarrow.min.js */
 	const drawCurvedArrow = (function() {
@@ -529,9 +530,9 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
-	const posClasses = '.s, .v, .o, .c, .oc, .a, .m';
 	function checkPOSDepth(element) {
-		const children = element.querySelectorAll('.sem');
+		const posClasses = '.s, .v, .o, .c, .oc, .a, .m',
+			children = element.querySelectorAll(posClasses);
 		let base = 0;
 
 		// 자신의 depth 초기화
