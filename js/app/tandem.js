@@ -349,9 +349,10 @@
 			// 형용사절,부사절은 위치가 겹치는 성분을 들고 오지 않을 경우 rcomment로 대신함.
 			// -> rcomment를 보고 성분 태그를 생성.
 			else if ((['ACLS', 'ADVCLS'].indexOf(tag.markType) > -1) && tag.rcomment != null) {
-				// 겹치는 성분이 V면 삭제.
+				// 겹치는 성분이 V면 m 태그로 교체.
 				if (second.start == tag.start && second.end == tag.end && second.markType == 'V') {
-					svocList.splice(i + 1, 1);
+					svocList.splice(i, 2, Object.assign(tag, {rcomment: null}),
+						Object.assign(second, {markType: 'M', rcomment: 'M'}));
 					// 완전히 겹치는 태그가 없을 경우 m 태그 삽입
 				} else {
 					svocList.splice(i + 1, 0,
