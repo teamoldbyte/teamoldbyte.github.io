@@ -10,8 +10,7 @@
 	};
 	let pakoPromise = null;
 	if (typeof pako == 'undefined' || typeof pako.inflate == 'undefined' || typeof pako.deflate == 'undefined') {
-		pakoPromise = $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
-						.then(()=>pakoPromise=null);
+		pakoPromise = $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
 	}
 	/* jquery.curvedarrow.min.js */
 	const drawCurvedArrow = (function() {
@@ -530,27 +529,31 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
+	const posClasses = '.s, .v, .o, .c, .oc, .a, .m';
 	function checkPOSDepth(element) {
-		const posClasses = '.s, .v, .o, .c, .oc, .a, .m',
-			children = element.querySelectorAll(posClasses);
-		let base = 0;
-
+		const children = element.querySelectorAll('.sem');
+		let base = element.matches(posClasses) & 1;
+		let childBase = 0;
 		// 자신의 depth 초기화
 		element.removeAttribute('data-lv');
 
 		if (children.length > 0 && !element.matches('.sem.v')) {
 			for (let i = 0, len = children.length; i < len; i++) {
-				base = Math.max(base, checkPOSDepth(children[i]) + 1);
+				childBase = Math.max(childBase, checkPOSDepth(children[i]));
 			}
-			if (element.matches(posClasses) && base > 0) element.setAttribute('data-lv', base);
-
-			element.classList.remove('inner');
-			if (element.matches(posClasses)) element.classList.add('outer');
-		} else {
-			element.classList.remove('outer');
-			if (element.matches(posClasses)) element.classList.add('inner');
 		}
-		return base;
+		
+		if(base) {
+			if(childBase > 0) {
+				element.classList.remove('inner');
+				element.classList.add('outer');
+				element.setAttribute('data-lv', childBase);
+			}else {
+				element.classList.remove('outer');
+				element.classList.add('inner');
+			}
+		}
+		return base + childBase;
 	}
 
 	/**
