@@ -312,11 +312,17 @@
 	font-size: 1.75rem;
 	position: relative;
 }
+.workbook-menu-section .add-icon .book-icon::after{
+	content: "menu_book";
+}
 .workbook-menu-section .add-icon .pencil-icon{
 	font-size: 1.75rem;
 	position: absolute;
 	left: 0.5rem;
 	top: 0.75rem;
+}
+.workbook-menu-section .add-icon .pencil-icon::after{
+	content: "edit";
 }
 .workbook-menu-section .qna-icon{
 	font-size: 1.5rem;
