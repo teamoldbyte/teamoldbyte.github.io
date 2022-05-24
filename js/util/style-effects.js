@@ -11,11 +11,14 @@
 			$(this).tooltip('hide');
 		}); 
 		/* [activates Scroll Reveals] --------------------------------------- */
-		ScrollReveal({duration: 1000, reset: false, viewOffset:{top:0,bottom:0}});
+		ScrollReveal({duration: 1000, reset: false, viewOffset:{top:0,bottom:0},
+			// opacity, transform 스타일 속성은 z-index 값을 0으로 만드는 것과 같아서 써머노트 등과 충돌이 있으므로,
+			// 등장 효과 끝난 후 제거하도록 한다.
+			afterReveal: function(el) { el.style.visibility = ''; el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; }});
 		ScrollReveal().reveal('.sr-showup', {delay: 100, distance: '20px', 
 			viewOffset:{top:50,bottom:50},
 			beforeReveal: function(el) { $(el).animate({opacity:1}); }});
-		ScrollReveal().reveal('.sr-slideup',{delay: 400, interval: 100, opacity: 1, distance: '100%'});
+		ScrollReveal().reveal('.sr-slideup', {delay: 400, interval: 100, opacity: 1, distance: '100%'});
 		/* ------------------------------------------------------------------ */	
 	})
 	// [Bootstrap Validation]---------------------------------------------------
