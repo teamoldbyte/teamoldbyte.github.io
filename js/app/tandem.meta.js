@@ -546,6 +546,21 @@
 			.sort((a, b) => a.depth - b.depth)
 			.map(meta => meta.name).join(' ');
 	}
+	
+	/** div를 해석한 gramMeta 정보를 저장한다.
+	@param sentenceId 문장 sid(Number)
+	@param div .semantics-result div(Element)
+	@param svocUpdate svoc가 업데이트되는 상황인지(Boolean)
+	 */
+	function saveGramMetaFromDOM(sentenceId, div, svocUpdate) {
+		const gramMeta = gramMetaStrFromDOM(div);
+		$.ajax({
+			url: '/sentence/grammeta/edit',
+			type: 'POST',
+			data: JSON.stringify({sid: sentenceId, gramMeta, metaStatus: svocUpdate ? 'S' : 'U'}),
+			contentType: 'application/json'
+		})
+	}
 
-	window['grammeta'] = { gramMetaStrFromDOM };
+	window['grammeta'] = { gramMetaStrFromDOM, saveGramMetaFromDOM };
 })(jQuery, window, document, tandem);
