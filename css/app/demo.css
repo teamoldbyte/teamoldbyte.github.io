@@ -1605,6 +1605,7 @@
     border-radius: 10px;
     resize: none;
     padding: 10px;
+	width: calc(100vw - 20rem);
 }
 .ai-translation-section{
 	display: inline-block;
@@ -1647,6 +1648,10 @@
 	.translation-section .ai-translation-section .ai-translation-block .trans-mdf-btns{
 		/*position: absolute;*/
 		right: 0;
+	}
+	/* 번역 편집 부분 */
+	.translation-section .trans-editor textarea{
+		width: 100%;
 	}
 	/* 단어 목록 */
 	.result-section .word-section{
