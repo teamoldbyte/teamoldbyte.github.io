@@ -559,7 +559,8 @@
 			type: 'POST',
 			data: JSON.stringify({sid: sentenceId, gramMeta, metaStatus: svocUpdate ? 'S' : 'U'}),
 			contentType: 'application/json'
-		})
+		});
+		return gramMeta;
 	}
 
 	window['grammeta'] = { gramMetaStrFromDOM, saveGramMetaFromDOM };
