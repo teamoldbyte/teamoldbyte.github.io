@@ -552,12 +552,12 @@
 	@param div .semantics-result div(Element)
 	@param svocUpdate svoc가 업데이트되는 상황인지(Boolean)
 	 */
-	function saveGramMetaFromDOM(sentenceId, div, svocUpdate) {
+	function saveGramMetaFromDOM(sentenceId, div, svocUpdate, domain) {
 		const gramMeta = gramMetaStrFromDOM(div);
 		$.ajax({
-			url: '/sentence/grammeta/edit',
+			url: `/${domain}/sentence/grammeta/edit`,
 			type: 'POST',
-			data: JSON.stringify({sid: sentenceId, gramMeta, metaStatus: svocUpdate ? 'S' : 'U'}),
+			data: JSON.stringify({sentenceId, gramMeta, metaStatus: svocUpdate ? 'S' : 'U'}),
 			contentType: 'application/json'
 		});
 		return gramMeta;
