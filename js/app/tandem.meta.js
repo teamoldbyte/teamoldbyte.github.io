@@ -83,7 +83,7 @@
 							break;
 						case 'rcm':
 							const ptcmodi = getPtcModi(child);
-							if (dir) sem.ptcmodi = ptcmodi;
+							if (ptcmodi) sem.ptcmodi = ptcmodi;
 							break;
 					}
 					semantics.push(sem);
