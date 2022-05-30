@@ -402,7 +402,7 @@
                                  index.html
  -----------------------------------------------------------------------------*/
 /* 가로스크롤의 맨 마지막 페이지에서 버튼 비활성화 */
-.flickity-button:disabled {
+.book-section .flickity-button:disabled {
 	pointer-events: auto;
 }
 
