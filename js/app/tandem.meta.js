@@ -1,7 +1,7 @@
-/** GramMeta 정보 추출
+/** GramMeta 정보 추출, metaStatus 수정
  @author LGM
  */
-(function($, window, document, tandem) {
+(function($, document, tandem) {
 	const allTypes = ['s', 'v', 'o', 'c', 'a', 'oc', 'm', 'rcm', 'tor', 'ger', 'ptc', 'conj',
 		'phr', 'adjphr', 'advphr', 'ptcphr', 'cls', 'ncls', 'acls', 'advcls', 'ccls', 'pcls'];
 	const formComponents = ['s', 'v', 'o', 'c', 'a', 'oc', 'm']; // 문장형식 요소들
@@ -551,6 +551,7 @@
 	@param sentenceId 문장 sid(Number)
 	@param div .semantics-result div(Element)
 	@param svocUpdate svoc가 업데이트되는 상황인지(Boolean)
+	@param domain gramMeta 추출이 이루어지는 도메인(워크북, 피코쌤, ...)
 	 */
 	function saveGramMetaFromDOM(sentenceId, div, svocUpdate, domain) {
 		const gramMeta = gramMetaStrFromDOM(div);
@@ -562,6 +563,21 @@
 		});
 		return gramMeta;
 	}
+	
+	/** 문장의 metaStatus를 S 또는 F로 저장한다.
+	@param sentenceId 문장 sid(Number)
+	@param metaStatus S(Success) / F(Fail)
+	@param domain metaStatus 평가가 이루어지는 도메인(워크북, 피코쌤, ...)
+	 */
+	function submitMetaStatus(sentenceId, metaStatus, domain, callback) {
+		$.ajax({
+			url: `/${domain}/sentence/metastatus/edit`,
+			type: 'POST',
+			data: JSON.stringify({sentenceId, metaStatus}),
+			contentType: 'application/json',
+			success: callback
+		})
+	}
 
-	window['grammeta'] = { gramMetaStrFromDOM, saveGramMetaFromDOM };
-})(jQuery, window, document, tandem);
+	tandem['meta'] = { gramMetaStrFromDOM, saveGramMetaFromDOM, submitMetaStatus };
+})(jQuery, document, tandem);
