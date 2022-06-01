@@ -575,7 +575,8 @@
 			type: 'POST',
 			data: JSON.stringify({sentenceId, metaStatus}),
 			contentType: 'application/json',
-			success: callback
+			success: callback,
+			error: () => alert('분석 평가 중 에러가 발생했습니다.')
 		})
 	}
 
