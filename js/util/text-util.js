@@ -53,8 +53,9 @@ const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A
 	  return this.replace(/(\b[a-z]\w*\W)([A-Z]\w*)/g,'$1 $2')
 	};
 	// 1개 이상의 연속된 공백문자는 하나의 ' '으로
+	// 2022.6.3 : 구두점 앞의 공백은 없애기
 	str.shrinkSpaces = function() {
-	  return this.replace(/\s+/g, ' ');
+	  return this.replace(/\s+/g, ' ').replace(/\s+([,.?!;:]+)/g, '$1');
 	};
 	// 하나의 정규화된 영어 문장으로 반환
 	str.sentenceNormalize = function() {
