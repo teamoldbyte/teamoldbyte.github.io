@@ -14,10 +14,25 @@ function getTextWidth(text, font) {
   context.font = font;
   return context.measureText(text).width;
 }
-const invalidEnglishRegex = /[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A0|\u2028|\u2029|\u2018-\u201A|\u201C-\u201D)]/gi;
-const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A0|\u2028|\u2029|\u2018-\u201A|\u201C-\u201D)]";
+/*
+U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+---------------------------------------------------------------------
+0000										\t	\n	\v	\f	\r
+0020		!	"	#	$	%	&	'	(	)	*	+	,	-	.	/
+0030	0	1	2	3	4	5	6	7	8	9	:	;	<	=	>	?
+0040	@	A	B	C	D	E	F	G	H	I	J	K	L	M	N	O
+0050	P	Q	R	S	T	U	V	W	X	Y	Z	[	\	]	^	_
+0060	`	a	b	c	d	e	f	g	h	i	j	k	l	m	n	o
+0070	p	q	r	s	t	u	v	w	x	y	z	{	|	}	~
+0080						nel
+00A0	nbsp
+2010									‘	’	‚	‛	“	”
+2020									ls	ps
+*/
+const invalidEnglishRegex = /[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]/gi;
+const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
-(function(str) {
+(function(window,str) {
 	/**
 	 * 문자열의 내용 중 [‘],[’],[‚],[“],[”]와 같이 특수한 유니코드값을 ASCII 문자로 대체하여 반환
 	 * (추가: [ ],[&nbsp;])
@@ -107,4 +122,106 @@ const invalidEnglishString = "[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A
 		} else return false;
 	  }
 	};
-}(String.prototype));
+	
+	/** 입력란에 교정을 적용하고, 변경된 부분을 강조 표시
+	 */
+	window.extractHighlightInfo = function(input, inputCursor) {
+		let i = 0, arr = [], match;
+		// 1. 공백과 구두점, 따옴표 교정
+		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|([,.!?:;]\w)|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+			for(i = 1; i < 8; i++) {
+				if(match[i] != null) {
+					switch(i) {
+						case 1:
+							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
+							arr.push({highlight: [match.index, match.index + 1]});
+							input = input.replace(match[0], ',');
+							break;
+						case 2:
+							arr.push({highlight: [match.index, match.index + 1]});
+							input = input.replace(match[0], '"');
+							break;
+						case 3:
+							arr.push({highlight: [match.index, match.index + 1]});
+							input = input.replace(match[0], '\'');
+							break;
+						case 4:
+							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
+							arr.push({highlight: [match.index, match.index + 1]});
+							input = input.replace(match[0], ' ');
+							break;
+						case 5:
+							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
+							arr.push({highlight: [match.index, match.index + 2]});
+							input = input.replace(match[0], match[i]);
+							break;
+						case 6:
+							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
+							arr.push({highlight: [match.index, match.index + 2]});
+							input = input.replace(match[0], `${match[i].substring(0,1)} ${match[i].substring(1)}`)
+							break;
+						case 7:
+							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
+							arr.push({highlight: [match.index, match.index + 2]});
+							input = input.replace(match[0], `'${match[i]}`);
+							break;
+					}
+					break;
+				}
+			}
+		}
+		// 2. 인용구 교정(인용부호가 쌍으로 있을 경우만)
+		const prevArrLen = arr.length;
+		const quotes = input.matchAll(/(["'])((?:\u0021|[\u0023-\u0026]|[\u0028-\u007E]|\s|(?:'(?:s|re|m|d|t|ll|ve)\s))+)\1(?!(?:(?:s|re|m|d|t|ll|ve) ))/g);
+		for(const quote of quotes) {
+			let substr = '', content = quote[2], lastIndex = quote.index + quote[0].length;
+			if(quote.index != 0 && !/\s/.test(input[quote.index - 1])) {
+				arr.forEach((v,index) => {
+					if(index >= prevArrLen) return;
+					if(v.highlight[0] >= quote.index) v.highlight[0]--;
+					if(v.highlight[1] >= quote.index) v.highlight[1]--;
+				})
+				arr.push({highlight: [quote.index, quote.index + 1]});
+				if(inputCursor >= quote.index) inputCursor++;
+				substr += ' ';
+				lastIndex++;
+			}
+			while(content.startsWith(' ')) {
+				arr.forEach((v,index) => {
+					if(index >= prevArrLen) return;
+					if(v.highlight[0] >= quote.index) v.highlight[0]--;
+					if(v.highlight[1] >= quote.index) v.highlight[1]--;
+				})
+				if(inputCursor >= quote.index) inputCursor--;
+				content = content.substring(1);
+				lastIndex--;
+			}
+			while(content.endsWith(' ')) {
+				arr.forEach((v,index) => {
+					if(index >= prevArrLen) return;
+					if(v.highlight[0] >= quote.index + content.length) v.highlight[0]--;
+					if(v.highlight[1] >= quote.index + content.length) v.highlight[1]--;
+				})
+				if(inputCursor > quote.index + content.length) inputCursor--;
+				content = content.slice(0, -1);
+				lastIndex--;
+			}
+			substr += quote[1] + content + quote[1];
+
+			if(input[quote.index + quote[0].length] != null && /\s|[,.!?:;]/.test(input[quote.index + quote[0].length]) == false) {
+				arr.forEach((v,index) => {
+					if(index >= prevArrLen) return;
+					if(v.highlight[0] >= lastIndex + 1) v.highlight[0]++;
+					if(v.highlight[1] >= lastIndex + 1) v.highlight[1]++;
+				})
+				arr.push({highlight: [lastIndex, lastIndex + 1]});
+				if(inputCursor >= lastIndex + 1) inputCursor++;
+				substr += ' ';
+			}
+			input = input.replace(quote[0], substr);
+		}
+		// 3. 비정규 문자들(보이지 않는 문자 포함)을 × 문자로 치환
+		input = input.replaceAll(invalidEnglishRegex, '×');
+		return {input, inputCursor, arr};
+	}
+}(this,String.prototype));
