@@ -128,8 +128,8 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 	window.extractHighlightInfo = function(input, inputCursor) {
 		let i = 0, arr = [], match;
 		// 1. 공백과 구두점, 따옴표 교정
-		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|([,.!?:;]\w)|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
-			for(i = 1; i < 8; i++) {
+		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|([,.!?:;]\w)|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+			for(i = 1; i < 9; i++) {
 				if(match[i] != null) {
 					switch(i) {
 						case 1:
@@ -161,8 +161,9 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 							input = input.replace(match[0], `${match[i].substring(0,1)} ${match[i].substring(1)}`)
 							break;
 						case 7:
+						case 8:
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
-							arr.push({highlight: [match.index, match.index + 2]});
+							arr.push({highlight: [match.index, match.index + match[i].length]});
 							input = input.replace(match[0], `'${match[i]}`);
 							break;
 					}
@@ -176,8 +177,8 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 		for(const quote of quotes) {
 			let substr = '', content = quote[2], lastIndex = quote.index + quote[0].length;
 			if(quote.index != 0 && !/\s/.test(input[quote.index - 1])) {
-				arr.forEach((v,index) => {
-					if(index >= prevArrLen) return;
+				arr.forEach((v,arrIndex) => {
+					if(arrIndex >= prevArrLen) return;
 					if(v.highlight[0] >= quote.index) v.highlight[0]--;
 					if(v.highlight[1] >= quote.index) v.highlight[1]--;
 				})
@@ -187,8 +188,8 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 				lastIndex++;
 			}
 			while(content.startsWith(' ')) {
-				arr.forEach((v,index) => {
-					if(index >= prevArrLen) return;
+				arr.forEach((v,arrIndex) => {
+					if(arrIndex >= prevArrLen) return;
 					if(v.highlight[0] >= quote.index) v.highlight[0]--;
 					if(v.highlight[1] >= quote.index) v.highlight[1]--;
 				})
@@ -197,8 +198,8 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 				lastIndex--;
 			}
 			while(content.endsWith(' ')) {
-				arr.forEach((v,index) => {
-					if(index >= prevArrLen) return;
+				arr.forEach((v,arrIndex) => {
+					if(arrIndex >= prevArrLen) return;
 					if(v.highlight[0] >= quote.index + content.length) v.highlight[0]--;
 					if(v.highlight[1] >= quote.index + content.length) v.highlight[1]--;
 				})
@@ -208,9 +209,9 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 			}
 			substr += quote[1] + content + quote[1];
 
-			if(input[quote.index + quote[0].length] != null && /\s|[,.!?:;]/.test(input[quote.index + quote[0].length]) == false) {
-				arr.forEach((v,index) => {
-					if(index >= prevArrLen) return;
+			if(input[quote.index + quote[0].length] != null && !/\s|[,.!?:;]/.test(input[quote.index + quote[0].length])) {
+				arr.forEach((v,arrIndex) => {
+					if(arrIndex >= prevArrLen) return;
 					if(v.highlight[0] >= lastIndex + 1) v.highlight[0]++;
 					if(v.highlight[1] >= lastIndex + 1) v.highlight[1]++;
 				})
