@@ -173,7 +173,7 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 		}
 		// 2. 인용구 교정(인용부호가 쌍으로 있을 경우만)
 		const prevArrLen = arr.length;
-		const quotes = input.matchAll(/(["'])((?:\u0021|[\u0023-\u0026]|[\u0028-\u007E]|\s|(?:'(?:s|re|m|d|t|ll|ve)\s))+)\1(?!(?:(?:s|re|m|d|t|ll|ve) ))/g);
+		const quotes = input.matchAll(/(["'])(?:(?!s|re|m|d|t|ll|ve)\s)((?:\u0021|[\u0023-\u0026]|[\u0028-\u007E]|\s|(?:'(?:s|re|m|d|t|ll|ve)\s))+)\1(?!(?:(?:s|re|m|d|t|ll|ve) ))/g);
 		for(const quote of quotes) {
 			let substr = '', content = quote[2], lastIndex = quote.index + quote[0].length;
 			if(quote.index != 0 && !/\s/.test(input[quote.index - 1])) {
