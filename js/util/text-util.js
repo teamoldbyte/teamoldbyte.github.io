@@ -124,44 +124,50 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 	};
 	
 	/** 입력란에 교정을 적용하고, 변경된 부분을 강조 표시
+	@param input 입력 문자열
+	@param inputCursor 텍스트 커서 위치
+	@returns input, inputCursor, arr 변경된 문자열 및 커서 위치, 강조표시(highlight)에 인자로 적용할 배열(Array<{highlight:Array<Number>}>)
 	 */
 	window.extractHighlightInfo = function(input, inputCursor) {
-		let i = 0, arr = [], match;
+		let i = 0, // 8개 패턴 iterator 
+		arr = [], // 강조표시 배열
+		match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
-		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|([,.!?:;]\w)|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+		// 정규식에 걸리지 않을 때까지 재검사
+		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|((?:\w[,!?:;]\w+)|((?:\w[,!?:;]\w+)|(?:[A-z]\.(?:[A-z]{2,}|\d+|I'[a-z]+))|\d\.[A-z]+) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
 			for(i = 1; i < 9; i++) {
 				if(match[i] != null) {
 					switch(i) {
-						case 1:
+						case 1: // 비정규화된 콤마를 ASCII 콤마로
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({highlight: [match.index, match.index + 1]});
 							input = input.replace(match[0], ',');
 							break;
-						case 2:
+						case 2: // 비정규화된 쌍따옴표를 ASCII 쌍따옴표로
 							arr.push({highlight: [match.index, match.index + 1]});
 							input = input.replace(match[0], '"');
 							break;
-						case 3:
+						case 3: // 비정규화된 홑따옴표를 ASCII 홑따옴표로
 							arr.push({highlight: [match.index, match.index + 1]});
 							input = input.replace(match[0], '\'');
 							break;
-						case 4:
+						case 4: // 둘 이상의 공백을 하나의 ASCII 공백으로
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({highlight: [match.index, match.index + 1]});
 							input = input.replace(match[0], ' ');
 							break;
-						case 5:
+						case 5: // 구두점 앞의 하나 이상의 공백은 생략
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({highlight: [match.index, match.index + 2]});
 							input = input.replace(match[0], match[i]);
 							break;
-						case 6:
-							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
-							arr.push({highlight: [match.index, match.index + 2]});
-							input = input.replace(match[0], `${match[i].substring(0,1)} ${match[i].substring(1)}`)
+						case 6: // 구두점 뒤의 영문자(숫자 및 알파벳)은 반드시 앞에 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
+							if(inputCursor >= match.index + 1) inputCursor += 1;
+							arr.push({highlight: [match.index + 2, match.index + 3]});
+							input = input.replace(match[0], `${match[i].substring(0,2)} ${match[i].substring(2)}`)
 							break;
-						case 7:
-						case 8:
+						case 7: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
+						case 8: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
 							arr.push({highlight: [match.index, match.index + match[i].length]});
 							input = input.replace(match[0], `'${match[i]}`);
@@ -173,48 +179,37 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 		}
 		// 2. 인용구 교정(인용부호가 쌍으로 있을 경우만)
 		const prevArrLen = arr.length;
+		// 아포스트로피 축약어는 인용부호에서 제외하고 동일한 인용부호의 쌍으로 감싼 문자열을 찾는다.
 		const quotes = input.matchAll(/(["'])(?:(?!s|re|m|d|t|ll|ve)\s)((?:\u0021|[\u0023-\u0026]|[\u0028-\u007E]|\s|(?:'(?:s|re|m|d|t|ll|ve)\s))+)\1(?!(?:(?:s|re|m|d|t|ll|ve) ))/g);
 		for(const quote of quotes) {
 			let substr = '', content = quote[2], lastIndex = quote.index + quote[0].length;
+			// 시작 인용부호 앞이 공백이 아니라면 공백을 추가한다.
 			if(quote.index != 0 && !/\s/.test(input[quote.index - 1])) {
-				arr.forEach((v,arrIndex) => {
-					if(arrIndex >= prevArrLen) return;
-					if(v.highlight[0] >= quote.index) v.highlight[0]--;
-					if(v.highlight[1] >= quote.index) v.highlight[1]--;
-				})
+				moveOffsetsInArray(arr, prevArrLen, quote.index, 1);
 				arr.push({highlight: [quote.index, quote.index + 1]});
 				if(inputCursor >= quote.index) inputCursor++;
 				substr += ' ';
 				lastIndex++;
 			}
-			while(content.startsWith(' ')) {
-				arr.forEach((v,arrIndex) => {
-					if(arrIndex >= prevArrLen) return;
-					if(v.highlight[0] >= quote.index) v.highlight[0]--;
-					if(v.highlight[1] >= quote.index) v.highlight[1]--;
-				})
+			// 인용구에 trimStart 적용
+			if(content.startsWith(' ')) {
+				moveOffsetsInArray(arr, prevArrLen, quote.index, -1);
 				if(inputCursor >= quote.index) inputCursor--;
-				content = content.substring(1);
+				content = content.trimStart();
 				lastIndex--;
 			}
-			while(content.endsWith(' ')) {
-				arr.forEach((v,arrIndex) => {
-					if(arrIndex >= prevArrLen) return;
-					if(v.highlight[0] >= quote.index + content.length) v.highlight[0]--;
-					if(v.highlight[1] >= quote.index + content.length) v.highlight[1]--;
-				})
-				if(inputCursor > quote.index + content.length) inputCursor--;
-				content = content.slice(0, -1);
+			// 인용구에 trimEnd 적용
+			if(content.endsWith(' ')) {
+				moveOffsetsInArray(arr, prevArrLen, quote.index + content.length, -1);
+				if(inputCursor >= quote.index + content.length) inputCursor--;
+				content = content.trimEnd();
 				lastIndex--;
 			}
+			// 인용부호 + 인용구 변경
 			substr += quote[1] + content + quote[1];
-
+			// 끝 인용부호 뒤가 공백 혹은 구두점이 아니라면 공백을 추가한다.
 			if(input[quote.index + quote[0].length] != null && !/\s|[,.!?:;]/.test(input[quote.index + quote[0].length])) {
-				arr.forEach((v,arrIndex) => {
-					if(arrIndex >= prevArrLen) return;
-					if(v.highlight[0] >= lastIndex + 1) v.highlight[0]++;
-					if(v.highlight[1] >= lastIndex + 1) v.highlight[1]++;
-				})
+				moveOffsetsInArray(arr, prevArrLen, lastIndex + 1, 1);
 				arr.push({highlight: [lastIndex, lastIndex + 1]});
 				if(inputCursor >= lastIndex + 1) inputCursor++;
 				substr += ' ';
@@ -224,5 +219,13 @@ const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
 		// 3. 비정규 문자들(보이지 않는 문자 포함)을 × 문자로 치환
 		input = input.replaceAll(invalidEnglishRegex, '×');
 		return {input, inputCursor, arr};
+	}
+	function moveOffsetsInArray(arr, until, compareIndex, offset) {
+		arr.forEach((v,i,array) => {
+			if(i >= until) return;
+			if(v.highlight[0] >= compareIndex) v.highlight[0] += offset;
+			if(v.highlight[1] >= compareIndex) v.highlight[1] += offset;
+			arr[i] = v;
+		});
 	}
 }(this,String.prototype));
