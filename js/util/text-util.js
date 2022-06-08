@@ -30,7 +30,7 @@ U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 2020									ls	ps
 */
 const invalidEnglishRegex = /[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]/gi;
-const invalidEnglishString = "[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]";
+const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(window,str) {
 	/**
