@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 .hwt-container {
+	font-family: 'Noto Sans Mono', monospace;
 	position: relative;
 	overflow: hidden !important;
 	-webkit-text-size-adjust: none !important;
