@@ -579,6 +579,20 @@
 .fico-example-section .example-sentence-section .correct-sentence{
 	color: #585174;
 }
+.x-mark{
+	position: relative;
+}
+.x-mark::before{
+	font-family: "Font Awesome 5 Free";
+	content: "\f00d";
+	right: 0.25rem;
+	font-style: normal;
+	opacity: 0.5;
+	top: -1.25rem;
+	font-size: 2rem;
+	position: absolute;
+	color: #a91461;
+}
 @media (max-width: 991px) {
 	.block-section .content-section .title-text{
 		padding-bottom: 10px;	
