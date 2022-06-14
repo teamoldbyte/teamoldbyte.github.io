@@ -7,13 +7,14 @@
 		bFcRed = '<b class=\"text-fc-red\">',
 		ex_sen_sect = '<div class=\"example-sentence-section\">',
 		cor_sen = '<span class=\"correct-sentence\"><i class=\"fa fa-arrow-right\"></i>',
-		emp_2 = '<span class=\"emp-color-2\">';
+		emp_2 = '<span class=\"emp-color-2\">',
+		thumbs_up = ' <i class="far fa-thumbs-up text-fc-purple"></i>';
 	const inputRules = [
-		`${tip_tit}#1:</b><br>문장 분석에 ${bFcRed}중요하지 않는 문장 요소</b>를 배제하세요.<br>${ex_sen_sect}What can I do for you${bFcRed}, Mom?</b> <br>${cor_sen} What can I do for you?</span>${emp_2} (better)</span></div>`,
-		`${tip_tit}#2:</b><br>문장 이해에 필요한 ${bFcRed}정확한 구두점</b>을 제공하세요.<br>${ex_sen_sect}Whether you like it or not ${bFcRed}you</b> must admit it now.<br>${cor_sen} Whether you like it or not<b class=\"me-1\">, you</b> must admit it now.</span>${emp_2} (better)</span></div>`,
-		`${tip_tit}#3:</b><br>접속사, to 등 ${bFcRed}생략을 최소화</b>하세요.<br>${ex_sen_sect}That is a ${bFcRed}sign lightning</b> may be about to strike.<br>${cor_sen} That is a sign <b class=\"me-1 text-fc-red\">that</b> lightning may be about to strike.</span>${emp_2} (better)</span></div>`,
-		`${tip_tit}#4:</b><br>관계사와 구별되는 ${bFcRed}지시 대명사</b>를 사용하세요.<br>${ex_sen_sect}How easy is ${bFcRed}that</b> going to be to manage?<br>${cor_sen} How easy is ${bFcRed}it</b> going to be to manage?</span>${emp_2} (better)</span></div>`,
-		`${tip_tit}#5:</b><br>문장 분석에 ${bFcRed}불필요한 접속사</b>를 문두에 두지 마세요.<br>${ex_sen_sect}${bFcRed}But</b> what passion was there in a life lived with prudence?<br>${cor_sen}What passion was there in a life lived with prudence?</span>${emp_2} (better)</span></div>`
+		`${tip_tit}#1</b><br>문장 분석에 ${bFcRed}중요하지 않는 문장 요소</b>를 배제하세요.<br>${ex_sen_sect}What can I do for you<b class="text-dark">, <span class="x-mark">Mom</span>?</b> <br>${cor_sen} What can I do for you?</span>${thumbs_up}</div>`,
+		`${tip_tit}#2</b><br>문장 이해에 필요한 ${bFcRed}정확한 구두점</b>을 제공하세요.<br>${ex_sen_sect}Whether you like it or not ${bFcRed}you</b> must admit it now.<br>${cor_sen} Whether you like it or not<b class="me-1 text-fc-purple"><span class="text-fc-red">,</span> you</b> must admit it now.</span>${thumbs_up}</div>`,
+		`${tip_tit}#3</b><br>접속사, to 등 ${bFcRed}생략을 최소화</b>하세요.<br>${ex_sen_sect}That is a <b class="me-1 text-dark">sign lightning</b> may be about to strike.<br>${cor_sen} That is a <b class="text-dark">sign <span class="text-fc-red">that</span> lightning</b> may be about to strike.</span>${thumbs_up}</div>`,
+		`${tip_tit}#4</b><br>관계사와 구별되는 ${bFcRed}지시 대명사</b>를 사용하세요.<br>${ex_sen_sect}How easy is <b class="me-1 text-dark"><span class="x-mark">that</span></b> going to be to manage?<br>${cor_sen} How easy is ${bFcRed}it</b> going to be to manage?</span>${thumbs_up}</div>`,
+		`${tip_tit}#5</b><br>문장 분석에 ${bFcRed}불필요한 접속사</b>를 문두에 두지 마세요.<br>${ex_sen_sect}<b class="me-1 text-dark"><span class="x-mark">But</span></b> what passion was there in a life lived with prudence?<br>${cor_sen}What passion was there in a life lived with prudence?</span>${thumbs_up}</div>`
 	];
 	const rul_div = '<div class=\"row g-0\"><div class=\"col-3 my-auto\"><b>',
 		and_exampl = '</div><div class=\"col-5 example-image\">';
