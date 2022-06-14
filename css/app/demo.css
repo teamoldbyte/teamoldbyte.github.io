@@ -588,10 +588,15 @@
 	right: 0.25rem;
 	font-style: normal;
 	opacity: 0.5;
-	top: -1.25rem;
+	top: -1rem;
 	font-size: 2rem;
 	position: absolute;
 	color: #a91461;
+}
+@media (max-width: 768px) {
+	.x-mark::before{
+		top: -1.25rem;
+	}
 }
 @media (max-width: 991px) {
 	.block-section .content-section .title-text{
