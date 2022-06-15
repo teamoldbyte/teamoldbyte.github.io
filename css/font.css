@@ -19,36 +19,21 @@
 /* 나눔스퀘어 */
 @font-face {
 	font-family: 'NanumSquare';
-	font-weight: 300;
-	src: local('NanumSquareL'), url('https://static.findsvoc.com/font/NanumSquareL.woff2');
-}
-@font-face {
-	font-family: 'NanumSquare';
 	font-weight: 400;
-	src: local('NanumSquareR'), url('https://static.findsvoc.com/font/NanumSquareR.woff2');
-}
-@font-face {
-	font-family: 'NanumSquare';
-	font-weight: 700;
-	src: local('NanumSquareB'), url('https://static.findsvoc.com/font/NanumSquareB.woff2');
-}
-@font-face {
-	font-family: 'NanumSquare';
-	font-weight: 800;
-	src: local('NanumSquareEB'), url('https://static.findsvoc.com/font/NanumSquareEB.woff2');
+	src: local('NanumSquareR'), url('https://cdn.jsdelivr.net/npm/@noonnu/nanumsquare@0.0.1/NanumSquareR.woff');
 }
 
 /* 함초롱돋움 */
 @font-face {
     font-family: 'HCRDotum';
-    src: local('HCRDotum'), url('https://static.findsvoc.com/font/HCRDotum.woff2');
+    src: local('HCRDotum'), url('https://cdn.jsdelivr.net/npm/@noonnu/hcrdotum/HCRDotum.woff');
     font-weight: normal;
     font-style: normal;
 }
 /* 나눔바른펜(구문분석 gcomment 사용) */
 @font-face {
     font-family: 'NanumBarunpen';
-    src: local('NanumBarunpen'), url('https://static.findsvoc.com/font/NanumBarunpen.woff2');
+    src: local('NanumBarunpen'), url('https://cdn.jsdelivr.net/npm/@noonnu/nanumbarunpen/NanumBarunpen.woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -56,29 +41,16 @@
 @font-face {
 	font-family: 'NanumBarunGothic';
 	font-style: normal;
-	font-weight: 300;
-	src: local('NanumBarunGothicLight'), url('https://static.findsvoc.com/font/NanumBarunGothicWebLight.woff2');
-}
-@font-face {
-	font-family: 'NanumBarunGothic';
-	font-style: normal;
 	font-weight: 400;
-	src: local('NanumBarunGothic'), url('https://static.findsvoc.com/font/NanumBarunGothicWeb.woff2');
+	src: local('NanumBarunGothic'), url('https://cdn.jsdelivr.net/npm/@noonnu/nanumbarungothic/NanumBarunGothicWeb.woff');
 }
-@font-face {
-	font-family: 'NanumBarunGothic';
-	font-style: normal;
-	font-weight: 700;
-	src: local('NanumBarunGothicBold'), url('https://static.findsvoc.com/font/NanumBarunGothicWebBold.woff2');
-}
-
 
 /* 리디 바탕 */
 @font-face {
     font-family: 'RIDIBatang';
     font-style: normal;
     font-weight: normal;
-    src: local('RIDIBatang'), url('https://static.findsvoc.com/font/RIDIBatang.woff2');
+    src: local('RIDIBatang'), url('https://cdn.jsdelivr.net/npm/@kfonts/ridi-batang/RIDIBatang.woff2');
 }
 /* 리디 바탕(영어) */
 @font-face {
@@ -86,7 +58,7 @@
     font-style: normal;
     font-weight: normal;
 	unicode-range:U+0041-005A, U+0061-007A;
-    src: local('RIDIBatang'), url('https://static.findsvoc.com/font/RIDIBatang.woff2');
+    src: local('RIDIBatang'), url('https://cdn.jsdelivr.net/npm/@kfonts/ridi-batang/RIDIBatang.woff2');
 }
 .nanumbarungothic * {
  font-family: 'NanumBarunGothic', sans-serif;
