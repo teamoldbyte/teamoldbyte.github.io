@@ -3,7 +3,7 @@
 @author LGM
  */
 (function($, document, tandem) {
-	const tip_tit = '<b>더 정확한 분석을 위해..',
+	const tip_tit = '<b class=\"text-yellow-500\">더 정확한 분석을 위해..',
 		bFcRed = '<b class=\"text-fc-red\">',
 		ex_sen_sect = '<div class=\"example-sentence-section\">',
 		cor_sen = '<span class=\"correct-sentence\"><i class=\"fa fa-arrow-right\"></i>',
