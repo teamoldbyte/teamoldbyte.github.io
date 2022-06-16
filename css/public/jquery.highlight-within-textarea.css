@@ -2,6 +2,7 @@
 
 .hwt-container {
 	font-family: 'Noto Sans Mono', monospace;
+	line-height: 1.5;
 	position: relative;
 	overflow: hidden !important;
 	-webkit-text-size-adjust: none !important;
