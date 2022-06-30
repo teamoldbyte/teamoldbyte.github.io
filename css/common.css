@@ -15,7 +15,7 @@
 	--fc-yellow: #f9d37a;
 	
 	
-	--fc-logo-head: url(https://teamoldbyte.github.io/images/logo/main_logo_headonly.svg);
+	--fc-logo-head: url(https://static.findsvoc.com/images/logo/main_logo_headonly.svg);
 }
 
 /**********************************************************
@@ -382,6 +382,9 @@ a:hover {
 	background-color: #424250 !important;
 }
 
+.bg-orange-90{
+	background-color: rgb(255, 242, 226) !important;
+}
 .bg-orange-100{
 	background-color: rgb(255 237 213) !important;
 }
@@ -444,6 +447,12 @@ a:hover {
 }
 .border-r-all-10px{
     border-radius: 10px!important;
+}
+/**********************************************************
+ *			border 
+ **********************************************************/
+.text-stroke-gray{
+	-webkit-text-stroke: 1px #dee2e6;
 }
 /**********************************************************
  *			under-line 
