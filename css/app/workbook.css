@@ -1096,9 +1096,11 @@
 .view-passage-section .full-text{
 	border-radius: 10px;
 	padding: 1rem 1.5rem;
-	background-color: #002060;
+	background-color: #0c1d41;
 	color: #fff;
 	border-radius: 5px;
+	font-family: Corbel;
+	font-size: 1.125rem;
 }
 @media (max-width: 1199.5px) {
 	.view-passage-section .full-text{
@@ -1106,7 +1108,7 @@
 	}
 }
 .view-passage-section .full-text .sentence-link{
-	color: #fff;
+	color: #e5fff4;
 }
 .view-passage-section a{
 	color: #0a58ca;
