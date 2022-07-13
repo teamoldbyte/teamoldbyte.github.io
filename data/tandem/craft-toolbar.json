@@ -1,0 +1,116 @@
+{
+	"common": [
+		{
+			"el": "div",
+			"class": "col-auto d-inline",
+			"children":
+			[	
+				{
+					"el": "button",
+					"title": "실행취소 (단축키: Ctrl + Z)",
+					"innerHTML": "<i class=\"fas fa-undo-alt\"></i>",
+					"disabled": "disabled",
+					"value": "undo"
+				},
+				{
+					"el": "button",
+					"title": "재실행 (단축키: Ctrl + Y)",
+					"innerHTML": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
+					"disabled": "disabled",
+					"value": "redo"
+				}
+			]
+		}
+	],
+	"battle1": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "정답 선택",
+				"innerHTML": "정답",
+				"value": "answer"
+			},
+			{
+				"el": "input",
+				"type": "checkbox",
+				"title": "보기 선택",
+				"innerHTML": "보기",
+				"value": "option"
+			}
+		]
+	},
+	"battle2": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"title": "수식어 선택",
+				"innerHTML": "수식어",
+				"value": "modifier"
+			},
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "피수식어 선택",
+				"innerHTML": "피수식어",
+				"value": "modificand"
+			}
+		]
+	},
+	"battle3": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "빈칸 선택",
+				"innerHTML": "빈칸 선택",
+				"value": "pick-right"
+			}
+		]
+	},
+	"battle4": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "정답 선택",
+				"innerHTML": "정답",
+				"value": "answer-wrong"
+			},
+			{
+				"el": "input",
+				"type": "checkbox",
+				"title": "보기 선택",
+				"innerHTML": "보기",
+				"value": "option"
+			}
+		]
+	},
+	"battle5": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "보기 선택",
+				"innerHTML": "보기",
+				"value": "option"
+			}
+		]
+	}
+}
