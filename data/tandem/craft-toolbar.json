@@ -50,6 +50,7 @@
 			{
 				"el": "input",
 				"type": "checkbox",
+				"checked": "checked",
 				"title": "수식어 선택",
 				"innerHTML": "수식어",
 				"value": "modifier"
@@ -57,7 +58,6 @@
 			{
 				"el": "input",
 				"type": "checkbox",
-				"checked": "checked",
 				"title": "피수식어 선택",
 				"innerHTML": "피수식어",
 				"value": "modificand"
