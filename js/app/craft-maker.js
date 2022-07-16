@@ -8,31 +8,37 @@
 		craftToolbarGroup = json;
 		battleBtns = json.common;
 	});
-	const allAsks = [
+	const askInfos = [
 		[// Battle #1
-			{role: 's', ask: "다음 문장의 주어(부)를 선택하세요."},
-			{role: 'v', ask: "다음 문장의 동사(부)를 선택하세요."},
-			{role: 'o', ask: "다음 문장의 목적어(부)를 선택하세요."},
-			{role: 'c', ask: "다음 문장의 보어(부)를 선택하세요."},
-			{role: 'oc', ask: "다음 문장의 목적보어(부)를 선택하세요."}
+			{selector: '.s', ask: 'find S', fullAsk: "다음 문장의 주어(부)를 선택하세요."},
+			{selector: '.v', ask: 'find V', fullAsk: "다음 문장의 동사(부)를 선택하세요."},
+			{selector: '.o', ask: 'find O', fullAsk: "다음 문장의 목적어(부)를 선택하세요."},
+			{selector: '.c', ask: 'find C', fullAsk: "다음 문장의 보어(부)를 선택하세요."},
+			{selector: '.oc', ask: 'find OC', fullAsk: "다음 문장의 목적보어(부)를 선택하세요."},
+			{selector: '.s[data-rc="s.s."]', ask: 'find SS', fullAsk: "다음 문장의 진짜주어(부)를 선택하세요."},
+			{selector: '.o[data-rc="i.o."]', ask: 'find IO', fullAsk: "다음 문장의 간접목적어(부)를 선택하세요."},
+			{selector: '.o[data-rc="d.o."]', ask: 'find DO', fullAsk: "다음 문장의 직접목적어(부)를 선택하세요."},
+			{selector: '.ptc', ask: 'find PTC', fullAsk: "다음 문장의 분사를 선택하세요."},
+			{selector: '.ger', ask: 'find GER', fullAsk: "다음 문장의 동명사를 선택하세요."},
+			{selector: '.tor', ask: 'find TOR', fullAsk: "다음 문장의 to부정사를 선택하세요."},
 		],
 		[// Battle #2
-			{role: 'phr', ask: "[전치사] 수식어와 피수식어를 선택하세요."},
-			{role: 'verbid', ask: "[준동사] 수식어와 피수식어를 선택하세요."},
-			{role: 'rel', ask: "[관계사] 수식어와 피수식어를 선택하세요."},
-			{role: 'adj', ask: "[형용사] 수식어와 피수식어를 선택하세요."},
-			{role: 'appo', ask: "[동격어구/절] 수식어와 피수식어를 선택하세요."},
+			{selector: '.adjphr[data-mfd],.phr[data-mfd]', ask: 'find MOD[phr]', fullAsk: "[전치사] 수식어와 피수식어를 선택하세요."},
+			{selector: '.tor[data-mfd],.ptc[data-mfd]', ask: 'find MOD[verbid]', fullAsk: "[준동사] 수식어와 피수식어를 선택하세요."},
+			{selector: '.acls[data-mfd]', ask: 'find MOD[rel]', fullAsk: "[관계사] 수식어와 피수식어를 선택하세요."},
+			{ask: 'find MOD[adj]', fullAsk: "[형용사] 수식어와 피수식어를 선택하세요."},
+			{ask: 'find MOD[appo]', fullAsk: "[동격어구/절] 수식어와 피수식어를 선택하세요."},
 		],
 		[// Battle #3
-			{role: 'BetweenTwo', ask: "다음 문장에서 적절한 보기를 선택하세요."}
+			{ask: 'sel correct', fullAsk: "다음 문장에서 적절한 보기를 선택하세요."}
 			
 		],
 		[// Battle #4
-			{role: 'wrong', ask: "다음 문장에서 어법상 틀린 것을 선택하세요."}
+			{ask: 'sel incorrect', fullAsk: "다음 문장에서 어법상 틀린 것을 선택하세요."}
 			
 		],
 		[// Battle #5
-			{role: 'arrange', ask: "다음 어구들을 해석에 맞게 배치해 보세요."}
+			{ask: 'arrange order', fullAsk: "다음 어구들을 해석에 맞게 배치해 보세요."}
 			
 		]
 	]
@@ -48,7 +54,7 @@
 		'}' +
 		'.battle-context .answer::after,.battle-context .option::after, .battle-context .answer-wrong::after {' +
 			'position: absolute;width: calc(1em + 2px);' +
-			'line-height: 1;top: 1.5em;left: calc(50% - .5em - 1px);' +
+			'line-height: 1;top: 1.5em;left: 0;' +
 			'text-align: center;content: "["counter(quizIndex)"]"' +
 		'}' +
 		'.battle-context .answer { color: red; }' +
@@ -65,93 +71,89 @@
 			'position: absolute; left: 0; bottom: 0; color: red; content: attr(data-wrong)' +
 		'}' +
 		'.battle-context * { cursor: pointer;}' +
-		'.battle-context *:hover { background: gold}' +
+		'.battle-context *:hover,.battle-context *:hover::before,.battle-context *:hover::after { background: gold}' +
 		'</style>');
 		
 	let battleMakerPanel = createElement({el: "div", className: "battle-section-panel"});
 	battleMakerPanel.insertAdjacentHTML('afterbegin',
 `	<!-- 기존 문제 조회 영역 -->
-	<div class="existing-battle-section border-bottom mb-3 pb-3">
-		<h5 class="mb-3">기존 등록 배틀 조회</h5>
+	<div class="existing-battle-section border-bottom pb-3 row">
+		<label class="col-auto lh-1 my-auto text-fc-red fw-bold">기존 등록 배틀 조회</label>
 		<!-- 조회 결과 -->
-		<div>
-			<div class="js-open-existing-battles" role="button" data-bs-toggle="collapse">
+		<div class="existing-battles-section col-auto">
+			<div class="js-open-existing-battle" role="button" data-bs-toggle="collapse">
 				• Battle <span class="existing-battle-type">0</span> 으로 등록 ( <span class="existing-battle-count">0</span> 건 ) <span class="fold-icon text-xl align-middle"></span>
 			</div>
 		</div>
-		<!-- 기존 등록 배틀 상세보기 영역 -->
-		<div class="js-existing-battle-view fade collapsed">
-			<p>---- 기존 등록 배틀 상세보기 영역. 추가 구현 예정 ----</p>
-			
-		</div>
 	</div>						
 	<!-- 배틀 추가 등록 영역 -->
-	<div class="add-battle-section">
+	<div class="add-battle-section py-3">
 		<!-- 배틀 타입 선택 -->
-		<div class="battle-type-section mb-3">
-			<h5 class="mb-3">배틀 타입 선택</h5>
-			<input type="radio" name="battleTypeSelect" autocomplete="off" value="1">
-			1. 성분 찾기
-			<input type="radio" name="battleTypeSelect" autocomplete="off" value="2">
-			2. 수식어 찾기
-			<input type="radio" name="battleTypeSelect" autocomplete="off" value="3">
-			3. 맞는 어법 찾기
-			<input type="radio" name="battleTypeSelect" autocomplete="off" value="4">
-			4. 틀린 어법 찾기
-			<input type="radio" name="battleTypeSelect" autocomplete="off" value="5">
-			5. 문장요소 배열하기
+		<div class="battle-type-section pb-3 row" data-radio="btnradioBattletype">
+			<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">배틀 타입 선택</label>
+			<input type="radio" class="btn-check" autocomplete="off" value="1" checked>
+			<label class="btn rounded-pill btn-outline-fico col-auto">1. 성분 찾기</label>
+			<input type="radio" class="btn-check" autocomplete="off" value="2">
+			<label class="btn rounded-pill btn-outline-fico col-auto">2. 수식어 찾기</label>
+			<input type="radio" class="btn-check" autocomplete="off" value="3">
+			<label class="btn rounded-pill btn-outline-fico col-auto">3. 맞는 어법 찾기</label>
+			<input type="radio" class="btn-check" autocomplete="off" value="4">
+			<label class="btn rounded-pill btn-outline-fico col-auto">4. 틀린 어법 찾기</label>
+			<input type="radio" class="btn-check" autocomplete="off" value="5">
+			<label class="btn rounded-pill btn-outline-fico col-auto">5. 문장요소 배열하기</label>
 		</div>
 		<!-- 문제 입력 -->
 		<div class="add-detail-battle-section">
-			<div class="battle-editor-section">
-				<h5 class="mb-3">문제</h5>
+			<div class="battle-editor-section pb-3">
 				<!-- 문제 입력 에디터 -->
 				<div class="craft-maker-container">
 				</div>
 			</div>
-			<div class="row g-2 mb-3">
+			<div class="row py-3">
 				<!-- 카테고리 입력 -->
-				<div class="battle-category-section col-12 col-md-6">
-					<h5 class="mb-3">카테고리</h5>
-					<select class="form-select">
+				<div class="battle-category-section col-12 col-md-4 row">
+					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">카테고리</label>
+					<select class="form-select d-inline-block w-auto col">
 					</select>
 				</div>
 				<!-- 난이도 입력 -->
-				<div class="battle-diffLevel-section col-12 col-md-6">
-					<h5 class="mb-3">난이도</h5>
-					<select class="form-select">
-						<option value="E">쉬움</option>
-						<option value="N" selected>보통</option>
-						<option value="D">어려움</option>
-					</select>
+				<div class="battle-diffLevel-section col-12 col-md-4 row" data-radio="btnradioBattlelevel">
+					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">난이도</label>
+					<input type="radio" class="btn-check battle-level-select" autocomplete="off" value="E" checked>
+					<label class="col btn rounded-pill btn-outline-fico">쉬움</label>
+					<input type="radio" class="btn-check battle-level-select" autocomplete="off" value="N">
+					<label class="col btn rounded-pill btn-outline-fico">보통</label>
+					<input type="radio" class="btn-check battle-level-select" autocomplete="off" value="D">
+					<label class="col btn rounded-pill btn-outline-fico">어려움</label>
+				</div>
+				<!-- 질문에 대한 태그 입력 -->
+				<div class="battle-askTag-section col row">
+					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">태그</label>
+					<input type="text" class="askTag form-control d-inline-block col" placeholder="ex) 목적어(부), 관계사(카테고리명)">
 				</div>
 			</div>
-			<!-- 질문에 대한 태그 입력 -->
-			<div class="battle-askTag-section mb-3">
-				<h5 class="mb-3">질문에 대한 태그</h5>
-				<input type="text" class="askTag form-control" placeholder="ex) 목적어(부), 관계사(카테고리명)">
+			<div class="battle-source-section pb-3 row">
+				<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">출처</label>
+				<input type="text" class="source form-control d-inline col" placeholder="ex) OOO 워크북, 2022년 6월 고3 모의고사 등">
 			</div>
 			<!-- 문제 해설 -->
-			<div class="battle-comment-section mb-3">
-				<h5 class="mb-3">해설</h5>
-				<textarea class="comment form-control" rows="2" placeholder="문제에 대한 해설, 참조 링크 등"></textarea>
+			<div class="battle-comment-section pb-3 row">
+				<label class="col-auto text-fc-purple fw-bold">해설</label>
+				<textarea class="comment form-control d-inline col" rows="2" placeholder="문제에 대한 해설, 참조 링크 등"></textarea>
 			</div>
-			<div class="battle-source-section mb-3">
-				<h5 class="mb-3">출처</h5>
-				<input type="text" class="source form-control" placeholder="ex) OOO 워크북, 2022년 6월 고3 모의고사 등">
-			</div>
-			<div class="button-section text-end">
+			<div class="button-section text-center">
 				<button type="button" class="js-add-battle btn btn-fico">등록</button>
 			</div>
 		</div>
 	</div>`);
 		
 	let craftToolbar = document.createElement('div');
-	craftToolbar.className = 'row g-2 btn-toolbar';
+	craftToolbar.className = 'row g-2 btn-toolbar m-1';
 	craftToolbar.setAttribute('role','toolbar');
 	
-	
+	//------------------------ [이벤트 할당] --------------------------------------
 	$(document)
+	// 배틀타입 선택시 에디터 종류를 변경한다.
 	.on('change', '.battle-type-section input[type=radio]', function() {
 		const semanticResult = $(this).closest('.battle-section-panel').data('semantics');
 		
@@ -176,13 +178,17 @@
 			pushEditHistory(context);
 			wrapText(this.closest('.battle-maker'));
 		}
-	}).on('click', '.battle-context *', function() {
+	})
+	// 보기 및 정답 요소들은 다시 클릭 시 삭제된다.
+	.on('click', '.battle-context *', function() {
 		if(this.nodeName == 'SPAN') {
 			this.outerHTML = this.innerHTML;
 		}else {
 			this.remove();
 		}
-	}).on('click', '.battle-maker [value=undo], .battle-maker [value=redo]', function() {
+	})
+	// 실행취소 및 재실행 동작
+	.on('click', '.battle-maker [value=undo], .battle-maker [value=redo]', function() {
 		const isUndo = this.value == 'undo';
 		const editHistory = isUndo ? undoList.pop() : redoList.pop();
 		const makerDiv = this.closest('.battle-maker');
@@ -194,35 +200,48 @@
 		
 		makerDiv.querySelector('[value=undo]').disabled = undoList.length == 0;
 		makerDiv.querySelector('[value=redo]').disabled = redoList.length == 0;
-	}).on('click', '.js-add-battle', function() {
+	})
+	.on('keyup', function(e) {
+		const battleMaker = e.target.closest('.battle-maker');
+		if(battleMaker) {
+			if(e.ctrlKey && e.key.toUpperCase() == 'Z')
+				$(battleMaker).find('[value=undo]').trigger('click');
+			else if(e.ctrlKey && e.key.toUpperCase() == 'Y')
+				$(battleMaker).find('[value=redo]').trigger('click');
+		}
+	})
+	// 배틀 등록 버튼 클릭시 배틀입력 정보를 커맨드로 취합하여 전송
+	.on('click', '.js-add-battle', function() {
 		const addSection = this.closest('.add-battle-section');
 		const $battlePanel = $(addSection).closest('.battle-section-panel');
 		const battleContext = addSection.querySelector('.battle-context');
 		
 		let example = '', answer = '';
-		const battleType = Number(addSection.querySelector('[name=battleTypeSelect]:checked').value);
+		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
+		
+		// 배틀 유형별 example, answer 정보 구성.
 		switch(battleType) {
-			case 1:
+			case '1':
 				example = findClassPositions(battleContext, '.answer, .option');
 				answer = findClassPositions(battleContext, '.answer');
 				break;
-			case 2:
+			case '2':
 				answer = [findClassPositions(battleContext, '.modifier')[0],
 						  findClassPositions(battleContext, '.modificand')[0]];
 				break;
-			case 3:
+			case '3':
 				let blank = battleContext.querySelector('.pick-right');
 				example = [findClassPositions(battleContext, '.pick-right')[0],
 							blank.textContent.trim(), blank.dataset.wrong.trim()];
 				answer = [blank.textContent.trim()];
 				break;
-			case 4:
+			case '4':
 				let wrong = battleContext.querySelector('.answer-wrong');
 				example = findClassPositions(battleContext, '.option, .answer-wrong');
 				answer = [findClassPositions(battleContext, '.answer-wrong')[0],
 							wrong.textContent.trim()];
 				break;
-			case 5:
+			case '5':
 				example = findClassPositions(battleContext, '.option');
 				break;
 			default: break;
@@ -239,7 +258,7 @@
 			askTag: addSection.querySelector('.askTag').value.trim(),
 			comment: addSection.querySelector('.comment').value.trim(),
 			source: addSection.querySelector('.source').value.trim(),
-			diffLevel: addSection.querySelector('.battle-diffLevel-section select').value
+			diffLevel: addSection.querySelector('.battle-diffLevel-section input:checked').value
 		}
 		
 		$.ajax({
@@ -259,30 +278,70 @@
 	function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv) {
 		const categorySection = battleMakerPanel.querySelector('.battle-category-section select');
 		let panelInstance = battleMakerPanel.cloneNode(true);
-		
+		const now = Date.now();
 		$(panelInstance).data('semantics', semanticsDiv)
 						.data('memberId', memberId)
 						.data('sentenceId', sentenceId);
+						
+		panelInstance.querySelectorAll('[data-radio]')
+			.forEach((radioGroup, i) => {
+				const radioName = `${radioGroup.dataset.radio}${now}${i}`
+				radioGroup.querySelectorAll('input[type=radio]').forEach((radio, j) => {
+					radio.name = radioName;
+					radio.id = `${radioName}${j}`;
+					radio.nextElementSibling.htmlFor = `${radioName}${j}`;
+				})
+		});
 		
 		// 문장에 등록된 배틀 조회
 		$.getJSON(`/craft/battle/search/${sentenceId}`, battles => {
-			
+			let battleSummary = {};
+			battles.forEach(battle => {
+				if(battleSummary[battle.battleType] == null) 
+					battleSummary[battle.battleType] = [];
+				battleSummary[battle.battleType].push(battle);
+			});
+			const battleList = panelInstance.querySelector('.existing-battles-section');
+			battleList.innerHTML = '';
+			if(Object.entries(battleSummary).length == 0) {
+				battleList.append('등록된 배틀이 없습니다.');
+			}else {
+				Object.entries(battleSummary).forEach((summ, i) => {
+					const randId = Date.now() + i;
+					
+					// 배틀 유형별 갯수 정보
+					const briefInfo = createElement({el: 'div', className: 'js-open-existing-battle', role: 'button'});
+					briefInfo.dataset.bsToggle = 'collapse';
+					briefInfo.dataset.bsTarget = `.js-existing-battle-view${randId}`;
+					
+					briefInfo.innerHTML = `• Battle <span class="existing-battle-type">${summ[0]}</span> (으)로 등록 ( ${summ[1].length} 건 ) <span class="fold-icon text-xl align-middle"></span>`;
+					battleList.append(briefInfo);
+					
+					// 배틀 상세 정보
+					const battleDetails = createElement({el: 'div', 
+						className: `js-existing-battle-view${randId} fade collapse`,
+						textContent: JSON.stringify(summ[1])});
+					battleList.append(battleDetails);
+					
+				})
+			}
 		})
 		
 		// 카테고리 화면에서 최초 1회 불러오기
 		if(categorySection.childElementCount == 0) {
-			categorySection.append(createElement({el:'option',selected:'selected',disabled:'disabled',innerHTML: '카테고리 선택'}))
 			$.getJSON('/grammar/category/list', categories => {
 				categories.forEach(category => {
 					categorySection.append(createElement({
 						el:'option',value:category.cid,
-						textContent: (category.parentCategory ? '└─':'') + category.title}));
+						textContent: (category.parentCategory ? '└─ ':'') + category.title}));
 				});
 				panelInstance.querySelector('.battle-category-section select')
 				.innerHTML = categorySection.innerHTML;
 			})
 		}
 		container.innerHTML = '';
+		// 배틀 1 유형을 기본으로 에디터 지정
+		attachBattleMaker(panelInstance.querySelector('.craft-maker-container'), semanticsDiv, 1);
 		container.append(panelInstance);
 	}
 	
@@ -294,23 +353,23 @@
 	function attachBattleMaker(container, semanticsDiv, battleType) {
 		container.innerHTML = '';
 		redoList = []; undoList = [];
-		const makerDiv = document.createElement('div');
-		makerDiv.className = 'battle-maker';
-		let asks = allAsks[battleType - 1];
-		if(battleType == 1) {
-			// 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
-			asks.forEach(el => {
-				if(semanticsDiv.querySelector(`.sem.${el.role}`) != null ) {
-					el.recommended = true;
-				}
-			});
-			asks.sort((a,b) => {
-				if(!a.recommended) return 1;
-				return b.recommended ? 0 : -1;
-			})
-		}
+		const makerDiv = createElement({el: 'div', className: 'battle-maker', tabIndex: 0})
+		let asks = askInfos[battleType - 1];
+		// 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
+		asks.forEach(el => {
+			if(el.selector != null && semanticsDiv.querySelector(`.sem${el.selector}`) != null ) {
+				el.recommended = true;
+			}
+		});
+		asks.sort((a,b) => {
+			if(!a.recommended) return 1;
+			return b.recommended ? 0 : -1;
+		})
+		// 배틀 유형별 툴바 표시
 		appendToolbar(craftToolbarGroup[`battle${battleType}`], makerDiv);
+		// 배틀 유형별 질문 표시
 		appendAskSelect(asks, makerDiv);
+		// 수정 영역 표시
 		appendContext(semanticsDiv, makerDiv);		
 		container.append(makerDiv);	
 	}
@@ -328,29 +387,63 @@
 		askSelect.className = 'form-select ask-select';
 		askArray.forEach(one => {
 			const option = document.createElement('option');
-			if(one.recommended) option.className = 'bg-dark text-white';
-			option.value = `find${one.role.toUpperCase()}`;
-			option.innerHTML = one.ask;
+			if(one.recommended) option.className = 'bg-fc-light-purple';
+			option.value = one.ask;
+			option.innerHTML = one.fullAsk;
 			askSelect.append(option);
 		});
 		maker.querySelector('[role=toolbar]').prepend(askSelect);
-		$(askSelect).wrap('<div class="col-auto"></div>');
+		$(askSelect).wrap('<div class="btn-group col-auto"></div>');
+		askSelect.insertAdjacentHTML('beforebegin', '<label class="col-auto lh-1 my-auto me-2 text-fc-purple fw-bold">질문</label>');
 	}
 	function appendContext(semanticsResult, maker) {
 		const context = document.createElement('div');
-		context.className = 'battle-context bg-white my-3 px-2';
+		context.className = 'battle-context fs-5 bg-white my-3 px-2';
 		context.textContent = tandem.cleanSvocDOMs(semanticsResult).innerText;
 		context.onmouseup = () => wrapText(maker);
 		maker.append(context);
 	}
 	function wrapText(maker) {
-		const sel = getSelection();
+		let sel = getSelection();
 		const chkdBtn = maker.querySelector('[role=toolbar] [type=checkbox]:checked');
 		if(!sel.isCollapsed && chkdBtn) {
 			if(sel.toString().trim() == maker.querySelector('.battle-context').textContent.trim()) return;
 			
 			pushEditHistory(maker.querySelector('.battle-context'));
 			
+			const battleType = Number(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
+			
+			/* 선택 범위를 단어 단위로 선택되도록 자동 조절. 선택범위의 양끝 공백은 제거
+				배틀 1, 3 유형은 띄어쓰기가 아닌 apostrophe를 기준으로 범위를 지정할 수도 있어서 예외
+			*/
+			if(![1,3].includes(battleType)) {
+				// 드래그 선택 방향이 오른쪽->왼쪽이라면 방향을 뒤집는다.(아래의 로직 전개를 위해)
+				if(sel.anchorNode.compareDocumentPosition(sel.focusNode) == 2
+				|| (sel.anchorNode.compareDocumentPosition(sel.focusNode) == 0
+				&& sel.anchorOffset > sel.focusOffset)) {
+					sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
+				}
+				// 왼쪽에 선택할 글자가 있다면 추가선택
+				while(sel.anchorOffset > 0 
+				&& sel.anchorNode.textContent.charAt(sel.anchorOffset).match(/\S/)
+				&& sel.anchorNode.textContent.charAt(sel.anchorOffset -1).match(/\S/)) {
+					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset - 1, sel.focusNode, sel.focusOffset);
+				}
+				// 왼쪽 끝이 공백이면 왼쪽 범위를 축소
+				while(sel.toString().match(/^\s/)) {
+					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset + 1, sel.focusNode, sel.focusOffset);
+				}
+				// 오른쪽에 선택할 글자가 있다면 추가선택
+				while( sel.focusOffset < sel.focusNode.textContent.length - 1
+				&& sel.focusNode.textContent.charAt(sel.focusOffset - 1).match(/\S/) 
+				&& sel.focusNode.textContent.charAt(sel.focusOffset).match(/\S/)) {
+					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset + 1);
+				}
+				// 오른쪽 끝이 공백이면 오른쪽 범위를 축소
+				while(sel.toString().match(/\s$/)) {
+					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset - 1);
+				}
+			}
 			const wrapper = document.createElement('span');
 			wrapper.className = chkdBtn.value;
 			const range = sel.getRangeAt(0);
