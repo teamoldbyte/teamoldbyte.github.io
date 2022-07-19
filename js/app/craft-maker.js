@@ -6,13 +6,13 @@
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
 	
-	
 	let craftToolbarGroup = {}, battleBtns = [], chkbxSeq = 0;
 	let undoList = [], redoList = []; // 편집 내역
 	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
 		craftToolbarGroup = json;
 		battleBtns = json.common;
 	});
+	let cachedAskTags = {}; // askTag값의 검색어 캐시 
 	const askInfos = [
 		[// Battle #1
 			{selector: '.s', ask: '#1', tag: '주어(부)', fullAsk: "다음 문장의 주어(부)를 선택하세요."},
@@ -80,20 +80,20 @@
 	let battleMakerPanel = createElement({el: "div", className: "battle-section-panel"});
 	battleMakerPanel.insertAdjacentHTML('afterbegin',
 `	<!-- 기존 문제 조회 영역 -->
-	<div class="existing-battle-section pb-3 row">
-		<label class="col-auto lh-1 ms-3 my-auto text-fc-red fw-bold">기존 등록 배틀 조회</label>
+	<div class="existing-battle-section bg-white row py-3 mx-0 mb-3 rounded-5">
+		<label class="col-auto lh-1 ps-3 my-auto text-fc-purple fw-bold">기존 등록 배틀 조회</label>
 		<!-- 조회 결과 -->
 		<div class="existing-battles-section col-auto">
 			<div class="js-open-existing-battle" role="button" data-bs-toggle="collapse">
 				• Battle <span class="existing-battle-type">0</span> 으로 등록 ( <span class="existing-battle-count">0</span> 건 ) <span class="fold-icon text-xl align-middle"></span>
 			</div>
 		</div>
-	</div>						
+	</div>
 	<!-- 배틀 추가 등록 영역 -->
-	<div class="add-battle-section p-3 bg-white rounded-3">
+	<div class="add-battle-section">
 		<!-- 배틀 타입 선택 -->
-		<div class="battle-type-section pb-3 row" data-radio="btnradioBattletype">
-			<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">배틀 타입 선택</label>
+		<div class="battle-type-section p-3 bg-white row mx-0 mb-3 rounded-5" data-radio="btnradioBattletype">
+			<label class="col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold">배틀 타입 선택</label>
 			<input type="radio" class="btn-check" autocomplete="off" value="1" checked>
 			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">1. 성분 찾기</label>
 			<input type="radio" class="btn-check" autocomplete="off" value="2">
@@ -106,7 +106,7 @@
 			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">5. 문장요소 배열하기</label>
 		</div>
 		<!-- 문제 입력 -->
-		<div class="add-detail-battle-section">
+		<div class="add-detail-battle-section p-3 bg-white rounded-5">
 			<div class="battle-editor-section pb-3">
 				<!-- 문제 입력 에디터 -->
 				<div class="craft-maker-container">
@@ -115,27 +115,17 @@
 			<div class="row pb-3">
 				<!-- 카테고리 입력 -->
 				<div class="battle-category-section col-12 col-md-3 row">
-					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">카테고리</label>
+					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">문법</label>
 					<select class="form-select d-inline-block w-auto col">
 					</select>
 				</div>
-				<!-- 난이도 입력 -->
-				<div class="battle-diffLevel-section col-12 col-md-3 row" data-radio="btnradioBattlelevel">
-					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">난이도</label>
-					<input type="radio" class="btn-check battle-level-select" autocomplete="off" value="E" checked>
-					<label class="col btn col-3 rounded-pill btn-outline-fico">쉬움</label>
-					<input type="radio" class="btn-check battle-level-select" autocomplete="off" value="N">
-					<label class="col btn col-3 ms-1 rounded-pill btn-outline-fico">보통</label>
-					<input type="radio" class="btn-check battle-level-select" autocomplete="off" value="D">
-					<label class="col btn col-3 ms-1 rounded-pill btn-outline-fico">어려움</label>
-				</div>
 				<!-- 질문에 대한 태그 입력 -->
-				<div class="battle-askTag-section col-12 col-md-3 row">
+				<div class="battle-askTag-section col-12 ms-md-4 col-md-3 row">
 					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">태그</label>
 					<input type="text" class="askTag form-control d-inline-block col" placeholder="ex) 목적어(부), 관계사(카테고리명)">
 				</div>
 				<!-- 질문 출처 입력 -->
-				<div class="battle-source-section col row me-md-2">
+				<div class="battle-source-section col ms-md-4 row me-md-2">
 					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">출처</label>
 					<input type="text" class="source form-control d-inline col" placeholder="ex) OOO 워크북, 2022년 6월 고3 모의고사 등">
 				</div>
@@ -153,7 +143,7 @@
 	</div>`);
 		
 	let craftToolbar = document.createElement('div');
-	craftToolbar.className = 'row g-2 btn-toolbar';
+	craftToolbar.className = 'btn-toolbar row col-md-3';
 	craftToolbar.setAttribute('role','toolbar');
 	
 	//------------------------ [이벤트 할당] --------------------------------------
@@ -294,18 +284,34 @@
 			}
 		})
 	})
-	
+	/** 배틀 출제 패널을 컨테이너에 삽입
+	 */
 	function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv) {
 		if(!$.fn.autocomplete) {
-			$.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js');
+			// 배틀 태그(askTag)의 제시어 기능을 위해 jquery-ui 사용
+			// jquery-ui와 부트스트랩의 tooltip 함수 충돌 때문에 
+			// 부트스트랩 메소드를 임시 저장한 채로 jquery-ui모듈을 로드한 후 원상복구
+			const _tooltip = $.fn.tooltip;
+			document.head.append(createElement({el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'}))
+			$.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', {
+				success: () => {
+					$.fn.tooltip = _tooltip;
+					// jquery-ui 모듈 로드가 완료되면 함수 재실행
+					openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv);
+				}
+			});
+			return;
 		}
 		const categorySection = battleMakerPanel.querySelector('.battle-category-section select');
+		// 공용 패널 복사본으로 패널 새로 생성
 		let panelInstance = battleMakerPanel.cloneNode(true);
-		const now = Date.now();
+		// 전달받은 인자값들을 패널 요소에 접근하여 얻을 수 있도록 설정
 		$(panelInstance).data('semantics', semanticsDiv)
 						.data('memberId', memberId)
 						.data('sentenceId', sentenceId);
 						
+		// 패널 내의 라디오버튼들에 유니크한 이름 설정(다른 패널들과 동작이 겹치지 않도록)
+		const now = Date.now();
 		panelInstance.querySelectorAll('[data-radio]')
 			.forEach((radioGroup, i) => {
 				const radioName = `${radioGroup.dataset.radio}${now}${i}`
@@ -369,6 +375,24 @@
 		
 		// 배틀 생성탭이 처음 나올 때 askTag값 임의 지정
 		$(panelInstance).find('.ask-select').trigger('change');
+		
+		// 배틀 태그(askTag)에 제시어 기능 적용
+		$(panelInstance).find('.askTag').autocomplete({
+			minLength: 1, delay: 50, source: function(req, res) {
+				const term = req.term && req.term.trim();
+				if(term in cachedAskTags) {
+					res(cachedAskTags[term]);
+					return;
+				}
+				$.getJSON(`/craft/battle/tag/search/${term}`, function(data) {
+					cachedAskTags[term] = data;
+					res(data);
+				}).fail(() => {
+					cachedAskTags[term] = null;
+					res([]);
+				})
+			}
+		})
 	}
 	
 	/** 배틀 문제 생성.
@@ -379,7 +403,7 @@
 	function attachBattleMaker(container, semanticsDiv, battleType) {
 		container.innerHTML = '';
 		redoList = []; undoList = [];
-		const makerDiv = createElement({el: 'div', className: 'battle-maker', tabIndex: 0})
+		const makerDiv = createElement({el: 'div', className: 'battle-maker row', tabIndex: 0})
 		let asks = askInfos[battleType - 1];
 		// 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
 		asks.forEach(el => {
@@ -412,12 +436,27 @@
 			appendBtn(battleBtns[i], craftToolbar);
 		}
 		maker.prepend(craftToolbar.cloneNode(true));
+		const levelBtns = createElement({el: 'div', className: 'battle-diffLevel-section col-12 col-md-6 row'});
+		levelBtns.append(createElement({el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도'}));
+		const now = Date.now();
+		[{text: '쉬움', value: 'E'},{text: '보통', value: 'N'},{text: '어려움', value: 'D'}]
+		.forEach(function(level, i) {
+			levelBtns.append(createElement({el: 'input', type: 'radio',
+				name: `btnRadioBattleLevel${now}`,
+				id: `btnRadioBattleLevel${now}${i}`,
+				className: 'btn-check battle-level-select', autocomplete: 'off',
+				checked: i == 0, value: level.value}));
+			levelBtns.append(createElement({el: 'label', textContent: level.text,
+				htmlFor: `btnRadioBattleLevel${now}${i}`,
+				className: 'col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico'}));
+		})
+		maker.append(levelBtns);
 	}
 	/** 주어진 질문 목록을 에디터에 설정
 	 */
 	function appendAskSelect(askArray, maker) {
 		const askSelect = document.createElement('select');
-		askSelect.className = 'form-select ask-select';
+		askSelect.className = 'form-select ask-select col';
 		askArray.forEach((one, i) => {
 			const option = document.createElement('option');
 			if(one.recommended) option.className = 'bg-fc-light-purple';
@@ -427,18 +466,20 @@
 			if(i == 0) option.selected = true;
 			askSelect.append(option);
 		});
-		maker.querySelector('[role=toolbar]').prepend(askSelect);
-		$(askSelect).wrap('<div class="btn-group col-auto"></div>');
-		askSelect.insertAdjacentHTML('beforebegin', '<label class="col-auto lh-1 my-auto me-2 text-fc-purple fw-bold">질문</label>');
+		maker.prepend(askSelect);
+		$(askSelect).wrap('<div class="col-12 col-md-3 row"></div>');
+		askSelect.insertAdjacentHTML('beforebegin', '<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">질문</label>');
 	}
 	/** 구문분석 div로부터 원문 텍스트를 추출하여 에디터 본문으로 삽입
 	 */
 	function appendContext(semanticsResult, maker) {
-		const context = document.createElement('div');
-		context.className = 'battle-context fs-5 bg-white mt-2 px-2 form-control';
-		context.textContent = tandem.cleanSvocDOMs(semanticsResult).innerText;
-		context.onmouseup = () => wrapText(maker);
-		maker.append(context);
+		const group = createElement({el: 'div', className: 'row pe-2'})
+		group.append(createElement({el: 'label', className: 'col-auto lh-1 my-auto text-white fw-bold', textContent: '본문'}));
+		group.append(createElement({el: 'div', 
+			className: 'battle-context fs-5 bg-white mt-3 px-2 col form-control',
+			textContent: tandem.cleanSvocDOMs(semanticsResult).innerText,
+			onmouseup: () => wrapText(maker)}));
+		maker.append(group);
 	}
 	function wrapText(maker) {
 		let sel = getSelection();
@@ -573,37 +614,5 @@
 		context.closest('.battle-maker').querySelector('[role=toolbar] [value="undo"]').disabled = false;
 	}
 	
-	function removeAllAttributes(node) {
-		while(node.attributes.length > 0) {
-			node.removeAttribute(node.attributes[0].name);
-		}
-		Array.from(node.children).forEach(child => {
-			if(child.nodeType == 1) removeAllAttributes(child);
-		});
-	}
-	
-	function selectComponentDOMs(div, arr) {
-		let selections = arr || [];
-		const children = div.children;
-		for(let i = 0, len = children.length; i < len; i++) {
-			const child = children[i];
-			if(child.matches('.s,.v,.o,.c,.oc,.a,.m')) {
-				selections.push(child);
-			}else if(child.matches('.ncls,.acls,.advcls,.phr,.adjphr,.tor,.ger,.ptc,.advphr,.ptcphr')) {
-				if(child.firstChild.nodeType == 1
-				&& child.firstChild.matches('.s,.v,.o,.c,.oc,.a,.m')
-				&& child.textContent == child.firstChild.textContent) {
-					selections.push(child.firstChild);
-				}
-			}
-		}
-		if(selections.length == 0) {
-			for(let i = 0, len = children.length; i < len; i++) {
-				selections = selectComponentDOMs(children[i], selections);
-			}
-		}
-		return selections;
-	}
-	
-	window['craft'] = { openBattleMakerPanel, attachBattleMaker };
+	window['craft'] = { openBattleMakerPanel };
 })(jQuery, window, document);
