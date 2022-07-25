@@ -1,4 +1,4 @@
-/** 텐덤을 기초로 한 문제 처리를 위한 모듈
+/** 텐덤을 기초로 한 크래프트 배틀 출제를 위한 모듈
  @author LGM
  */
 (function($, window, document) {
@@ -823,5 +823,5 @@
 		context.closest('.battle-maker').querySelector('[role=toolbar] [value="undo"]').disabled = false;
 	}
 	
-	window['craft'] = { openBattleMakerPanel };
+	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel });
 })(jQuery, window, document);
