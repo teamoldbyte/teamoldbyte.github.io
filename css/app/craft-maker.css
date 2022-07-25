@@ -1,0 +1,69 @@
+@charset "UTF-8";
+/* 배틀 출제 및 미리보기는 편집에 방해되는 아웃라인 삭제 */
+.battle-maker,.battle-preview { 
+	outline: none; 
+}
+/* 각 편집 영역마다 보기 번호 리셋 */
+.battle-context { 
+	line-height: 3; 
+	counter-set: quizIndex 0;
+	counter-reset: quizIndex; 
+}
+/* 보기 번호증가, 밑줄 표시 */
+.battle-context .answer, 
+.battle-context .option, 
+.battle-context .answer-wrong,
+.battle-context .modifier,
+.battle-context .modificand {
+	position: relative;
+	counter-increment: quizIndex;
+	text-decoration:underline;
+}
+/* 보기 번호 표시 */
+.battle-context .answer::after,
+.battle-context .option::after, 
+.battle-context .answer-wrong::after,
+.battle-context .modifier::after,
+.battle-context .modificand::after {
+	position: absolute;
+	line-height: 1;
+	top: 1.5em;
+	left: 0;
+	text-align: center;
+}
+.battle-context .answer::after,
+.battle-context .option::after, 
+.battle-context .answer-wrong::after {
+	content: "[" counter(quizIndex) "]";
+}
+.battle-context .modificand::after { 
+	content: "피수식어";
+}
+.battle-context .modifier::after { 
+	content: "수식어";
+}
+/* 정답은 푸른색 */
+.battle-context .answer,
+.battle-context .pick-right, 
+.battle-context .answer-wrong {
+	position:relative; 
+	color: blue;
+}
+/* 오탑은 빨간색 */
+.battle-context .pick-right::before, 
+.battle-context .answer-wrong::before {
+	position: absolute; 
+	left: 0; 
+	line-height: 1;
+	bottom: 100%; 
+	color: red; 
+	content: attr(data-wrong)
+}
+.battle-context * { 
+	cursor: pointer;
+}
+.battle-context *:hover,
+.battle-context *:hover::before,
+.battle-context *:hover::after { 
+	background: gold
+}

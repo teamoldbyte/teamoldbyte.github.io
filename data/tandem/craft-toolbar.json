@@ -1,13 +1,214 @@
 {
+	"layout": {
+		"el": "div",
+		"className": "battle-section-panel",
+		"children": [
+			{
+				"el": "div",
+				"className": "bg-white row py-3 mx-0 mb-3 rounded-5",
+				"children": [
+					{
+						"el": "label",
+						"className": "col-auto lh-1 ps-3 my-auto text-fc-purple fw-bold",
+						"textContent": "기존 등록 배틀 조회"
+					},
+					{
+						"el": "div",
+						"className": "existing-battles-section col-auto"
+					}
+				]
+			},
+			{
+				"el": "div",
+				"className": "add-battle-section",
+				"children": [
+					{
+						"el": "div",
+						"className": "battle-type-section p-3 bg-white row mx-0 mb-3 rounded-5",
+						"data-radio": "btnradioBattletype",
+						"children": [
+							{
+								"el": "label",
+								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold",
+								"textContent": "배틀 타입 선택"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 1,
+								"checked": "checked"
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "1. 성분 찾기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 2
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "2. 수식어 찾기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 3
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "3. 맞는 어법 찾기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 4
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "4. 틀린 어법 찾기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 5
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "5. 문장요소 배열하기"
+							}
+						]
+					},
+					{
+						"el": "div",
+						"className": "add-detail-battle-section p-3 bg-white rounded-5",
+						"children": [
+							{
+								"el": "div",
+								"className": "battle-editor-section pb-3",
+								"children": [
+									{
+										"el": "div",
+										"className": "craft-maker-container"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "row pb-3",
+								"children": [
+									{
+										"el": "div",
+										"className": "battle-category-section col-12 col-md-3 row",
+										"children": [
+											{
+												"el": "label",
+												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "문법"
+											},
+											{
+												"el": "select",
+												"className": "form-select d-inline-block w-auto col"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "battle-askTag-section col-12 ms-md-4 col-md-3 row",
+										"children": [
+											{
+												"el": "label",
+												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "태그"
+											},
+											{
+												"el": "input",
+												"type": "text",
+												"className": "askTag form-control d-inline-block col",
+												"placeholder": "ex) 목적어(부), 관계사(카테고리명)"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "battle-source-section col ms-md-4 row me-md-2",
+										"children": [
+											{
+												"el": "label",
+												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "출처"
+											},
+											{
+												"el": "input",
+												"type": "text",
+												"className": "source form-control d-inline col",
+												"placeholder": "ex) OOO 워크북, 2022년 6월 고3 모의고사 등"
+											}
+										]
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "battle-comment-section pb-3 row me-md-2",
+								"children": [
+									{
+										"el": "label",
+										"className": "col-auto text-fc-purple fw-bold",
+										"textContent": "해설"
+									},
+									{
+										"el": "textarea",
+										"className": "comment form-control d-inline col h-auto",
+										"rows": "2",
+										"placeholder": "문제에 대한 한 줄 코멘트, 참조 링크 등"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "button-section text-center",
+								"children": [
+									{
+										"el": "button",
+										"type": "button",
+										"className": "js-add-battle btn btn-fico btn-lg",
+										"textContent": "등록"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	},	
 	"common": [
 		{
 			"el": "div",
-			"class": "col-auto d-inline",
+			"className": "col-auto d-inline",
 			"children":
 			[	
 				{
 					"el": "button",
 					"title": "실행취소 (단축키: Ctrl + Z)",
+					"className": "btn btn-outline-fico col-auto",
 					"innerHTML": "<i class=\"fas fa-undo-alt\"></i>",
 					"disabled": "disabled",
 					"value": "undo"
@@ -15,6 +216,7 @@
 				{
 					"el": "button",
 					"title": "재실행 (단축키: Ctrl + Y)",
+					"className": "btn btn-outline-fico col-auto",
 					"innerHTML": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
 					"disabled": "disabled",
 					"value": "redo"
@@ -50,7 +252,6 @@
 			{
 				"el": "input",
 				"type": "checkbox",
-				"checked": "checked",
 				"title": "수식어 선택",
 				"innerHTML": "수식어",
 				"value": "modifier"
@@ -58,6 +259,7 @@
 			{
 				"el": "input",
 				"type": "checkbox",
+				"checked": "checked",
 				"title": "피수식어 선택",
 				"innerHTML": "피수식어",
 				"value": "modificand"
