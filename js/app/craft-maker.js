@@ -198,6 +198,10 @@
 			data: JSON.stringify(command),
 			success: function(response) {
 				alert(`[등록 결과]\nbattleId: ${response.battleId}\ngroupCount: ${response.groupCount}`);
+				
+				battleContext.replaceChildren(battleContext.textContent);
+				addSection.querySelector('.comment').value = '';
+				
 				command.battleId = response.battleId;
 				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
 				const battleList = battlePanel.querySelector('.existing-battles-section');
@@ -209,7 +213,7 @@
 					// 문장에서의 첫 등록
 					if(!battleList.querySelector('[data-battle-type]')) {
 						// 배틀 미등록 문구 삭제
-						battleList.childNodes.forEach(child => child.remove());
+						battleList.replaceChildren();
 					}
 					const randId = Date.now() + 1;
 					battleGroupBtn = createElement({
@@ -328,7 +332,7 @@
 			});
 			const battleListSection = panelInstance.querySelector('.existing-battles-section');
 			// 이전 배틀 목록 비우기
-			battleListSection.childNodes && battleListSection.childNodes.forEach(child => battleListSection.removeChild(child));
+			battleListSection.replaceChildren();
 			if(Object.entries(battleSummary).length == 0) {
 				battleListSection.append('등록된 배틀이 없습니다.');
 			}else {
@@ -356,7 +360,7 @@
 			}
 		})
 		
-		container.childNodes.forEach(child => container.removeChild(child));
+		container.replaceChildren();
 		// 배틀 1 유형을 기본으로 에디터 지정
 		attachBattleMaker(panelInstance.querySelector('.craft-maker-container'), semanticsDiv, 1);
 		container.append(panelInstance);
@@ -406,7 +410,7 @@
 	@param battleType 배틀 유형(1,2,3,4,5)
 	 */
 	function attachBattleMaker(container, semanticsDiv, battleType) {
-		container.childNodes?.forEach(n => n.remove());
+		container.replaceChildren();
 		redoList = []; undoList = [];
 		const makerDiv = createElement({el: 'div', className: 'battle-maker row', tabIndex: 0})
 		container.append(makerDiv);	
