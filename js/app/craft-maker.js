@@ -6,145 +6,61 @@
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
 	
-	let craftToolbarGroup = {}, battleBtns = [], chkbxSeq = 0;
+	let staticCraftPanel, craftToolbarGroup = {}, battleBtns = [], categories = [], chkbxSeq = 0;
+	let _memberId;
 	let undoList = [], redoList = []; // 편집 내역
 	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
+//	$.getJSON('/tandem/craft-toolbar.json', json => {
 		craftToolbarGroup = json;
+		staticCraftPanel = createElement(json.layout);
 		battleBtns = json.common;
 	});
-	let cachedAskTags = {}; // askTag값의 검색어 캐시 
+	let cachedAskTags = {}, cachedSources = {}; // 검색어 캐시 
+	const commonAsk = [
+		'다음 문장의 {}를 선택하세요.', 
+		'[{}] 수식어와 피수식어를 선택하세요.',
+		'다음 문장에서 적절한 보기를 선택하세요.',
+		'다음 문장에서 어법상 틀린 것을 선택하세요.',
+		'다음 어구들을 해석에 맞게 배치해 보세요.'];
 	const askInfos = [
 		[// Battle #1
-			{selector: '.s', ask: '#1', tag: '주어(부)', fullAsk: "다음 문장의 주어(부)를 선택하세요."},
-			{selector: '.v', ask: '#1', tag: '동사(부)', fullAsk: "다음 문장의 동사(부)를 선택하세요."},
-			{selector: '.o', ask: '#1', tag: '목적어(부)', fullAsk: "다음 문장의 목적어(부)를 선택하세요."},
-			{selector: '.c', ask: '#1', tag: '보어(부)', fullAsk: "다음 문장의 보어(부)를 선택하세요."},
-			{selector: '.oc', ask: '#1', tag: '목적보어(부)', fullAsk: "다음 문장의 목적보어(부)를 선택하세요."},
-			{selector: '.s[data-rc="s.s."]', tag: '진짜주어(부)', ask: '#1', fullAsk: "다음 문장의 진짜주어(부)를 선택하세요."},
-			{selector: '.o[data-rc="i.o."]', tag: '간접목적어(부)', ask: '#1', fullAsk: "다음 문장의 간접목적어(부)를 선택하세요."},
-			{selector: '.o[data-rc="d.o."]', tag: '직접목적어(부)', ask: '#1', fullAsk: "다음 문장의 직접목적어(부)를 선택하세요."},
-			{selector: '.ptc', ask: '#1', tag: '분사', fullAsk: "다음 문장의 분사를 선택하세요."},
-			{selector: '.ger', ask: '#1', tag: '동명사', fullAsk: "다음 문장의 동명사를 선택하세요."},
-			{selector: '.tor', ask: '#1', tag: 'to부정사', fullAsk: "다음 문장의 to부정사를 선택하세요."},
+			{selector: '.s', ask: '#1', tag: '주어(부)'},
+			{selector: '.v', ask: '#1', tag: '동사(부)'},
+			{selector: '.o', ask: '#1', tag: '목적어(부)'},
+			{selector: '.c', ask: '#1', tag: '보어(부)'},
+			{selector: '.oc', ask: '#1', tag: '목적보어(부)'},
+			{selector: '.s[data-rc="s.s."]', tag: '진짜주어(부)', ask: '#1'},
+			{selector: '.o[data-rc="i.o."]', tag: '간접목적어(부)', ask: '#1'},
+			{selector: '.o[data-rc="d.o."]', tag: '직접목적어(부)', ask: '#1'},
+			{selector: '.ptc', ask: '#1', tag: '분사'},
+			{selector: '.ger', ask: '#1', tag: '동명사'},
+			{selector: '.tor', ask: '#1', tag: 'to부정사'},
 		],
 		[// Battle #2
-			{selector: '.adjphr[data-mfd],.phr[data-mfd]', ask: '#2', tag: '전치사', fullAsk: "[전치사] 수식어와 피수식어를 선택하세요."},
-			{selector: '.tor[data-mfd],.ptc[data-mfd]', ask: '#2', tag: '준동사', fullAsk: "[준동사] 수식어와 피수식어를 선택하세요."},
-			{selector: '.acls[data-mfd]', ask: '#2', tag: '관계사', fullAsk: "[관계사] 수식어와 피수식어를 선택하세요."},
-			{ask: '#2', tag: '형용사', fullAsk: "[형용사] 수식어와 피수식어를 선택하세요."},
-			{ask: '#2', tag: '동격어구/절', fullAsk: "[동격어구/절] 수식어와 피수식어를 선택하세요."},
+			{selector: '.adjphr[data-mfd],.phr[data-mfd]', ask: '#2', tag: '전치사'},
+			{selector: '.tor[data-mfd],.ptc[data-mfd]', ask: '#2', tag: '준동사'},
+			{selector: '.acls[data-mfd]', ask: '#2', tag: '관계사'},
+			{ask: '#2', tag: '형용사'},
+			{ask: '#2', tag: '동격어구/절'},
 		],
 		[// Battle #3
-			{ask: '#3', fullAsk: "다음 문장에서 적절한 보기를 선택하세요."}
+			{ask: '#3'}
 			
 		],
 		[// Battle #4
-			{ask: '#4', fullAsk: "다음 문장에서 어법상 틀린 것을 선택하세요."}
+			{ask: '#4'}
 			
 		],
 		[// Battle #5
-			{ask: '#5', fullAsk: "다음 어구들을 해석에 맞게 배치해 보세요."}
+			{ask: '#5'}
 			
 		]
 	]
-	document.head.insertAdjacentHTML('beforeend', 
-		'<style>' +
-		'.battle-maker { counter-set: quizIndex 0;counter-reset: quizIndex; outline: none; }' +
-		'.battle-context { line-height: 3; }' +
-		'.battle-context .answer, .battle-context .option, .battle-context .answer-wrong {' +
-			'position: relative;counter-increment: quizIndex;' +
-			'text-decoration:underline;' +
-		'}' +
-		'.battle-context .answer::after,.battle-context .option::after, .battle-context .answer-wrong::after {' +
-			'position: absolute;width: calc(1em + 2px);' +
-			'line-height: 1;top: 1.5em;left: 0;' +
-			'text-align: center;content: "["counter(quizIndex)"]"' +
-		'}' +
-		'.battle-context .answer { color: red; }' +
-		'.battle-context .modifier,.battle-context .modificand {position:relative;text-decoration:underline;}' +
-		'.battle-context .modifier::after,.battle-context .modificand::after {' +
-			'position: absolute;width: calc(1em + 2px);' +
-			'line-height: 1;top: 1.5em;left: calc(50% - .5em - 1px);' +
-			'text-align: center;' +
-		'}' +
-		'.battle-context .modificand::after { content: "피수식어"}' +
-		'.battle-context .modifier::after { content: "수식어"}' +
-		'.battle-context .pick-right, .battle-context .answer-wrong {position:relative; color: blue;}' +
-		'.battle-context .pick-right::before, .battle-context .answer-wrong::before {' +
-			'position: absolute; left: 0; bottom: 0; color: red; content: attr(data-wrong)' +
-		'}' +
-		'.battle-context * { cursor: pointer;}' +
-		'.battle-context *:hover,.battle-context *:hover::before,.battle-context *:hover::after { background: gold}' +
-		'</style>');
 		
-	let battleMakerPanel = createElement({el: "div", className: "battle-section-panel"});
-	battleMakerPanel.insertAdjacentHTML('afterbegin',
-`	<!-- 기존 문제 조회 영역 -->
-	<div class="existing-battle-section bg-white row py-3 mx-0 mb-3 rounded-5">
-		<label class="col-auto lh-1 ps-3 my-auto text-fc-purple fw-bold">기존 등록 배틀 조회</label>
-		<!-- 조회 결과 -->
-		<div class="existing-battles-section col-auto">
-			<div class="js-open-existing-battle" role="button" data-bs-toggle="collapse">
-				• Battle <span class="existing-battle-type">0</span> 으로 등록 ( <span class="existing-battle-count">0</span> 건 ) <span class="fold-icon text-xl align-middle"></span>
-			</div>
-		</div>
-	</div>
-	<!-- 배틀 추가 등록 영역 -->
-	<div class="add-battle-section">
-		<!-- 배틀 타입 선택 -->
-		<div class="battle-type-section p-3 bg-white row mx-0 mb-3 rounded-5" data-radio="btnradioBattletype">
-			<label class="col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold">배틀 타입 선택</label>
-			<input type="radio" class="btn-check" autocomplete="off" value="1" checked>
-			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">1. 성분 찾기</label>
-			<input type="radio" class="btn-check" autocomplete="off" value="2">
-			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">2. 수식어 찾기</label>
-			<input type="radio" class="btn-check" autocomplete="off" value="3">
-			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">3. 맞는 어법 찾기</label>
-			<input type="radio" class="btn-check" autocomplete="off" value="4">
-			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">4. 틀린 어법 찾기</label>
-			<input type="radio" class="btn-check" autocomplete="off" value="5">
-			<label class="btn rounded-pill btn-outline-fico col-auto mx-2">5. 문장요소 배열하기</label>
-		</div>
-		<!-- 문제 입력 -->
-		<div class="add-detail-battle-section p-3 bg-white rounded-5">
-			<div class="battle-editor-section pb-3">
-				<!-- 문제 입력 에디터 -->
-				<div class="craft-maker-container">
-				</div>
-			</div>
-			<div class="row pb-3">
-				<!-- 카테고리 입력 -->
-				<div class="battle-category-section col-12 col-md-3 row">
-					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">문법</label>
-					<select class="form-select d-inline-block w-auto col">
-					</select>
-				</div>
-				<!-- 질문에 대한 태그 입력 -->
-				<div class="battle-askTag-section col-12 ms-md-4 col-md-3 row">
-					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">태그</label>
-					<input type="text" class="askTag form-control d-inline-block col" placeholder="ex) 목적어(부), 관계사(카테고리명)">
-				</div>
-				<!-- 질문 출처 입력 -->
-				<div class="battle-source-section col ms-md-4 row me-md-2">
-					<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">출처</label>
-					<input type="text" class="source form-control d-inline col" placeholder="ex) OOO 워크북, 2022년 6월 고3 모의고사 등">
-				</div>
-			</div>
-
-			<!-- 문제 해설 -->
-			<div class="battle-comment-section pb-3 row me-md-2">
-				<label class="col-auto text-fc-purple fw-bold">해설</label>
-				<textarea class="comment form-control d-inline col h-auto" rows="2" placeholder="문제에 대한 해설, 참조 링크 등"></textarea>
-			</div>
-			<div class="button-section text-center">
-				<button type="button" class="js-add-battle btn btn-fico btn-lg">등록</button>
-			</div>
-		</div>
-	</div>`);
-		
-	let craftToolbar = document.createElement('div');
-	craftToolbar.className = 'btn-toolbar row col-md-3';
-	craftToolbar.setAttribute('role','toolbar');
+	let craftToolbar = createElement({
+		el: 'div', 
+		className: 'btn-toolbar row col-md-3',
+		role: 'toolbar'});
 	
 	//------------------------ [이벤트 할당] --------------------------------------
 	$(document)
@@ -183,11 +99,13 @@
 	})
 	// 보기 및 정답 요소들은 다시 클릭 시 삭제된다.
 	.on('click', '.battle-context *', function() {
-		if(this.nodeName == 'SPAN') {
-			this.outerHTML = this.innerHTML;
-		}else {
-			this.remove();
-		}
+		if(this.closest('.battle-maker')) {
+			if(this.nodeName == 'SPAN') {
+				this.outerHTML = this.innerHTML;
+			}else {
+				this.remove();
+			}
+		} 
 	})
 	// 실행취소 및 재실행 동작
 	.on('click', '.battle-maker [value=undo], .battle-maker [value=redo]', function() {
@@ -215,9 +133,20 @@
 	// 배틀 등록 버튼 클릭시 배틀입력 정보를 커맨드로 취합하여 전송
 	.on('click', '.js-add-battle', function() {
 		const addSection = this.closest('.add-battle-section');
-		const $battlePanel = $(addSection).closest('.battle-section-panel');
+		const battlePanel = addSection.closest('.battle-section-panel');
 		const battleContext = addSection.querySelector('.battle-context');
-		
+		const categoryId = Number(addSection.querySelector('.battle-category-section select').value);
+		const command = {
+			sentenceId: $(battlePanel).data('sentenceId'),
+			categoryId,
+			memberId: _memberId,
+			ask: addSection.querySelector('.ask-select').value.trim(),
+			askTag: addSection.querySelector('.askTag').value.trim(),
+			comment: addSection.querySelector('.comment').value.trim(),
+			source: addSection.querySelector('.source').value.trim(),
+			diffLevel: addSection.querySelector('.battle-diffLevel-section input:checked').value
+		}
+				
 		let example = '', answer = '';
 		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
 		
@@ -225,19 +154,19 @@
 		switch(battleType) {
 			case '1':
 				// [보기 위치1, 보기 위치2, ...]
-				example = findClassPositions(battleContext, '.answer, .option');
+				example = findPositions(battleContext, '.answer, .option');
 				// [정답 위치]
-				answer = findClassPositions(battleContext, '.answer');
+				answer = findPositions(battleContext, '.answer');
 				break;
 			case '2':
 				// [수식어 위치, 피수식어 위치]
-				answer = [findClassPositions(battleContext, '.modifier')[0],
-						  findClassPositions(battleContext, '.modificand')[0]];
+				answer = [findPositions(battleContext, '.modifier')[0],
+						  findPositions(battleContext, '.modificand')[0]];
 				break;
 			case '3':
 				let blank = battleContext.querySelector('.pick-right');
 				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
-				example = [findClassPositions(battleContext, '.pick-right')[0],
+				example = [findPositions(battleContext, '.pick-right')[0],
 							blank.textContent.trim(), blank.dataset.wrong.trim()];
 				// [정답 텍스트]
 				answer = [blank.textContent.trim()];
@@ -245,31 +174,22 @@
 			case '4':
 				let wrong = battleContext.querySelector('.answer-wrong');
 				// [보기 위치1, 보기 위치2, ...]
-				example = findClassPositions(battleContext, '.option, .answer-wrong');
+				example = findPositions(battleContext, '.option, .answer-wrong');
 				// [정답 위치, 정답 텍스트, 오답 텍스트]
-				answer = [findClassPositions(battleContext, '.answer-wrong')[0],
+				answer = [findPositions(battleContext, '.answer-wrong')[0],
 							wrong.textContent.trim(), wrong.dataset.wrong.trim()];
 				break;
 			case '5':
 				// [보기 위치1, 보기 위치2, ...]
-				example = findClassPositions(battleContext, '.option');
+				example = findPositions(battleContext, '.option');
+				// select에서 한글해석 선택
+				command.ask = addSection.querySelector('.select-kor').value;
 				break;
 			default: break;
 		}
-		
-		
-		
-		const command = {
-			sentenceId: $battlePanel.data('sentenceId'),
-			categoryId: Number(addSection.querySelector('.battle-category-section select').value),
-			memberId: $battlePanel.data('memberId'), battleType,
-			ask: addSection.querySelector('.ask-select').value.trim(),
-			example: JSON.stringify(example), answer: JSON.stringify(answer),
-			askTag: addSection.querySelector('.askTag').value.trim(),
-			comment: addSection.querySelector('.comment').value.trim(),
-			source: addSection.querySelector('.source').value.trim(),
-			diffLevel: addSection.querySelector('.battle-diffLevel-section input:checked').value
-		}
+		command.answer = JSON.stringify(answer);
+		command.example = JSON.stringify(example);
+		command.battleType = battleType;
 		
 		$.ajax({
 			url: '/craft/battle/add',
@@ -277,38 +197,114 @@
 			contentType: 'application/json',
 			data: JSON.stringify(command),
 			success: function(response) {
-				alert(`[등록 결과]\nbattleId: ${response.battleId}\ngroupCount: ${response.groupCount}`)
+				alert(`[등록 결과]\nbattleId: ${response.battleId}\ngroupCount: ${response.groupCount}`);
+				command.battleId = response.battleId;
+				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
+				const battleList = battlePanel.querySelector('.existing-battles-section');
+				const newBattle = previewBattle($(battlePanel).data('eng'), command);
+				let battleGroupBtn = battleList.querySelector(`[data-battle-type="${battleType}"]`);
+				let battleGroupBlock;
+				// 유형 그룹이 없을 경우
+				if(!battleGroupBtn) {
+					// 문장에서의 첫 등록
+					if(!battleList.querySelector('[data-battle-type]')) {
+						// 배틀 미등록 문구 삭제
+						battleList.childNodes.forEach(child => child.remove());
+					}
+					const randId = Date.now() + 1;
+					battleGroupBtn = createElement({
+							el: 'div', className: 'js-open-existing-battle d-inline-block btn border', role: 'button',
+							'data-battle-type': battleType,
+							'data-bs-toggle': 'collapse','data-bs-target': `#existingBattleView${randId}`,
+							children: [
+								`Battle #${battleType}: `,
+								{el: 'span', className: 'battle-count', textContent: 1}, 
+								' 건 ',
+								{ el: 'span', className: 'fold-icon text-xl align-middle' }
+							]
+					});
+					battleList.append(battleGroupBtn);
+					$(battleGroupBtn).css('height',0).animate({height:'100%'}, 500, function() { this.style.height = 'auto';});
+					// 유형 그룹 추가
+					battleGroupBlock = createElement({// 배틀 상세 정보
+							el: 'div', id: `existingBattleView${randId}`,
+							className: 'battle-preview fade collapse'
+					});
+					battleList.append(battleGroupBlock)
+				}
+				else {
+					// 기존 유형 그룹에 추가
+					const battleCountBlock = battleGroupBtn.querySelector('.battle-count');
+					battleCountBlock.textContent = Number(battleCountBlock.textContent) + 1;
+					battleGroupBlock = document.querySelector(battleGroupBtn.dataset.bsTarget);
+				}
+				const newBattleBlock = createElement(newBattle)
+				battleGroupBlock.append(newBattleBlock);
+				$(newBattleBlock).css('display','none').slideDown()
 			},
 			error: function(err) {
 				alert(err);
 			}
 		})
 	})
+	// 배틀 삭제
+	.on('click', '.js-delete-battle', function() {
+		const battleBlock = this.closest('.battle-preview-one');
+		const battlesBlock = battleBlock.closest('.battle-preview')
+		const battleGroupBtn = battlesBlock.previousElementSibling;
+		const battleId = battleBlock.dataset.id;
+		$.post(`/craft/battle/del/${battleId}`, function() {
+			alert('배틀이 삭제되었습니다.');
+			battleBlock.remove();
+			const counter = battleGroupBtn.querySelector('.battle-count');
+			const decreased = Number(counter.textContent) - 1;
+			if(decreased > 0) {
+				counter.textContent = Number(counter.textContent) - 1; 
+			}else {
+				battlesBlock.remove();
+				battleGroupBtn.remove();
+			}
+		}).fail(() => alert('배틀 삭제에 실패했습니다.'))
+	})
 	/** 배틀 출제 패널을 컨테이너에 삽입
 	 */
-	function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv) {
+	async function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList) {
 		if(!$.fn.autocomplete) {
+			document.head.append(createElement(
+				[{el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'},
+				{el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/app/craft-maker.min.css'}]));
 			// 배틀 태그(askTag)의 제시어 기능을 위해 jquery-ui 사용
 			// jquery-ui와 부트스트랩의 tooltip 함수 충돌 때문에 
 			// 부트스트랩 메소드를 임시 저장한 채로 jquery-ui모듈을 로드한 후 원상복구
 			const _tooltip = $.fn.tooltip;
-			document.head.append(createElement({el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'}))
-			$.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', {
+			await $.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', {
 				success: () => {
 					$.fn.tooltip = _tooltip;
-					// jquery-ui 모듈 로드가 완료되면 함수 재실행
-					openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv);
 				}
 			});
-			return;
 		}
-		const categorySection = battleMakerPanel.querySelector('.battle-category-section select');
+		// 카테고리 화면에서 최초 1회 불러오기
+		const categorySection = staticCraftPanel.querySelector('.battle-category-section select');
+		if(categories.length == 0) {
+			await $.getJSON('/grammar/category/list', results => {
+				categories = results;
+				let elements = Array.from(categories, c => {
+					return { el:'option', value: c.cid,
+						textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
+				})
+				categorySection.append(createElement(elements));
+			});
+		}
+		_memberId = memberId;
+		const sentenceEng = tandem.cleanSvocDOMs(semanticsDiv).innerText;
+		
 		// 공용 패널 복사본으로 패널 새로 생성
-		let panelInstance = battleMakerPanel.cloneNode(true);
+		let panelInstance = staticCraftPanel.cloneNode(true);
 		// 전달받은 인자값들을 패널 요소에 접근하여 얻을 수 있도록 설정
 		$(panelInstance).data('semantics', semanticsDiv)
-						.data('memberId', memberId)
-						.data('sentenceId', sentenceId);
+						.data('sentenceId', sentenceId)
+						.data('eng', sentenceEng)
+						.data('transList', transList);
 						
 		// 패널 내의 라디오버튼들에 유니크한 이름 설정(다른 패널들과 동작이 겹치지 않도록)
 		const now = Date.now();
@@ -324,51 +320,43 @@
 		
 		// 문장에 등록된 배틀 조회
 		$.getJSON(`/craft/battle/search/${sentenceId}`, battles => {
-			let battleSummary = {};
+			let battleSummary = {}; // 타입별 배열로 저장(1: [a,b,c], 2: [d,e,f], ...)
 			battles.forEach(battle => {
 				if(battleSummary[battle.battleType] == null) 
 					battleSummary[battle.battleType] = [];
 				battleSummary[battle.battleType].push(battle);
 			});
-			const battleList = panelInstance.querySelector('.existing-battles-section');
-			battleList.innerHTML = '';
+			const battleListSection = panelInstance.querySelector('.existing-battles-section');
+			// 이전 배틀 목록 비우기
+			battleListSection.childNodes && battleListSection.childNodes.forEach(child => battleListSection.removeChild(child));
 			if(Object.entries(battleSummary).length == 0) {
-				battleList.append('등록된 배틀이 없습니다.');
+				battleListSection.append('등록된 배틀이 없습니다.');
 			}else {
+				const battleElements = [];
 				Object.entries(battleSummary).forEach((summ, i) => {
 					const randId = Date.now() + i;
-					
-					// 배틀 유형별 갯수 정보
-					const briefInfo = createElement({el: 'div', className: 'js-open-existing-battle', role: 'button'});
-					briefInfo.dataset.bsToggle = 'collapse';
-					briefInfo.dataset.bsTarget = `.js-existing-battle-view${randId}`;
-					
-					briefInfo.innerHTML = `• Battle <span class="existing-battle-type">${summ[0]}</span> (으)로 등록 ( ${summ[1].length} 건 ) <span class="fold-icon text-xl align-middle"></span>`;
-					battleList.append(briefInfo);
-					
-					// 배틀 상세 정보
-					const battleDetails = createElement({el: 'div', 
-						className: `js-existing-battle-view${randId} fade collapse`,
-						textContent: JSON.stringify(summ[1])});
-					battleList.append(battleDetails);
-					
+					battleElements.push({// 배틀 유형별 갯수 정보
+							el: 'div', className: 'js-open-existing-battle d-inline-block btn border', role: 'button',
+							'data-battle-type': summ[0],
+							'data-bs-toggle': 'collapse','data-bs-target': `#existingBattleView${randId}`,
+							children: [
+								`Battle #${summ[0]}: `,
+								{el: 'span', className: 'battle-count', textContent: summ[1].length}, 
+								' 건 ',
+								{ el: 'span', className: 'fold-icon text-xl align-middle' }
+							]
+					});
+					battleElements.push({// 배틀 상세 정보
+							el: 'div', id: `existingBattleView${randId}`,
+							className: 'battle-preview fade collapse',
+							children: Array.from(summ[1], battle => previewBattle(sentenceEng, battle))
+					});
 				})
+				battleListSection.append(createElement(battleElements));
 			}
 		})
 		
-		// 카테고리 화면에서 최초 1회 불러오기
-		if(categorySection.childElementCount == 0) {
-			$.getJSON('/grammar/category/list', categories => {
-				categories.forEach(category => {
-					categorySection.append(createElement({
-						el:'option',value:category.cid,
-						textContent: (category.parentCategory ? '└─ ':'') + category.title}));
-				});
-				panelInstance.querySelector('.battle-category-section select')
-				.innerHTML = categorySection.innerHTML;
-			})
-		}
-		container.innerHTML = '';
+		container.childNodes.forEach(child => container.removeChild(child));
 		// 배틀 1 유형을 기본으로 에디터 지정
 		attachBattleMaker(panelInstance.querySelector('.craft-maker-container'), semanticsDiv, 1);
 		container.append(panelInstance);
@@ -393,6 +381,23 @@
 				})
 			}
 		})
+		// 배틀 출처(source)에 제시어 기능 적용
+		$(panelInstance).find('.source').autocomplete({
+			minLength: 1, delay: 50, source: function(req, res) {
+				const term = req.term && req.term.trim();
+				if(term in cachedSources) {
+					res(cachedSources[term]);
+					return;
+				}
+				$.getJSON(`/craft/battle/source/search/${term}`, function(data) {
+					cachedSources[term] = data;
+					res(data);
+				}).fail(() => {
+					cachedSources[term] = null;
+					res([]);
+				})
+			}
+		})
 	}
 	
 	/** 배틀 문제 생성.
@@ -401,27 +406,28 @@
 	@param battleType 배틀 유형(1,2,3,4,5)
 	 */
 	function attachBattleMaker(container, semanticsDiv, battleType) {
-		container.innerHTML = '';
+		container.childNodes?.forEach(n => n.remove());
 		redoList = []; undoList = [];
 		const makerDiv = createElement({el: 'div', className: 'battle-maker row', tabIndex: 0})
+		container.append(makerDiv);	
 		let asks = askInfos[battleType - 1];
-		// 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
-		asks.forEach(el => {
-			if(el.selector != null && semanticsDiv.querySelector(`.sem${el.selector}`) != null ) {
-				el.recommended = true;
-			}
-		});
-		asks.sort((a,b) => {
-			if(!a.recommended) return 1;
-			return b.recommended ? 0 : -1;
-		})
+		// 1, 2 유형의 경우 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
+		if([1,2].includes(battleType)) {
+			asks.forEach(el => {
+				if(el.selector != null && semanticsDiv.querySelector(`.sem${el.selector}`) != null )
+					el.recommended = true;
+			});
+			asks.sort((a,b) => {
+				if(!a.recommended) return 1;
+				return b.recommended ? 0 : -1;
+			})
+		}
 		// 배틀 유형별 툴바 표시
-		appendToolbar(craftToolbarGroup[`battle${battleType}`], makerDiv);
+		appendToolbar(battleType, makerDiv);
 		// 배틀 유형별 질문 표시
-		appendAskSelect(asks, makerDiv);
+		appendAskSelect(battleType, asks, makerDiv);
 		// 수정 영역 표시
 		appendContext(semanticsDiv, makerDiv);		
-		container.append(makerDiv);	
 		// 
 		const selectedAsk = makerDiv.closest('.add-battle-section').querySelector('.ask-select');
 		$(selectedAsk).trigger('change');
@@ -429,60 +435,91 @@
 	
 	/** 주어진 버튼 그룹을 툴바에 넣어서 에디터에 탑재
 	 */
-	function appendToolbar(btnGroup, maker) {
+	function appendToolbar(battleType, maker) {
+		const btnGroup = craftToolbarGroup[`battle${battleType}`]
 		craftToolbar.innerHTML = '';
-		appendBtn(btnGroup, craftToolbar);
+		appendClassifiedElement(btnGroup, craftToolbar);
 		for(let i = 0, len = battleBtns.length; i < len; i++) {
-			appendBtn(battleBtns[i], craftToolbar);
+			appendClassifiedElement(battleBtns[i], craftToolbar);
 		}
 		maker.prepend(craftToolbar.cloneNode(true));
-		const levelBtns = createElement({el: 'div', className: 'battle-diffLevel-section col-12 col-md-6 row'});
-		levelBtns.append(createElement({el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도'}));
 		const now = Date.now();
+		const levelBtns = {el: 'div', className: 'battle-diffLevel-section col-12 col-md-3 row',
+			children: [
+				{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도'}
+			]
+		};
 		[{text: '쉬움', value: 'E'},{text: '보통', value: 'N'},{text: '어려움', value: 'D'}]
 		.forEach(function(level, i) {
-			levelBtns.append(createElement({el: 'input', type: 'radio',
+			levelBtns.children.push({el: 'input', type: 'radio', autocomplete: 'off',
 				name: `btnRadioBattleLevel${now}`,
 				id: `btnRadioBattleLevel${now}${i}`,
-				className: 'btn-check battle-level-select', autocomplete: 'off',
-				checked: i == 0, value: level.value}));
-			levelBtns.append(createElement({el: 'label', textContent: level.text,
+				className: 'btn-check battle-level-select', 
+				checked: i == 0, value: level.value});
+			levelBtns.children.push({el: 'label', textContent: level.text,
 				htmlFor: `btnRadioBattleLevel${now}${i}`,
-				className: 'col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico'}));
+				className: 'col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico'});
 		})
-		maker.append(levelBtns);
+		appendClassifiedElement(levelBtns, maker);
+		if(battleType == 5) {
+			maker.append(createElement({
+				el: 'div', className: 'col-12 col-md-3 row',
+				children: [
+					{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해석'},
+					{el: 'select', className: 'select-kor form-select d-inline-block col',
+					children: Array.from($(maker).closest('.battle-section-panel').data('transList'), (trans, i) => {
+						return {el: 'option', value: trans.id, textContent: `${i+1}번째 해석`}
+					})}
+				]
+			}))
+		}
 	}
 	/** 주어진 질문 목록을 에디터에 설정
+	@param battleType 배틀 유형 1,2,3,4,5
+	@param askArray 질문 목록 [{selector, tag, recommended}]
 	 */
-	function appendAskSelect(askArray, maker) {
-		const askSelect = document.createElement('select');
-		askSelect.className = 'form-select ask-select col';
+	function appendAskSelect(battleType, askArray, maker) {
+		const json = {
+			el: 'div', 
+			className: 'col-12 col-md-3 row',
+			children: [
+				{	el: 'label', textContent: '질문', 
+					className: 'col-auto lh-1 my-auto text-fc-purple fw-bold'
+				}
+			]				
+		};
+		const select = {
+			el: 'select', 
+			className: 'form-select ask-select col', 
+			children: []
+		};
 		askArray.forEach((one, i) => {
-			const option = document.createElement('option');
+			const option = {el: 'option'};
 			if(one.recommended) option.className = 'bg-fc-light-purple';
-			option.value = one.ask;
-			if(one.tag) option.dataset.tag = one.tag
-			option.innerHTML = one.fullAsk;
+			option.value = `#${battleType}`;
+			if(one.tag) option['data-tag'] = one.tag
+			option.innerHTML = commonAsk[battleType - 1].replace('{}',one.tag);
 			if(i == 0) option.selected = true;
-			askSelect.append(option);
+			select.children.push(option);
 		});
-		maker.prepend(askSelect);
-		$(askSelect).wrap('<div class="col-12 col-md-3 row"></div>');
-		askSelect.insertAdjacentHTML('beforebegin', '<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">질문</label>');
+		json.children.push(select);
+		maker.prepend(createElement(json));
 	}
 	/** 구문분석 div로부터 원문 텍스트를 추출하여 에디터 본문으로 삽입
 	 */
 	function appendContext(semanticsResult, maker) {
-		const group = createElement({el: 'div', className: 'row pe-2'})
-		group.append(createElement({el: 'label', className: 'col-auto lh-1 my-auto text-white fw-bold', textContent: '본문'}));
-		group.append(createElement({el: 'div', 
-			className: 'battle-context fs-5 bg-white mt-3 px-2 col form-control',
-			textContent: tandem.cleanSvocDOMs(semanticsResult).innerText,
-			onmouseup: () => wrapText(maker)}));
-		maker.append(group);
+		appendClassifiedElement({
+			el: 'div', className: 'row pe-2', children: [
+				{el: 'label', className: 'col-auto lh-1 my-auto text-white fw-bold', textContent: '본문'},
+				{el: 'div', className: 'battle-context fs-5 bg-white mt-3 px-2 col form-control',
+					textContent: tandem.cleanSvocDOMs(semanticsResult).innerText, onmouseup: () => wrapText(maker)}
+			]}, maker);
 	}
+	/** BattleMaker 내부에 선택된 텍스트를 span으로 감싸고 에디터에서 선택된 메뉴에 따라 클래스 지정
+	 */
 	function wrapText(maker) {
 		let sel = getSelection();
+		// 에디터에서 선택된 메뉴버튼
 		const chkdBtn = maker.querySelector('[role=toolbar] [type=checkbox]:checked');
 		if(!sel.isCollapsed && chkdBtn) {
 			if(sel.toString().trim() == maker.querySelector('.battle-context').textContent.trim()) return;
@@ -541,62 +578,90 @@
 		} 		
 	}
 	
-	function createElement(json) {
-		const element = document.createElement(json.el);
-		Object.keys(json).forEach(key => {
-			if(!['el','children'].includes(key)) {
-				element[key] = json[key];
+	/** json 정보를 바탕으로 버튼 태그를 생성하여 삽입.
+	버튼그룹 및 툴팁, 라벨 자동 적용.
+	@param json 버튼을 포함한 태그 정보
+	@param parent 태그가 삽입될 부모 요소
+	 */
+	function appendClassifiedElement(json, parent) {
+		modifyJson(json, v => {
+			// div에 클래스명이 없을 경우 버튼그룹으로 적용
+			if(!v.className && v.el == 'div')
+				v.className = 'btn-group col-auto';
+			// 체크박스는 아니지만 title이 있다면 툴팁으로 적용
+			else if(v.title && v.type != 'checkbox') {
+				v['data-toggle'] = 'tooltip';
+				v['data-placement'] = 'bottom';
 			}
+			return v;
 		})
-		return element;
-	}
-	
-	function appendBtn(btn, parent) {
-		const element = createElement(btn);
-		if(!btn.className) {
-			switch(btn.el) {
-				case 'button':
-					element.className = 'btn btn-outline-dark col-auto btn-sm';
-					break;
-				case 'div':
-					element.className = 'btn-group col-auto';
-					break;
-				default: break;
-			}
-		}
 		
-		if(btn.title && !(btn.type && btn.type == 'checkbox')) {
-			element.dataset.toggle = 'tooltip';
-			element.dataset.placement = 'bottom';
-		}
-
-		parent.append(element);
-
-		if(btn.type && btn.type == 'checkbox') {
-			if(!btn.className) element.className = 'btn-check';
-			const chkbxId = 'btn-check-' + chkbxSeq++;
-			element.id = chkbxId;
-			const label = document.createElement('label');
-			label.className = 'btn btn-outline-fico';
-			label.htmlFor = chkbxId;
-			label.innerHTML = btn.innerHTML;
-			if(btn.title) {
-				label.title = btn.title;
+		const element = createElement(json);
+		// 체크박스들은 토글버튼형태로 보이도록 라벨 추가 지정
+		// json에서는 객체 추가가 어렵기 때문에 DOM 생성 후 진행
+		element.querySelectorAll('[type=checkbox]').forEach(chkbx => {
+			if(!chkbx.className) chkbx.className = 'btn-check';
+			const chkbxId = `btn-check-${chkbxSeq++}`;
+			chkbx.id = chkbxId;
+			const label = createElement({el: 'label', htmlFor: chkbxId,
+				className: 'btn btn-outline-fico', textContent: chkbx.textContent});
+			if(chkbx.title) { // 체크박스에 지정된 title은 라벨을 위해 있는 것
+				label.title = chkbx.title;
 				label.dataset.toggle = 'tooltip';
 				label.dataset.placement = 'bottom';
 			}
-			
-			parent.append(label);
-		}
-		
-		if(btn.children) {
-			for(let i = 0, len = btn.children.length; i < len; i++) {
-				appendBtn(btn.children[i], $(element));
-			}
-		}
-	}		
+			chkbx.after(label);
+		})
+		parent.append(element);
+	}	
 	
-	function findClassPositions(container, matcher) {
+	/** json 정보를 바탕으로 html 태그를 생성하여 반환
+	Element.xxx 형태로 호출이 가능한 요소여야 함.(예: for (x) -> htmlFor (o))
+	@param json (el: 태그이름, children: 자식태그들, 기타: 적용 속성)
+	*/
+	function createElement(json) {
+		// 키-값 쌍이 아닌 '문자열'인 경우 텍스트노드로 반환
+		if(typeof json == 'string') return document.createTextNode(json);
+		// 배열인 경우 자식 요소 뭉치로 반환
+		if(Array.isArray(json)) {
+			const fragment = document.createDocumentFragment();
+			json.forEach(child => fragment.append(createElement(child)));
+			return fragment;
+		}
+		const element = document.createElement(json.el);
+		Object.keys(json).forEach(key => {
+			if(key.match(/^data-/)) // 사용자정의 속성. data-xx 
+				element.dataset[key.replace('data-', '')
+				.replace(/-(\w)/g, g0 => g0.toUpperCase()[1])] = json[key];
+			else if(key == 'children') { // 자식태그들
+				json[key].forEach(child => 
+					element.appendChild(createElement(child)));
+			}else if(key != 'el') { // 나머지 속성들 적용
+				element[key] = json[key];
+			}
+		});
+		return element;
+	}
+	function modifyJson(json, fn) {
+		if(Array.isArray(json)) {
+			json.forEach((v,i) => json[i] = modifyJson(v, fn));
+		}
+		else if(typeof json == 'object') {
+			Object.entries(json).forEach(([key, value]) => {
+				if(value && Array.isArray(value))
+					value.forEach((v,i) => value[i] = modifyJson(v, fn));
+				json[key] = value;
+			});
+		}
+		return fn.apply(this, [json]);
+	}
+	
+	/** 컨테이너 속에서 지정한 선택자에 해당하는 요소들의 위치 반환
+	@param container 부모 html 요소
+	@param matcher 선택자
+	@returns [[start,end], [start,end],...] start/end: Number
+	*/
+	function findPositions(container, matcher) {
 		let pos = 0, arr = [];
 		container.childNodes.forEach(child => {
 			const textLength = child.textContent.replaceAll(/[\n\u200b]/gm, '').length;
@@ -607,7 +672,147 @@
 		})
 		return arr;
 	}
+	/** 요소들을 등장 순서에 따라 정렬
+	 */
+	function sortByPosition(a, b) {
+		return a[0] - b[0];
+	}
 	
+	/** battle json 정보를 통해 createElement() 파라미터용 json 반환
+	@param eng battle의 원문 Sentence 텍스트 정보
+	@param battle battle정보를 담은 JSONObject
+	 */
+	function previewBattle(eng, battle) {
+		const answers = JSON.parse(battle.answer);
+		const examples = JSON.parse(battle.example);
+		let offsetPos = 0;
+		const contextChildren = [];
+		if(battle.battleType == '1') {
+		/* 성분 찾기. 
+			example = [[보기1start,보기1end],[보기2start,보기2end],...]
+			answer = [[정답1start,정답1end],[정답2start,정답2end],...]
+		*/ 
+			examples.sort(sortByPosition).forEach((example, j, arr) => {
+				let leftStr = eng.substring(offsetPos, example[0]);
+				if(leftStr) contextChildren.push(leftStr);
+				contextChildren.push({
+					el: 'span',
+					className: (answers.find(a => a[0] == example[0] && a[1] == example[1])) ? 'answer' : 'option', 
+					textContent: eng.substring(example[0],example[1])
+				});
+				if(j == arr.length - 1 && example[1] < eng.length) {
+					contextChildren.push(eng.substring(example[1]));
+				}
+				offsetPos = example[1];
+			});
+		}else if(battle.battleType == '2') {
+		/* 수식어 찾기.
+			answer = [[수식어start,수식어end],[피수식어start,피수식어end]]
+		 */
+			answers.sort(sortByPosition).forEach((answer, j, arr) => {
+				let leftStr = eng.substring(offsetPos, answer[0]);
+				if(leftStr) contextChildren.push(leftStr);
+				contextChildren.push({
+					el: 'span',
+					className: j == 0 ? 'modifier' : 'modificand', 
+					textContent: eng.substring(answer[0],answer[1])
+				});
+				if(j == arr.length - 1 && answer[1] < eng.length) {
+					contextChildren.push(eng.substring(answer[1]));
+				}
+				offsetPos = answer[1];
+			});
+		}else if(battle.battleType == '3') {
+		/* 맞는 어법 찾기.
+			example = [[대상start,대상end],정답텍스트,오답텍스트]
+			answer = [정답텍스트]
+		*/
+			let leftStr = eng.substring(offsetPos, examples[0][0]);
+			if(leftStr) contextChildren.push(leftStr);
+			contextChildren.push({
+				el: 'span',
+				className: 'pick-right',
+				'data-wrong': examples[2],
+				textContent: eng.substring(examples[0][0],examples[0][1])
+			});				
+			if(examples[0][1] < eng.length)
+				contextChildren.push(eng.substring(examples[0][1]));
+		}else if(battle.battleType == '4') {
+		/* 틀린 어법 찾기.
+			example = [[보기1start,보기1end],[보기2start,보기2end],...]
+			answer = [[정답start,정답end],정답텍스트,오답텍스트]
+		 */
+			examples.sort(sortByPosition).forEach((example, j, arr) => {
+				let leftStr = eng.substring(offsetPos, example[0]);
+				if(leftStr) contextChildren.push(leftStr);
+				const span = {
+					el: 'span',
+					className: 'option', 
+					textContent: eng.substring(example[0],example[1])
+				};
+				if(answers[0][0] == example[0] && answers[0][1] == example[1]) {
+					span.className = 'answer-wrong';
+					span['data-wrong'] = answers[2];
+				}
+				contextChildren.push(span);
+				if(j == arr.length - 1 && example[1] < eng.length) {
+					contextChildren.push(eng.substring(example[1]));
+				}
+				offsetPos = example[1];
+			});
+		}else if(battle.battleType == '5') {
+		/* 배열하기.
+			example = [[보기1start,보기1end],[보기2start,보기2end],...]
+		 */
+		 	examples.sort(sortByPosition).forEach((example, j, arr) => {
+				let leftStr = eng.substring(offsetPos, example[0]);
+				if(leftStr) contextChildren.push(leftStr);
+				contextChildren.push({
+					el: 'span',
+					className: 'option', 
+					textContent: eng.substring(example[0],example[1])
+				});
+				if(j == arr.length - 1 && example[1] < eng.length) {
+					contextChildren.push(eng.substring(example[1]));
+				}
+				offsetPos = example[1];
+			});
+		}
+		const preview = {
+			el: 'div', 'data-id': battle.battleId,
+			className: 'battle-preview-one m-1 ms-5 bg-light border border-2 px-2', 
+			children: [
+				{
+					el: 'div', className: 'row', children: [
+						{el: 'div', className: 'col-auto', children: [
+							{el: 'label', className: 'fw-bold me-2', textContent: '질문:'},
+							{el: 'span', textContent: commonAsk[battle.battleType - 1].replace('{}',battle.askTag)}
+						]},
+						{el: 'div', className: 'col-auto', children: [
+							{el: 'label', className: 'fw-bold me-2', textContent: '난이도:'},
+							{el: 'span', textContent: battle.diffLevel}
+						]},
+						{el: 'div', className: 'col-auto', children: [
+							{el: 'label', className: 'fw-bold me-2', textContent: '문법:'},
+							{el: 'span', textContent: battle.grammarTitle}
+						]}
+					]
+				},
+				{
+					el: 'div', className: 'battle-context pb-3', 
+					children: contextChildren
+				}
+			]
+		};
+		if(_memberId == battle.memberId)
+			preview.children.push({el: 'div', children: [
+				{el: 'button', className: 'btn btn-sm btn-fico js-delete-battle', textContent: '삭제'}
+				]
+			})
+		return preview;
+	}
+	
+	// 컨텍스트의 html을 통째로 보관
 	function pushEditHistory(context){
 		undoList.push(context.innerHTML);
 		redoList = [];
