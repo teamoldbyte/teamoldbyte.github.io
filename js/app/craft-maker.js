@@ -6,56 +6,20 @@
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
 	
-	let staticCraftPanel, craftToolbarGroup = {}, battleBtns = [], categories = [], chkbxSeq = 0;
+	let staticCraftPanel, craftToolbarGroup = {}, 
+		battleAsks = [], battleTypeInfos = [], 
+		battleBtns = [], categories = [], chkbxSeq = 0;
 	let _memberId;
 	let undoList = [], redoList = []; // 편집 내역
 	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
 //	$.getJSON('/tandem/craft-toolbar.json', json => {
 		craftToolbarGroup = json;
-		staticCraftPanel = createElement(json.layout);
-		battleBtns = json.common;
+		staticCraftPanel = createElement(json.craftPanel);
+		battleAsks = json.battleAsks;
+		battleTypeInfos = json.battleTypeInfos;
+		battleBtns = json.commonEditorBtns;
 	});
 	let cachedAskTags = {}, cachedSources = {}; // 검색어 캐시 
-	const commonAsk = [
-		'다음 문장의 {}를 선택하세요.', 
-		'[{}] 수식어와 피수식어를 선택하세요.',
-		'다음 문장에서 적절한 보기를 선택하세요.',
-		'다음 문장에서 어법상 틀린 것을 선택하세요.',
-		'다음 어구들을 해석에 맞게 배치해 보세요.'];
-	const askInfos = [
-		[// Battle #1
-			{selector: '.s', ask: '#1', tag: '주어(부)'},
-			{selector: '.v', ask: '#1', tag: '동사(부)'},
-			{selector: '.o', ask: '#1', tag: '목적어(부)'},
-			{selector: '.c', ask: '#1', tag: '보어(부)'},
-			{selector: '.oc', ask: '#1', tag: '목적보어(부)'},
-			{selector: '.s[data-rc="s.s."]', tag: '진짜주어(부)', ask: '#1'},
-			{selector: '.o[data-rc="i.o."]', tag: '간접목적어(부)', ask: '#1'},
-			{selector: '.o[data-rc="d.o."]', tag: '직접목적어(부)', ask: '#1'},
-			{selector: '.ptc', ask: '#1', tag: '분사'},
-			{selector: '.ger', ask: '#1', tag: '동명사'},
-			{selector: '.tor', ask: '#1', tag: 'to부정사'},
-		],
-		[// Battle #2
-			{selector: '.adjphr[data-mfd],.phr[data-mfd]', ask: '#2', tag: '전치사'},
-			{selector: '.tor[data-mfd],.ptc[data-mfd]', ask: '#2', tag: '준동사'},
-			{selector: '.acls[data-mfd]', ask: '#2', tag: '관계사'},
-			{ask: '#2', tag: '형용사'},
-			{ask: '#2', tag: '동격어구/절'},
-		],
-		[// Battle #3
-			{ask: '#3'}
-			
-		],
-		[// Battle #4
-			{ask: '#4'}
-			
-		],
-		[// Battle #5
-			{ask: '#5'}
-			
-		]
-	]
 		
 	let craftToolbar = createElement({
 		el: 'div', 
@@ -136,6 +100,7 @@
 		const battlePanel = addSection.closest('.battle-section-panel');
 		const battleContext = addSection.querySelector('.battle-context');
 		const categoryId = Number(addSection.querySelector('.battle-category-section select').value);
+		const battleTypeSelector = 'data-battle-type';
 		const command = {
 			sentenceId: $(battlePanel).data('sentenceId'),
 			categoryId,
@@ -206,34 +171,22 @@
 				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
 				const battleList = battlePanel.querySelector('.existing-battles-section');
 				const newBattle = previewBattle($(battlePanel).data('eng'), command);
-				let battleGroupBtn = battleList.querySelector(`[data-battle-type="${battleType}"]`);
+				let battleGroupBtn = battleList.querySelector(`[${battleTypeSelector}="${battleType}"]`);
 				let battleGroupBlock;
 				// 유형 그룹이 없을 경우
 				if(!battleGroupBtn) {
 					// 문장에서의 첫 등록
-					if(!battleList.querySelector('[data-battle-type]')) {
+					if(!battleList.querySelector(`[${battleTypeSelector}]`)) {
 						// 배틀 미등록 문구 삭제
 						battleList.replaceChildren();
 					}
 					const randId = Date.now() + 1;
-					battleGroupBtn = createElement({
-							el: 'div', className: 'js-open-existing-battle d-inline-block btn border', role: 'button',
-							'data-battle-type': battleType,
-							'data-bs-toggle': 'collapse','data-bs-target': `#existingBattleView${randId}`,
-							children: [
-								`Battle #${battleType}: `,
-								{el: 'span', className: 'battle-count', textContent: 1}, 
-								' 건 ',
-								{ el: 'span', className: 'fold-icon text-xl align-middle' }
-							]
-					});
+					[battleGroupBtn, battleGroupBlock] = makeExistingBattle(battleType,1,randId,[]);
+					battleGroupBtn = createElement(battleGroupBtn);
+					battleGroupBlock = createElement(battleGroupBlock);
 					battleList.append(battleGroupBtn);
 					$(battleGroupBtn).css('height',0).animate({height:'100%'}, 500, function() { this.style.height = 'auto';});
 					// 유형 그룹 추가
-					battleGroupBlock = createElement({// 배틀 상세 정보
-							el: 'div', id: `existingBattleView${randId}`,
-							className: 'battle-preview fade collapse'
-					});
 					battleList.append(battleGroupBlock)
 				}
 				else {
@@ -272,7 +225,7 @@
 	})
 	/** 배틀 출제 패널을 컨테이너에 삽입
 	 */
-	async function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList) {
+	function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList) {
 		if(!$.fn.autocomplete) {
 			document.head.append(createElement(
 				[{el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'},
@@ -281,23 +234,27 @@
 			// jquery-ui와 부트스트랩의 tooltip 함수 충돌 때문에 
 			// 부트스트랩 메소드를 임시 저장한 채로 jquery-ui모듈을 로드한 후 원상복구
 			const _tooltip = $.fn.tooltip;
-			await $.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', {
+			$.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', {
 				success: () => {
 					$.fn.tooltip = _tooltip;
+					openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList);
 				}
 			});
+			return;
 		}
 		// 카테고리 화면에서 최초 1회 불러오기
 		const categorySection = staticCraftPanel.querySelector('.battle-category-section select');
 		if(categories.length == 0) {
-			await $.getJSON('/grammar/category/list', results => {
+			$.getJSON('/grammar/category/list', results => {
 				categories = results;
 				let elements = Array.from(categories, c => {
 					return { el:'option', value: c.cid,
 						textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
 				})
 				categorySection.append(createElement(elements));
+				openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList);
 			});
+			return;
 		}
 		_memberId = memberId;
 		const sentenceEng = tandem.cleanSvocDOMs(semanticsDiv).innerText;
@@ -336,27 +293,12 @@
 			if(Object.entries(battleSummary).length == 0) {
 				battleListSection.append('등록된 배틀이 없습니다.');
 			}else {
-				const battleElements = [];
 				Object.entries(battleSummary).forEach((summ, i) => {
 					const randId = Date.now() + i;
-					battleElements.push({// 배틀 유형별 갯수 정보
-							el: 'div', className: 'js-open-existing-battle d-inline-block btn border', role: 'button',
-							'data-battle-type': summ[0],
-							'data-bs-toggle': 'collapse','data-bs-target': `#existingBattleView${randId}`,
-							children: [
-								`Battle #${summ[0]}: `,
-								{el: 'span', className: 'battle-count', textContent: summ[1].length}, 
-								' 건 ',
-								{ el: 'span', className: 'fold-icon text-xl align-middle' }
-							]
-					});
-					battleElements.push({// 배틀 상세 정보
-							el: 'div', id: `existingBattleView${randId}`,
-							className: 'battle-preview fade collapse',
-							children: Array.from(summ[1], battle => previewBattle(sentenceEng, battle))
-					});
+					battleListSection.append(createElement(
+						makeExistingBattle(summ[0], summ[1].length, randId, 
+							Array.from(summ[1], battle => previewBattle(sentenceEng, battle)))));
 				})
-				battleListSection.append(createElement(battleElements));
 			}
 		})
 		
@@ -414,7 +356,7 @@
 		redoList = []; undoList = [];
 		const makerDiv = createElement({el: 'div', className: 'battle-maker row', tabIndex: 0})
 		container.append(makerDiv);	
-		let asks = askInfos[battleType - 1];
+		let asks = battleTypeInfos[battleType - 1];
 		// 1, 2 유형의 경우 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
 		if([1,2].includes(battleType)) {
 			asks.forEach(el => {
@@ -502,7 +444,7 @@
 			if(one.recommended) option.className = 'bg-fc-light-purple';
 			option.value = `#${battleType}`;
 			if(one.tag) option['data-tag'] = one.tag
-			option.innerHTML = commonAsk[battleType - 1].replace('{}',one.tag);
+			option.innerHTML = battleAsks[battleType - 1].replace('{}',one.tag);
 			if(i == 0) option.selected = true;
 			select.children.push(option);
 		});
@@ -580,6 +522,29 @@
 				}
 			}
 		} 		
+	}
+	
+	/** 배틀 조회 목록에 추가할 '유형명&갯수 표시','상세보기목록' json을 반환.
+	createElement()를 사용해야 DOM화 할 수 있음.
+	 */
+	function makeExistingBattle(battleType, groupCount, randId, battlePreviews) {
+		const viewId = `existingBattleView${randId}`;
+		return [{
+				el: 'div', className: 'js-open-existing-battle d-inline-block btn border', role: 'button',
+				'data-battle-type': battleType,
+				'data-bs-toggle': 'collapse','data-bs-target': `#${viewId}`,
+				children: [
+					`Battle #${battleType}: `,
+					{el: 'span', className: 'battle-count', textContent: groupCount}, 
+					' 건 ',
+					{ el: 'span', className: 'fold-icon text-xl align-middle' }
+				]
+		},
+		{// 배틀 상세 정보
+			el: 'div', id: `existingBattleView${randId}`,
+			className: 'battle-preview fade collapse',
+			children: battlePreviews
+		}];
 	}
 	
 	/** json 정보를 바탕으로 버튼 태그를 생성하여 삽입.
@@ -790,7 +755,7 @@
 					el: 'div', className: 'row', children: [
 						{el: 'div', className: 'col-auto', children: [
 							{el: 'label', className: 'fw-bold me-2', textContent: '질문:'},
-							{el: 'span', textContent: commonAsk[battle.battleType - 1].replace('{}',battle.askTag)}
+							{el: 'span', textContent: battleAsks[battle.battleType - 1].replace('{}',battle.askTag)}
 						]},
 						{el: 'div', className: 'col-auto', children: [
 							{el: 'label', className: 'fw-bold me-2', textContent: '난이도:'},
