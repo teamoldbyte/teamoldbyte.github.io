@@ -101,10 +101,12 @@
 		const battleContext = addSection.querySelector('.battle-context');
 		const categoryId = Number(addSection.querySelector('.battle-category-section select').value);
 		const battleTypeSelector = 'data-battle-type';
+		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
 		const command = {
 			sentenceId: $(battlePanel).data('sentenceId'),
-			categoryId,
+			categoryId, battleType,
 			memberId: _memberId,
+			example: '', answer: '',
 			ask: addSection.querySelector('.ask-select').value.trim(),
 			askTag: addSection.querySelector('.askTag').value.trim(),
 			comment: addSection.querySelector('.comment').value.trim(),
@@ -112,21 +114,18 @@
 			diffLevel: addSection.querySelector('.battle-diffLevel-section input:checked').value
 		}
 				
-		let example = '', answer = '';
-		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
-		
 		// 배틀 유형별 example, answer 정보 구성.
 		switch(battleType) {
 			case '1':
 				// [보기 위치1, 보기 위치2, ...]
-				example = findPositions(battleContext, '.answer, .option');
+				command.example = JSON.stringify(findPositions(battleContext, '.answer, .option'));
 				// [정답 위치]
-				answer = findPositions(battleContext, '.answer');
+				command.answer = JSON.stringify(findPositions(battleContext, '.answer'));
 				break;
 			case '2':
 				// [수식어 위치, 피수식어 위치]
-				answer = [findPositions(battleContext, '.modifier')[0],
-						  findPositions(battleContext, '.modificand')[0]];
+				command.answer = JSON.stringify([findPositions(battleContext, '.modifier')[0],
+						  findPositions(battleContext, '.modificand')[0]]);
 				break;
 			case '3':
 				let blank = battleContext.querySelector('.pick-right');
@@ -135,30 +134,27 @@
 					return;
 				}
 				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
-				example = [findPositions(battleContext, '.pick-right')[0],
-							blank.textContent.trim(), blank.dataset.wrong.trim()];
+				command.example = JSON.stringify([findPositions(battleContext, '.pick-right')[0],
+							blank.textContent.trim(), blank.dataset.wrong.trim()]);
 				// [정답 텍스트]
-				answer = [blank.textContent.trim()];
+				command.answer = JSON.stringify([blank.textContent.trim()]);
 				break;
 			case '4':
 				let wrong = battleContext.querySelector('.answer-wrong');
 				// [보기 위치1, 보기 위치2, ...]
-				example = findPositions(battleContext, '.option, .answer-wrong');
+				command.example = JSON.stringify(findPositions(battleContext, '.option, .answer-wrong'));
 				// [정답 위치, 정답 텍스트, 오답 텍스트]
-				answer = [findPositions(battleContext, '.answer-wrong')[0],
-							wrong.textContent.trim(), wrong.dataset.wrong.trim()];
+				command.answer = JSON.stringify([findPositions(battleContext, '.answer-wrong')[0],
+							wrong.textContent.trim(), wrong.dataset.wrong.trim()]);
 				break;
 			case '5':
 				// [보기 위치1, 보기 위치2, ...]
-				example = findPositions(battleContext, '.option');
+				command.example = JSON.stringify(findPositions(battleContext, '.option'));
 				// select에서 한글해석 선택
 				command.ask = addSection.querySelector('.select-kor').value;
 				break;
 			default: break;
 		}
-		command.answer = JSON.stringify(answer);
-		command.example = JSON.stringify(example);
-		command.battleType = battleType;
 		
 		$.ajax({
 			url: '/craft/battle/add',
