@@ -130,6 +130,10 @@
 				break;
 			case '3':
 				let blank = battleContext.querySelector('.pick-right');
+				if(!blank) {
+					alert('문제로 만들 어구를 선택해 주세요.');
+					return;
+				}
 				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
 				example = [findPositions(battleContext, '.pick-right')[0],
 							blank.textContent.trim(), blank.dataset.wrong.trim()];
@@ -216,7 +220,7 @@
 			const counter = battleGroupBtn.querySelector('.battle-count');
 			const decreased = Number(counter.textContent) - 1;
 			if(decreased > 0) {
-				counter.textContent = Number(counter.textContent) - 1; 
+				counter.textContent = decreased; 
 			}else {
 				battlesBlock.remove();
 				battleGroupBtn.remove();
