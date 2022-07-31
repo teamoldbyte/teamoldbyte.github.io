@@ -207,7 +207,7 @@
 /* 수식어(+수식어부 rcomment) 글자색 */
 .sem.m.inner, .sem.m.outer[data-rc]::before {color: #0080ff;}
 /* to부정사,동명사 글자색 */
-.sem.tor, .sem.ger {color: #795548;}
+/*.sem.tor, .sem.ger {color: #795548;}*/
 /* 분사 글자색 */
 .sem.ptc {color: #794865;}
 
