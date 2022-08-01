@@ -1,10 +1,16 @@
 /** 텐덤을 기초로 한 크래프트 배틀 출제를 위한 모듈
  @author LGM
  */
-(function($, window, document) {
+(function craftMaker($, window, document) {
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
+	if(typeof createElement == 'undefined') {
+		$.cachedScript('https://static.findsvoc.com/js/util/DOM-util.min.js', {
+			success: () => craftMaker($, window, document)
+		});
+		return;
+	}
 	
 	let staticCraftPanel, craftToolbarGroup = {}, 
 		battleAsks = [], battleTypeInfos = [], 
@@ -583,34 +589,7 @@
 		})
 		parent.append(element);
 	}	
-	
-	/** json 정보를 바탕으로 html 태그를 생성하여 반환
-	Element.xxx 형태로 호출이 가능한 요소여야 함.(예: for (x) -> htmlFor (o))
-	@param json (el: 태그이름, children: 자식태그들, 기타: 적용 속성)
-	*/
-	function createElement(json) {
-		// 키-값 쌍이 아닌 '문자열'인 경우 텍스트노드로 반환
-		if(typeof json == 'string') return document.createTextNode(json);
-		// 배열인 경우 자식 요소 뭉치로 반환
-		if(Array.isArray(json)) {
-			const fragment = document.createDocumentFragment();
-			json.forEach(child => fragment.append(createElement(child)));
-			return fragment;
-		}
-		const element = document.createElement(json.el);
-		Object.keys(json).forEach(key => {
-			if(key.match(/^data-/)) // 사용자정의 속성. data-xx 
-				element.dataset[key.replace('data-', '')
-				.replace(/-(\w)/g, g0 => g0.toUpperCase()[1])] = json[key];
-			else if(key == 'children') { // 자식태그들
-				json[key].forEach(child => 
-					element.appendChild(createElement(child)));
-			}else if(key != 'el') { // 나머지 속성들 적용
-				element[key] = json[key];
-			}
-		});
-		return element;
-	}
+
 	function modifyJson(json, fn) {
 		if(Array.isArray(json)) {
 			json.forEach((v,i) => json[i] = modifyJson(v, fn));
