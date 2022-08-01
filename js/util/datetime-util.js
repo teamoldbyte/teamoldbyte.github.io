@@ -7,13 +7,14 @@ Date.prototype.format = function(f) {
     const weekName = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
     const d = this;
      
-    return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function($1) {
+    return f.replace(/(yyyy|yy|MM|dd|E|e|HH|hh|mm|ss|a\/p)/g, function($1) {
         switch ($1) {
             case "yyyy": return d.getFullYear();
             case "yy": return (d.getFullYear() % 1000).zf(2);
             case "MM": return (d.getMonth() + 1).zf(2);
             case "dd": return d.getDate().zf(2);
             case "E": return weekName[d.getDay()];
+            case "e": return weekName[d.getDay()][0];
             case "HH": return d.getHours().zf(2);
             case "hh": return ((h = d.getHours() % 12) ? h : 12).zf(2);
             case "mm": return d.getMinutes().zf(2);
