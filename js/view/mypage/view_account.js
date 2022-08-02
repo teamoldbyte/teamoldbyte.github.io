@@ -29,7 +29,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					]
 				},
 				{ // 에그 카운터 영역
-					el: 'div', className: 'text-center mt-2',
+					el: 'div', className: 'egg-count-section text-center mt-2',
 					children: [
 						{
 							el: 'span', className: 'egg-count', innerText: tray[i] > 0 ? tray[i] : ''
@@ -69,13 +69,12 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	}, 500);
 	
 	// [버킷 진행도 표시]---------------------------------------------------------
-	let bucketLevel = 0, _quotient = normalEggCount, bucketSize = 1;
-	while(_quotient >= 3) {
+	let bucketLevel = 1, bucketSize = 1, _quotient = normalEggCount;
+	while(_quotient >= 9) {
 		_quotient /= 3;
 		bucketSize *= 3;
 		bucketLevel++;
 	}
-	bucketSize /= 3;
 	bucketLevel = Math.max(1, bucketLevel);
 	
 	// 버킷 전체보기 세팅
@@ -140,8 +139,8 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			role: 'button', 'data-bs-toggle': 'tooltip', 'data-count': count,
 			title: `${count}/${bucketSize}`
 		})
-		bucketStatus.append(bucket);
 		bucketDOMs.push(bucket);
+		bucketStatus.append(bucket);
 	}
 	// 버킷을 차례대로 채워나감
 	const buckettimeline = anime.timeline({ duration: 500, easing: 'linear' })
