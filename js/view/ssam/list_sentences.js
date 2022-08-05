@@ -623,10 +623,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	
 	// [분석 결과 추가/편집]--------------------------------------------------------
 	$(document).on('click', '.js-add-svoc, .js-edit-svoc', async function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		let forNew = $(this).is('.js-add-svoc');
 		$('.js-add-svoc').prop('disabled', true);
 		
@@ -707,10 +703,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [구문분석 삭제]-------------------------------------------------------------
 	.on('click', '.js-del-svoc', function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}	
 		const $result = $('.semantics-result[data-seq="' + this.dataset.seq + '"]');
 		const $sentenceSection = $result.closest('.one-sentence-unit-section');
 		const svocId = Number($result.data('svocId'));
@@ -737,10 +729,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	// [나의 해석 수정]------------------------------------------------------------
 	const $transEditor = $(createElement(transEditorJson));
 	$(document).on('click', '.js-edit-trans-open', function(){
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		} 
 		let $transBlock = $(this).closest('.ai-translation-block');
 		if($transBlock.length > 0){
 			$transBlock.find('.trans-mdf-btns, .translation-text').hide();
@@ -939,10 +927,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	
 	// [지문/문장의 노트 수정 폼 열기]-------------------------------------------------
 /*	.on('click', '.js-edit-note-open', async function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		const $noteSection = $(this).closest('.note-block')
 		const $textSection = $noteSection.find('.text-section');
 		$noteSection.find('.note-mdf-btns').hide();
@@ -999,10 +983,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [지문/문장의 노트 삭제]-------------------------------------------------------
 	.on('click', '.js-delete-note', function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		if(confirm('삭제하시겠습니까?')){
 			// 노트 삭제
 			const $noteBlock = $(this).closest('.note-block'),
@@ -1026,10 +1006,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [지문/문장 노트 추가 폼 열기]--------------------------------------------
 	.on('click', '.note-section .add-icon', async function(){
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		$(this).prop('disabled', true);
 		const $section = $(this).closest('.note-section');
 		const $addSection = $section.find('.add-section');
@@ -1065,10 +1041,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [지문/문장 질문 추가 폼 열기]--------------------------------------------------
 	.on('click', '.qna-section .add-icon', async function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		$(this).prop('disabled', true).tooltip('hide');
 		const $section = $(this).closest('.qna-section');
 		const $addSection = $section.children('.add-section');
@@ -1115,10 +1087,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [질문 수정폼 열기]-----------------------------------------------------------
 	.on('click', '.js-edit-question-open', function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		$question = $(this).closest('.question-section');
 		$contentSection = $question.find('.text-section').slideUp();
 		$editSection = $question.find('.edit-section').slideDown();
@@ -1212,10 +1180,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})	
 	// [지문/문장의 질문 답변 목록 가져오기]-----------------------------------------------
 	.on('show.bs.collapse', '.qna-list .content-block', async function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		const $contentBlock = $(this);
 		const $qnaSection = $(this).closest('.qna-unit');
 		const questionId = $qnaSection.data('questionId');
@@ -1267,10 +1231,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [답변 추가 폼 열기]----------------------------------------------------------
 	.on('click', '.qna-unit .add-section .text-input', function() {
-		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
-			return;
-		}
 		// Summernote 에디터 세팅--
 		openSummernote($(this));
 		//----------------------
