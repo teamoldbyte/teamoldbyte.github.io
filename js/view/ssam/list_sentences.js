@@ -558,7 +558,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const metaStatus = this.dataset.metaStatus;
 		const $statusIcon = $sentence.find('.dashboard-section .meta-status');
 		// metaStatus 저장(ajax)-------------------------------------------------
-		tandem?.meta?.submitMetaStatus($sentence.data('sentenceId'), metaStatus, 'ssam', () => {
+		tandem?.meta?.submitMetaStatus($sentence.data('sentenceId'), metaStatus, 'workbook', () => {
 			metaStatusCallback($statusIcon, resultStatusMap[metaStatus]);
 		});
 		// ---------------------------------------------------------------------
