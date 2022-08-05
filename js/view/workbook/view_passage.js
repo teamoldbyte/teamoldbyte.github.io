@@ -162,7 +162,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 					]},
 					{ el: 'div', className: 'modal-footer justify-content-center', children: [
 						{ el: 'button', type: 'button', className: 'btn btn-outline-fico', 'data-bs-dismiss': 'modal', textContent: '취소' },
-						{ el: 'button', type: 'button', className: 'tn btn-fico status-submit', textContent: '제출' }
+						{ el: 'button', type: 'button', className: 'btn btn-fico status-submit', textContent: '제출' }
 					]
 					}
 				]}
@@ -830,8 +830,8 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	// [분석 결과 평가]------------------------------------------------------------
 	const checkModalContents = {'S': '<b>평가를 하는 이유</b><br><br>A.I.는 인간의 언어를 이해하면서 분석하지 않습니다.<br>학습자들에게 도움이 될 수 있도록 분석 결과를 평가해주세요.<br>평가도 하고 다양한 fico Egg도 모아보세요.',
 								'F': '<b>AI 분석이 정확하지 않은가요?</b><br><br>그건 회원님이 AI보다 실력이 좋다는 증거입니다.<br>직접 수정할 수도 있고 그냥 내버려 둘 수도 있습니다.<br>실력 발휘 기대합니다.'};
-	const resultStatusMap = {'S': {icon: '🙂', status: 'S', tooltip: '평가를 받은 문장이예요.'},
-							'F': {icon: '🙁', status: 'F', tooltip: '분석이 틀렸대요.'} };
+	const resultStatusMap = {'S': {icon: '🥳', status: 'S', tooltip: '평가를 받은 문장이예요.'},
+							'F': {icon: '🤯', status: 'F', tooltip: '분석이 틀렸대요.'} };
 	
 	// 분석 평가 모달을 띄운 버튼에 따라 모달 속 내용 설정(문장정보, metaStatus)
 	$('#check-modal').on('show.bs.modal', function() {
