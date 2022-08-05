@@ -141,7 +141,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 					]},
 					{ el: 'div', className: 'modal-footer justify-content-center', children: [
 						{ el: 'button', type: 'button', className: 'btn btn-outline-fico', 'data-bs-dismiss': 'modal', textContent: '취소' },
-						{ el: 'button', type: 'button', className: 'tn btn-fico status-submit', textContent: '제출' }
+						{ el: 'button', type: 'button', className: 'btn btn-fico status-submit', textContent: '제출' }
 					]
 					}
 				]}
