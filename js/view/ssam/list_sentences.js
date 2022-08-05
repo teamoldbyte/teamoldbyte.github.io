@@ -446,7 +446,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 				if(window['tandem'] != undefined && tandem['meta'] != undefined
 				&& j + 1 == svocListLen && sentenceInfo.metaStatus != null && sentenceInfo.metaStatus == 'N') {
 					// gramMeta 저장(ajax)---------------------------------------
-					tandem.meta.saveGramMetaFromDOM(sentenceInfo.sentenceId, div, false, 'ssam');
+					tandem.meta.saveGramMetaFromDOM(sentenceInfo.sentenceId, div, false, 'workbook');
 					// ---------------------------------------------------------
 				}			
 			})
@@ -558,7 +558,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const metaStatus = this.dataset.metaStatus;
 		const $statusIcon = $sentence.find('.dashboard-section .meta-status');
 		// metaStatus 저장(ajax)-------------------------------------------------
-		tandem?.meta?.submitMetaStatus($sentence.data('sentenceId'), metaStatus, 'workbook', () => {
+		tandem?.meta?.submitMetaStatus($sentence.data('sentenceId'), metaStatus, 'ssam', () => {
 			metaStatusCallback($statusIcon, resultStatusMap[metaStatus]);
 		});
 		// ---------------------------------------------------------------------
@@ -675,7 +675,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			editSvoc(svocCommand, successSave);
 			// --------------------------------
 			// gramMeta도 같이 저장(ajax)---------------------------------------
-			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'ssam');
+			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'workbook');
 			// --------------------------------------------------------------
 			metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),resultStatusMap['S']);
 		}
