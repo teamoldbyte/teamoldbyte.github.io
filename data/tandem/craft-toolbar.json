@@ -199,6 +199,45 @@
 			}
 		]
 	},	
+	"battleCounterPanel": {
+		"el": "div",
+		"className": "battles-counter-section p-3 bg-white row mx-0 mb-3 rounded-5",
+		"children": [
+			{
+				"el": "div", "className": "col-md-7 row",
+				"children": [
+					{
+						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "배틀타입"
+					},
+					{
+						"el": "div", "className": "counter-same-type col-auto row"
+					}
+				]
+			},
+			{
+				"el": "div", "className": "col-md-2 row",
+				"children": [
+					{
+						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "난이도"
+					},
+					{
+						"el": "div", "className": "counter-same-difflevel col-auto row"
+					}
+				]				
+			},
+			{
+				"el": "div", "className": "col-md-3 row",
+				"children": [
+					{
+						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "문법"
+					},
+					{
+						"el": "div", "className": "counter-same-category col-auto row"
+					}
+				]
+			}
+		]
+	},
 	"battleAsks": [
 		"다음 문장의 {}를 선택하세요.", 
 		"[{}] 수식어와 피수식어를 선택하세요.",
