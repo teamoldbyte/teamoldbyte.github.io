@@ -44,7 +44,9 @@ function createElement(json) {
 				}
 			}else console.error('style에 ' + typeof json[key] + '은/는 맞지 않습니다.');
 		}else if(key != 'el') { // 나머지 속성들 적용
-			element[key] = json[key];
+			if(element[key] == undefined) {
+				element.setAttribute(key, json[key]);
+			}else element[key] = json[key];
 		}		
 	}
 	return element;
