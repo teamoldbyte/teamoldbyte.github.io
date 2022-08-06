@@ -110,7 +110,7 @@
 		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
 		const command = {
 			sentenceId: $(battlePanel).data('sentenceId'),
-			categoryId, battleType,
+			categoryId, battleType, engLength: battleContext.textContent.trim().length,
 			memberId: _memberId,
 			example: '', answer: '',
 			ask: addSection.querySelector('.ask-select').value.trim(),
