@@ -55,7 +55,7 @@
 			statsType = 'level';
 			let diffLevel = document.getElementById(this.htmlFor).value;
 			const engLength = addSection.querySelector('.battle-context').textContent.trim().length;
-			diffLevel = calcDiffSpecific(diffLEvel, engLength);
+			diffLevel = calcDiffSpecific(diffLevel, engLength);
 			param = { diffLevel };
 		}else {
 			statsType = 'gc';
@@ -67,19 +67,19 @@
 				case 'type':
 					counterSection.querySelector('.counter-same-type')
 					.replaceChildren(createElement(Array.from(result, (count, i) => {
-						return [{el: 'label', className: 'border-fc-navy-2', textContent: i + 1}, {el: 'span', textContent: count}]
+						return [{el: 'label', className: 'border-fc-navy-2 col-auto', textContent: i + 1}, {el: 'span', className: 'col-auto', textContent: count}]
 					})));
 					break;
 				case 'level':
 					counterSection.querySelector('.counter-same-difflevel')
 					.replaceChildren(createElement([
-						{ el: 'span', textContent: `${diffLevel}: ${result}`}
+						{ el: 'span', className: 'col-auto', textContent: `${param.diffLevel}: ${result}`}
 					]));
 					break;
 				case 'gc':
 					counterSection.querySelector('.counter-same-category')
 					.replaceChildren(createElement(
-						{ el: 'span', textContent: `${categories.find(c => c.cid == categoryId).title}: ${result}`}
+						{ el: 'span', className: 'col-auto', textContent: `${categories.find(c => c.cid == param.categoryId).title}: ${result}`}
 					));
 					break;
 			}
