@@ -34,6 +34,71 @@
 	
 	//------------------------ [이벤트 할당] --------------------------------------
 	$(document)
+	// 배틀타입, 난이도, 문법 카테고리 클릭 시 해당하는 배틀 수를 조회한다.
+	.on('click', '.battle-type-section .btn, .battle-diffLevel-section .btn, .battle-category-section select', function() {
+		let param = {};
+		const addSection = this.closest('.add-battle-section');
+		let counterSection = addSection.querySelector('.battles-counter-section');
+		let statsType;
+		if(!counterSection) {
+			counterSection = createElement(craftToolbarGroup.battleCounterPanel)
+			$.getJSON('/craft/battle/stats/total', total => {
+				counterSection.querySelector('.counter-total').textContent = total;
+			}).fail(() => alert('전체 배틀 갯수를 조회할 수 없습니다.'));
+			addSection.querySelector('.battle-type-section').after(counterSection);
+		}
+		if(this.matches('.battle-type-section .btn')) {
+			statsType = 'type';
+			const battleType = document.getElementById(this.htmlFor).value;
+			param = { battleType };
+		}else if(this.matches('.battle-diffLevel-section .btn')) {
+			statsType = 'level';
+			let diffLevel = document.getElementById(this.htmlFor).value;
+			const engLength = addSection.querySelector('.battle-context').textContent.trim().length;
+			if(diffLevel == 'E') {
+				if(engLength <= 30) {
+					diffLevel = '하1';
+				}else {
+					diffLevel = '하2';
+				}
+			}else if(diffLevel == 'N') {
+				if(engLength <= 70) {
+					diffLevel = '중1';
+				}else if(engLength <= 100) {
+					diffLevel = '중2';
+				}else if(engLength <= 150) {
+					diffLevel = '중3';
+				}else {
+					diffLevel = '중4';
+				}
+			}else if(diffLevel == 'D') {
+				if(engLength <= 150) {
+					diffLevel = '고1';
+				}else if(engLength <= 200) {
+					diffLevel = '고2';
+				}else {
+					diffLevel = '고3';
+				}
+			}
+			param = { diffLevel };
+		}else {
+			statsType = 'gc';
+			const categoryId = parseInt(this.value);
+			param = { categoryId };
+		}
+		$.getJSON(`/craft/battle/stats${statsType}`, param, function(result) {
+			switch(statsType) {
+				case 'type':
+					counterSection.querySelector('.counter-same-type')
+					.replaceChildren(createElement(Array.from(result, (count, i) => {
+						return [{el: 'label', className: 'border-fc-navy-2', textContent: i + 1}, {el: 'span', textContent: count}]
+					})));
+					break;
+				case 'level':
+				case 'gc':
+			}
+		}).fail(() => alert('배틀 갯수 조회에 실패했습니다.'));
+	})
 	// 배틀타입 선택시 에디터 종류를 변경한다.
 	.on('change', '.battle-type-section input[type=radio]', function() {
 		const semanticResult = $(this).closest('.battle-section-panel').data('semantics');
