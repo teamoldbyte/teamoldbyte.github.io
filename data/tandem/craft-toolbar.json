@@ -204,7 +204,7 @@
 		"className": "battles-counter-section p-3 bg-white row mx-0 mb-3 rounded-5",
 		"children": [
 			{
-				"el": "div", "className": "col-md-1 row",
+				"el": "div", "className": "col-md-auto row",
 				"children": [
 					{ "el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "전체" },
 					{ "el": "span", "className": "counter-total col-auto"}
@@ -222,7 +222,7 @@
 				]
 			},
 			{
-				"el": "div", "className": "col-md-2 row",
+				"el": "div", "className": "col-md-auto row",
 				"children": [
 					{
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "난이도"
@@ -233,7 +233,7 @@
 				]				
 			},
 			{
-				"el": "div", "className": "col-md-3 row",
+				"el": "div", "className": "col-md-auto row",
 				"children": [
 					{
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "문법"
