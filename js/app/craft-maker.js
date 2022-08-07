@@ -62,7 +62,7 @@
 			const categoryId = parseInt(this.value);
 			param = { categoryId };
 		}
-		$.getJSON(`/craft/battle/stats${statsType}`, param, function(result) {
+		$.getJSON(`/craft/battle/stats/${statsType}`, param, function(result) {
 			switch(statsType) {
 				case 'type':
 					counterSection.querySelector('.counter-same-type')
