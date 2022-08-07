@@ -55,31 +55,7 @@
 			statsType = 'level';
 			let diffLevel = document.getElementById(this.htmlFor).value;
 			const engLength = addSection.querySelector('.battle-context').textContent.trim().length;
-			if(diffLevel == 'E') {
-				if(engLength <= 30) {
-					diffLevel = '하1';
-				}else {
-					diffLevel = '하2';
-				}
-			}else if(diffLevel == 'N') {
-				if(engLength <= 70) {
-					diffLevel = '중1';
-				}else if(engLength <= 100) {
-					diffLevel = '중2';
-				}else if(engLength <= 150) {
-					diffLevel = '중3';
-				}else {
-					diffLevel = '중4';
-				}
-			}else if(diffLevel == 'D') {
-				if(engLength <= 150) {
-					diffLevel = '고1';
-				}else if(engLength <= 200) {
-					diffLevel = '고2';
-				}else {
-					diffLevel = '고3';
-				}
-			}
+			diffLevel = calcDiffSpecific(diffLEvel, engLength);
 			param = { diffLevel };
 		}else {
 			statsType = 'gc';
@@ -95,7 +71,17 @@
 					})));
 					break;
 				case 'level':
+					counterSection.querySelector('.counter-same-difflevel')
+					.replaceChildren(createElement([
+						{ el: 'span', textContent: `${diffLevel}: ${result}`}
+					]));
+					break;
 				case 'gc':
+					counterSection.querySelector('.counter-same-category')
+					.replaceChildren(createElement(
+						{ el: 'span', textContent: `${categories.find(c => c.cid == categoryId).title}: ${result}`}
+					));
+					break;
 			}
 		}).fail(() => alert('배틀 갯수 조회에 실패했습니다.'));
 	})
@@ -173,16 +159,18 @@
 		const categoryId = Number(addSection.querySelector('.battle-category-section select').value);
 		const battleTypeSelector = 'data-battle-type';
 		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
+		const diffLevel = addSection.querySelector('.battle-diffLevel-section input:checked').value;
+		const engLength = battleContext.textContent.trim().length;
 		const command = {
 			sentenceId: $(battlePanel).data('sentenceId'),
-			categoryId, battleType, engLength: battleContext.textContent.trim().length,
+			categoryId, battleType,
 			memberId: _memberId,
 			example: '', answer: '',
 			ask: addSection.querySelector('.ask-select').value.trim(),
 			askTag: addSection.querySelector('.askTag').value.trim(),
 			comment: addSection.querySelector('.comment').value.trim(),
 			source: addSection.querySelector('.source').value.trim(),
-			diffLevel: addSection.querySelector('.battle-diffLevel-section input:checked').value
+			diffLevel, engLength, diffSpecificLevel: calcDiffSpecific(diffLevel, engLength)
 		}
 				
 		// 배틀 유형별 example, answer 정보 구성.
@@ -830,6 +818,37 @@
 		undoList.push(context.innerHTML);
 		redoList = [];
 		context.closest('.battle-maker').querySelector('[role=toolbar] [value="undo"]').disabled = false;
+	}
+	
+	// 문장 난이도(E,N,D)와 문장길이로 상세난이도 반환
+	function calcDiffSpecific(diffLevel, engLength) {
+		let diffSpecificLevel;
+		if(diffLevel == 'E') {
+			if(engLength <= 30) {
+				diffSpecificLevel = '하1';
+			}else {
+				diffSpecificLevel = '하2';
+			}
+		}else if(diffLevel == 'N') {
+			if(engLength <= 70) {
+				diffSpecificLevel = '중1';
+			}else if(engLength <= 100) {
+				diffSpecificLevel = '중2';
+			}else if(engLength <= 150) {
+				diffSpecificLevel = '중3';
+			}else {
+				diffSpecificLevel = '중4';
+			}
+		}else if(diffLevel == 'D') {
+			if(engLength <= 150) {
+				diffSpecificLevel = '고1';
+			}else if(engLength <= 200) {
+				diffSpecificLevel = '고2';
+			}else {
+				diffSpecificLevel = '고3';
+			}
+		}
+		return diffSpecificLevel;
 	}
 	
 	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel });
