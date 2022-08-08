@@ -82,31 +82,23 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	for(let i = 0; i < bucketLevel; i++) {
 		bucketHistory.push({
 			el: 'div', className: 'col-4 row g-0 my-4', children: [
-				{
-					el: 'div', className: 'col-10 text-center', children: [
-						{ el: 'div', className: `bucket-icon bucket-${i+1} text-warning` },
-						{ el: 'div', className: 'text-xl', innerText: `Lv.${i+1}` }
-					]
-				},
-				{
-					el: 'div', className: 'col-2 my-auto text-center', children: [
-						{ el: 'i', className: 'fas fa-arrow-right text-2xl text-gray-400' }
-					]
-				}
-			]
-		})
+				{ el: 'div', className: 'col-10 text-center', children: [
+					{ el: 'div', className: `bucket-icon bucket-${i+1} text-warning` },
+					{ el: 'div', className: 'text-xl', innerText: `Lv.${i+1}` }
+				]},
+				{ el: 'div', className: 'col-2 my-auto text-center', children: [
+					{ el: 'i', className: 'fas fa-arrow-right text-2xl text-gray-400' }
+				]}
+			]});
 	}
 	bucketHistory.push({
 		el: 'div', className: 'col-4 row g-0 my-4', children: [
-			{
-				el: 'div', className: 'col-10 text-center', children: [
-					{ el: 'div', className: 'bucket-icon uncollected text-gray-400' },
-					{ el: 'div', className: 'text-xl' }
-				]
-			},
+			{ el: 'div', className: 'col-10 text-center', children: [
+				{ el: 'div', className: 'bucket-icon uncollected text-gray-400' },
+				{ el: 'div', className: 'text-xl' }
+			]},
 			{ el: 'div', className: 'col-2 my-auto text-center' }
-		]
-	})
+		]});
 
 	const bucketDOMs = [];
 	const bucketStatus = document.querySelector('.total-egg-section');
@@ -159,7 +151,9 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		detail.querySelector('.egg').className = 
 			`egg${eggIndex < 9 ? tray[eggIndex] == 0 ? ' uncollected' : (' egg-' + (eggIndex + 1) + (eggIndex > 4 ? ' metallic' : '')) : ' metallic gold'}`;
 		// 에그 이름
-		detail.querySelector('.egg-text-info-section .name').innerHTML = eggInfoList[eggIndex].name;
+		const eggClass = eggIndex < 5 ? 'pastel' : eggIndex < 9 ? 'shining' : 'gold';
+		detail.querySelector('.egg-text-info-section .name').innerHTML 
+			= `<span class="badge egg-sort ${eggClass}">${eggClass}</span>` + eggInfoList[eggIndex].name;
 		// 에그 타이틀
 		detail.querySelector('.egg-text-info-section .title').innerHTML = eggInfoList[eggIndex].title;
 		// 에그 부화 d-day
@@ -167,11 +161,14 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		// 에그 설명
 		detail.querySelector('.egg-text-info-section .desc').innerHTML = eggInfoList[eggIndex].desc;
 		
-		
 		if(selectedEgg.matches('.gold')) {
 			showFireworks({target: detail.querySelector('.egg'),
 				size: 1, distance: 100, colors: ['#FFFFFF'], interval: 500, count: 5, particles: 5
 			})
+			// 골드 에그는 말한이 숨김
+			$(detail).find('.egg-text-info-section .writer').hide();
+		}else {
+			$(detail).find('.egg-text-info-section .writer').show();
 		}
 		// 데스크톱용 상세보기 위치 설정
 		if(window.innerWidth >= 576) {
@@ -379,7 +376,8 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					]},
 					{ el: 'span', className: 'title' },
 					{ el: 'span', className: 'desc' },
-					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' }
+					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' },
+					{ el: 'span', className: 'hatching-info', textContent: '에그를 부화시켜 마법사 에그시가 숨겨놓은 선물을 받아가세요.' }
 				]}
 			]}
 		]}
