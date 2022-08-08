@@ -13,8 +13,11 @@
 	}
 	
 	let staticCraftPanel, craftToolbarGroup = {}, 
-		battleAsks = [], battleTypeInfos = [], 
-		battleBtns = [], categories = [], chkbxSeq = 0;
+		battleAsks = [], battleTypeInfos = [], battleBtns = [], 
+		// 문법 카테고리 목록(캐싱)
+		categories = [], 
+		// 체크박스 크룹화를 위한 시퀀스값
+		chkbxSeq = 0; 
 	let _memberId;
 	let undoList = [], redoList = []; // 편집 내역
 	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
@@ -43,9 +46,9 @@
 		if(!counterSection) {
 			counterSection = createElement(craftToolbarGroup.battleCounterPanel)
 			$.getJSON('/craft/battle/stats/total', total => {
-				counterSection.querySelector('.counter-total').textContent = total;
+				counterSection.querySelector('.counter-total').textContent = `${total}건`;
 			}).fail(() => alert('전체 배틀 갯수를 조회할 수 없습니다.'));
-			addSection.querySelector('.battle-type-section').after(counterSection);
+			addSection.querySelector('.battle-type-section').before(counterSection);
 		}
 		if(this.matches('.battle-type-section .btn')) {
 			statsType = 'type';
@@ -63,26 +66,30 @@
 			param = { categoryId };
 		}
 		$.getJSON(`/craft/battle/stats/${statsType}`, param, function(result) {
+			let section;
 			switch(statsType) {
 				case 'type':
-					counterSection.querySelector('.counter-same-type')
-					.replaceChildren(createElement(Array.from(result, (count, i) => {
-						return [{el: 'label', className: 'border-fc-navy-2 col-auto', textContent: i + 1}, {el: 'span', className: 'col-auto', textContent: count}]
+					section = counterSection.querySelector('.counter-same-type');
+					section.replaceChildren(createElement(Array.from(result, (count, i) => {
+						return [{el: 'label', className: 'bg-fc-yellow col-auto ms-2 rounded-pill', textContent: `#${i + 1}`}, 
+								{el: 'span', className: 'col-auto', textContent: `${count}건`}]
 					})));
 					break;
 				case 'level':
-					counterSection.querySelector('.counter-same-difflevel')
-					.replaceChildren(createElement([
-						{ el: 'span', className: 'col-auto', textContent: `${param.diffLevel}: ${result}`}
+					section = counterSection.querySelector('.counter-same-difflevel')
+					section.replaceChildren(createElement([
+						{ el: 'span', className: 'col-auto', textContent: `${param.diffLevel}: ${result}건`}
 					]));
 					break;
 				case 'gc':
-					counterSection.querySelector('.counter-same-category')
-					.replaceChildren(createElement(
-						{ el: 'span', className: 'col-auto', textContent: `${categories.find(c => c.cid == param.categoryId).title}: ${result}`}
+					section = counterSection.querySelector('.counter-same-category')
+					section.replaceChildren(createElement(
+						{ el: 'span', className: 'col-auto', textContent: `${categories.find(c => c.cid == param.categoryId).title}: ${result}건`}
 					));
 					break;
 			}
+			if($.fn.bounce != undefined)
+				$(section).bounce();
 		}).fail(() => alert('배틀 갯수 조회에 실패했습니다.'));
 	})
 	// 배틀타입 선택시 에디터 종류를 변경한다.
