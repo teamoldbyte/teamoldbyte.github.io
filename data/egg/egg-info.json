@@ -1,52 +1,52 @@
 [
   {
     "name": "플레인 화이트<br>White-Plain Egg",
-    "title" "욕망",
+    "title": "욕망",
     "desc": "세상과 만물을 품을 수 있는 절대 에너지<br>그것은 당신 속에 있는 욕망"
   },
   {
     "name": "레몬 버터<br>Lemmon-Butter Egg",
-    "title" "자아",
+    "title": "자아",
     "desc": "알은 하나의 세계이고<br>다른 세계로 나아가기 위해서는<br>알은 깨어져야 한다."
   },  
   {
     "name": "코튼 캔디<br>Cotton-Candy Egg",
-    "title" "시간",
+    "title": "시간",
     "desc": "달콤함에 빠져사는 우리의 게으름은<br>보잘것없는 업적이라는 쓴맛을 뱉는다."
   },
   {
     "name": "민트 블루<br>Mint-Blue Egg",
-    "title" "게임",
+    "title": "게임",
     "desc": "그곳에서는 어떠한 실수도<br>어떠한 실패조차 두렵지 않다.<br>어떠한 도전도 게임처럼…"
   },
   {
     "name": "로열 라벤더<br>Royal-Lavender Egg",
-    "title" "목표",
+    "title": "목표",
     "desc": "비상하는 매가 허공에서 빛나듯이<br>목표를 가진 당신은 군중 속에서 빛나리라."
   },
   {
     "name": "레드 가넷<br>Red-Garnet Egg",
-    "title" "인내",
+    "title": "인내",
     "desc": "언어는 침묵 속에서<br>빛은 어둠 속에서<br>당신의 염원은 인내 속에서.."
   },
   {
     "name": "오그 페리도트<br>Aug-Peridot Egg",
-    "title" "차이",
+    "title": "차이",
     "desc": "다른 모든 이들이 일상의 관계와<br>반복을 통해 동질함을 가질 때<br>당신은 이곳에서 차이를 발견할 것이다."
   },
   {
     "name": "블루 토파즈<br>Blue-Topaz Egg",
-    "title" "초인",
+    "title": "초인",
     "desc": "한 발짝, 한 발짝, 여기에 왔다.<br>초인의 발걸음이 아니라면 어찌 왔을까?"
   },
   {
     "name": "퍼플 사파이어<br>Purple-Sapphire Egg",
-    "title" "출항",
+    "title": "출항",
     "desc": "언제 돌아올지 모르는 출항으로 앞두고<br>육지에서의 마지막 저녁을 보낸다.<br>매일 오늘이 그 하루로 살아나가길…"
   },
   {
     "name": "골드 시나몬<br>Gold Cinnamon Egg",
-    "title" "욕망 (흰색)",
+    "title": "",
     "desc": "보석같이 반짝거리는 신비로운 금색 달걀<br>흔하게 보이지 않는 희귀한 달걀이다.<br>금색 달걀은 특별한 방법으로 얻을 수 있다고 알려져있다."
   }
 ]
