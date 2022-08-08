@@ -358,7 +358,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		{ el: 'div', className: 'egg-detail-section' + (window.innerWidth < 576 ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
 			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: "$('.egg-detail-section').hide(100)" },
 			{ el: 'div', className: 'row g-0', children: [
-				{ el: 'div', className: 'col-12 col-md-8', children: [
+				{ el: 'div', className: 'col-12 col-md-7', children: [
 					{ el: 'div', className: 'egg-wrapper', children: [
 						{ el: 'div', className: 'shadow', children: [
 							{ el: 'div', className: 'main' },
@@ -372,7 +372,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 						]}
 					]}
 				]},
-				{ el: 'div', className: 'egg-text-info-section col-12 col-md-4', children: [
+				{ el: 'div', className: 'egg-text-info-section col-12 col-md-5', children: [
 					{ el: 'h4', className: 'name mb-3' },
 					{ el: 'span', className: 'count-text', children: [
 						'Hatching D-Day : ',
