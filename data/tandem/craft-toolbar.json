@@ -204,10 +204,10 @@
 		"className": "battles-counter-section p-3 bg-white row mx-0 mb-3 rounded-5",
 		"children": [
 			{
-				"el": "div", "className": "col-md-auto row",
+				"el": "div", "className": "col-md row",
 				"children": [
 					{ "el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "전체" },
-					{ "el": "span", "className": "counter-total col-auto"}
+					{ "el": "span", "className": "counter-total col-auto", "textContent": "-"}
 				]
 			},
 			{
@@ -217,29 +217,29 @@
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "배틀타입"
 					},
 					{
-						"el": "div", "className": "counter-same-type col-auto row"
+						"el": "div", "className": "counter-same-type col-auto row", "textContent": "-"
 					}
 				]
 			},
 			{
-				"el": "div", "className": "col-md-auto row",
+				"el": "div", "className": "col-md row",
 				"children": [
 					{
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "난이도"
 					},
 					{
-						"el": "div", "className": "counter-same-difflevel col-auto row"
+						"el": "div", "className": "counter-same-difflevel col-auto row", "textContent": "-"
 					}
 				]				
 			},
 			{
-				"el": "div", "className": "col-md-auto row",
+				"el": "div", "className": "col-md row",
 				"children": [
 					{
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "문법"
 					},
 					{
-						"el": "div", "className": "counter-same-category col-auto row"
+						"el": "div", "className": "counter-same-category col-auto row", "textContent": "-"
 					}
 				]
 			}
