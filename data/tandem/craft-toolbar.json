@@ -217,7 +217,9 @@
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "배틀타입"
 					},
 					{
-						"el": "div", "className": "counter-same-type col-auto row", "textContent": "-"
+						"el": "div", "className": "counter-same-type col-auto row", "children": [
+							{ "el": "span", "className": "col-auto", "textContent": "-" }
+						]
 					}
 				]
 			},
@@ -228,7 +230,9 @@
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "난이도"
 					},
 					{
-						"el": "div", "className": "counter-same-difflevel col-auto row", "textContent": "-"
+						"el": "div", "className": "counter-same-difflevel col-auto row", "children": [
+							{ "el": "span", "className": "col-auto", "textContent": "-" }
+						]
 					}
 				]				
 			},
@@ -239,7 +243,9 @@
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "문법"
 					},
 					{
-						"el": "div", "className": "counter-same-category col-auto row", "textContent": "-"
+						"el": "div", "className": "counter-same-category col-auto row", "children": [
+							{ "el": "span", "className": "col-auto", "textContent": "-" }
+						]
 					}
 				]
 			}
