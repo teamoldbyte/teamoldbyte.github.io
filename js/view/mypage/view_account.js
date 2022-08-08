@@ -16,8 +16,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					el: 'div', className: 'egg-wrapper m-auto',
 					style: 'transform: scale(0)',
 					children: [
-						{
-							el: 'div', 
+						{ el: 'div', 
 							className: `egg${i < 9 ? tray[i] == 0 ? ' uncollected' : (' egg-' + (i + 1) + (i > 4 ? ' metallic' : '')) : ' metallic gold'}`,
 							children: [
 								{ el: 'div', className: 'fill' },
@@ -148,28 +147,34 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		const selectedEgg = this.querySelector('.egg');
 		const eggIndex = parseInt((selectedEgg.className.match(/egg-(\d+)/)||{ 1 : 10 })[1]) - 1;
 		if(selectedEgg.matches('.uncollected')) return;
+		// 골드 여부
+		const isGold = selectedEgg.matches('.gold');
+		// 골드 여부에 따라 표시여부가 달라지는 항목들 선택자
+		const selectiveInfo = Array.from(['count-text','hatching-info','writer'], s => '.egg-text-info-section .'+s).join(',');
+		
+		$(detail).find(selectiveInfo).toggle(!isGold);
+		
+		// 에그 종류에 따른 클래스 추가
 		detail.querySelector('.egg').className = 
 			`egg${eggIndex < 9 ? tray[eggIndex] == 0 ? ' uncollected' : (' egg-' + (eggIndex + 1) + (eggIndex > 4 ? ' metallic' : '')) : ' metallic gold'}`;
 		// 에그 이름
 		const eggClass = eggIndex < 5 ? 'pastel' : eggIndex < 9 ? 'shining' : 'gold';
 		detail.querySelector('.egg-text-info-section .name').innerHTML 
 			= `<span class="badge egg-sort ${eggClass}">${eggClass}</span>` + eggInfoList[eggIndex].name;
+		// 에그 부화 d-day
+		if(!isGold) 
+			detail.querySelector('.egg-text-info-section .egg-count').textContent 
+			= 900 - parseInt(this.querySelector('.egg-count').textContent)
 		// 에그 타이틀
 		detail.querySelector('.egg-text-info-section .title').innerHTML = eggInfoList[eggIndex].title;
-		// 에그 부화 d-day
-		detail.querySelector('.egg-text-info-section .egg-count').textContent = 900 - parseInt(this.querySelector('.egg-count').textContent)
 		// 에그 설명
 		detail.querySelector('.egg-text-info-section .desc').innerHTML = eggInfoList[eggIndex].desc;
 		
-		if(selectedEgg.matches('.gold')) {
+		// 골드의 경우 반짝임 효과
+		if(isGold) 
 			showFireworks({target: detail.querySelector('.egg'),
 				size: 1, distance: 100, colors: ['#FFFFFF'], interval: 500, count: 5, particles: 5
-			})
-			// 골드 에그는 말한이 숨김
-			$(detail).find('.egg-text-info-section .writer').hide();
-		}else {
-			$(detail).find('.egg-text-info-section .writer').show();
-		}
+			});
 		// 데스크톱용 상세보기 위치 설정
 		if(window.innerWidth >= 576) {
 			if(e.currentTarget.getBoundingClientRect().x > window.innerWidth / 2) {
@@ -350,7 +355,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				]}
 			]}
 		]},
-		{ el: 'div', className: 'egg-detail-section top-50 translate-middle-y', style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
+		{ el: 'div', className: 'egg-detail-section' + (window.innerWidth < 576 ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
 			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: "$('.egg-detail-section').hide(100)" },
 			{ el: 'div', className: 'row g-0', children: [
 				{ el: 'div', className: 'col-12 col-md-8', children: [
@@ -369,7 +374,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				]},
 				{ el: 'div', className: 'egg-text-info-section col-12 col-md-4', children: [
 					{ el: 'h4', className: 'name mb-3' },
-					{ el: 'span', className: 'count-text d-block', children: [
+					{ el: 'span', className: 'count-text', children: [
 						'Hatching D-Day : ',
 						{ el: 'span', className: 'egg-count' },
 						' left.'
