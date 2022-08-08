@@ -37,9 +37,10 @@ function createElement(json) {
 			if(typeof json[key] == 'string') {
 				element[key] = json[key];
 			}else if(typeof json[key] == 'object') {
-				const styleProperties = json[key];
-				for(let j = 0, slen = styleProperties.length; j < slen; j++) {
-					const property = styleProperties[j];
+				const styleProperties = json[key],
+					styleKeys = Object.keys(styleProperties);
+				for(let j = 0, slen = styleKeys.length; j < slen; j++) {
+					const property = styleKeys[j];
 					element[key][property] = styleProperties[property];
 				}
 			}else console.error('style에 ' + typeof json[key] + '은/는 맞지 않습니다.');
