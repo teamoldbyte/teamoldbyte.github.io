@@ -1190,6 +1190,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			})
 		}
 	})
+	/*
 	// [문장의 질문 목록 가져오기(1회)]-----------------------------------------------
 	.one('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=qna]', function() {
 		const $_this = $(this);
@@ -1259,6 +1260,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			})
 		}
 	})
+	*/
 /* -------------------------------- 지문/문장 공통------------------------------ */
 	
 	// [지문/문장의 노트 수정 폼 열기]-------------------------------------------------
@@ -1372,6 +1374,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			}
 		});
 	})
+	/*
 	// [지문/문장 질문 추가 폼 열기]--------------------------------------------------
 	.on('click', '.qna-section .add-icon', async function() {
 		$(this).prop('disabled', true).tooltip('hide');
@@ -1521,12 +1524,12 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		
 		if($contentBlock.is('.loading,.loaded')) return;
 		if(!$contentBlock.is('.loaded')) { 
-			/* $_this.find('.-icon').text($contentBlock.is('.collapse.show')
-										? 'arrow_drop_down' : 'arrow_drop_up');
-			$contentBlock.collapse('toggle'); 
-			$_this.find('.qna-mdf-btns')
-			.add($contentBlock.find('.question-section .qna-mdf-btns')).toggle();
-			return; */
+			// $_this.find('.-icon').text($contentBlock.is('.collapse.show')
+			//							? 'arrow_drop_down' : 'arrow_drop_up');
+			//$contentBlock.collapse('toggle'); 
+			//$_this.find('.qna-mdf-btns')
+			//.add($contentBlock.find('.question-section .qna-mdf-btns')).toggle();
+			//return;
 			$contentBlock.addClass('loading');
 		}
 			
@@ -1789,6 +1792,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			}
 		}			
 	})
+	*/
 	// 크래프트 출제 패널 동작
 	.on('show.bs.tab', '[role=tab][data-type=craft]', function(e) {
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
