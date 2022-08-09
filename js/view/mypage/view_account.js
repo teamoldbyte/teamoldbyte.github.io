@@ -160,7 +160,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		// 에그 이름
 		const eggClass = eggIndex < 5 ? 'pastel' : eggIndex < 9 ? 'shining' : 'gold';
 		detail.querySelector('.egg-text-info-section .name').innerHTML 
-			= `<span class="badge egg-sort ${eggClass}">${eggClass}</span>` + eggInfoList[eggIndex].name;
+			= `<span class="badge egg-sort ${eggClass}">name</span>` + eggInfoList[eggIndex].name;
 		// 에그 부화 d-day
 		if(!isGold) 
 			detail.querySelector('.egg-text-info-section .egg-count').textContent 
@@ -358,7 +358,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		{ el: 'div', className: 'egg-detail-section' + (window.innerWidth < 576 ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
 			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: "$('.egg-detail-section').hide(100)" },
 			{ el: 'div', className: 'row g-0', children: [
-				{ el: 'div', className: 'col-12 col-md-7', children: [
+				{ el: 'div', className: 'col-12 col-md-8', children: [
 					{ el: 'div', className: 'egg-wrapper', children: [
 						{ el: 'div', className: 'shadow', children: [
 							{ el: 'div', className: 'main' },
@@ -372,17 +372,19 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 						]}
 					]}
 				]},
-				{ el: 'div', className: 'egg-text-info-section col-12 col-md-5', children: [
-					{ el: 'h4', className: 'name mb-3' },
-					{ el: 'span', className: 'count-text', children: [
-						'Hatching D-Day : ',
-						{ el: 'span', className: 'egg-count' },
-						' left.'
-					]},
+				{ el: 'div', className: 'egg-text-info-section col-12 col-md-4', children: [
+					{ el: 'h4', className: 'name' },
 					{ el: 'span', className: 'title' },
 					{ el: 'span', className: 'desc' },
 					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' },
-					{ el: 'span', className: 'hatching-info', textContent: '에그를 부화시켜 마법사 에그시가 숨겨놓은 선물을 받아가세요.' }
+					{ el: 'div', className: 'position-absolute bottom-0', children: [
+						{ el: 'span', className: 'count-text', children: [
+							'Hatching D-Day : ',
+							{ el: 'span', className: 'egg-count' },
+							' left.'
+						]},
+						{ el: 'span', className: 'hatching-info', textContent: '에그를 부화시켜 마법사 에그시가 숨겨놓은 선물을 받아가세요.' }
+					]},
 				]}
 			]}
 		]}
