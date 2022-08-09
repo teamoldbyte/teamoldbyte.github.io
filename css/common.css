@@ -302,7 +302,9 @@ a:hover {
 .text-red-700{
 	color: rgb(185, 28, 28) !important;
 }
-
+.text-gray-300{
+	color: rgb(209 213 219) !important;
+}
 .text-gray-400{
 	color: rgb(156 163 175) !important;
 }
@@ -452,7 +454,7 @@ a:hover {
  *			border 
  **********************************************************/
 .text-stroke-gray{
-	-webkit-text-stroke: 1px #dee2e6;
+	-webkit-text-stroke: 1.5px gray;
 }
 /**********************************************************
  *			under-line 
