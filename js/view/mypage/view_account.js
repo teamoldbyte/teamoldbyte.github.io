@@ -316,11 +316,22 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	// [결제 대기]----------------------------------------------------------------
 	.on('show.bs.collapse', '#modalDiv #phase-2', function() {
 		$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
-		let time = 60000;
-		clearTimeout(nextTimer);
-		nextTimer = setTimeout(() => {
-			$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', false);
-		}, time);
+		clearInterval(nextTimer);
+		$('#phase-2 .progress-bar').attr('aria-valuenow', 0).width(0);
+		let progress = 0
+		nextTimer = setInterval(() => {
+			if(progress < 100) {
+				progress++;
+				$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
+										.width(progress + '%');
+				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
+			}else {
+				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', false);
+			}
+		}, 1000);
+	})
+	.on('hide.bs.collapse', '#modalDiv #phase-2', function() {
+		clearInterval(nextTimer);
 	})
 	// [추가정보 입력 완료]---------------------------------------------------------
 	.on('submit', '#paymentForm', function(e) {
@@ -333,8 +344,8 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				data: JSON.stringify(data),
 				contentType: 'application/json', 
 				success: () => {
-					alert('구매를 완료했습니다.');
-					location.reload();
+					alert('멤버십이 연장되었습니다.\n다시 로그인해 주세요.');
+					document.forms.logout.submit();
 				},
 				error: () => {
 					alert('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.');
