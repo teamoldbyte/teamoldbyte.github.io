@@ -107,7 +107,7 @@
 
 /* 메뉴 아이콘 영역 */
 .workbook-menu-section .menu-icon-section .navbar-nav{
-	background-color: rgb(216, 233, 227);
+	background-color: #d8d9e9;
 	/* border: 1.5px solid #585174; */
 	/*box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 1px inset;*/
 	border-radius: 10px;
@@ -221,7 +221,7 @@
 		top: -38%;
 		width: 70px;
 		height: 70px;
-		background: rgb(216, 233, 227);
+		background: #d8d9e9;
 		border-radius: 50%;
 		z-index: 1;
 		transition: 1s;
@@ -235,7 +235,7 @@
 		height: 30px;
 		background: transparent;
 		border-radius: 50%;
-		box-shadow: 15px 18px rgb(216, 233, 227);
+		box-shadow: 15px 18px #d8d9e9;
 	}
 	.workbook-menu-section .indicator::after{
 		content: '';
@@ -246,7 +246,7 @@
 		height: 30px;
 		background: transparent;
 		border-radius: 50%;
-		box-shadow: -15px 18px rgb(216, 233, 227);
+		box-shadow: -15px 18px #d8d9e9;
 	}
 	.workbook-menu-section .menu-icon-section ul li:nth-child(1):hover ~ .indicator{
 		display: block;
@@ -328,6 +328,9 @@
 	font-size: 1.5rem;
 	vertical-align: middle;
 }
+.workbook-menu-section #mobileDropdown.show{
+	display: none;
+}
 @media (max-width: 991px) {
     .workbook-menu-section{
 		top: 3rem;
@@ -350,6 +353,9 @@
 		border: none;
 		font-size: 1.5rem;
 		padding: 0;
+	}
+	.workbook-menu-section #mobileDropdown.show{
+		display: block;
 	}
 	/* 메뉴 아이콘 영역 */
 	.workbook-menu-section .menu-icon-section .navbar-nav{
