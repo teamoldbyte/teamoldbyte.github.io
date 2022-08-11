@@ -379,7 +379,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 						]}
 					]}
 				]},
-				{ el: 'div', className: 'egg-text-info-section col-12 col-md-4', children: [
+				{ el: 'div', className: 'egg-text-info-section col-12 col-md-4 mt-5 mt-md-0', children: [
 					{ el: 'h4', className: 'name' },
 					{ el: 'span', className: 'title' },
 					{ el: 'span', className: 'desc' },
