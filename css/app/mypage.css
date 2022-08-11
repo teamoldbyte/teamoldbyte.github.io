@@ -177,7 +177,7 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 .egg-wrapper .shadow {
 	position: absolute;
 	left: 5rem;
-	top: 2rem;
+	top: 4rem;
 	width: 50%;
 	height: 90%;
 	border-radius: inherit;
@@ -189,6 +189,7 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 .egg-wrapper .shadow .main {
 	position: absolute;
 	right: 0;
+	bottom: 2rem;
 	width: 100%;
 	height: 100%;
 	border-radius: inherit;
@@ -557,6 +558,11 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 	font-size: 0.75rem;
 }
 
+.egg-detail-section .egg-text-info-section .footer-text{
+	position: absolute;
+	bottom: 0;
+}
+
 .egg-detail-section .egg-wrapper {
 	position: relative;
 	width: 270px;
@@ -587,6 +593,25 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 @media (max-width: 576px){
 	.egg-detail-section{
 		width: 100%;
+	}
+	
+	.egg-detail-section .egg-wrapper {
+		width: 11rem;
+		height: 14rem;
+	}
+	.egg-detail-section .egg-wrapper .shadow {
+		top: -6rem;	
+	}
+	.egg-detail-section .egg-wrapper .shadow .main{
+		bottom: -5rem;
+	}
+	
+	.egg-detail-section .egg-text-info-section .name{
+		margin-bottom: 3rem;
+	}
+	.egg-detail-section .egg-text-info-section .footer-text{
+		position: relative;
+		margin-top: 3rem;
 	}
 }
 /*------------------------------------------------------------------------------
