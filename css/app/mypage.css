@@ -34,7 +34,7 @@
 .mypage-section .sub-menu p.active{
 	color: #000;
 }
-@media (max-width: 720px) {
+@media (max-width: 992px) {
 	/* 서브 메뉴 영역 */
 	.sub-menu-section{
 		border-right: none;
@@ -519,6 +519,7 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 }
 .egg-detail-section .egg-text-info-section{
 	position: relative;
+	min-height: 40vh;
 }
 .egg-detail-section .egg-text-info-section .egg-sort{
 	vertical-align: baseline;
@@ -577,6 +578,11 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 	animation-iteration-count: infinite;
 	box-shadow: inset 3px 3px 30px rgba(255,255,255,0.8),
 				inset 1px -3px 20px rgba(0,0,0,0.3);
+}
+@media (max-width: 992px){
+	.egg-detail-section{
+		width: 70vw;
+	}
 }
 @media (max-width: 576px){
 	.egg-detail-section{
