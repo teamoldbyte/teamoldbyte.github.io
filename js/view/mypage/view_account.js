@@ -384,7 +384,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					{ el: 'span', className: 'title' },
 					{ el: 'span', className: 'desc' },
 					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' },
-					{ el: 'div', className: 'position-absolute bottom-0', children: [
+					{ el: 'div', className: 'footer-text', children: [
 						{ el: 'span', className: 'count-text', children: [
 							'Hatching D-Day : ',
 							{ el: 'span', className: 'egg-count' },
