@@ -94,7 +94,7 @@
 			el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
 				maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)',
 				borderRadius: '50% 50% 50% 50%/60% 60% 40% 40%',
-				background: `center/ 101% 101% url(https://static.findsvoc.com/images/app/egg/egg-${colorIndex+1}.png) no-repeat`
+				background: `center/ 102% 101% url(https://static.findsvoc.com/images/app/egg/egg-${colorIndex+1}.png) no-repeat`
 			}
 		});
 	}
@@ -419,14 +419,16 @@
 	/** 비회원이면 트레이를 []으로, 회원이면 로그인 직후 세션 트레이값으로 설정
 	마이페이지 방문 여부 설정
 	@param accountTray 세션의 트레이 
+	@param balance 골드량
 	@caller workbook_layout
 	 */
-	function setEggTray(accountTray) {
+	function setEggTray(accountTray, balance) {
 		// 회원인 경우 세션의 트레이값 조회
 		if(accountTray != null && accountTray.length > 0) {
 			// 로그인 직후면 세션의 트레이 사용
 			if(document.referrer.includes('/auth/login')) {
 				eggTray = JSON.parse(accountTray);
+				eggTray[9] = parseInt(balance);
 				window.localStorage.setItem('fico_egg_tray', JSON.stringify(eggTray));
 				if(window.localStorage.getItem('fico_egg_confirmed') == null) {
 					eggConfirmed = true;
@@ -442,6 +444,7 @@
 				// 만약 브라우저에 저장된 값이 없을 경우 세션의 트레이 사용
 				else {
 					eggTray = JSON.parse(accountTray);
+					eggTray[9] = parseInt(balance);
 					window.localStorage.setItem('fico_egg_tray', JSON.stringify(eggTray));
 				}
 				// 마이페이지 방문여부 확인
