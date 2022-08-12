@@ -91,10 +91,10 @@
 	}
 	function createNewEgg(colorIndex) {
 		return createElement({
-			el: 'img', src: `https://static.findsvoc.com/images/app/egg/egg-${colorIndex+1}.png`,
-			style: { 
-				position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', maxWidth: '50vmin', zIndex: 1071,
-				maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)'
+			el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
+				maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)',
+				borderRadius: '50% 50% 50% 50%/60% 60% 40% 40%',
+				background: `center/ 101% 101% url(https://static.findsvoc.com/images/app/egg/egg-${colorIndex+1}.png) no-repeat`
 			}
 		});
 	}
@@ -112,7 +112,7 @@
 	
 	function createNewBucket(level) {
 		return createElement({
-			el: 'img', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level}.svg`,
+			el: 'img', className: 'new-obj', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level}.svg`,
 			style: {
 				position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', maxWidth: '50vmin', zIndex: 1071,
 				maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)'
@@ -237,7 +237,7 @@
 					if(newEggColors.length > 0 || prevLevel < bucketLevel) {
 						if(document.getElementById('newEggModal') == null)
 							document.body.appendChild(createElement(newEggModal));
-						$('#newEggModal .modal-body img').remove();
+						$('#newEggModal .modal-body .new-obj').remove();
 						
 						const newEggs = [];
 						newEggColors.forEach(newEggColor => {
