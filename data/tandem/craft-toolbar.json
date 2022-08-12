@@ -382,6 +382,85 @@
 			]
 		}
 	],
+	"addResultModal": { 
+		"el": "div", 
+		"id": "craftResultModal", 
+		"className": "modal fade", 
+		"tabIndex": "-1", 
+		"children": [
+			{ 
+				"el": "div", 
+				"className": "modal-dialog", 
+				"children": [
+					{ 
+						"el": "div", 
+						"className": "modal-content border-0", 
+						"children": [
+							{ 
+								"el": "div", 
+								"className": "modal-header bg-fc-purple", 
+								"children": [
+									{ 
+										"el": "h5", 
+										"className": "modal-title text-white", 
+										"textContent": "배틀 등록 완료" 
+									}
+								]
+							},
+							{ 
+								"el": "div", 
+								"className": "modal-body w-100 text-center", 
+								"children": [
+									{ 
+										"el": "div", 
+										"className": "row", 
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "col-auto text-fc-purple", 
+												"textContent": "등록된 배틀 ID:"
+											},
+											{ 
+												"el": "span", 
+												"className": "battle-id col-auto"
+											}
+										]
+									},
+									{ 
+										"el": "div", 
+										"className": "row", 
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "col-auto text-fc-purple", 
+												"textContent": "동일 유형 배틀 수:"
+											},
+											{ 
+												"el": "span", 
+												"className": "group-count col-auto"
+											}
+										]
+									}
+								]
+							},
+							{ 
+								"el": "div", 
+								"className": "modal-footer justify-content-center", 
+								"children": [
+									{ 
+										"el": "button", 
+										"className": "btn btn-fico", 
+										"data-bs-dismiss": "modal", 
+										"textContent": "확인" 
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	},
 	"battle1": {
 		"el": "div",
 		"children":
