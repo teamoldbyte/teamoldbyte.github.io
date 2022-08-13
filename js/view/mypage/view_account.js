@@ -356,6 +356,10 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		{ el: 'div', className: 'bucket-detail-section modal', id: 'bucket-modal', tabIndex: '-1', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
 				{ el: 'div', className: 'modal-content', children: [
+					{ el: 'div', className: 'modal-header', children: [
+						{ el: 'h5', textContent: '획득 버킷'},
+						{ el: 'button', type:'button', className: 'btn-close', 'data-bs-dismiss': 'modal'},
+					]},
 					{ el: 'div', className: 'modal-body px-1 px-md-5', children: [
 						{ el: 'div', className: 'bucket-history row g-0', children: bucketHistory }
 					]}
