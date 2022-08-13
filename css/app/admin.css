@@ -1,0 +1,51 @@
+
+/**********************************************************
+ *					폰트 
+ **********************************************************/
+body{
+	font-family: 'NanumBarunGothic';
+	font-size: 14px;
+}
+
+/**********************************************************
+ *					토큰 트리 
+ **********************************************************/
+.tokentree-result {
+	margin-top: 2rem;
+	overflow-x: scroll;
+	line-height: normal;
+}
+.tokentree-result table {
+	font-family: 'consolas';
+	border-collapse: separate;
+}
+
+.tokentree-result .node {
+	background-color: #ffffff;
+	border: solid 1px #1A1A34;
+}
+
+.tokentree-result .node-label {
+	font-size: 14px;
+	color: #C0504D;
+}
+
+.tokentree-result .node-index {
+	color: #C0504D;
+	font-size: 12px;
+}
+
+.tokentree-result .node-range {
+	color: #1A1A34;
+	font-size: 11px;
+}
+
+.tokentree-result .node-text {
+	color: hsl(220deg 100% 30%);
+	font-size: 15px;
+}
+
+.tokentree-result .node-part {
+	color: #1A1A34;
+	font-size: 13px;
+}
