@@ -104,7 +104,7 @@
 			el: 'img', id: 'egg_tray', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level}.svg`,
 			onclick: () => window.location.assign('/mypage'), 'data-bs-toggle': 'tooltip', title: '마이페이지로 가서 에그 확인',
 			style: {
-				position: 'fixed', left: `${window.innerWidth - 80}px`, top: `${window.innerHeight - 150}px`, zIndex: 1072,
+				position: 'fixed', left: `${window.innerWidth}px`, top: `${window.innerHeight - 150}px`, zIndex: 1072,
 				width: '70px', height: '70px', cursor: 'pointer'
 			}
 		});
@@ -177,7 +177,7 @@
 		.add({
 			duration: 2000,
 			left: {
-				value: function() {return window.innerWidth - 58 + anime.random(-4,4)},
+				value: function() {return window.innerWidth - 56 + anime.random(-4,4)},
 				easing: 'linear'
 			},
 			top: [
