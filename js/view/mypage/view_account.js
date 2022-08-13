@@ -151,7 +151,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		// 골드 여부
 		const isGold = selectedEgg.matches('.gold');
 		// 골드 여부에 따라 표시여부가 달라지는 항목들 선택자
-		const selectiveInfo = Array.from(['count-text','hatching-info','writer'], s => '.egg-text-info-section .'+s).join(',');
+		const selectiveInfo = Array.from(['count-text','hatching-info'], s => '.egg-text-info-section .'+s).join(',');
 		
 		$(detail).find(selectiveInfo).toggle(!isGold);
 		
