@@ -15,13 +15,14 @@
 	let staticCraftPanel, craftToolbarGroup = {}, 
 		battleAsks = [], battleTypeInfos = [], battleBtns = [], 
 		// 문법 카테고리 목록(캐싱)
-		categories = [], 
-		// 체크박스 크룹화를 위한 시퀀스값
-		chkbxSeq = 0; 
+		categories = [], workbook_battleSource;
+		// 체크박스 그룹화를 위한 시퀀스값
+		chkbxSeq = 0;
 	let _memberId;
 	let undoList = [], redoList = []; // 편집 내역
+	
+	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
 	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
-//	$.getJSON('/tandem/craft-toolbar.json', json => {
 		craftToolbarGroup = json;
 		staticCraftPanel = createElement(json.craftPanel);
 		battleAsks = json.battleAsks;
@@ -228,10 +229,19 @@
 			contentType: 'application/json',
 			data: JSON.stringify(command),
 			success: function(response) {
-				alert(`[등록 결과]\nbattleId: ${response.battleId}\ngroupCount: ${response.groupCount}`);
+				if(!document.getElementById('craftResultModal')) {
+					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
+				}
+				$('#craftResultModal .battle-id').text(response.battleId);
+				$('#craftResultModal .group-count').text(response.groupCount);
+				$('#craftResultModal').modal('show');
+				
+				// 워크북 내에서 등록한 경우 배틀 출처 기본값 지정.
+				if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
+					workbook_battleSource = command.source;
+				}
 				
 				battleContext.replaceChildren(battleContext.textContent);
-				addSection.querySelector('.comment').value = '';
 				
 				command.battleId = response.battleId;
 				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
@@ -410,6 +420,9 @@
 				})
 			}
 		})
+		if(workbook_battleSource) {
+			panelInstance.querySelector('input.source').value = workbook_battleSource;
+		}
 	}
 	
 	/** 배틀 문제 생성.
@@ -691,8 +704,8 @@
 	@param battle battle정보를 담은 JSONObject
 	 */
 	function previewBattle(eng, battle) {
-		const answers = JSON.parse(battle.answer);
-		const examples = JSON.parse(battle.example);
+		const answers = JSON.parse(battle.answer||"[]");
+		const examples = JSON.parse(battle.example||"[]");
 		let offsetPos = 0;
 		const contextChildren = [];
 		if(battle.battleType == '1') {
