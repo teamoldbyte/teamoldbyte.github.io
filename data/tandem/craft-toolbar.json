@@ -287,8 +287,18 @@
 			},
 			{
 				"ask": "#1",
-				"tag": "진짜주어(부)",
+				"tag": "의미상주어(부)",
 				"selector": ".s[data-rc=\"s.s.\"]"
+			},
+			{
+				"ask": "#1",
+				"tag": "진주어(부)",
+				"selector": ".s[data-rc=\"r.s.\"],.s[data-rc=\"진주어\"]"
+			},
+			{
+				"ask": "#1",
+				"tag": "진목적어(부)",
+				"selector": ".o[data-rc=\"r.o.\"],.o[data-rc=\"진목적어\"]"
 			},
 			{
 				"ask": "#1",
