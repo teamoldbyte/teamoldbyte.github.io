@@ -443,7 +443,7 @@
 											{ 
 												"el": "label", 
 												"className": "col-auto text-fc-purple", 
-												"textContent": "동일 유형 배틀 수:"
+												"textContent": "동일 분류(배틀 타입+난이도+문법) 배틀 수:"
 											},
 											{ 
 												"el": "span", 
