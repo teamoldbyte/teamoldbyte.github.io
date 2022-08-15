@@ -415,17 +415,10 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 	-webkit-text-fill-color: transparent;
 }
 .total-egg-section .bucket-icon.bucket-3{
-	line-height: 93%;
-}
-.total-egg-section .bucket-icon.bucket-4{
 	line-height: 108%;
 }
 @media (max-width: 768px){
 	.total-egg-section .bucket-icon.bucket-3{
-		line-height: 101%;
-	}
-
-	.total-egg-section .bucket-icon.bucket-4{
 		line-height: 119%;
 	}
 }
@@ -447,11 +440,11 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 	content: "\f6e8";
 }
 .bucket-icon.bucket-3::before{
-	content: "\f01c";
+	content: "\f291";
 	vertical-align: bottom;
 }
 .bucket-icon.bucket-4::before{
-	content: "\f291";
+	content: "\f07a";
 	vertical-align: bottom;
 }
 .bucket-icon.bucket-5::before{
