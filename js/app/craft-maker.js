@@ -15,7 +15,7 @@
 	let staticCraftPanel, craftToolbarGroup = {}, 
 		battleAsks = [], battleTypeInfos = [], battleBtns = [], 
 		// 문법 카테고리 목록(캐싱)
-		categories = [], workbook_battleSource;
+		categories = [], workbook_battleSource,
 		// 체크박스 그룹화를 위한 시퀀스값
 		chkbxSeq = 0;
 	let _memberId;
@@ -110,8 +110,6 @@
 	})
 	// 에디터 메뉴 내의 토글아이콘들은 다른 토글아이콘을 체크해제한다.
 	.on('change', '.battle-maker [role=toolbar] [type=checkbox]', function() {
-		const maker = this.closest('.battle-maker');
-		const context = maker.querySelector('.battle-context');
 		if(!this.checked) {
 			return;
 		}
@@ -122,7 +120,6 @@
 		
 		const sel = getSelection();
 		if(!sel.isCollapsed) {
-			pushEditHistory(context);
 			wrapText(this.closest('.battle-maker'));
 		}
 	})
@@ -546,44 +543,55 @@
 		let sel = getSelection();
 		// 에디터에서 선택된 메뉴버튼
 		const chkdBtn = maker.querySelector('[role=toolbar] [type=checkbox]:checked');
+		
+		const REGEX_NOT_WHITESPACE_PUNCT = /[^\s,.!?;:…]/,
+			REGEX_STARTSWITH_WHITESPACE_PUNCT = /^(\s|[,.!?;:…])/,
+			REGEX_ENDSWITH_WHITESPACE_PUNCT = /(\s|[,.!?;:…])$/,
+			REGEX_SHORT_VERB = /('m|'re|'s|'d|'ll|'ve)$/;
 		if(!sel.isCollapsed && chkdBtn) {
-			if(sel.toString().trim() == maker.querySelector('.battle-context').textContent.trim()) return;
-			
-			pushEditHistory(maker.querySelector('.battle-context'));
+			const context = maker.querySelector('.battle-context');
+			if(sel.toString().trim() == context.textContent.trim()
+			|| !(8 & sel.anchorNode.compareDocumentPosition(context)
+				 & sel.focusNode.compareDocumentPosition(context))) return;
 			
 			const battleType = Number(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
 			
 			/* 선택 범위를 단어 단위로 선택되도록 자동 조절. 선택범위의 양끝 공백은 제거
 				배틀 1, 3 유형은 띄어쓰기가 아닌 apostrophe를 기준으로 범위를 지정할 수도 있어서 예외
 			*/
-			if(![1,3].includes(battleType)) {
-				// 드래그 선택 방향이 오른쪽->왼쪽이라면 방향을 뒤집는다.(아래의 로직 전개를 위해)
-				if(sel.anchorNode.compareDocumentPosition(sel.focusNode) == 2
-				|| (sel.anchorNode.compareDocumentPosition(sel.focusNode) == 0
-				&& sel.anchorOffset > sel.focusOffset)) {
-					sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
-				}
-				// 왼쪽에 선택할 글자가 있다면 추가선택
-				while(sel.anchorOffset > 0 
-				&& sel.anchorNode.textContent.charAt(sel.anchorOffset).match(/\S/)
-				&& sel.anchorNode.textContent.charAt(sel.anchorOffset -1).match(/\S/)) {
-					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset - 1, sel.focusNode, sel.focusOffset);
-				}
-				// 왼쪽 끝이 공백이면 왼쪽 범위를 축소
-				while(sel.toString().match(/^\s/)) {
-					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset + 1, sel.focusNode, sel.focusOffset);
-				}
-				// 오른쪽에 선택할 글자가 있다면 추가선택
-				while( sel.focusOffset < sel.focusNode.textContent.length - 1
-				&& sel.focusNode.textContent.charAt(sel.focusOffset - 1).match(/\S/) 
-				&& sel.focusNode.textContent.charAt(sel.focusOffset).match(/\S/)) {
-					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset + 1);
-				}
-				// 오른쪽 끝이 공백이면 오른쪽 범위를 축소
-				while(sel.toString().match(/\s$/)) {
-					sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset - 1);
-				}
+			// 드래그 선택 방향이 오른쪽->왼쪽이라면 방향을 뒤집는다.(아래의 로직 전개를 위해)
+			if(sel.anchorNode.compareDocumentPosition(sel.focusNode) == 2
+			|| (sel.anchorNode.compareDocumentPosition(sel.focusNode) == 0
+			&& sel.anchorOffset > sel.focusOffset)) {
+				sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
 			}
+			// 왼쪽에 선택할 글자가 있다면 추가선택
+			while(sel.anchorOffset > 0 
+			&& sel.anchorNode.textContent.charAt(sel.anchorOffset).match(REGEX_NOT_WHITESPACE_PUNCT)
+			&& sel.anchorNode.textContent.charAt(sel.anchorOffset -1).match(REGEX_NOT_WHITESPACE_PUNCT)
+			&& (![1,3].includes(battleType) || !sel.toString().trim().match(REGEX_SHORT_VERB))) {
+				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset - 1, sel.focusNode, sel.focusOffset);
+			}
+			// 왼쪽 끝이 공백이거나 구두점이면 왼쪽 범위를 축소
+			while(sel.toString().match(REGEX_STARTSWITH_WHITESPACE_PUNCT)) {
+				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset + 1, sel.focusNode, sel.focusOffset);
+			}
+			// 오른쪽에 선택할 글자가 있다면 추가선택
+			while( sel.focusOffset < sel.focusNode.textContent.length - 1
+			&& sel.focusNode.textContent.charAt(sel.focusOffset - 1).match(REGEX_NOT_WHITESPACE_PUNCT) 
+			&& sel.focusNode.textContent.charAt(sel.focusOffset).match(REGEX_NOT_WHITESPACE_PUNCT)
+			&& (![1,3].includes(battleType) || !(sel.focusNode.textContent.length > 2 
+					&& sel.focusNode.textContent.substring(sel.focusOffset, sel.focusOffset + 3).trim().match(REGEX_SHORT_VERB)))) {
+				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset + 1);
+			}
+			// 오른쪽 끝이 공백이거나 구두점이면 오른쪽 범위를 축소
+			while(sel.toString().match(REGEX_ENDSWITH_WHITESPACE_PUNCT)) {
+				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset - 1);
+			}
+			if(sel.toString().trim().length == 0) return;
+			
+			pushEditHistory(context);
+			
 			const wrapper = document.createElement('span');
 			wrapper.className = chkdBtn.value;
 			const range = sel.getRangeAt(0);
