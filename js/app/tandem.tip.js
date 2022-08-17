@@ -20,7 +20,7 @@
 		and_exampl = '</div><div class=\"col-5 example-image\">';
 	const tandemRules = [
 		`${rul_div}주어</b><br>(subject)${and_exampl}<span class=\"sem s inner cmnt-align-center example\" data-rc=\"S\" data-rc-min=\"S\">You</span></div><div class=\"col-4 my-auto\">subject의 약어로 S로 표시하고 주어부에 <span class=\"color-chip subj\">◼︎︎</span> 색상 적용</div></div>`,
-		`${rul_div}의미상주어</b><br>(sense subject)${and_exampl}<span class=\"sem s inner cmnt-align-center example\" data-rc=\"s.s.\" data-rc-min=\"s.s.\" data-gc=\"의미상 주어\">to change</span></div><div class=\"col-4 my-auto\">sense subject의 약어로 s.s.</div></div>`,
+		`${rul_div}의미상주어</b><br>(sense subject)${and_exampl}<span class=\"sem s inner cmnt-align-center example\" data-rc=\"s.s.\" data-rc-min=\"s.s.\" data-gc=\"의미상 주어\">for you</span></div><div class=\"col-4 my-auto\">sense subject의 약어로 s.s.</div></div>`,
 		`${rul_div}동사</b><br>(verb)${and_exampl}<span class=\"sem v inner cmnt-align-center example\" data-rc=\"V\" data-rc-min=\"V\">are</span></div><div class=\"col-4 my-auto\">verb의 약어로 V로 표시하고 동사부에 <span class=\"color-chip verb\">◼︎︎</span> 색상 적용</div></div>`,
 		`${rul_div}목적어</b><br>(object)${and_exampl}<span class=\"sem o inner cmnt-align-center example\" data-rc=\"O\" data-rc-min=\"O\">a dream</span></div><div class=\"col-4 my-auto\"></div></div>`,
 		`${rul_div}진목적어</b><br>(real object)${and_exampl}<span class=\"sem o inner cmnt-align-center example\" data-rc=\"r.o.\" data-rc-min=\"r.o.\">to solve the problem</span></div><div class=\"col-4 my-auto\">real object의 약어로 r.o.</div></div>`,
