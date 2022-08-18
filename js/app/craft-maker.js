@@ -471,7 +471,7 @@
 				{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도'}
 			]
 		};
-		[{text: '쉬움', value: 'E'},{text: '보통', value: 'N'},{text: '어려움', value: 'D'}]
+		[{text: '쉬움', value: 'A'},{text: '보통', value: 'B'},{text: '어려움', value: 'C'}]
 		.forEach(function(level, i) {
 			levelBtns.children.push({el: 'input', type: 'radio', autocomplete: 'off',
 				name: `btnRadioBattleLevel${now}`,
@@ -851,13 +851,13 @@
 	// 문장 난이도(E,N,D)와 문장길이로 상세난이도 반환
 	function calcDiffSpecific(diffLevel, engLength) {
 		let diffSpecificLevel;
-		if(diffLevel == 'E') {
+		if(diffLevel == 'A') {
 			if(engLength <= 30) {
 				diffSpecificLevel = '하1';
 			}else {
 				diffSpecificLevel = '하2';
 			}
-		}else if(diffLevel == 'N') {
+		}else if(diffLevel == 'B') {
 			if(engLength <= 70) {
 				diffSpecificLevel = '중1';
 			}else if(engLength <= 100) {
@@ -867,7 +867,7 @@
 			}else {
 				diffSpecificLevel = '중4';
 			}
-		}else if(diffLevel == 'D') {
+		}else if(diffLevel == 'C') {
 			if(engLength <= 150) {
 				diffSpecificLevel = '고1';
 			}else if(engLength <= 200) {
