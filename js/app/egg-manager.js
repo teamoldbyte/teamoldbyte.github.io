@@ -236,7 +236,7 @@
 					// 새로 획득한 에그가 있거나 버킷이 바뀌었으면 표시
 					if(newEggColors.length > 0 || prevLevel < bucketLevel) {
 						if(document.getElementById('newEggModal') == null)
-							document.body.appendChild(createElement(newEggModal));
+							document.body.prepend(createElement(newEggModal));
 						$('#newEggModal .modal-body .new-obj').remove();
 						
 						const newEggs = [];
