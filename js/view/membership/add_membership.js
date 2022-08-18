@@ -40,7 +40,7 @@ function pageinit(membershipCommand) {
 										{ el: 'input', type: 'text', id: 'inputPhone', className: 'form-control', placeholder: '예) 01012345678', autocomplete: 'off', pattern: '[0-9]{9,12}', value: membershipCommand.phone, 'aria-describedby': 'phoneHelpInline', required: true },
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 전화번호를 입력해 주십시오.' }
 									]},
-									{ el: 'div', classNAme: 'phone-text-section col-9 col-md-10 ms-auto my-0', children: [
+									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 										{ el: 'span', id: 'phoneHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '전화번호는 암호화 되니 반드시 숫자로 입력해 주세요.' }
 									]}
 								]},
@@ -147,7 +147,7 @@ function pageinit(membershipCommand) {
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
 												{ el: 'input', type: 'email', name: 'email', className: 'form-control', value: membershipCommand.email, 'aria-describedby': 'emailHelpInline', required: !loggedin, readOnly: true },
-												{ el: 'div', className: '"invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 이메일을 입력해 주십시오.' }
+												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 이메일을 입력해 주십시오.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 												{ el: 'span', id: 'emailHelpInline', className: 'form-text ms-2', textContent: '계정의 아이디로 사용될 이메일입니다.' }
@@ -161,7 +161,7 @@ function pageinit(membershipCommand) {
 												{ el: 'input', type: 'password', className: 'form-control', id: 'passwd', name: 'passwd', autocomplete: 'off', 'aria-describedby': 'passwordHelpInline', required: !loggedin, pattern: "[A-z0-9!+-./\u0022#$%&'()*:;?@\[\]^_`{|}~\\]{8,16}"/*, oninput: document.getElementById('passwdCheck').setAttribute('pattern',this.value);*/},
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.' }
 											]},
-											{ el: 'div', className: 'password-text-section col-9 col-md-10 ms-auto my-0', children: [
+											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 												{ el: 'span', id: 'passwordHelpInline', className: 'form-text ms-2', textContent: '생성될 계정의 비밀번호를 입력해 주세요.' }
 											]}
 										]},
@@ -173,7 +173,7 @@ function pageinit(membershipCommand) {
 												{ el: 'input', type: 'password', id: 'passwdCheck', className: 'form-control', autocomplete: 'off', 'aria-describedby': 'passwdCheckHelpInline', required: !loggedin },
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;위에서 입력한 비밀번호와 맞지 않습니다.' }
 											]},
-											{ el: 'div', className: 'password-text-section col-9 col-md-10 ms-auto my-0', children: [
+											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 												{ el: 'span', id: 'passwdCheckHelpInline', className: 'form-text ms-2', textContent: '위에서 입력한 비밀번호를 한번 더 입력해 주세요.'}
 											]}
 										]},
@@ -203,7 +203,7 @@ function pageinit(membershipCommand) {
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;성별을 선택해 주세요.'}
 											])
 											},
-											{ el: 'div', className: 'phone-text-section col-9 col-md-10 ms-auto my-0', children: [
+											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 												{ el: 'span', id: 'sexHelpInline', className: 'form-text ms-2', textContent: '성별을 선택해 주세요.'}
 											]}
 										]},
