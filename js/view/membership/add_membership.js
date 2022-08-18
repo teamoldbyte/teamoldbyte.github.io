@@ -313,7 +313,7 @@ function pageinit(membershipCommand) {
 		$(this).find('.btn-close').show();
 		this.querySelector('.payment-info .name').innerHTML = itemName.replace(/(-.+)/,'<span class="d-inline-block">$1</span>');
 		this.querySelector('.payment-info .price').innerHTML = price;
-		$('#totalAmount').val(price.replace(/[^0-9]/g,''));
+		$('#totalAmount').val(price.replace(/\D/g,''));
 		
 		if(loggedin) {
 			$('#phase-1,#phase-2').collapse('toggle');
@@ -321,6 +321,7 @@ function pageinit(membershipCommand) {
 	})
 	// 모달이 닫힐 때 초기화
 	.on('hide.bs.modal', '#done-info-modal', function(e) {
+		$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
 		clearTimeout(nextTimer);
 		document.querySelector('#phase-1 form').classList.remove('was-validated')
 		document.querySelector('#phase-1 form').reset();
@@ -337,8 +338,11 @@ function pageinit(membershipCommand) {
 			$('#done-info-modal').modal('hide');
 	})
 	.on('click', '#cancelPayment', function() {
-		if(confirm('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?')) 
+		if(confirm('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?')) {
+			$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
+			clearTimeout(nextTimer);
 			$('#done-info-modal').modal('hide');
+		} 
 	})
 	
 	// phase-1 시작
