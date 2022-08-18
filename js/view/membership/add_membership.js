@@ -287,9 +287,9 @@ function pageinit(membershipCommand) {
 					]},
 					{ el: 'div', className: 'modal-body', children: [
 						{ el: 'p', children: [
-							'해당 이메일은 이미 계정으로 ', { el: 'b', textContent: '사용 중'}, '인 이메일입니다.', { el: 'br'},
-							'본인의 계정이 맞으시다면 ', { el: 'b', textContent: '로그인 후, 후원 진행' }, '을 부탁드립니다.', { el: 'br'}, { el: 'br'},
-							'만약, 해당 계정의 ', { el: 'b', textContent: '비밀번호를 잊어버리신 경우' }, '는', { el: 'br', className: 'd-none d-md-block' },
+							'해당 E-mail은 이미 ', { el: 'b', textContent: 'fico 계정'}, '으로 등록되어 있습니다.', { el: 'br'},
+							'본인 계정일 경우 ', { el: 'b', textContent: '로그인 후 마이 페이지에서 연장' }, '해 주세요.', { el: 'br'}, { el: 'br'},
+							{ el: 'b', textContent: '비밀번호 재발급' }, '이나 ', { el: 'b', textContent: '계정 부정 사용 신고' }, '를 하려면', { el: 'br'},
 							'teamoldbyte@gmail.com 으로 문의 바랍니다.', { el: 'br'}
 						]}
 					]},
@@ -337,7 +337,7 @@ function pageinit(membershipCommand) {
 			$('#done-info-modal').modal('hide');
 	})
 	.on('click', '#cancelPayment', function() {
-		if(confirm('입금을 확인 중입니다. 가입을 취소하시겠습니까?\n(이미 입금을 실행하셨다면 teamoldbyte@gmail.com으로 문의해 주세요.)')) 
+		if(confirm('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?')) 
 			$('#done-info-modal').modal('hide');
 	})
 	
