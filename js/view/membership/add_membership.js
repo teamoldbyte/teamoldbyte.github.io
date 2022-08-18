@@ -341,6 +341,7 @@ function pageinit(membershipCommand) {
 		if(confirm('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?')) {
 			$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
 			clearTimeout(nextTimer);
+			$('#phase-1,#phase-2').collapse('toggle');
 			$('#done-info-modal').modal('hide');
 		} 
 	})
