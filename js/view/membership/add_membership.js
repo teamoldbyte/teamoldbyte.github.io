@@ -360,6 +360,7 @@ function pageinit(membershipCommand) {
 			$('.check-email-input').val(result ? '' : email).trigger('input');
 			$('#paymentForm').addClass('was-validated');
 			if(result) $('.check-modal-section').modal('show');
+			else alert('사용가능한 E-mail입니다. 가입 진행을 계속해 주세요.');
 		});
 		// ----------------------------------------------------
 	})
