@@ -5,6 +5,10 @@ function pageinit() {
 	const passageId = Number(sessionStorage.getItem('editingPassageId')),
 		workbookId = Number(sessionStorage.getItem('workbookId'));
 		
+	const sentenceSectionColor = getComputedStyle(document.querySelector('.one-sentence-unit-section')).backgroundColor;
+	
+	calcParaLengthToggleAddBtn();
+	
 	// [지문 추가하기로 이동]
 	$('#addPassageBtn').click(() =>
 		location.assign('/workbook/passage/add/' + ntoa(workbookId))
@@ -77,11 +81,6 @@ function pageinit() {
 	
 	// [문장 추가 블록 toggle]-----------------------------------------------------
 	$('.js-open-add-sentence').click(function() {
-		if(Array.from($('.one-sentence-unit-section .sentence-text').get(), sentence => sentence.textContent).join('').length >= 1500) {
-			if(confirm('지문의 크기가 너무 커서 문장을 추가할 수 없습니다.\n새 지문으로 등록하시겠습니까?')) {
-				location.assign('/workbook/passage/add/' + ntoa(workbookId));
-			}else return;
-		}
 		$(this).add($('.add-section')).slideToggle(100, () => $('.add-section textarea').focus());
 	});
 	// [문장 추가 취소]------------------------------------------------------------
@@ -112,18 +111,6 @@ function pageinit() {
 			$invalid.show();
 			$submitBtn.prop('disabled', true);
 			return;
-		}
-		else if($section.is('.add-section') 
-			&& Array.from($('.one-sentence-unit-section .sentence-text').get(), sentence => sentence.textContent).join('').length + edited.length >= 1500
-			|| $section.is('.edit-section') 
-			&& Array.from($(`.one-sentence-unit-section:not(:eq(${$section.closest('.one-sentence-unit-section').index('.one-sentence-unit-section')})) .sentence-text`).get(), sentence => sentence.textContent).join('').length + edited.length >= 1500) {
-			// 기존 지문 총 글자 수와 추가/수정하려는 문장의 글자수 합이 1500자 이상이라면 새 지문 등록으로 이동
-			if(confirm('지문의 크기가 너무 커서 문장을 추가할 수 없습니다.\n새 지문으로 등록하시겠습니까?')) {
-				location.assign('/workbook/passage/add/' + ntoa(workbookId));
-			}else {
-				$invalid.show();
-				$submitBtn.prop('disabled', true);
-			}
 		}else {
 			$invalid.hide();
 			$submitBtn.prop('disabled', false);
@@ -150,6 +137,7 @@ function pageinit() {
 				$('.js-cancel-add').trigger('click');
 				
 				const $sentenceList = $('.list-sentence-section');
+				const anims = [];
 				for(let i = 0, len = sentences.length; i < len; i++) {
 					const sentenceUnit = sentences[i];
 					const $sentenceBlock = $('.one-sentence-unit-section:last').clone();
@@ -159,9 +147,12 @@ function pageinit() {
 					$sentenceBlock[0].dataset.ordernum = sentenceUnit.orderNum;
 					$sentenceList.append($sentenceBlock);
 					alertMsg += '\n['+(i+1)+'] ' + sentenceUnit.eng;
+					anims.push($sentenceBlock[0]);
 				}
 				arrangeSentences();
+				calcParaLengthToggleAddBtn();
 				alert(alertMsg);
+				focusEffectSentence(anims);
 			}
 		}
 		
@@ -180,7 +171,7 @@ function pageinit() {
 
 		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
 		if(edited.length == 0 || edited.length > maxChars
-		|| edited.match(/[^(\u0020-\u007F|\u000A|\u000C|\u000D|\u0085|\u00A0|\u2028|\u2029|\u2018-\u201A|\u201C-\u201D)]/gi)) {
+		|| edited.match(/[^\u0020-\u007F\u0085\u00A0\u2028\u2029\u2018-\u201A\u201C-\u201D]/gi)) {
 			return;
 		}
 		// 수정 전과 동일하면 취소
@@ -212,6 +203,7 @@ function pageinit() {
 				let alertMsg = '문장이 아래와 같이 ' + sentences.length + '개로 나뉘었습니다.';
 				$sentenceSection.find('.edit-section').one('hidden.bs.collapse', function() {
 					$sentenceSection.hide(function() {
+						const anims = [];
 						for(let i = 0, len = sentences.length; i < len; i++) {
 							const sentenceUnit = sentences[i];
 							const $sentenceBlock = $sentenceSection.clone();
@@ -221,11 +213,14 @@ function pageinit() {
 							$sentenceBlock[0].dataset.ordernum = sentenceUnit.orderNum;
 							$sentenceSection.before($sentenceBlock);
 							alertMsg += '\n['+(i+1)+'] ' + sentenceUnit.eng;
+							anims.push($sentenceBlock[0]);
 						}
 						$sentenceSection.remove();
 						$('.one-sentence-unit-section').slideDown();
 						arrangeSentences();
+						calcParaLengthToggleAddBtn();
 						alert(alertMsg);
+						focusEffectSentence(anims);
 					});
 				});
 				$sentenceSection.find('.edit-section').collapse('hide');
@@ -235,6 +230,7 @@ function pageinit() {
 				$sentenceSection[0].dataset.sid = sentences[0].sentenceId;
 				$sentenceSection.find('.edit-section textarea').val(sentences[0].eng);
 				$sentenceSection.find('.edit-section').collapse('hide');
+				focusEffectSentence($sentenceSection[0]);
 			}
 		}
 		
@@ -258,11 +254,17 @@ function pageinit() {
 			$sentenceSection.slideUp(function(){
 				$(this).remove();
 				arrangeSentences();
+				calcParaLengthToggleAddBtn();
 			})
 		}
 	});
 	
 	// - - - - - - - - - - - Embeded functions - - - - - - - - - - - - - - - - -
+	// 문장섹션을 잠깐 강조 효과 적용
+	function focusEffectSentence(targets) {
+		anime({targets, duration: 1000, easing: 'linear', backgroundColor: ['#ffc107', sentenceSectionColor]});
+	}
+	
 	// 전체 문장을 orderNum을 기준으로 재정렬
 	function arrangeSentences() {
 		$('.list-sentence-section').html(
@@ -270,5 +272,13 @@ function pageinit() {
 				.sort((a, b) => a.dataset.ordernum - b.dataset.ordernum)
 				.each((i, el) => $(el).find('.numbering-text').text(i+1))
 		);
+	}
+	
+	// 전체 문장의 길이 계산하여 문장 추가 버튼과 지문 추가 버튼 토글하기
+	function calcParaLengthToggleAddBtn() {
+		const overflow  = Array.from($('.one-sentence-unit-section .sentence-text').get(), sentence => sentence.textContent).join('').length >= 1500;
+		
+		$('.exceed-max-notice')[overflow ? 'slideDown' : 'slideUp'](100);
+		$('.js-open-add-sentence')[overflow ? 'slideUp' : 'slideDown'](100);
 	}
 }
