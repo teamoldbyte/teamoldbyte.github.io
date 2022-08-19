@@ -52,3 +52,42 @@ function createElement(json) {
 	}
 	return element;
 }
+
+/** HTML 요소를 json 객체로 반환.
+최종적으로는 다시 JSON.stringify를 적용 후 사용.
+참고하는 용도이며, 오류는 있을 수 있음.
+ */
+function parseHTML(html) {
+	let fragment, json;
+	fragment = document.createElement('temp');
+	if(typeof html == 'string') {
+		fragment.innerHTML = html;
+	}else if(typeof html == 'object') {
+		fragment.appendChild(html.cloneNode(true));
+	}else return null;
+	json = Array.from(Array.from(fragment.childNodes).filter(c => [Node.TEXT_NODE,Node.ELEMENT_NODE].includes(c.nodeType)), c => {
+		if(c.nodeType == Node.TEXT_NODE) {
+			const text = c.textContent;
+			if(text.match(/\S/)) return text;
+			else return null;
+		}
+		else {
+			// 태그명 추출
+			const el = { "el": c.nodeName.toLowerCase()};
+			// 속성들 추출
+			for(let attr of c.attributes) {
+				el[attr.name] = attr.value || true;
+			}
+			// 자식 노드 추출
+			if(c.hasChildNodes) {
+				const children = Array.from(c.childNodes, cc => parseHTML(cc)).filter(cc => {
+					return cc != null && (cc['length'] == undefined || cc['length'] > 0)
+				});
+				if(children.length > 0) el['children'] = children;
+			}
+			return el;
+		}
+	});
+	if(json.length == 1) json = json[0];
+	return json;
+}
