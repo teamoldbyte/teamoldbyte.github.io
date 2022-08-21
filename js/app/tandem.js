@@ -493,7 +493,7 @@
 					htmlTag += ` data-mfd="${semanticSequence}-${modificandIndex}"`;
 
 				if (tag.rcomment)
-					htmlTag += ` data-rc="${(tag.rcomment.indexOf('.') > 0) ? tag.rcomment : tag.rcomment.substring(0, 1).toUpperCase()}"`;
+					htmlTag += ` data-rc="${tag.rcomment.match(/\W/) ? tag.rcomment : tag.rcomment.substring(0, 1).toUpperCase()}"`;
 
 				if (tag.gcomment)
 					htmlTag += ` data-gc="${tag.gcomment}"`;
