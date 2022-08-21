@@ -165,17 +165,17 @@
 		const battleTypeSelector = 'data-battle-type';
 		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
 		const diffLevel = addSection.querySelector('.battle-diffLevel-section input:checked').value;
+		const ask = addSection.querySelector('.ask-select').value.trim();
+		const askTag = addSection.querySelector('.askTag').value.trim();
+		const comment = addSection.querySelector('.comment').value.trim();
+		const source = addSection.querySelector('.source').value.trim();
 		const engLength = battleContext.textContent.trim().length;
 		const command = {
+			categoryId, battleType, ask, askTag, comment, source, diffLevel, engLength,
 			sentenceId: $(battlePanel).data('sentenceId'),
-			categoryId, battleType,
 			memberId: _memberId,
 			example: '', answer: '',
-			ask: addSection.querySelector('.ask-select').value.trim(),
-			askTag: addSection.querySelector('.askTag').value.trim(),
-			comment: addSection.querySelector('.comment').value.trim(),
-			source: addSection.querySelector('.source').value.trim(),
-			diffLevel, engLength, diffSpecificLevel: calcDiffSpecific(diffLevel, engLength)
+			diffSpecificLevel: calcDiffSpecific(diffLevel, engLength)
 		}
 				
 		// 배틀 유형별 example, answer 정보 구성.
@@ -232,6 +232,7 @@
 				$('#craftResultModal .battle-id').text(response.battleId);
 				$('#craftResultModal .group-count').text(response.groupCount);
 				$('#craftResultModal').modal('show');
+				
 				
 				// 워크북 내에서 등록한 경우 배틀 출처 기본값 지정.
 				if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
@@ -392,10 +393,10 @@
 					return;
 				}
 				$.getJSON(`/craft/battle/tag/search/${term}`, function(data) {
-					cachedAskTags[term] = data;
+					if(data.length > 0) cachedAskTags[term] = data;
 					res(data);
 				}).fail(() => {
-					cachedAskTags[term] = null;
+					//cachedAskTags[term] = null;
 					res([]);
 				})
 			}
@@ -409,10 +410,10 @@
 					return;
 				}
 				$.getJSON(`/craft/battle/source/search/${term}`, function(data) {
-					cachedSources[term] = data;
+					if(data.length > 0) cachedSources[term] = data;
 					res(data);
 				}).fail(() => {
-					cachedSources[term] = null;
+					//cachedSources[term] = null;
 					res([]);
 				})
 			}
