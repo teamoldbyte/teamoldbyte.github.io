@@ -603,6 +603,9 @@ text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
 	.egg-detail-section .egg-text-info-section .name{
 		margin-bottom: 3rem;
 	}
+	.egg-detail-section .egg-text-info-section .writer{
+		margin-bottom: 0;
+	}
 	.egg-detail-section .egg-text-info-section .footer-text{
 		position: relative;
 		margin-top: 3rem;
