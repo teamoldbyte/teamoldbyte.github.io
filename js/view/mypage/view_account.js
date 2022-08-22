@@ -2,6 +2,7 @@
 @author LGM
  */
 function pageinit(tray, normalEggCount, goldEggCount) {
+	const MOBILE_WIDTH_MAX_BOUNDARY = 576;
 	let eggInfoList = [];
 	$.getJSON('https://static.findsvoc.com/data/egg/egg-info.json', list => {
 		eggInfoList = list;
@@ -148,6 +149,13 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		const selectedEgg = this.querySelector('.egg');
 		const eggIndex = parseInt((selectedEgg.className.match(/egg-(\d+)/)||{ 1 : 10 })[1]) - 1;
 		if(selectedEgg.matches('.uncollected')) return;
+		
+		if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY) {
+			if(window.history.state != 'eggModal')
+				window.history.pushState('eggModal', 'eggModal');
+			$('html').addClass('overflow-hidden');
+		}
+		
 		// 골드 여부
 		const isGold = selectedEgg.matches('.gold');
 		// 골드 여부에 따라 표시여부가 달라지는 항목들 선택자
@@ -177,7 +185,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				size: 1, distance: 100, colors: ['#FFFFFF'], interval: 500, count: 5, particles: 5
 			});
 		// 데스크톱용 상세보기 위치 설정
-		if(window.innerWidth >= 576) {
+		if(window.innerWidth >= MOBILE_WIDTH_MAX_BOUNDARY) {
 			if(e.currentTarget.getBoundingClientRect().x > window.innerWidth / 2) {
 				detail.style.left = 'unset';
 				detail.style.right = `${document.body.clientWidth - this.offsetLeft - this.offsetWidth}px`;
@@ -197,10 +205,19 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	})
 	// [에그 상세보기에서 커서를 떼면 닫기]---------------------------------------------
 	.on('mouseleave', '.egg-detail-section', function(e) {
+		if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY) return;
 		e.stopPropagation();
 		e.stopImmediatePropagation();
 		$('.egg-detail-section').hide();
 	})
+	if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY) {
+		window.addEventListener('popstate', () => {
+			if(history.state != 'eggModal') {
+				$('.egg-detail-section').hide(100);
+				$('html').removeClass('overflow-hidden');
+			} 
+		})
+	}
 
 	// [에그 내역 조회]------------------------------------------------------------
 	$('#accountEventTable').one('show.bs.collapse', function() {
@@ -247,7 +264,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 								]} : ''
 							]},
 							// 날짜
-							{ el: 'td', innerText: new Date(myEvent.txDate).format('yyyy-MM-dd(e) HH:mm') }
+							{ el: 'td', innerText: new Date(myEvent.txDate).format('yyyy-MM-dd(e)') }
 						]
 					});
 			}
@@ -259,6 +276,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			const startNum = Math.floor(currPage / 10) * 10 + 1;
 			const endNum = Math.min(startNum + 9, totalPages);
 			const pageitems = [];
+			
 			// 이전 버튼
 			if(startNum > 10) pageitems.push({
 				el: 'li', className: 'page-item', ariaLabel: 'Previous', children: [
@@ -350,7 +368,14 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			})
 		}
 	});
-	
+	// 모바일 화면일 경우 에그 내역 페이지네이션을 작게
+	function fitWindowSize() {
+		const isMobileSize = window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY;
+		$('#accountEventPagination').toggleClass('pagination-sm', isMobileSize);
+		$('#accountEventList').toggleClass('align-middle text-sm', isMobileSize);
+	}
+	fitWindowSize();
+	window.addEventListener('resize', fitWindowSize);
 	
 	document.body.append(createElement([
 		{ el: 'div', className: 'bucket-detail-section modal', id: 'bucket-modal', tabIndex: '-1', children: [
@@ -367,12 +392,17 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			]}
 		]},
 		{ el: 'div', className: 'egg-detail-section' + (window.innerWidth < 576 ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
-			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: () => $('.egg-detail-section').hide(100) },
+			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: () => {
+				if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY && window.history.state == 'eggModal') {
+					window.history.back();
+				}else {
+					$('.egg-detail-section').hide(100);
+				}} },
 			{ el: 'div', className: 'row g-0', children: [
 				{ el: 'div', className: 'col-12 col-md-8', children: [
 					{ el: 'div', className: 'egg-wrapper', children: [
 						{ el: 'div', className: 'shadow', children: [
-							{ el: 'div', className: 'main' },
+							//{ el: 'div', className: 'main' },
 							{ el: 'div', className: 'secondary'}
 						]},
 						{ el: 'div', className: 'egg', children: [
@@ -389,7 +419,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					{ el: 'span', className: 'desc' },
 					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' },
 					{ el: 'div', className: 'footer-text', children: [
-						{ el: 'span', className: 'count-text', children: [
+						{ el: 'span', className: 'count-text mb-0', children: [
 							'Hatching D-Day : ',
 							{ el: 'span', className: 'egg-count' },
 							' left.'
