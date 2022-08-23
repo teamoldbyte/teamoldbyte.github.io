@@ -226,6 +226,12 @@
 			contentType: 'application/json',
 			data: JSON.stringify(command),
 			success: function(response) {
+				// 태그 캐시 갱신
+				pushToCache(askTag, cachedAskTags);
+				// 출처 캐시 갱신
+				pushToCache(source, cachedSources);
+				
+				
 				if(!document.getElementById('craftResultModal')) {
 					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
 				}
@@ -385,43 +391,31 @@
 		$(panelInstance).find('.ask-select').trigger('change');
 		
 		// 배틀 태그(askTag)에 제시어 기능 적용
-		$(panelInstance).find('.askTag').autocomplete({
-			minLength: 1, delay: 50, source: function(req, res) {
-				const term = req.term && req.term.trim();
-				if(term in cachedAskTags) {
-					res(cachedAskTags[term]);
-					return;
-				}
-				$.getJSON(`/craft/battle/tag/search/${term}`, function(data) {
-					if(data.length > 0) cachedAskTags[term] = data;
-					res(data);
-				}).fail(() => {
-					//cachedAskTags[term] = null;
-					res([]);
-				})
-			}
-		})
 		// 배틀 출처(source)에 제시어 기능 적용
-		$(panelInstance).find('.source').autocomplete({
-			minLength: 1, delay: 50, source: function(req, res) {
-				const term = req.term && req.term.trim();
-				if(term in cachedSources) {
-					res(cachedSources[term]);
-					return;
+		$(panelInstance).find('.askTag, .source').each(function() {
+			const ajaxURL = `/craft/battle/${this.matches('.askTag') ? 'tag' : 'source'}/search/{}`;
+			const cacheList = this.matches('.askTag') ? cachedAskTags : cachedSources;
+			$(this).autocomplete({
+				minLength: 1, delay: 50, source: function(req, res) {
+					const term = req.term && req.term.trim();
+					if(term in cacheList) {
+						res(cacheList[term]);
+						return;
+					}
+					$.getJSON(ajaxURL.replace('{}',term), function(data) {
+						if(data.length > 0) cacheList[term] = data.sort();
+						res(data);
+					}).fail(() => {
+						res([]);
+					})
 				}
-				$.getJSON(`/craft/battle/source/search/${term}`, function(data) {
-					if(data.length > 0) cachedSources[term] = data;
-					res(data);
-				}).fail(() => {
-					//cachedSources[term] = null;
-					res([]);
-				})
-			}
+			})
 		})
 		if(workbook_battleSource) {
 			panelInstance.querySelector('input.source').value = workbook_battleSource;
 		}
 	}
+	
 	
 	/** 배틀 문제 생성.
 	@param container 에디터가 들어갈 div
@@ -849,6 +843,23 @@
 		context.closest('.battle-maker').querySelector('[role=toolbar] [value="undo"]').disabled = false;
 	}
 	
+	/** 키워드를 캐시에 추가, 캐시를 정렬
+	 */
+	function pushToCache(keyword, cacheList) {
+		if(keyword.length > 0) {
+			for(let i = 0, len = keyword.length; i < len; i++) {
+				for(let j = i + 1; j <= len; j++) {
+					const term = keyword.substring(i, j);
+					if(!(term in cacheList)) 
+						cacheList[term] = [];
+					if(!cacheList[term].includes(keyword))
+						cacheList[term].push(keyword);
+					cacheList[term].sort();
+				}
+			}
+		}
+	}
+	
 	// 문장 난이도(E,N,D)와 문장길이로 상세난이도 반환
 	function calcDiffSpecific(diffLevel, engLength) {
 		let diffSpecificLevel;
@@ -880,5 +891,5 @@
 		return diffSpecificLevel;
 	}
 	
-	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel });
+	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, });
 })(jQuery, window, document);
