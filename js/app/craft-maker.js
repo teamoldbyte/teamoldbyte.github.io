@@ -99,7 +99,7 @@
 		
 		const makerContainer = this.closest('.add-battle-section').querySelector('.craft-maker-container');
 		
-		attachBattleMaker(makerContainer, semanticResult, this.value)
+		attachBattleMaker(makerContainer, semanticResult, parseInt(this.value));
 	})
 	// 에디터 메뉴의 질문(ask)을 선택하면 태그(tag) 프리셋값을 설정한다.
 	.on('change', '.ask-select', function() {
@@ -443,11 +443,12 @@
 		appendToolbar(battleType, makerDiv);
 		// 배틀 유형별 질문 표시
 		appendAskSelect(battleType, asks, makerDiv);
+		if([1,2].includes(battleType)) {
+			const selectedAsk = makerDiv.closest('.add-battle-section').querySelector('.ask-select');
+			$(selectedAsk).trigger('change');
+		}			
 		// 수정 영역 표시
 		appendContext(semanticsDiv, makerDiv);		
-		// 
-		const selectedAsk = makerDiv.closest('.add-battle-section').querySelector('.ask-select');
-		$(selectedAsk).trigger('change');
 	}
 	
 	/** 주어진 버튼 그룹을 툴바에 넣어서 에디터에 탑재
