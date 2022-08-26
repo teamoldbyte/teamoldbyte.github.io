@@ -37,7 +37,7 @@ function pageinit(membershipCommand) {
 										{ el: 'label', htmlFor: 'inputPhone', className: 'col-form-label text-smd fw-bold', textContent: '전화번호' }
 									]},
 									{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-										{ el: 'input', type: 'text', id: 'inputPhone', className: 'form-control', placeholder: '예) 01012345678', autocomplete: 'off', pattern: '[0-9]{9,12}', value: membershipCommand.phone, 'aria-describedby': 'phoneHelpInline', required: true },
+										{ el: 'input', type: 'text', id: 'inputPhone', name: 'phone', className: 'form-control', placeholder: '예) 01012345678', autocomplete: 'off', pattern: '[0-9]{9,12}', value: membershipCommand.phone, 'aria-describedby': 'phoneHelpInline', required: true },
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 전화번호를 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
