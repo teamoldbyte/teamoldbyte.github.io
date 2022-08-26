@@ -478,7 +478,13 @@
 				className: 'col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico'});
 		})
 		appendClassifiedElement(levelBtns, maker);
+		
+		const categorySelect = maker.closest('.add-battle-section').querySelector('.battle-category-section select')
 		if(battleType == 5) {
+			// 5유형의 배틀은 '어순'을 기본 문법 카테고리로 선택
+			categorySelect.value = '880000';
+			$(categorySelect).trigger('click')
+			// 5유형의 배틀은 해석을 선택하는 영역을 추가(ask로 지정됨)
 			maker.append(createElement({
 				el: 'div', className: 'col-12 col-md-3 row',
 				children: [
@@ -489,6 +495,11 @@
 					})}
 				]
 			}))
+		}else {
+			// 5유형 외의 배틀은 문법 카테고리를 첫 번째 것으로 선택
+			if(categorySelect.value == '880000') {
+				categorySelect.value = '100000';
+			}
 		}
 	}
 	/** 주어진 질문 목록을 에디터에 설정
