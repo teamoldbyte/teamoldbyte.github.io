@@ -767,14 +767,18 @@
 			});
 		}else if(battle.battleType == '2') {
 		/* 수식어 찾기.
-			answer = [[수식어start,수식어end],[피수식어start,피수식어end]]
+			answer = [[[수식어start,수식어end],[수식어start,수식어end],...],[[피수식어start,피수식어end],[피수식어start,피수식어end],...]]
 		 */
-			answers.sort(sortByPosition).forEach((answer, j, arr) => {
+		 	const [ modifiers, modificands ] = answers;
+		 	// answerArr = [[start,end,class],[start,end,class],...]
+		 	const answerArr = Array.from(modifiers, modifier => modifier.concat('modifier'))
+	 						.concat(Array.from(modificands, modificand => modificand.concat('modificand')));
+			answerArr.sort(sortByPosition).forEach((answer, j, arr) => {
 				let leftStr = eng.substring(offsetPos, answer[0]);
 				if(leftStr) contextChildren.push(leftStr);
 				contextChildren.push({
 					el: 'span',
-					className: j == 0 ? 'modifier' : 'modificand', 
+					className: answer[2], 
 					textContent: eng.substring(answer[0],answer[1])
 				});
 				if(j == arr.length - 1 && answer[1] < eng.length) {
