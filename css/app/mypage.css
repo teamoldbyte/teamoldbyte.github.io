@@ -78,8 +78,9 @@
 	width: 18%;
 	margin: 1.25% auto;
 	padding: 1rem 0;
+	height: 13.5rem;
 	position: relative;
-	background-color: rgba(241, 241, 241, 0.4);
+	background-color: #f9f9f9;
 }
 .egg-info:nth-child(5n-4){
 	margin-left: 0;
