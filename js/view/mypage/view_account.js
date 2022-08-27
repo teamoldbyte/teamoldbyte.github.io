@@ -8,12 +8,19 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		eggInfoList = list;
 	})
 	// [보유 에그 표시]------------------------------------------------------------
-	const eggDOMs = []
+	const eggInfos = document.querySelectorAll('.egg-dimention-section .egg-info');
 	for(let i = 0; i < 9; i++) {
-		eggDOMs.push({ el: 'div', className: 'egg-info', role: tray[i] == 0 ? null : 'button', children: [
+		if(tray[i] > 0) eggInfos[i].role = 'button';
+		let eggClass = 'egg';
+		if(tray[i] == 0) eggClass += ' uncollected';
+		else {
+			eggClass += ` egg-${i + 1}`;
+			if(i > 4) eggClass += ' metallic';
+		}
+		eggInfos[i].appendChild(createElement([
 			// 에그 그래픽 영역
 			{ el: 'div', className: 'egg-wrapper m-auto', style: 'transform: scale(0)', children: [
-				{ el: 'div', className: `egg${tray[i] == 0 ? ' uncollected' : (' egg-' + (i + 1) + (i > 4 ? ' metallic' : ''))}`, children: [
+				{ el: 'div', className: eggClass, children: [
 					{ el: 'div', className: 'fill' },
 					{ el: 'div', className: 'shading' },
 					{ el: 'div', className: 'key' },
@@ -24,10 +31,10 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			{ el: 'div', className: 'egg-count-section text-center mt-2', children: [
 				{ el: 'span', className: 'egg-count', innerText: tray[i] > 0 ? tray[i] : '' }
 			]}
-		]});
+		]))
 	}
 	// 골드 추가
-	eggDOMs.push({ el: 'div', className: 'egg-info', role: 'button', children: [
+	eggInfos[9].appendChild(createElement([
 		{ el: 'div', className: 'egg-wrapper m-auto', style: 'transform: scale(0)', children: [
 			{ el: 'div', className: 'egg metallic gold', children: [
 				{ el: 'div', className: 'fill' },
@@ -39,8 +46,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		{ el: 'div', className: 'egg-count-section text-center mt-2', children: [
 			{ el: 'span', className: 'egg-count', innerText: goldEggCount }
 		]}
-	]});	
-	document.querySelector('.egg-dimention-section').append(createElement(eggDOMs));
+	]))
 	// 에그를 하나씩 표시
 	anime({
 		targets: '.egg-dimention-section .egg-info .egg-wrapper',
@@ -101,21 +107,21 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			{ el: 'div', className: 'col-2 my-auto text-center' }
 		]});
 
-	const bucketDOMs = [];
-	const bucketStatus = document.querySelector('.total-egg-section');
 	// 총 9개의 버킷 표시
+	const bucketJSONs = [];
+	let restCount = normalEggCount, count;
 	for(let i = 0; i < 9; i++) {
-		const rest = (normalEggCount - bucketSize * i);
-		const count = (rest >= bucketSize) ? bucketSize 
-					: (rest > 0) ? rest : 0;
-		const bucket = createElement({
+		if(restCount / bucketSize >= 1) count = bucketSize;
+		else count = Math.max(0, restCount % bucketSize);
+		restCount -= bucketSize;
+		bucketJSONs.push({
 			el: 'div', className: `bucket-icon position-relative bucket-${bucketLevel}`,
 			role: 'button', 'data-bs-toggle': 'tooltip', 'data-count': count,
 			title: `${count}/${bucketSize}`
-		})
-		bucketDOMs.push(bucket);
-		bucketStatus.append(bucket);
+		});
 	}
+	document.querySelector('.total-egg-section').appendChild(createElement(bucketJSONs));
+	const bucketDOMs = document.querySelectorAll('.total-egg-section .bucket-icon');
 	// 버킷을 차례대로 채워나감
 	const buckettimeline = anime.timeline({ duration: 500, easing: 'linear' })
 	setTimeout(() => {
@@ -164,12 +170,20 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		$(detail).find(selectiveInfo).toggle(!isGold);
 		
 		// 에그 종류에 따른 클래스 추가
-		detail.querySelector('.egg').className = 
-			`egg${eggIndex < 9 ? tray[eggIndex] == 0 ? ' uncollected' : (' egg-' + (eggIndex + 1) + (eggIndex > 4 ? ' metallic' : '')) : ' metallic gold'}`;
+		let eggClass = 'egg';
+		if(tray[eggIndex] == 0) eggClass += 'uncollected';
+		else {
+			eggClass += ` egg-${eggIndex + 1}`;
+			if(eggIndex > 4) eggClass += ' metallic';
+			if(eggIndex == 9) eggClass += ' gold';
+		} 
+		detail.querySelector('.egg').className = eggClass;
 		// 에그 이름
-		const eggClass = eggIndex < 5 ? 'pastel' : eggIndex < 9 ? 'shining' : 'gold';
+		let eggBadgeClass = 'pastel';
+		if(eggIndex == 9) eggBadgeClass = 'gold';
+		else if(eggIndex > 4) eggBadgeClass = 'shining';
 		detail.querySelector('.egg-text-info-section .name').innerHTML 
-			= `<span class="badge egg-sort ${eggClass}">name</span>` + eggInfoList[eggIndex].name;
+			= `<span class="badge egg-sort ${eggBadgeClass}">name</span>` + eggInfoList[eggIndex].name;
 		// 에그 부화 d-day
 		if(!isGold) 
 			detail.querySelector('.egg-text-info-section .egg-count').textContent 
@@ -320,7 +334,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			const itemName = $item.data('itemname');
 			const price = $item.next('.membership-block').find('.price').text();
 			
-			$('#totalAmount').val(price.replace(/[^0-9]/g,''));
+			$('#totalAmount').val(price.replace(/\D+/g,''));
 			orderItemList = [$item.val()];
 			$('#phase-2 .payment-info .name').text(itemName);
 			$('#phase-2 .payment-info .price').text(price);
