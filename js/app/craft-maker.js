@@ -161,7 +161,7 @@
 		const addSection = this.closest('.add-battle-section');
 		const battlePanel = addSection.closest('.battle-section-panel');
 		const battleContext = addSection.querySelector('.battle-context');
-		const categoryId = Number(addSection.querySelector('.battle-category-section select').value);
+		const categoryId = parseInt(addSection.querySelector('.battle-category-section select').value);
 		const battleTypeSelector = 'data-battle-type';
 		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
 		const diffLevel = addSection.querySelector('.battle-diffLevel-section input:checked').value;
@@ -187,9 +187,9 @@
 				command.answer = JSON.stringify(findPositions(battleContext, '.answer'));
 				break;
 			case '2':
-				// [수식어 위치, 피수식어 위치]
-				command.answer = JSON.stringify([findPositions(battleContext, '.modifier')[0],
-						  findPositions(battleContext, '.modificand')[0]]);
+				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
+				command.answer = JSON.stringify([ findPositions(battleContext, '.modifier'),
+						  						findPositions(battleContext, '.modificand') ]);
 				break;
 			case '3':
 				let blank = battleContext.querySelector('.pick-right');
@@ -198,20 +198,29 @@
 					return;
 				}
 				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
-				command.example = JSON.stringify([findPositions(battleContext, '.pick-right')[0],
-							blank.textContent.trim(), blank.dataset.wrong.trim()]);
+				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
+												blank.textContent.trim(), blank.dataset.wrong.trim() ]);
 				// [정답 텍스트]
-				command.answer = JSON.stringify([blank.textContent.trim()]);
+				command.answer = JSON.stringify([ blank.textContent.trim() ]);
 				break;
 			case '4':
 				let wrong = battleContext.querySelector('.answer-wrong');
+				if(battleContext.querySelector('.option') == null) {
+					alert('보기 어구를 선택해 주세요.');
+					return;					
+				}
 				// [보기 위치1, 보기 위치2, ...]
 				command.example = JSON.stringify(findPositions(battleContext, '.option, .answer-wrong'));
 				// [정답 위치, 정답 텍스트, 오답 텍스트]
-				command.answer = JSON.stringify([findPositions(battleContext, '.answer-wrong')[0],
-							wrong.textContent.trim(), wrong.dataset.wrong.trim()]);
+				command.answer = JSON.stringify([ findPositions(battleContext, '.answer-wrong')[0], 
+												wrong.textContent.trim(), wrong.dataset.wrong.trim() ]);
 				break;
 			case '5':
+				if(Array.from(battleContext.querySelectorAll('.option'), opt => opt.textContent).join('').replace(/\W/g,'')
+				!= battleContext.textContent.replace(/\W/g,'')) {
+					alert('보기를 모두 더하면 원문이 되도록 선택해 주세요.');
+					return;
+				}
 				// [보기 위치1, 보기 위치2, ...]
 				command.example = JSON.stringify(findPositions(battleContext, '.option'));
 				// select에서 한글해석 선택
@@ -220,6 +229,7 @@
 			default: break;
 		}
 		
+		// (ajax) 배틀 등록
 		$.ajax({
 			url: '/craft/battle/add',
 			type: 'POST',
@@ -272,7 +282,7 @@
 				else {
 					// 기존 유형 그룹에 추가
 					const battleCountBlock = battleGroupBtn.querySelector('.battle-count');
-					battleCountBlock.textContent = Number(battleCountBlock.textContent) + 1;
+					battleCountBlock.textContent = parseInt(battleCountBlock.textContent) + 1;
 					battleGroupBlock = document.querySelector(battleGroupBtn.dataset.bsTarget);
 				}
 				const newBattleBlock = createElement(newBattle)
@@ -294,7 +304,7 @@
 			alert('배틀이 삭제되었습니다.');
 			battleBlock.remove();
 			const counter = battleGroupBtn.querySelector('.battle-count');
-			const decreased = Number(counter.textContent) - 1;
+			const decreased = parseInt(counter.textContent) - 1;
 			if(decreased > 0) {
 				counter.textContent = decreased; 
 			}else {
@@ -441,6 +451,14 @@
 		}
 		// 배틀 유형별 툴바 표시
 		appendToolbar(battleType, makerDiv);
+		
+		// 문장 길이에 따라 난이도 선택을 제한( engLength > 80: 중↑, engLength > 150: 상)
+		const engLength = semanticsDiv.textContent.length;
+		makerDiv.querySelector('.battle-level-select[value="A"]').disabled = engLength > 80;
+		makerDiv.querySelector('.battle-level-select[value="B"]').disabled = engLength > 150;
+		makerDiv.querySelector('.battle-level-select[value="B"]').checked = engLength > 80;
+		makerDiv.querySelector('.battle-level-select[value="C"]').checked = engLength > 150;
+		
 		// 배틀 유형별 질문 표시
 		appendAskSelect(battleType, asks, makerDiv);
 		if([1,2].includes(battleType)) {
@@ -561,7 +579,13 @@
 			|| !(8 & sel.anchorNode.compareDocumentPosition(context)
 				 & sel.focusNode.compareDocumentPosition(context))) return;
 			
-			const battleType = Number(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
+			const battleType = parseInt(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
+			
+			// 배틀 3,4 유형에 정답을 두 개 이상 선택하려는 경우 취소 
+			if([3,4].includes(battleType) && chkdBtn.value.match(/pick-right|answer-wrong/) && context.getElementsByClassName(chkdBtn.value).length > 0) {
+				alert('이 유형의 배틀은 복수 정답을 허용하지 않습니다.\n기존 정답을 눌러 지워 주세요.');
+				return;
+			}
 			
 			/* 선택 범위를 단어 단위로 선택되도록 자동 조절. 선택범위의 양끝 공백은 제거
 				배틀 1, 3 유형은 띄어쓰기가 아닌 apostrophe를 기준으로 범위를 지정할 수도 있어서 예외
@@ -607,7 +631,7 @@
 			range.insertNode(wrapper);
 			sel.removeAllRanges();
 			
-			if(wrapper.matches('.pick-right,.answer-wrong')) {
+			if(chkdBtn.value.match(/pick-right|answer-wrong/)) {
 				const wrong = prompt(`${wrapper.textContent}의 오답을 입력하세요.`);
 				if(wrong) {
 					wrapper.dataset.wrong = wrong;
