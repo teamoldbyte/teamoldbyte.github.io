@@ -170,13 +170,9 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		$(detail).find(selectiveInfo).toggle(!isGold);
 		
 		// 에그 종류에 따른 클래스 추가
-		let eggClass = 'egg';
-		if(tray[eggIndex] == 0) eggClass += 'uncollected';
-		else {
-			eggClass += ` egg-${eggIndex + 1}`;
-			if(eggIndex > 4) eggClass += ' metallic';
-			if(eggIndex == 9) eggClass += ' gold';
-		} 
+		let eggClass = `egg egg-${eggIndex + 1}`;
+		if(eggIndex > 4) eggClass += ' metallic';
+		if(eggIndex == 9) eggClass += ' gold';
 		detail.querySelector('.egg').className = eggClass;
 		// 에그 이름
 		let eggBadgeClass = 'pastel';
