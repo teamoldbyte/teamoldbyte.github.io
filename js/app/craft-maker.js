@@ -29,7 +29,7 @@
 		battleTypeInfos = json.battleTypeInfos;
 		battleBtns = json.commonEditorBtns;
 	});
-	let cachedAskTags = {}, cachedSources = {}; // 검색어 캐시 
+	let cachedAskTags = {}, cachedSources = {}, cachedCateAskTagMap = {}; // 검색어 캐시 
 		
 	let craftToolbar = createElement({
 		el: 'div', 
@@ -107,6 +107,11 @@
 		const tagInput = this.closest('.add-battle-section').querySelector('.askTag');
 		if(tag) tagInput.value = tag;
 		else tagInput.value = '';
+	})
+	// 문법 카테고리 값을 변경하면 동일 문법에 대한 이전 askTag값을 사용. (내역이 없을 경우 빈 값)
+	.on('change', '.battle-category-section select', function() {
+		this.closest('.add-battle-section').querySelector('.askTag').value 
+		= cachedCateAskTagMap[parseInt(this.value)] || '';
 	})
 	// 에디터 메뉴 내의 토글아이콘들은 다른 토글아이콘을 체크해제한다.
 	.on('change', '.battle-maker [role=toolbar] [type=checkbox]', function() {
@@ -240,7 +245,8 @@
 				pushToCache(askTag, cachedAskTags);
 				// 출처 캐시 갱신
 				pushToCache(source, cachedSources);
-				
+				// 카테고리-태그 갱신
+				cachedCateAskTagMap[categoryId] = askTag;
 				
 				if(!document.getElementById('craftResultModal')) {
 					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
