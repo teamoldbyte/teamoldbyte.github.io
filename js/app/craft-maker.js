@@ -917,22 +917,22 @@
 				diffSpecificLevel = '하2';
 			}
 		}else if(diffLevel == 'B') {
-			if(engLength <= 70) {
+			if(engLength <= 50) {
 				diffSpecificLevel = '중1';
-			}else if(engLength <= 100) {
+			}else if(engLength <= 70) {
 				diffSpecificLevel = '중2';
-			}else if(engLength <= 150) {
+			}else if(engLength <= 100) {
 				diffSpecificLevel = '중3';
 			}else {
 				diffSpecificLevel = '중4';
 			}
 		}else if(diffLevel == 'C') {
 			if(engLength <= 150) {
-				diffSpecificLevel = '고1';
+				diffSpecificLevel = '상1';
 			}else if(engLength <= 200) {
-				diffSpecificLevel = '고2';
+				diffSpecificLevel = '상2';
 			}else {
-				diffSpecificLevel = '고3';
+				diffSpecificLevel = '상3';
 			}
 		}
 		return diffSpecificLevel;
