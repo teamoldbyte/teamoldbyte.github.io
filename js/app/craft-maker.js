@@ -19,6 +19,7 @@
 		// 체크박스 그룹화를 위한 시퀀스값
 		chkbxSeq = 0;
 	let _memberId;
+	const GRAMMARID_ORDERING = 880000;
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
@@ -485,6 +486,7 @@
 			appendClassifiedElement(battleBtns[i], craftToolbar);
 		}
 		maker.prepend(craftToolbar.cloneNode(true));
+		
 		const now = Date.now();
 		const levelBtns = {el: 'div', className: 'battle-diffLevel-section col-12 col-md-3 row',
 			children: [
@@ -507,8 +509,8 @@
 		const categorySelect = maker.closest('.add-battle-section').querySelector('.battle-category-section select')
 		if(battleType == 5) {
 			// 5유형의 배틀은 '어순'을 기본 문법 카테고리로 선택
-			categorySelect.value = '880000';
-			$(categorySelect).trigger('click')
+			categorySelect.value = GRAMMARID_ORDERING;
+			$(categorySelect).trigger('click');
 			// 5유형의 배틀은 해석을 선택하는 영역을 추가(ask로 지정됨)
 			maker.append(createElement({
 				el: 'div', className: 'col-12 col-md-3 row',
@@ -520,11 +522,10 @@
 					})}
 				]
 			}))
-		}else {
-			// 5유형 외의 배틀은 문법 카테고리를 첫 번째 것으로 선택
-			if(categorySelect.value == '880000') {
-				categorySelect.value = '100000';
-			}
+		}
+		// 3,4,5 유형은 askTag을 먼저 비움
+		if(battleType > 2) {
+			$(categorySelect).trigger('change');
 		}
 	}
 	/** 주어진 질문 목록을 에디터에 설정
