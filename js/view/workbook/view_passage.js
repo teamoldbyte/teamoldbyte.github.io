@@ -1800,11 +1800,13 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
 			return {id: $(transBlock).data('korTid'), text: transBlock.textContent}
 		})
-		craft.openBattleMakerPanel(document.querySelector(this.dataset.bsTarget),
-			memberId,
-			$sentenceSection.data('sentenceId'), 
-			$sentenceSection.find('.semantics-result')[0],
-			translations);
+		if(document.querySelector(this.dataset.bsTarget).querySelector('.battle-section-panel') == null) {
+			craft.openBattleMakerPanel(document.querySelector(this.dataset.bsTarget),
+				memberId,
+				$sentenceSection.data('sentenceId'), 
+				$sentenceSection.find('.semantics-result')[0],
+				translations);
+		}
 	})
 	
 /* ------------------------------ Embed functions --------------------------- */
