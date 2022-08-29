@@ -2,10 +2,11 @@
 @author LGM
  */
 function pageinit() {
+	const MOBILE_WIDTH_MAX_BOUNDARY = 576;
 	const passageId = Number(sessionStorage.getItem('editingPassageId')),
 		workbookId = Number(sessionStorage.getItem('workbookId'));
 		
-	const sentenceSectionColor = getComputedStyle(document.querySelector('.one-sentence-unit-section')).backgroundColor;
+	const sentenceSectionColor = (window.innerWidth >= MOBILE_WIDTH_MAX_BOUNDARY) ? '#f6f6f6' : '#fff';
 	
 	calcParaLengthToggleAddBtn();
 	
