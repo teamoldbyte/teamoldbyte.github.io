@@ -9,6 +9,16 @@
 		className: 'egg-confirm position-absolute top-0 start-100 translate-middle bg-danger border border-light rounded-circle'
 	}
 	
+	// 에그 및 버킷 연출 x좌표 (스크롤바 너비를 빼고 계산)
+	let LEFT_END_EGGSHOW = document.documentElement.clientWidth;
+	const resizeObserver = new ResizeObserver(() => {
+		if(window.innerWidth > document.documentElement.clientWidth) {
+			LEFT_END_EGGSHOW = document.documentElement.clientWidth;
+			resizeObserver.disconnect();
+		}
+	})
+	resizeObserver.observe(document.documentElement);
+	
 	// 신규 에그 획득 모달
 	const newEggModal = { el: 'div', id: 'newEggModal', className: 'modal', tabIndex: '-1', 'data-bs-backdrop': 'static', style: { zIndex: 1071, background: 'radial-gradient(circle, white 25%, #fff4)' }, children: [
 		{ el: 'div', className: 'modal-dialog modal-dialog-centered overflow-hidden m-0', style: 'max-width: 100%', children: [
@@ -152,7 +162,7 @@
 		// 에그 트레이 등장
 		anime({
 			targets: bucket,
-			left: [window.innerWidth, window.innerWidth - 70],
+			left: [window.innerWidth, LEFT_END_EGGSHOW - 70],
 			duration: 500,
 		});
 
@@ -177,7 +187,7 @@
 		.add({
 			duration: 2000,
 			left: {
-				value: function() {return window.innerWidth - 56 + anime.random(-4,4)},
+				value: function() {return LEFT_END_EGGSHOW - 56 + anime.random(-4,4)},
 				easing: 'linear'
 			},
 			top: [
