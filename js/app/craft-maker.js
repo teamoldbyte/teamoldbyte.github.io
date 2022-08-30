@@ -20,6 +20,7 @@
 		chkbxSeq = 0;
 	let _memberId;
 	const GRAMMARID_ORDERING = 880000;
+	const BATTLE_TYPE_SELECTOR = 'data-battle-type';
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
@@ -168,7 +169,7 @@
 		const battlePanel = addSection.closest('.battle-section-panel');
 		const battleContext = addSection.querySelector('.battle-context');
 		const categoryId = parseInt(addSection.querySelector('.battle-category-section select').value);
-		const battleTypeSelector = 'data-battle-type';
+		
 		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
 		const diffLevel = addSection.querySelector('.battle-diffLevel-section input:checked').value;
 		const ask = addSection.querySelector('.ask-select').value.trim();
@@ -268,12 +269,12 @@
 				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
 				const battleList = battlePanel.querySelector('.existing-battles-section');
 				const newBattle = previewBattle($(battlePanel).data('eng'), command);
-				let battleGroupBtn = battleList.querySelector(`[${battleTypeSelector}="${battleType}"]`);
+				let battleGroupBtn = battleList.querySelector(`[${BATTLE_TYPE_SELECTOR}="${battleType}"]`);
 				let battleGroupBlock;
 				// 유형 그룹이 없을 경우
 				if(!battleGroupBtn) {
 					// 문장에서의 첫 등록
-					if(!battleList.querySelector(`[${battleTypeSelector}]`)) {
+					if(!battleList.querySelector(`[${BATTLE_TYPE_SELECTOR}]`)) {
 						// 배틀 미등록 문구 삭제
 						battleList.replaceChildren();
 					}
@@ -550,7 +551,7 @@
 		askArray.forEach((one, i) => {
 			const option = {el: 'option'};
 			if(one.recommended) option.className = 'bg-fc-light-purple';
-			option.value = `#${battleType}`;
+			option.value = one.tag || `#${battleType}`;
 			if(one.tag) option['data-tag'] = one.tag
 			option.innerHTML = battleAsks[battleType - 1].replace('{}',one.tag);
 			if(i == 0) option.selected = true;
