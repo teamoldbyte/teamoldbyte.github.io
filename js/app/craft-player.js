@@ -67,7 +67,7 @@
 				correct = view.querySelector('.arranged-examples').textContent.replace(/\W/g,'').trim() == currentBattle.eng.replace(/\W/g,'').trim();
 				break;
 		}
-		
+		alert(correct? '맞혔습니다' : '틀렸습니다');
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: false };
 		$.ajax({
 			url: '/craft/battle/play/submit',
