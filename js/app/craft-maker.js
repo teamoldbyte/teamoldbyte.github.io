@@ -913,27 +913,27 @@
 		let diffSpecificLevel;
 		if(diffLevel == 'A') {
 			if(engLength <= 30) {
-				diffSpecificLevel = '하1';
-			}else {
-				diffSpecificLevel = '하2';
-			}
+				diffSpecificLevel = '훈련병';
+			}else if(engLength <= 60){
+				diffSpecificLevel = '일병';
+			}else diffSpecificLevel = '병장';
 		}else if(diffLevel == 'B') {
 			if(engLength <= 50) {
-				diffSpecificLevel = '중1';
+				diffSpecificLevel = '하사';
 			}else if(engLength <= 70) {
-				diffSpecificLevel = '중2';
+				diffSpecificLevel = '상사';
 			}else if(engLength <= 100) {
-				diffSpecificLevel = '중3';
-			}else {
-				diffSpecificLevel = '중4';
-			}
+				diffSpecificLevel = '소위';
+			}else if(engLength <= 120){
+				diffSpecificLevel = '대위';
+			}else diffSpecificLevel = '소령';
 		}else if(diffLevel == 'C') {
 			if(engLength <= 150) {
-				diffSpecificLevel = '상1';
+				diffSpecificLevel = '대령';
 			}else if(engLength <= 200) {
-				diffSpecificLevel = '상2';
+				diffSpecificLevel = '준장';
 			}else {
-				diffSpecificLevel = '상3';
+				diffSpecificLevel = '소장';
 			}
 		}
 		return diffSpecificLevel;
