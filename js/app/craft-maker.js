@@ -913,7 +913,7 @@
 		let diffSpecificLevel;
 		if(diffLevel == 'A') {
 			if(engLength <= 30) {
-				diffSpecificLevel = '훈련병';
+				diffSpecificLevel = '이병';
 			}else if(engLength <= 60){
 				diffSpecificLevel = '일병';
 			}else diffSpecificLevel = '병장';
