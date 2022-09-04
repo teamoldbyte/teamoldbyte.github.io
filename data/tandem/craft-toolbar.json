@@ -288,27 +288,27 @@
 			{
 				"ask": "#1", 
 				"tag": "종속절의 주어(부)",
-				"selector": ".advcls>.s, .ncls>.s, .acls>.s" 
+				"selector": ".advcls>*>.s, .ncls>*>.s, .acls>*>.s" 
 			},
 			{
 				"ask": "#1", 
 				"tag": "종속절의 동사(부)",
-				"selector": ".advcls>.v, .ncls>.v, .acls>.v" 
+				"selector": ".advcls>*>.v, .ncls>*>.v, .acls>*>.v" 
 			},	
 			{
 				"ask": "#1", 
 				"tag": "종속절의 목적어(부)",
-				"selector": ".advcls>.o, .ncls>.o, .acls>.o" 
+				"selector": ".advcls>*>.o, .ncls>*>.o, .acls>*>.o" 
 			},
 			{
 				"ask": "#1", 
 				"tag": "종속절의 보어(부)",
-				"selector": ".advcls>.c, .ncls>.c, .acls>.c" 
+				"selector": ".advcls>*>.c, .ncls>*>.c, .acls>*>.c" 
 			},				
 			{
 				"ask": "#1", 
 				"tag": "종속절의 목적격 보어(부)",
-				"selector": ".advcls>.oc, .ncls>.oc, .acls>.oc" 
+				"selector": ".advcls>*>.oc, .ncls>*>.oc, .acls>*>.oc" 
 			},				
 			{
 				"ask": "#1",
