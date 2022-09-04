@@ -264,17 +264,17 @@
 				"ask": "#1", 
 				"tag": "주어(부)",
 				"selector": ".s" 
-			},
+			},			
 			{
 				"ask": "#1", 
 				"tag": "동사(부)",
 				"selector": ".v"
-			},
+			},		
 			{
 				"ask": "#1", 
 				"tag": "목적어(부)",
 				"selector": ".o"
-			},
+			},		
 			{
 				"ask": "#1", 
 				"tag": "보어(부)",
@@ -285,6 +285,31 @@
 				"tag": "목적격 보어(부)",
 				"selector": ".oc"
 			},
+			{
+				"ask": "#1", 
+				"tag": "종속절의 주어(부)",
+				"selector": ".advcls>.s, .ncls>.s, .acls>.s" 
+			},
+			{
+				"ask": "#1", 
+				"tag": "종속절의 동사(부)",
+				"selector": ".advcls>.v, .ncls>.v, .acls>.v" 
+			},	
+			{
+				"ask": "#1", 
+				"tag": "종속절의 목적어(부)",
+				"selector": ".advcls>.o, .ncls>.o, .acls>.o" 
+			},
+			{
+				"ask": "#1", 
+				"tag": "종속절의 보어(부)",
+				"selector": ".advcls>.c, .ncls>.c, .acls>.c" 
+			},				
+			{
+				"ask": "#1", 
+				"tag": "종속절의 목적격 보어(부)",
+				"selector": ".advcls>.oc, .ncls>.oc, .acls>.oc" 
+			},				
 			{
 				"ask": "#1",
 				"tag": "의미상주어(부)",
