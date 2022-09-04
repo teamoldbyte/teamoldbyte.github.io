@@ -465,7 +465,7 @@
 		// 배틀 유형별 툴바 표시
 		appendToolbar(battleType, makerDiv);
 		
-		const engLength = semanticsDiv.textContent.length;
+		const engLength = tandem?.cleanSvocDOMs(semanticsDiv).textContent.length;
 		makerDiv.querySelector('.eng-length').textContent = engLength;
 		// 문장 길이에 따라 난이도 선택을 제한( engLength > 80: 중↑, engLength > 150: 상)
 		//makerDiv.querySelector('.battle-level-select[value="A"]').disabled = engLength > 80;
