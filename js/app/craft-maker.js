@@ -195,8 +195,13 @@
 				break;
 			case '2':
 				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
-				command.answer = JSON.stringify([ findPositions(battleContext, '.modifier'),
-						  						findPositions(battleContext, '.modificand') ]);
+				const modifiers = findPositions(battleContext, '.modifier'),
+					modificands = findPositions(battleContext, '.modificand');
+				if((modifiers.length || modificands.length) == 0) {
+					alert('수식어 혹은 피수식어를 1개 이상 선택해 주세요.')
+					return;
+				}
+				command.answer = JSON.stringify([ modifiers, modificands ]);
 				break;
 			case '3':
 				let blank = battleContext.querySelector('.pick-right');
@@ -460,10 +465,27 @@
 		// 배틀 유형별 툴바 표시
 		appendToolbar(battleType, makerDiv);
 		
-		// 문장 길이에 따라 난이도 선택을 제한( engLength > 80: 중↑, engLength > 150: 상)
 		const engLength = semanticsDiv.textContent.length;
-		makerDiv.querySelector('.battle-level-select[value="A"]').disabled = engLength > 80;
-		makerDiv.querySelector('.battle-level-select[value="B"]').disabled = engLength > 150;
+		makerDiv.querySelector('.eng-length').textContent = engLength;
+		// 문장 길이에 따라 난이도 선택을 제한( engLength > 80: 중↑, engLength > 150: 상)
+		//makerDiv.querySelector('.battle-level-select[value="A"]').disabled = engLength > 80;
+		//makerDiv.querySelector('.battle-level-select[value="B"]').disabled = engLength > 150;
+		const levelSelectorC = makerDiv.querySelector('.battle-level-select[value="C"]'),
+			  levelSelectorB = makerDiv.querySelector('.battle-level-select[value="B"]');
+		
+		if(engLength > 150) {
+			levelSelectorC.checked = true;
+			bootstrap.Tooltip.getOrCreateInstance(levelSelectorC.nextElementSibling).enable();
+			bootstrap.Tooltip.getOrCreateInstance(levelSelectorB.nextElementSibling).disable();
+		}else {
+			bootstrap.Tooltip.getOrCreateInstance(levelSelectorC.nextElementSibling).disable();
+			if(engLength > 80) {
+				levelSelectorB.checked = true;
+				bootstrap.Tooltip.getOrCreateInstance(levelSelectorB.nextElementSibling).enable();
+			}else {
+				bootstrap.Tooltip.getOrCreateInstance(levelSelectorB.nextElementSibling).disable();
+			}
+		}
 		makerDiv.querySelector('.battle-level-select[value="B"]').checked = engLength > 80;
 		makerDiv.querySelector('.battle-level-select[value="C"]').checked = engLength > 150;
 		
@@ -501,11 +523,17 @@
 				id: `btnRadioBattleLevel${now}${i}`,
 				className: 'btn-check battle-level-select', 
 				checked: i == 0, value: level.value});
-			levelBtns.children.push({el: 'label', textContent: level.text,
-				htmlFor: `btnRadioBattleLevel${now}${i}`,
+			levelBtns.children.push({el: 'label', textContent: level.text, 'data-bs-toggle': i>0?'tooltip':'',
+				htmlFor: `btnRadioBattleLevel${now}${i}`, 'data-bs-html': 'true', 'data-bs-title': '문장 길이로 시스템이 파악한<br>최소 난이도입니다.', 'data-bs-trigger': 'manual',
 				className: 'col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico'});
 		})
 		appendClassifiedElement(levelBtns, maker);
+		
+		maker.appendChild(createElement([
+			{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '길이' },
+			{ el: 'span', className: 'col-auto my-auto eng-length' }
+		]))
+		
 		
 		const categorySelect = maker.closest('.add-battle-section').querySelector('.battle-category-section select')
 		if(battleType == 5) {
@@ -514,7 +542,7 @@
 			$(categorySelect).trigger('click');
 			// 5유형의 배틀은 해석을 선택하는 영역을 추가(ask로 지정됨)
 			maker.append(createElement({
-				el: 'div', className: 'col-12 col-md-3 row',
+				el: 'div', className: 'col-12 col-md-auto row',
 				children: [
 					{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해석'},
 					{el: 'select', className: 'select-kor form-select d-inline-block col',
