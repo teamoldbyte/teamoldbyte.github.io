@@ -71,7 +71,7 @@
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: false };
 		$.ajax({
 			url: '/craft/battle/evaluation/add',
-			type: 'POST', contentType: 'application/json', data: JSON.stringify(command),
+			type: 'GET', contentType: 'application/json', data: command,
 			success: () => {
 				if(battlePool.length > 0) {
 					_askStep();
@@ -265,7 +265,7 @@
 		}
 		
 		// 배틀 출처 표시
-		view.querySelector('.source').textContent = currentBattle.source;
+		// view.querySelector('.source').textContent = currentBattle.source;
 	}
 	
 	/** 플레이어 초기화
