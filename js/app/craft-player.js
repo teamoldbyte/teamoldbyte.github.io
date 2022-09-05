@@ -70,7 +70,7 @@
 		alert(correct? '맞혔습니다' : '틀렸습니다');
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: false };
 		$.ajax({
-			url: '/craft/battle/play/submit',
+			url: '/craft/battle/evaluation/add',
 			type: 'POST', contentType: 'application/json', data: JSON.stringify(command),
 			success: () => {
 				if(battlePool.length > 0) {
