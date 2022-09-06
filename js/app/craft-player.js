@@ -252,6 +252,8 @@
 				 
 				// 해석 표시
 				sentence.replaceChildren(currentBattle.kor)
+				// 선택 초기화
+				view.querySelector('.arranged-examples').replaceChildren();
 				// 보기 표시
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
 					options.push({ el: 'button', className: 'btn btn-outline-secondary', textContent: eng.substring(start, end), onclick: function() {
