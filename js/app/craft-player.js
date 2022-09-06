@@ -87,8 +87,10 @@
 		const url = `/craft/battle/${_contentType}${contentPath}/next`
 		$.getJSON(url, function(battles) {
 			battlePool = battles;
+			if(battles.length == 0) alert('조회된 문제가 없습니다.');
+			else
 			_askStep();
-		});
+		}).fail(() => alert('문제 조회에 실패했습니다.'));
 	}
 	
 	// 한 문제 플레이어에 표시
