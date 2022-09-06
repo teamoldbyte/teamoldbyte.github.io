@@ -197,8 +197,14 @@
 				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
 				const modifiers = findPositions(battleContext, '.modifier'),
 					modificands = findPositions(battleContext, '.modificand');
-				if((modifiers.length || modificands.length) == 0) {
-					alert('수식어 혹은 피수식어를 1개 이상 선택해 주세요.')
+				if(ask.includes('피수식어를 모두') && (modifiers.length > 0 || modificands.length == 0)) {
+					alert('피수식어만 1개 이상 선택해 주세요.');
+					return;
+				}else if(ask.includes('수식어를 모두') && (modificands.length > 0 || modifiers.length == 0)) {
+					alert('수식어만 1개 이상 선택해 주세요.');
+					return;
+				}else if(!ask.includes('모두') && (modifiers.length && modificands.length) == 0) {
+					alert('수식어/피수식어를 1쌍 이상 선택해 주세요.');
 					return;
 				}
 				command.answer = JSON.stringify([ modifiers, modificands ]);
@@ -582,9 +588,14 @@
 			option.value = one.tag || `#${battleType}`;
 			if(one.tag) option['data-tag'] = one.tag
 			option.innerHTML = battleAsks[battleType - 1].replace('{}',one.tag);
-			if(i == 0) option.selected = true;
+			if(i == 0 && battleType != 2) option.selected = true;
 			select.children.push(option);
 		});
+		if(battleType == 2) {
+			const modifyExist = (askArray.find(v => v.recommended) != null);
+			select.children.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', innerHTML: '피수식어를 모두 선택하세요.'});
+			select.children.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', selected: true, innerHTML: '수식어를 모두 선택하세요.'});
+		}
 		json.children.push(select);
 		maker.prepend(createElement(json));
 	}
