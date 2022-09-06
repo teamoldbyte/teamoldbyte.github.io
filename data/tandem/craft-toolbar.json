@@ -348,7 +348,7 @@
 			{
 				"ask": "#1",
 				"tag": "진목적어(부)",
-				"selector": ".o[data-rc=\"r.o.\"],.o[data-rc=\"진목적어\",.o[data-rc=\"(진)o\"]"
+				"selector": ".o[data-rc=\"r.o.\"],.o[data-rc=\"진목적어\"],.o[data-rc=\"(진)o\"]"
 			},
 			{
 				"ask": "#1",
