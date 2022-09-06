@@ -214,12 +214,12 @@
 					example = [[보기1start,보기1end],[보기2start,보기2end],...]
 					answer = [[정답start,정답end],정답텍스트,오답텍스트]
 				 */
-				const [[ answerStart, answerEnd ], answer ] = answers;
+				const [[ answerStart, answerEnd ], answer, wrong ] = answers;
 				// 보기 표시
 				examples.sort(([a], [b]) => a - b).forEach(([ start, end ], j, arr) => {
 					leftStr = eng.substring(offsetPos, start);
 					if(leftStr) contextChildren.push(leftStr);
-					const optionText = eng.substring(start, end);
+					let optionText = eng.substring(start, end);
 					const span = {
 						el: 'span',
 						className: 'option text-decoration-underline', 
@@ -227,6 +227,8 @@
 					};
 					if(answerStart == start && answerEnd == end) {
 						span.className = 'answer-wrong text-decoration-underline';
+						span.textContent = wrong;
+						optionText = wrong;
 						span['data-answer'] = answer;
 					}
 					contextChildren.push(span);
