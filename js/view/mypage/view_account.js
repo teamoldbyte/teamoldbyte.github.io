@@ -388,6 +388,49 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	window.addEventListener('resize', fitWindowSize);
 	
 	document.body.append(createElement([
+		{ "el": "div", "class": "modal fade", "id": "egg-explain-modal", "tabindex": "-1", 
+			"aria-labelledby": "eggExplainModalLabel", "aria-hidden": true, "children": [
+			{ "el": "div", "class": "modal-dialog modal-dialog-centered", "children": [
+				{ "el": "div", "class": "modal-content", "children": [
+					{ "el": "div", "class": "modal-header", "children": [
+						{ "el": "h5", "textContent": "에그는 무엇인가요?" },
+						{ "el": "button",
+							"type": "button",
+							"class": "btn-close",
+							"data-bs-dismiss": "modal",
+							"aria-label": "Close"
+						}
+					]},
+					{ "el": "div", "class": "modal-body", "children": [
+						{ "el": "p", "children": [
+							"에그는 ",
+							{ "el": "b", "textContent": "총 9개" },
+							"로 구성되며 에그마다 다른 확률로 무작위로 배포됩니다.",
+							{ "el": "br" },
+							"각 에그 부화에 필요한 숫자를 모두 채우면 조그만 ",
+							{ "el": "b", "textContent": "학습 보상" },
+							"을 드립니다.",
+							{ "el": "br" },
+							{ "el": "span", "class": "text-warning fw-bold", "textContent": "골드 에그"
+							},
+							"는 ",
+							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
+							" 머니로 사용되며 ",
+							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
+							" 쌤에게만 지급됩니다.",
+							{ "el": "br" },
+							{ "el": "br" },
+							{ "el": "span", "class": "text-lmd fw-bold", "textContent": "에그를 모을 수 있는 방법" },
+							{ "el": "br" },
+							"1. 구문 분석된 문장을 평가하기",
+							{ "el": "br" },
+							"2. 틀린 구문 분석을 수정하기",
+							{ "el": "br" }
+						]}
+					]}
+				]}
+			]}
+		]},
 		{ el: 'div', className: 'bucket-detail-section modal', id: 'bucket-modal', tabIndex: '-1', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
 				{ el: 'div', className: 'modal-content', children: [
