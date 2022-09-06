@@ -338,27 +338,27 @@
 			{
 				"ask": "#1",
 				"tag": "의미상주어(부)",
-				"selector": ".s[data-rc=\"s.s.\"]"
+				"selector": ".s[data-rc=\"s.s.\"],.s[data-rc=\"(의)s\"]"
 			},
 			{
 				"ask": "#1",
 				"tag": "진주어(부)",
-				"selector": ".s[data-rc=\"r.s.\"],.s[data-rc=\"진주어\"]"
+				"selector": ".s[data-rc=\"r.s.\"],.s[data-rc=\"진주어\"],.s[data-rc=\"(진)s\"]"
 			},
 			{
 				"ask": "#1",
 				"tag": "진목적어(부)",
-				"selector": ".o[data-rc=\"r.o.\"],.o[data-rc=\"진목적어\"]"
+				"selector": ".o[data-rc=\"r.o.\"],.o[data-rc=\"진목적어\",.o[data-rc=\"(진)o\"]"
 			},
 			{
 				"ask": "#1",
 				"tag": "간접목적어(부)",
-				"selector": ".o[data-rc=\"i.o.\"]" 
+				"selector": ".o[data-rc=\"i.o.\"],.o[data-rc=\"(간)o\"]" 
 			},
 			{
 				"ask": "#1",
 				"tag": "직접목적어(부)", 
-				"selector": ".o[data-rc=\"d.o.\"]"
+				"selector": ".o[data-rc=\"d.o.\"],.o[data-rc=\"(직)o\"]"
 			},
 			{
 				"ask": "#1",
