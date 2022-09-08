@@ -721,7 +721,7 @@
 				if (curr.classList.contains('rcm')) {
 					if (curr.classList.contains('cmnt-align-start')) {
 						currLeft -= rem;
-					} else {
+					} else if(currRect != null && currGCommentStyle != null){
 						currLeft += currRect.width - parseFloat(currGCommentStyle.width)
 							- parseFloat(currGCommentStyle.right);
 					}
