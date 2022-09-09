@@ -197,13 +197,13 @@
 				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
 				const modifiers = findPositions(battleContext, '.modifier'),
 					modificands = findPositions(battleContext, '.modificand');
-				if(ask.includes('피수식어를 모두') && (modifiers.length > 0 || modificands.length == 0)) {
+				if(ask.includes('모든 피수식') && (modifiers.length > 0 || modificands.length == 0)) {
 					alert('피수식어만 1개 이상 선택해 주세요.');
 					return;
-				}else if(ask.includes('수식어를 모두') && (modificands.length > 0 || modifiers.length == 0)) {
+				}else if(ask.includes('모든 수식') && (modificands.length > 0 || modifiers.length == 0)) {
 					alert('수식어만 1개 이상 선택해 주세요.');
 					return;
-				}else if(!ask.includes('모두') && (modifiers.length && modificands.length) == 0) {
+				}else if(!ask.includes('모든') && (modifiers.length && modificands.length) == 0) {
 					alert('수식어/피수식어를 1쌍 이상 선택해 주세요.');
 					return;
 				}
@@ -357,8 +357,7 @@
 			$.getJSON('/grammar/category/list', results => {
 				categories = results;
 				let elements = Array.from(categories, c => {
-					return { el:'option', value: c.cid,
-						textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
+					return { el:'option', value: c.cid, textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
 				})
 				categorySection.append(createElement(elements));
 				openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList);
@@ -496,7 +495,7 @@
 		makerDiv.querySelector('.battle-level-select[value="C"]').checked = engLength > 150;
 		
 		// 배틀 유형별 질문 표시
-		appendAskSelect(battleType, asks, makerDiv);
+		makerDiv.prepend(createElement(createAskSelect(battleType, asks)));
 		if([1,2].includes(battleType)) {
 			const selectedAsk = makerDiv.closest('.add-battle-section').querySelector('.ask-select');
 			$(selectedAsk).trigger('change');
@@ -567,21 +566,23 @@
 	@param battleType 배틀 유형 1,2,3,4,5
 	@param askArray 질문 목록 [{selector, tag, recommended}]
 	 */
-	function appendAskSelect(battleType, askArray, maker) {
-		const json = {
+	function createAskSelect(battleType, askArray) {
+		return {
 			el: 'div', 
 			className: 'col-12 col-md-3 row',
 			children: [
 				{	el: 'label', textContent: '질문', 
 					className: 'col-auto lh-1 my-auto text-fc-purple fw-bold'
+				},
+				{
+					el: 'select', 
+					className: 'form-select ask-select col', 
+					children: createAskOptions(battleType, askArray)
 				}
-			]				
-		};
-		const select = {
-			el: 'select', 
-			className: 'form-select ask-select col', 
-			children: []
-		};
+			]};
+	}
+	function createAskOptions(battleType, askArray) {
+		const options = [];
 		askArray.forEach((one, i) => {
 			const option = {el: 'option'};
 			if(one.recommended) option.className = 'bg-fc-light-purple';
@@ -590,16 +591,17 @@
 			
 			option.innerHTML = combineAsk(battleType, one.tag);
 			if(i == 0 && battleType != 2) option.selected = true;
-			select.children.push(option);
+			options.push(option);
 		});
-		if(battleType == 2) {
+		// 2유형 질문에는 정적 선택지 2개 제일 위에 추가
+		if(parseInt(battleType) == 2) {
 			const modifyExist = (askArray.find(v => v.recommended) != null);
-			select.children.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', innerHTML: '피수식어를 모두 선택하세요.'});
-			select.children.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', selected: true, innerHTML: '수식어를 모두 선택하세요.'});
-		}
-		json.children.push(select);
-		maker.prepend(createElement(json));
+			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', value: '모든 피수식', innerHTML: '피수식어를 모두 선택하세요.'});
+			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', value: '모든 수식', selected: true, innerHTML: '수식어를 모두 선택하세요.'});
+		}		
+		return options;
 	}
+	
 	/** 구문분석 div로부터 원문 텍스트를 추출하여 에디터 본문으로 삽입
 	 */
 	function appendContext(semanticsResult, maker) {
@@ -987,5 +989,9 @@
 		return diffSpecificLevel;
 	}
 	
-	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, categories, previewBattle, combineAsk, createBattleContext});
+	function getAsks(battleType) {
+		return battleTypeInfos[parseInt(battleType) - 1];
+	}
+	
+	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, getAsks, previewBattle, combineAsk, createAskOptions, createBattleContext});
 })(jQuery, window, document);
