@@ -586,8 +586,9 @@
 			const option = {el: 'option'};
 			if(one.recommended) option.className = 'bg-fc-light-purple';
 			option.value = one.tag || `#${battleType}`;
-			if(one.tag) option['data-tag'] = one.tag
-			option.innerHTML = battleAsks[battleType - 1].replace('{}',one.tag);
+			if(one.tag) option['data-tag'] = one.tag;
+			
+			option.innerHTML = combineAsk(battleType, one.tag);
 			if(i == 0 && battleType != 2) option.selected = true;
 			select.children.push(option);
 		});
@@ -790,6 +791,36 @@
 	@param battle battle정보를 담은 JSONObject
 	 */
 	function previewBattle(eng, battle) {
+
+		const preview = {
+			el: 'div', 'data-id': battle.battleId, className: 'battle-preview-one m-1 ms-5 bg-light border border-2 px-2', children: [
+			{ el: 'div', className: 'row', children: [
+				{el: 'div', className: 'col-auto', children: [
+					{el: 'label', className: 'fw-bold me-2', textContent: '질문:'},
+					{el: 'span', textContent: combineAsk(battleType, battle.askTag)}
+				]},
+				{el: 'div', className: 'col-auto', children: [
+					{el: 'label', className: 'fw-bold me-2', textContent: '난이도:'},
+					{el: 'span', textContent: battle.diffLevel}
+				]},
+				{el: 'div', className: 'col-auto', children: [
+					{el: 'label', className: 'fw-bold me-2', textContent: '문법:'},
+					{el: 'span', textContent: battle.grammarTitle}
+				]}
+			]},
+			{ el: 'div', className: 'battle-context pb-3', 
+				children: createBattleContext(eng, battle)
+			}
+		]};
+		if(_memberId == battle.memberId)
+			preview.children.push({el: 'div', children: [
+				{el: 'button', className: 'btn btn-sm btn-fico js-delete-battle', textContent: '삭제'}
+				]
+			})
+		return preview;
+	}
+	
+	function createBattleContext(eng, battle) {
 		const answers = JSON.parse(battle.answer||"[]");
 		const examples = JSON.parse(battle.example||"[]");
 		let offsetPos = 0;
@@ -889,38 +920,7 @@
 				offsetPos = example[1];
 			});
 		}
-		const preview = {
-			el: 'div', 'data-id': battle.battleId,
-			className: 'battle-preview-one m-1 ms-5 bg-light border border-2 px-2', 
-			children: [
-				{
-					el: 'div', className: 'row', children: [
-						{el: 'div', className: 'col-auto', children: [
-							{el: 'label', className: 'fw-bold me-2', textContent: '질문:'},
-							{el: 'span', textContent: battleAsks[battle.battleType - 1].replace('{}',battle.askTag)}
-						]},
-						{el: 'div', className: 'col-auto', children: [
-							{el: 'label', className: 'fw-bold me-2', textContent: '난이도:'},
-							{el: 'span', textContent: battle.diffLevel}
-						]},
-						{el: 'div', className: 'col-auto', children: [
-							{el: 'label', className: 'fw-bold me-2', textContent: '문법:'},
-							{el: 'span', textContent: battle.grammarTitle}
-						]}
-					]
-				},
-				{
-					el: 'div', className: 'battle-context pb-3', 
-					children: contextChildren
-				}
-			]
-		};
-		if(_memberId == battle.memberId)
-			preview.children.push({el: 'div', children: [
-				{el: 'button', className: 'btn btn-sm btn-fico js-delete-battle', textContent: '삭제'}
-				]
-			})
-		return preview;
+		return contextChildren;		
 	}
 	
 	// 컨텍스트의 html을 통째로 보관
@@ -945,6 +945,15 @@
 				}
 			}
 		}
+	}
+	
+	// battleType과 ask값을 통해 질문을 완전한 문장으로 구성.
+	function combineAsk(battleType, tag) {
+		let completeAsk = battleAsks[battleType - 1].replace('{}', tag);
+		if(battleType == 1 && completeAsk.match(/종속절의|주절의/)) {
+			completeAsk.replace('문장의', '문장에서');
+		}
+		return completeAsk;
 	}
 	
 	// 문장 난이도(E,N,D)와 문장길이로 상세난이도 반환
@@ -978,5 +987,5 @@
 		return diffSpecificLevel;
 	}
 	
-	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, });
+	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, categories, previewBattle, combineAsk, createBattleContext});
 })(jQuery, window, document);
