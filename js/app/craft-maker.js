@@ -455,7 +455,7 @@
 		redoList = []; undoList = [];
 		const makerDiv = createElement({el: 'div', className: 'battle-maker row', tabIndex: 0})
 		container.append(makerDiv);	
-		let asks = battleTypeInfos[battleType - 1];
+		let asks = Array.from(battleTypeInfos)[battleType - 1];
 		// 1, 2 유형의 경우 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
 		if([1,2].includes(battleType)) {
 			asks.forEach(el => {
