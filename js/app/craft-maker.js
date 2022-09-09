@@ -951,7 +951,7 @@
 	function combineAsk(battleType, tag) {
 		let completeAsk = battleAsks[battleType - 1].replace('{}', tag);
 		if(battleType == 1 && completeAsk.match(/종속절의|주절의/)) {
-			completeAsk.replace('문장의', '문장에서');
+			completeAsk = completeAsk.replace('문장의', '문장에서');
 		}
 		return completeAsk;
 	}
