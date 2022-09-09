@@ -1107,7 +1107,7 @@
 		const rects = range.getClientRects();
 		if (rects.length > 0) {
 			return [rects[0], rects[rects.length - 1]];
-		} else return null;
+		} else return [null, null];
 	}
 
 	/**
