@@ -797,7 +797,7 @@
 			{ el: 'div', className: 'row', children: [
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '질문:'},
-					{el: 'span', textContent: combineAsk(battleType, battle.askTag)}
+					{el: 'span', textContent: combineAsk(parseInt(battle.battleType), battle.askTag)}
 				]},
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '난이도:'},
