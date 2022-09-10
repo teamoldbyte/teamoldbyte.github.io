@@ -462,10 +462,10 @@
 				if(el.selector != null && semanticsDiv.querySelector(`.sem${el.selector}`) != null )
 					el.recommended = true;
 			});
-			asks.sort((a,b) => {
+			/*asks.sort((a,b) => {
 				if(!a.recommended) return 1;
 				return b.recommended ? 0 : -1;
-			})
+			})*/
 		}
 		// 배틀 유형별 툴바 표시
 		appendToolbar(battleType, makerDiv);
