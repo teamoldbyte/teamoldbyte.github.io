@@ -913,7 +913,10 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				profile.style.background = 'url(/resource/profile/images/'
 									+ memberImage + ') center/cover no-repeat';
 			}
-			$newSection.find('.writer-section').prepend($personacon);
+						
+			$newSection.find('.writer-section')
+						.attr('data-bs-target', $sentenceSection.find('.writer-section').get(0).dataset.bsTarget)
+						.prepend($personacon);
 			const text = $sentenceSection.find('.origin-sentence .sentence-text').text();
 			const svocBytes = await tandem.getSvocBytes($sentenceSection.find('.semantics-result').get(0));
 			
