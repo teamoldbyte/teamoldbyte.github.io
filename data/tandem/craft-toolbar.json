@@ -367,13 +367,53 @@
 			},
 			{
 				"ask": "#1",
+				"tag": "현재분사 목적보어(부)",
+				"selector": ".ptc>.oc:only-child, .oc>.ptc:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "과거분사 목적보어(부)",
+				"selector": ".ptc>.oc:only-child, .oc>.ptc:only-child"
+			},
+			{
+				"ask": "#1",
 				"tag": "동명사",
 				"selector": ".ger"
 			},
 			{
 				"ask": "#1",
+				"tag": "동명사 목적어(부)",
+				"selector": ".ger>.o:only-child, .o>.ger:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "동명사 보어(부)",
+				"selector": ".ger>.c:only-child, .c>.ger:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "동명사 목적보어(부)",
+				"selector": ".ger>.oc:only-child, .oc>.ger:only-child"
+			},
+			{
+				"ask": "#1",
 				"tag": "to부정사",
 				"selector": ".tor"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사 목적어(부)",
+				"selector": ".tor>.o:only-child, .o>.tor:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사 보어(부)",
+				"selector": ".tor>.c:only-child, .c>.tor:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사 목적보어(부)",
+				"selector": ".tor>.oc:only-child, .oc>.tor:only-child"
 			}
 		],
 		[
