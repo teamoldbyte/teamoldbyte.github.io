@@ -121,7 +121,7 @@ function pageinit(battlePage) {
 			const answerDetailSection = document.querySelector('.explain-detail-section');
 
 			// 구문분석 정보
-			tandem.showSemanticAnalysis(eng, answerInfo.svocTag.svocResult, $(answerDetailSection).find('.svocInfo').empty());
+			tandem.showSemanticAnalysis(eng, answerInfo.svocTag.svocBytes, $(answerDetailSection).find('.svocInfo').empty());
 			// 해석 정보
 			answerDetailSection.querySelector('.korInfo').replaceChildren(createElement(Array.from(answerInfo.korList, kor => {
 				return { el: 'div', textContent: kor.kor };
