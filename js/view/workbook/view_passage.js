@@ -110,7 +110,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	}
 	const transEditorJson = {
 		el: 'div', className: 'trans-editor mt-2', children: [
-			{ el: 'textarea', className: 'text-input form-control' },
+			{ el: 'textarea', className: 'text-input form-control', placeholder: '나의 해석을 직접 등록할 수 있습니다.' },
 			{ el: 'div', className: 'trans-edit-btns btn-group my-2', children: [
 				{ el: 'button', type: 'button', className: 'js-edit-trans-cancel btn btn-sm btn-outline-fico', textContent: '취소' },
 				{ el: 'button', type: 'button', className: 'js-edit-trans login-required btn btn-sm btn-fico', textContent: '확인' }
