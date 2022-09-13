@@ -993,5 +993,5 @@
 		return battleTypeInfos[parseInt(battleType) - 1];
 	}
 	
-	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, getAsks, previewBattle, combineAsk, createAskOptions, createBattleContext});
+	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, getAsks, previewBattle, combineAsk, createAskOptions, createBattleContext, calcDiffSpecific, findPositions });
 })(jQuery, window, document);
