@@ -209,7 +209,7 @@
 /* to부정사,동명사 글자색 */
 /*.sem.tor, .sem.ger {color: #795548;}*/
 /* 분사 글자색 */
-.sem.ptc {color: #794865;}
+/*.sem.ptc {color: #794865;}*/
 
 /* 선행사 gcomment */
 .sem.rcm[data-gc]::after {
