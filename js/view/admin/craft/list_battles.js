@@ -105,6 +105,8 @@ function pageinit(battlePage) {
 	// 배틀 수정
 	$(document).on('input', '#battleDetailSection *', function(e) {
 		e.stopPropagation();
+		if(this.matches('.battle-diffLevel'))
+			document.querySelector('.battle-engLevel').textContent = craft.calcDiffSpecific(this.value, $('#battleDetailSection').data('battleCommand').eng.length);
 		$('#editBattle').prop('disabled',Array.from(document.getElementById('battleDetailSection').querySelectorAll('input, textarea, select')).every( input => input.value == input.dataset.org));
 	}).on('click', '#editBattle', function() {
 		const orgCommand = $('#battleDetailSection').data('battleCommand');
@@ -210,9 +212,12 @@ function pageinit(battlePage) {
 						{ el: 'span', className: 'col battle-engLevel my-auto'}
 					]}
 				]},
-				{ el: 'div', className: 'battle-context my-3 p-3 border rounded' },
-				{ el: 'div', className: 'battleSubInfo row', children: [
-					{ el: 'div', className: 'col-3 row', children: [
+				{ el: 'div', className: 'col-12 row', children: [
+					{ el: 'div', className: 'col-auto invisible', textContent: '본문'},
+					{ el: 'div', className: 'col battle-context my-3 p-3 border rounded'}
+				]},
+				{ el: 'div', className: 'battleSubInfo col-12 row', children: [
+					{ el: 'div', className: 'col-4 row', children: [
 						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '출처' },
 						{ el: 'input', type: 'text', className: 'form-control col battle-source' }
 					]},
@@ -220,13 +225,13 @@ function pageinit(battlePage) {
 						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '문법' },
 						{ el: 'select', className: 'form-select col battle-category'}
 					]},
-					{ el: 'div', className: 'col-4 row', children: [
+					{ el: 'div', className: 'col row', children: [
 						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '태그' },
 						{ el: 'input', type: 'text', className: 'form-control col battle-askTag' }
 					]}
 				] },
 				{ el: 'div', className: 'battleComment col-12 row mt-3', children: [
-					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '한줄 코멘트' },
+					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해설' },
 					{ el: 'textarea', className: 'form-control col battle-comment' }
 				]},
 				{ el: 'div', className: 'battleEditBtns row mt-3 position-relative', children: [
