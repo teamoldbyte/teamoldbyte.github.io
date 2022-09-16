@@ -818,6 +818,10 @@
 				}
 			}
 		}
+		// 텍스트 내용이 없는 태그는 삭제
+		div.querySelectorAll('.sem').forEach( elem => {
+			if(elem.textContent.length == 0) elem.remove();
+		})
 	}
 
 	/**
