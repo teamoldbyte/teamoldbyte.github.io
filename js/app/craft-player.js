@@ -11,8 +11,8 @@
 	let _contentId; // 지정된 컨텐츠가 있을 경우 해당 컨텐츠 아이디
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
 	let _memberId, _ageGroup; // 사용자 정보
-	
-	
+	let _battleRecord; // 배틀 전적 정보
+	let currRankBase, nextRankBase; // 현재 및 다음 계급의 시작 정답수
 	
 	
 	
@@ -42,14 +42,17 @@
 	let selectHistory = []; // 현재 문제에서 선택한 선택지들 모음(1,2,5유형용)
 	
 	$(document).on('click', '.js-solve-btn', function() {
-		
-		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
-		$(this).toggleClass('js-solve-btn js-next-btn').text('다음');
-		
 		const view = this.closest('.battle-section');
 		const answers = JSON.parse(currentBattle.answer||"[]");
 		const examples = JSON.parse(currentBattle.example||"[]");
 		let correct = true;
+		
+		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
+		$(this).toggleClass('js-solve-btn js-next-btn').text('다음');
+		// 해설을 위해 배틀타입을 숨김
+		$(view).find('.battle-type-block').slideUp();
+		$(view).find('.sub-block,.example-btn-section,.arranged-examples').addClass('pe-none');
+		
 		// 각 배틀타입에 맞게 채점 진행
 		switch(currentBattle.battleType) {
 			case '1':
@@ -104,13 +107,16 @@
 		$.ajax({
 			url: '/craft/battle/evaluation/add',
 			type: 'GET', contentType: 'application/json', data: command,
+			success: () => { if(correct) { _battleRecord.correct++; } calcRank(); },
 			error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.')
 		})
 	})
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function() {
 		this.disabled = true;
-		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
+		const $battleSection = $(this).toggleClass('js-solve-btn js-next-btn').text('확인').closest('.battle-section');
+		$battleSection.find('.battle-type-block').slideDown();
+		$battleSection.find('.sub-block,.example-btn-section,.arranged-examples').removeClass('pe-none');
 		// 클라이언트에 남은 다음 문제 진행
 		if(battlePool.length > 0) {
 			_askStep();
@@ -165,6 +171,12 @@
 		
 		// 다른 배틀 섹션 숨김
 		$(view).show().siblings('.battle-section').hide();
+		anime({
+			targets: view,
+			easing: 'linear',
+			duration: 100,
+			left: ['100vw', 0],
+		})
 		// 해설 숨김
 		$(view).find('.explain-section').hide().find('.collapse').collapse('hide');
 		
@@ -324,21 +336,28 @@
 				 
 				// 해석 표시
 				sentence.replaceChildren(currentBattle.kor)
-				// 선택 초기화
-				view.querySelector('.arranged-examples').replaceChildren();
 				// 보기 표시
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
 					options.push({ el: 'button', className: 'btn btn-outline-fico mb-1', textContent: eng.substring(start, end), onclick: function() {
-						if(!this.closest('.arranged-examples')) {
-							view.querySelector('.arranged-examples').appendChild(this);
-						}else {
-							view.querySelector('.example-btn-section').appendChild(this);
+						if(!this.closest('.arranged-examples') && !this.matches('.text-secondary.bg-secondary')) {
+							const clone = this.cloneNode(true);
+							view.querySelector('.arranged-examples').appendChild(clone);
+							clone.onclick = () => {
+								clone.remove();
+								$(this).removeClass('text-secondary bg-secondary');	
+								view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
+							}
+							$(this).addClass('text-secondary bg-secondary');
 						}
 						view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
 					}
 					});
 				});	
 				view.querySelector('.example-btn-section').replaceChildren(createElement(options));
+				// 선택 초기화
+				view.querySelector('.arranged-examples').replaceChildren();
+				view.querySelector('.arranged-examples').style.height = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
+				
 				break;
 		}
 		
@@ -348,10 +367,11 @@
 	
 	/** 플레이어 초기화
 	 */
-	function initPlayer(memberId, age, contentType, contentId) {
+	function initPlayer(memberId, age, contentType, contentId, battleRecord) {
 		_memberId = memberId;
 		_contentId = contentId;
 		_contentType = contentType;
+		_battleRecord = battleRecord;
 
 		// 나이를 연령대로 변환
 		if(age < 13) _ageGroup = 'E';
@@ -359,6 +379,9 @@
 		else if(age < 19) _ageGroup = 'H';
 		else  _ageGroup = 'C';
 		
+		// 진급 진행도 표시
+		calcRank();
+
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
 			req = window.indexedDB.open(DB_NAME, DB_VERSION);
@@ -406,7 +429,76 @@
 		return arr;
 	}
 	
+	function calcRank() {
+		if(_battleRecord.correct > 3500) {
+			currRankBase = 3501;
+			nextRankBase = 3501;
+		}else if(_battleRecord.correct > 2500) {
+			currRankBase = 2501;
+			nextRankBase = 3501;
+		}else if(_battleRecord.correct > 2000) {
+			currRankBase = 2001;
+			nextRankBase = 2501;
+		}else if(_battleRecord.correct > 1600) {
+			currRankBase = 1601;
+			nextRankBase = 2001;
+		}else if(_battleRecord.correct > 1300) {
+			currRankBase = 1301;
+			nextRankBase = 1601;
+		}else if(_battleRecord.correct > 1100) {
+			currRankBase = 1101;
+			nextRankBase = 1301;
+		}else if(_battleRecord.correct > 900) {
+			currRankBase = 901;
+			nextRankBase = 1101;
+		}else if(_battleRecord.correct > 700) {
+			currRankBase = 701;
+			nextRankBase = 901;
+		}else if(_battleRecord.correct > 600) {
+			currRankBase = 601;
+			nextRankBase = 701;
+		}else if(_battleRecord.correct > 500) {
+			currRankBase = 501;
+			nextRankBase = 601;
+		}else if(_battleRecord.correct > 400) {
+			currRankBase = 401;
+			nextRankBase = 501;
+		}else if(_battleRecord.correct > 300) {
+			currRankBase = 301;
+			nextRankBase = 401;
+		}else if(_battleRecord.correct > 200) {
+			currRankBase = 201;
+			nextRankBase = 301;
+		}else if(_battleRecord.correct > 150) {
+			currRankBase = 151;
+			nextRankBase = 201;
+		}else if(_battleRecord.correct > 100) {
+			currRankBase = 101;
+			nextRankBase = 151;
+		}else if(_battleRecord.correct > 50) {
+			currRankBase = 51;
+			nextRankBase = 101;
+		}else if(_battleRecord.correct > 20) {
+			currRankBase = 21;
+			nextRankBase = 51;
+		}else {
+			currRankBase = 0;
+			nextRankBase = 21;
+		}		
+		const rankProgress = document.querySelector('.progress-bar');
+		
+		const rankPercent = ((_battleRecord.correct - currRankBase) * 100 / nextRankBase).toFixed(1);
+		rankProgress.ariaValueNow = rankPercent;
+		rankProgress.textContent = `${rankPercent}%`;
+		rankProgress.style.width = `${rankPercent}%`;
+	}
+	
+	/** 해설 내용 표시
+	 */
 	function displayAnswerInfo(eng, explainSection, answerInfo) {
+		
+		// 한 줄 코멘트는 미리 펼치기
+		$(explainSection).find('.comment-section').collapse('show');
 
 		// 구문분석 정보
 		tandem.showSemanticAnalysis(eng, answerInfo.svocTag.svocBytes, $(explainSection).find('.svoc-section').empty());
