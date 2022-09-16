@@ -818,10 +818,6 @@
 				}
 			}
 		}
-		// 텍스트 내용이 없는 태그는 삭제
-		div.querySelectorAll('.sem').forEach( elem => {
-			if(elem.textContent.length == 0) elem.remove();
-		})
 	}
 
 	/**
@@ -855,6 +851,10 @@
 	 */
 	function correctMarkLine(div) {
 		div.removeAttribute('style');
+		// 텍스트 내용이 없는 태그는 삭제
+		div.querySelectorAll('.sem').forEach( elem => {
+			if(elem.textContent.length == 0) elem.remove();
+		})
 		const elementsHaveAlign = div.querySelectorAll('.cmnt-align-center,.cmnt-align-start');
 		for (let i = 0, len = elementsHaveAlign.length; i < len; i++) {
 			elementsHaveAlign[i].classList.remove('cmnt-align-center', 'cmnt-align-start', 'odd');
