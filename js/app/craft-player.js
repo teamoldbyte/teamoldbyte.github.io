@@ -30,13 +30,8 @@
 	
 	
 	
-	
-	
-	
-	
 	const DB_NAME = 'findsvoc-idb';	// url 호스트별로 유일한 데이터베이스명을 가집니다.
 	const DB_VERSION = 1;	// 데이터베이스 버전(테이블 스키마 변경이 필요할 경우 올리세요.)
-	const DB_STORE_NAME = 'likedb';	// 테이블명
 	let req, idb, idbstore;
 	
 	let selectHistory = []; // 현재 문제에서 선택한 선택지들 모음(1,2,5유형용)
@@ -96,7 +91,16 @@
 				correct = view.querySelector('.arranged-examples').textContent.replace(/\W/g,'').trim() == currentBattle.eng.replace(/\W/g,'').trim();
 				break;
 		}
-		alert(correct? '맞혔습니다' : '틀렸습니다');
+		const resultColor = correct ? '#4EC9B0' : '#F44747';
+		const viewBox = view.querySelector('.sub-block'); 
+		anime({
+			targets: viewBox,
+			borderColor: ['#0000', resultColor],
+			begin: () => {
+				viewBox.style.borderStyle = 'solid';
+				viewBox.style.borderWidth = '2px';	
+			}
+		})
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: false };
 		
 		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment);
@@ -107,7 +111,31 @@
 		$.ajax({
 			url: '/craft/battle/evaluation/add',
 			type: 'GET', contentType: 'application/json', data: command,
-			success: () => { if(correct) { _battleRecord.correct++; } calcRank(); },
+			success: () => { 
+				if(correct) { 
+					_battleRecord.correct++; 
+				}
+				if(_memberId == 0) {
+					req = window.indexedDB.open(DB_NAME, DB_VERSION);
+					req.onsuccess = function() {
+						idb = this.result;
+						const tx = idb.transaction(['StepBattle'], 'readwrite');
+						idbstore = tx.objectStore('StepBattle');
+						idbstore.index('bid').openCursor().onsuccess = function() {
+							let cursor = this.result;
+							if(cursor) {
+								if(cursor.key == currentBattle.bid) {
+									const record = cursor.value;
+									record.solve = correct? 'O': 'X';
+									cursor.update(record);
+									return;
+								}
+								cursor.continue();
+							}
+						};
+					};	
+				}
+				calcRank(); },
 			error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.')
 		})
 	})
@@ -116,6 +144,7 @@
 		this.disabled = true;
 		const $battleSection = $(this).toggleClass('js-solve-btn js-next-btn').text('확인').closest('.battle-section');
 		$battleSection.find('.battle-type-block').slideDown();
+		$battleSection.find('.sub-block').css('borderWidth',0);
 		$battleSection.find('.sub-block,.example-btn-section,.arranged-examples').removeClass('pe-none');
 		// 클라이언트에 남은 다음 문제 진행
 		if(battlePool.length > 0) {
@@ -129,7 +158,8 @@
 		tandem.correctMarkLine(this.querySelector('.semantics-result'))
 	})
 	
-	// 다음 20문제 가져오기
+	/** 다음 20문제 가져오기
+	*/
 	function _getNextBattles() {
 		const contentPath = _contentId ? `/${ntoa(_contentId)}` : ''
 		const url = `/craft/battle/${_contentType}${contentPath}/next`
@@ -141,22 +171,19 @@
 					req = window.indexedDB.open(DB_NAME, DB_VERSION);
 					req.onsuccess = function() {
 						idb = this.result;
-						const tx = idb.transaction(['Battle'], 'readwrite');
-						idbstore = tx.objectStore('Battle');
-						// 전체 레코드를 조회
-						req = idbstore.openCursor();
-						req.onsuccess = function() {
-							const cursor = this.result;
-							if(cursor) {
-								// 레코드에 해당하는 버튼을 찾아 좋아요 표시 클래스를 적용합니다.
-								const [likeUser, likeTarget] = atob(cursor.key).split('_');
-								_findTargetAndToggleClass(likeUser, likeTarget, cursor.value.checked);
-								cursor.continue();
-							}
+						const tx = idb.transaction(['StepBattle'], 'readwrite');
+						idbstore = tx.objectStore('StepBattle');
+						let i = 0;
+						insertNext();
+						function insertNext() {
+							if(i < battles.length) {
+								const battle = battles[i++];
+								idbstore.add({ bid: battle.bid, data: battle, solve: '' }, battle.bid)
+										.onsuccess = insertNext;
+							}else _askStep();
 						}
 					};				
-				}
-				_askStep();
+				}else _askStep();
 			}
 		}).fail(() => alert('새로운 문제를 조회할 수 없습니다.'));
 	}
@@ -373,43 +400,59 @@
 		_contentType = contentType;
 		_battleRecord = battleRecord;
 
-		// 나이를 연령대로 변환
-		if(age < 13) _ageGroup = 'E';
-		else if(age < 16) _ageGroup = 'M';
-		else if(age < 19) _ageGroup = 'H';
-		else  _ageGroup = 'C';
-		
-		// 진급 진행도 표시
-		calcRank();
-
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
+			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
 			req = window.indexedDB.open(DB_NAME, DB_VERSION);
 			req.onsuccess = function() {
 				idb = this.result;
-				const tx = idb.transaction(['FreeMembership','Battle'], 'readonly');
-				idbstore = tx.objectStore('Battle');
+				const tx = idb.transaction(['StepBattle'], 'readonly');
+				idbstore = tx.objectStore('StepBattle');
 				// 전체 레코드를 조회
 				req = idbstore.openCursor();
 				req.onsuccess = function() {
 					const cursor = this.result;
 					if(cursor) {
-						// 레코드에 해당하는 버튼을 찾아 좋아요 표시 클래스를 적용합니다.
-						const [likeUser, likeTarget] = atob(cursor.key).split('_');
-						_findTargetAndToggleClass(likeUser, likeTarget, cursor.value.checked);
+						switch(cursor.value.solve) {
+							case 'O':
+								_battleRecord.correct++;
+								break;
+							case 'X':
+								_battleRecord.incorrect++;
+								break;
+							default:
+							 	battlePool.push(cursor.value.data);
+								break;	
+						}
 						cursor.continue();
-					}
+					}else initDatas(age);
 				}
 			};
 			// 테이블 스키마 변경이 필요할 경우 아래 코드를 변경하세요.
 			req.onupgradeneeded = function() {
 				idb = this.result;
-				idbstore = idb.createObjectStore('Battle');
-				idbstore.createIndex('id', 'id', { unique: false});
-				idbstore.createIndex('checked', 'checked', { unique: false});
+				idbstore = idb.createObjectStore('StepBattle');
+				idbstore.createIndex('bid', 'bid', { unique: true});
+				idbstore.createIndex('data', 'data'); // 실제 Battle
+				idbstore.createIndex('solve', 'solve', { unique: false}); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
 			}
-		}
-		_getNextBattles();
+		}else initDatas(age);
+		
+	}
+	
+	/** 연령그룹 계산, 문제를 조회하고 프로그레스 표시
+	 */
+	function initDatas(age) {
+		// 나이를 연령대로 변환
+		if(age < 13) _ageGroup = 'E';
+		else if(age < 16) _ageGroup = 'M';
+		else if(age < 19) _ageGroup = 'H';
+		else  _ageGroup = 'C';
+		// 문제 풀이 비어있다면 다음 문제 가져오기
+		if(battlePool.length == 0) _getNextBattles();
+		else _askStep();
+		// 진급 진행도 표시
+		calcRank();		
 	}
 	
 	/** 컨테이너 속에서 지정한 선택자에 해당하는 요소들의 위치 반환
