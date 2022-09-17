@@ -12,7 +12,7 @@
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
 	let _memberId, _ageGroup; // 사용자 정보
 	let _battleRecord; // 배틀 전적 정보
-	let currRankBase, nextRankBase; // 현재 및 다음 계급의 시작 정답수
+	let currRankTitle, currRankBase, nextRankBase; // 현재 계급명, 현재 및 다음 계급의 시작 정답수
 	
 	
 	
@@ -133,7 +133,7 @@
 					};	
 				}
 				
-				const timerTitle = createElement({ el: 'span', textContent: '5초 뒤에 눌러주세요.' });
+				const timerTitle = createElement({ el: 'span', textContent: '4초 뒤에 눌러주세요.' });
 				const nextBtn = view.querySelector('.js-next-btn');
 				nextBtn.parentElement.prepend(timerTitle);
 				let timeLeft = 4;
@@ -488,61 +488,94 @@
 	}
 	
 	function calcRank() {
+		const prevRankBase = currRankBase;
 		if(_battleRecord.correct > 3500) {
+			currRankTitle = '대장';
 			currRankBase = 3501;
 			nextRankBase = 3501;
 		}else if(_battleRecord.correct > 2500) {
+			currRankTitle = '중장';
 			currRankBase = 2501;
 			nextRankBase = 3501;
 		}else if(_battleRecord.correct > 2000) {
+			currRankTitle = '소장';
 			currRankBase = 2001;
 			nextRankBase = 2501;
 		}else if(_battleRecord.correct > 1600) {
+			currRankTitle = '준장';
 			currRankBase = 1601;
 			nextRankBase = 2001;
 		}else if(_battleRecord.correct > 1300) {
+			currRankTitle = '대령';
 			currRankBase = 1301;
 			nextRankBase = 1601;
 		}else if(_battleRecord.correct > 1100) {
+			currRankTitle = '중령';
 			currRankBase = 1101;
 			nextRankBase = 1301;
 		}else if(_battleRecord.correct > 900) {
+			currRankTitle = '소령';
 			currRankBase = 901;
 			nextRankBase = 1101;
 		}else if(_battleRecord.correct > 700) {
+			currRankTitle = '대위';
 			currRankBase = 701;
 			nextRankBase = 901;
 		}else if(_battleRecord.correct > 600) {
+			currRankTitle = '중위';
 			currRankBase = 601;
 			nextRankBase = 701;
 		}else if(_battleRecord.correct > 500) {
+			currRankTitle = '소위';
 			currRankBase = 501;
 			nextRankBase = 601;
 		}else if(_battleRecord.correct > 400) {
+			currRankTitle = '상사';
 			currRankBase = 401;
 			nextRankBase = 501;
 		}else if(_battleRecord.correct > 300) {
+			currRankTitle = '중사';
 			currRankBase = 301;
 			nextRankBase = 401;
 		}else if(_battleRecord.correct > 200) {
+			currRankTitle = '하사';
 			currRankBase = 201;
 			nextRankBase = 301;
 		}else if(_battleRecord.correct > 150) {
+			currRankTitle = '병장';
 			currRankBase = 151;
 			nextRankBase = 201;
 		}else if(_battleRecord.correct > 100) {
+			currRankTitle = '상병';
 			currRankBase = 101;
 			nextRankBase = 151;
 		}else if(_battleRecord.correct > 50) {
+			currRankTitle = '일병';
 			currRankBase = 51;
 			nextRankBase = 101;
 		}else if(_battleRecord.correct > 20) {
+			currRankTitle = '이병';
 			currRankBase = 21;
 			nextRankBase = 51;
 		}else {
+			currRankTitle = '훈련병';
 			currRankBase = 0;
 			nextRankBase = 21;
 		}		
+		
+		// 진급을 하면 축하 연출
+		if(prevRankBase < currRankBase) {
+			showFireworks({target:$('.battle-section:visible')[0], distance: 100, size: 10})
+			const newRankImage = createElement({ el: 'img', src: `https://static.findsvoc.com/images/app/craft/${currRankTitle}.png`, class: 'position-absolute start-50 top-50 w-50', style: 'transform: translate(-50%, -50%)'});
+			document.body.appendChild(newRankImage);
+			anime({
+				targets: newRankImage,
+				scale: [0, 1],
+				easing: 'cubicBezier(0,2,1,2)',
+				duration: 1000,
+				complete: () => setTimeout( () => newRankImage.remove(), 3000)
+			})
+		}
 		const rankProgress = document.querySelector('.progress-bar');
 		
 		const rankPercent = ((_battleRecord.correct - currRankBase) * 100 / nextRankBase).toFixed(1);
