@@ -43,7 +43,7 @@
 		let correct = true;
 		
 		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
-		$(this).toggleClass('js-solve-btn js-next-btn').text('다음');
+		$(this).toggleClass('js-solve-btn js-next-btn').text('다음').prop('disabled', true);
 		// 해설을 위해 배틀타입을 숨김
 		$(view).find('.battle-type-block').slideUp();
 		$(view).find('.sub-block,.example-btn-section,.arranged-examples').addClass('pe-none');
@@ -89,18 +89,15 @@
 				break;
 			case '5':
 				correct = view.querySelector('.arranged-examples').textContent.replace(/\W/g,'').trim() == currentBattle.eng.replace(/\W/g,'').trim();
+				view.querySelector('.example-btn-section').replaceChildren(currentBattle.eng);
 				break;
 		}
-		const resultColor = correct ? '#4EC9B0' : '#F44747';
 		const viewBox = view.querySelector('.sub-block'); 
-		anime({
-			targets: viewBox,
-			borderColor: ['#0000', resultColor],
-			begin: () => {
-				viewBox.style.borderStyle = 'solid';
-				viewBox.style.borderWidth = '2px';	
-			}
-		})
+		
+		const resultToast = createElement({"el":"div","class":`toast align-items-center position-absolute top-0 start-50 w-50 text-white text-center ${correct?'bg-success':'bg-danger'} border-0 translate-middle`,
+							"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "false", "textContent": correct?"정답입니다!":"틀렸어요.."});
+		viewBox.prepend(resultToast);
+		bootstrap.Toast.getOrCreateInstance(resultToast).show();
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: false };
 		
 		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment);
@@ -135,6 +132,20 @@
 						};
 					};	
 				}
+				
+				const timerTitle = createElement({ el: 'span', textContent: '5초 뒤에 눌러주세요.' });
+				const nextBtn = view.querySelector('.js-next-btn');
+				nextBtn.parentElement.prepend(timerTitle);
+				let timeLeft = 4;
+				const nextTimer = setInterval(() => {
+					if(--timeLeft > 0) {
+						timerTitle.textContent = `${timeLeft}초 뒤에 눌러주세요.`;
+					}else {
+						timerTitle.remove();
+						nextBtn.disabled = false;
+						clearInterval(nextTimer);
+					}
+				}, 1000);
 				calcRank(); },
 			error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.')
 		})
@@ -143,8 +154,8 @@
 	.on('click', '.js-next-btn', function() {
 		this.disabled = true;
 		const $battleSection = $(this).toggleClass('js-solve-btn js-next-btn').text('확인').closest('.battle-section');
+		$battleSection.find('.toast').remove();
 		$battleSection.find('.battle-type-block').slideDown();
-		$battleSection.find('.sub-block').css('borderWidth',0);
 		$battleSection.find('.sub-block,.example-btn-section,.arranged-examples').removeClass('pe-none');
 		// 클라이언트에 남은 다음 문제 진행
 		if(battlePool.length > 0) {
@@ -201,9 +212,12 @@
 		anime({
 			targets: view,
 			easing: 'linear',
-			duration: 100,
+			duration: 1000,
 			left: ['100vw', 0],
 		})
+		// 확인버튼 비활성화
+		$(view).find('.js-solve-btn').prop('disabled', true);
+			
 		// 해설 숨김
 		$(view).find('.explain-section').hide().find('.collapse').collapse('hide');
 		
@@ -365,7 +379,7 @@
 				sentence.replaceChildren(currentBattle.kor)
 				// 보기 표시
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
-					options.push({ el: 'button', className: 'btn btn-outline-fico mb-1', textContent: eng.substring(start, end), onclick: function() {
+					options.push({ el: 'span', className: 'btn btn-outline-fico mb-1', textContent: eng.substring(start, end), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.text-secondary.bg-secondary')) {
 							const clone = this.cloneNode(true);
 							view.querySelector('.arranged-examples').appendChild(clone);
@@ -383,6 +397,7 @@
 				view.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				// 선택 초기화
 				view.querySelector('.arranged-examples').replaceChildren();
+				$(view).find('.arranged-examples').sortable();
 				view.querySelector('.arranged-examples').style.height = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
 				
 				break;
