@@ -687,5 +687,32 @@
 				"value": "option"
 			}
 		]
+	},
+	"battle6": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "빈칸 선택",
+				"innerHTML": "빈칸 선택",
+				"value": "fill-right"
+			}
+		]
+	},
+	"battle7": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "button",
+				"type": "button",
+				"title": "오답 단어 추가",
+				"innerHTML": "오답 단어 추가",
+				"value": "add-word"
+			}
+		]
 	}
 }
