@@ -92,6 +92,30 @@
 								"el": "label",
 								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
 								"textContent": "5. 문장요소 배열하기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 6
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "6. 빈 칸 채우기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 7
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "7. 한글 해석하기"
 							}
 						]
 					},
@@ -256,7 +280,9 @@
 		"[{}] 수식어와 피수식어를 선택하세요.",
 		"다음 문장에서 적절한 보기를 선택하세요.",
 		"다음 문장에서 어법상 틀린 것을 선택하세요.",
-		"다음 어구들을 해석에 맞게 배치해 보세요."	
+		"다음 어구들을 해석에 맞게 배치해 보세요.",
+		"다음 빈칸에 어울리는 단어/구를 채우세요.",
+		"한글낱말을 배열하여 영어문장을 해석해 보세요."
 	],
 	"battleTypeInfos": [
 		[
@@ -454,6 +480,16 @@
 		[
 			{
 				"ask": "#5"
+			}
+		],
+		[
+			{
+				"ask": "#6"
+			}
+		],
+		[
+			{
+				"ask": "#7"
 			}
 		]
 	],
