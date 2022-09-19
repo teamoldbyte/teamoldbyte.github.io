@@ -44,7 +44,8 @@
 }
 /* 정답은 푸른색 */
 .battle-context .answer,
-.battle-context .pick-right, 
+.battle-context .pick-right,
+.battle-context .fill-right,
 .battle-context .answer-wrong {
 	position:relative; 
 	color: blue;
