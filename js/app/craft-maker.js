@@ -115,21 +115,6 @@
 		this.closest('.add-battle-section').querySelector('.askTag').value 
 		= cachedCateAskTagMap[parseInt(this.value)] || '';
 	})
-	// 해석이 동반되는 문제는 해석 셀렉트를 골라야 함. 빈 값의 경우 직접 입력한 값이 선택되도록.
-	.on('change', '.select-kor', function() {
-		if(!this.value) {
-			const selected = Array.from(this.options).filter(o => o.selected)[0];
-			const kor = prompt(`해석 직접 입력${selected.dataset.trans ? '(수정)':''}:`);
-			if(kor == null) {
-				if(selected.dataset.trans == null) this.children[0].selected = true;
-			}else {
-				if(kor.length > 0) {
-					selected.dataset.trans = kor.trim();
-					selected.textContent = `(직접입력) ${kor.trim()}`;
-				}
-			}
-		}
-	})
 	
 	// 에디터 메뉴 내의 토글아이콘들은 다른 토글아이콘을 체크해제한다.
 	.on('change', '.battle-maker [role=toolbar] [type=checkbox]', function() {
@@ -255,20 +240,11 @@
 					alert('보기를 모두 더하면 원문이 되도록 선택해 주세요.');
 					return;
 				}
+				// 목록에서 선택한 해석id는 ask로
+				command.ask = addSection.querySelector('.select-kor').value;
 				// [보기 위치1, 보기 위치2, ...]
 				command.example = JSON.stringify(findPositions(battleContext, '.option'));
-				// select에서 한글해석 선택
-				const selectedKorOption5 = Array.from(addSection.querySelector('.select-kor').options).filter(o => o.selected)[0];
-				if(selectedKorOption5.value.length == 0 && !selectedKorOption5.dataset.trans) {
-					alert('해석을 선택하거나 입력해 주세요.');
-					return;
-				}
-				if(selectedKorOption5.value.length == 0)
-					// 직접 입력한 해석은 answer로
-					command.answer = [ selectedKorOption5.dataset.trans ];
-				else
-					// 목록에서 선택한 해석id는 ask로
-					command.ask = addSection.querySelector('.select-kor').value;
+
 				break;
 			case '6':
 				if(battleContext.querySelector('.fill-right') == null) {
@@ -276,36 +252,15 @@
 					return;					
 				}
 				let blank6 = battleContext.querySelector('.fill-right');
+				// 목록에서 선택한 해석id는 ask로
+				command.ask = addSection.querySelector('.select-kor').value;
 				// [빈칸 위치, 정답 텍스트]
 				command.example = JSON.stringify([ findPositions(battleContext, '.fill-right')[0], 
 												blank6.textContent.trim()]);
-				// select에서 한글해석 선택
-				const selectedKorOption6 = Array.from(addSection.querySelector('.select-kor').options).filter(o => o.selected)[0];
-				if(selectedKorOption6.value.length == 0 && !selectedKorOption6.dataset.trans) {
-					alert('해석을 선택하거나 입력해 주세요.');
-					return;
-				}
-				if(selectedKorOption6.value.length == 0)
-					// 직접 입력한 해석은 answer로
-					command.answer = JSON.stringify([ selectedKorOption6.dataset.trans ]);
-				else 
-					// 목록에서 선택한 해석id는 ask로
-					command.ask = addSection.querySelector('.select-kor').value;
 				break;
 			case '7':
-				// select에서 한글해석 선택
-				const selectedKorOption7 = Array.from(addSection.querySelector('.select-kor').options).filter(o => o.selected)[0];
-				if(selectedKorOption7.value.length == 0 && !selectedKorOption7.dataset.trans) {
-					alert('해석을 선택하거나 입력해 주세요.');
-					return;
-				}
+				// 목록에서 선택한 해석id는 ask로
 				command.ask = addSection.querySelector('.select-kor').value;
-				if(selectedKorOption7.value.length == 0)
-					// 직접 입력한 해석은 answer로
-					command.answer = JSON.stringify([ selectedKorOption7.dataset.trans ]);
-				else 
-					// 목록에서 선택한 해석id는 ask로
-					command.ask = addSection.querySelector('.select-kor').value;
 				// [ 추가단어1, 추가단어2, ... ]
 				command.example = JSON.stringify(Array.from(addSection.querySelector('.battle-kor-ext').value.trim().split('/'), ext => ext.trim()));
 				
@@ -620,7 +575,7 @@
 					{el: 'select', className: 'select-kor form-select d-inline-block col',
 					children: Array.from($(maker).closest('.battle-section-panel').data('transList'), (trans, i) => {
 						return {el: 'option', value: trans.id, textContent: trans.text.trim(), 'data-trans': trans.text.trim() }
-					}).concat([{ el: 'option', value: '', textContent: '--직접 입력--'}])}
+					})}
 				]
 			}));
 		}
@@ -984,7 +939,6 @@
 		/* 배열하기.
 			ask = 해석 아이디(선택한 해석일 경우)
 			example = [[보기1start,보기1end],[보기2start,보기2end],...]
-			answer = [해석](직접 입력한 해석일 경우)
 		 */
 		 	examples.sort(sortByPosition).forEach((example, j, arr) => {
 				let leftStr = eng.substring(offsetPos, example[0]);
@@ -1003,7 +957,6 @@
 		/** 빈칸 채우기
 			ask = 해석 아이디(선택한 해석일 경우)
 			example = [[대상start,대상end],정답텍스트]
-			answer = [해석](직접 입력한 해석일 경우)
 		 */	
 			let leftStr = eng.substring(offsetPos, examples[0][0]);
 			if(leftStr) contextChildren.push(leftStr);
@@ -1018,7 +971,6 @@
 		/** 해석 배열하기
 			ask = 해석 아이디(선택한 해석일 경우)
 			example = [추가 단어1, 추가 단어2, ...](추가 단어를 입력했을 경우)
-			answer = [해석](직접 입력한 해석일 경우)
 		 */	
 		}
 		return contextChildren;		
