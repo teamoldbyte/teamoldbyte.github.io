@@ -194,7 +194,7 @@ function pageinit(battlePage) {
 					{ el: 'div', className: 'col-2 row', children: [
 						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '종류' },
 						{ el: 'select', className: 'form-select col battle-type', children: 
-							Array.from(['1','2','3','4','5'], n => {return {el: 'option', value: n, textContent: `#${n}`}}) 
+							Array.from(['1','2','3','4','5','6','7'], n => {return {el: 'option', value: n, textContent: `#${n}`}}) 
 						}
 					]},
 					{ el: 'div', className: 'col-5 row', children: [
