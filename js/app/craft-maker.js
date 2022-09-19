@@ -300,6 +300,9 @@
 				
 				command.battleId = response.battleId;
 				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
+				if(command.battleType == '7') {
+					command.kor = $(battlePanel).data('transList').find(t => t.id == parseInt(command.ask)).text.trim();
+				}
 				const battleList = battlePanel.querySelector('.existing-battles-section');
 				const newBattle = previewBattle($(battlePanel).data('eng'), command);
 				let battleGroupBtn = battleList.querySelector(`[${BATTLE_TYPE_SELECTOR}="${battleType}"]`);
@@ -408,7 +411,6 @@
 					radio.nextElementSibling.htmlFor = `${radioName}${j}`;
 				})
 		});
-		
 		// 문장에 등록된 배틀 조회
 		$.getJSON(`/craft/battle/search/${sentenceId}`, battles => {
 			let battleSummary = {}; // 타입별 배열로 저장(1: [a,b,c], 2: [d,e,f], ...)
@@ -427,7 +429,14 @@
 					const randId = Date.now() + i;
 					battleListSection.append(createElement(
 						makeExistingBattle(summ[0], summ[1].length, randId, 
-							Array.from(summ[1], battle => previewBattle(sentenceEng, battle)))));
+							Array.from(summ[1], battle => {
+								let korAttachedBattle;
+								if(battle.battleType == '7') {
+									korAttachedBattle = Object.assign({}, battle, {kor: transList.find( t => t.id==parseInt(battle.ask)).text.trim()});
+								}else korAttachedBattle = battle;
+								
+								return previewBattle(sentenceEng, korAttachedBattle)
+							}))));
 				})
 			}
 		})
@@ -972,6 +981,29 @@
 			ask = 해석 아이디(선택한 해석일 경우)
 			example = [추가 단어1, 추가 단어2, ...](추가 단어를 입력했을 경우)
 		 */	
+		 	contextChildren.push({
+				el: 'div', className: 'row', children: [
+					{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '영문'},
+					{ el: 'span', textContent: eng }
+				]
+			});
+			contextChildren.push({
+				el: 'div', className: 'row', children: [
+					{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '정답'},
+					{ el: 'span', textContent: battle.kor}
+				]
+			});
+			contextChildren.push({
+				el: 'div', className: 'row', children: [
+					{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '보기'},
+					{ el: 'span', children: Array.from(battle.kor.split(/\s+/), k => {
+							return { el: 'span', class: 'btn border border-dark', textContent: k }
+						}).concat(Array.from(examples.filter(ex => ex.length > 0), k => {
+							return { el: 'span', class: 'btn border border-danger', textContent: k }
+						}))
+					}
+				]
+			});
 		}
 		return contextChildren;		
 	}
