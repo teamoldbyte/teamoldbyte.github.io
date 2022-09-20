@@ -251,12 +251,13 @@
 					alert('문제로 만들 어구를 선택해 주세요.');
 					return;					
 				}
-				let blank6 = battleContext.querySelector('.fill-right');
+				let blank6 = battleContext.querySelectorAll('.fill-right');
 				// 목록에서 선택한 해석id는 ask로
 				command.ask = addSection.querySelector('.select-kor').value;
 				// [빈칸 위치, 정답 텍스트]
-				command.example = JSON.stringify([ findPositions(battleContext, '.fill-right')[0], 
-												blank6.textContent.trim()]);
+				command.example = JSON.stringify(Array.from(findPositions(battleContext, '.fill-right'), (pos,i) => {
+					return [pos, blank6[i].textContent.trim()];
+				}));
 				break;
 			case '7':
 				// 목록에서 선택한 해석id는 ask로
@@ -964,17 +965,20 @@
 		}else if(battle.battleType == '6') {
 		/** 빈칸 채우기
 			ask = 해석 아이디(선택한 해석일 경우)
-			example = [[대상start,대상end],정답텍스트]
+			example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트],...]
 		 */	
-			let leftStr = eng.substring(offsetPos, examples[0][0]);
-			if(leftStr) contextChildren.push(leftStr);
-			contextChildren.push({
-				el: 'span',
-				className: 'fill-right',
-				textContent: eng.substring(examples[0][0],examples[0][1])
-			});				
-			if(examples[0][1] < eng.length)
-				contextChildren.push(eng.substring(examples[0][1]));		 	
+		 	examples.sort((a,b) => a[0][0] - b[0][0]).forEach((example, j, arr) => {
+				let leftStr = eng.substring(offsetPos, example[0][0]);
+				if(leftStr) contextChildren.push(leftStr);
+				contextChildren.push({
+					el: 'span',
+					className: 'fill-right',
+					textContent: eng.substring(example[0][0],example[0][1])
+				});				
+				if(j == arr.length - 1 && example[0][1] < eng.length)
+					contextChildren.push(eng.substring(example[0][1]));	
+				offsetPos = example[0][1];	 	
+			});
 		}else if(battle.battleType == '7') {
 		/** 해석 배열하기
 			ask = 해석 아이디(선택한 해석일 경우)
