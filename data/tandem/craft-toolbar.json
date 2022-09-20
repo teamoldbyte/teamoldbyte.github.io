@@ -703,17 +703,6 @@
 		]
 	},
 	"battle7": {
-		"el": "div",
-		"children":
-		[
-			{
-				"el": "button",
-				"type": "button",
-				"className": "btn btn-outline-fico",
-				"title": "오답 단어 추가",
-				"innerHTML": "오답 단어 추가",
-				"value": "add-word"
-			}
-		]
+		"el": "div"
 	}
 }
