@@ -75,7 +75,7 @@
 					section = counterSection.querySelector('.counter-same-type');
 					section.replaceChildren(createElement(Array.from(result, (count, i) => {
 						return [{el: 'label', className: 'bg-fc-yellow col-auto ms-2 rounded-pill', textContent: `#${i + 1}`}, 
-								{el: 'span', className: 'col-auto', textContent: `${count}건`}]
+								{el: 'span', className: 'col-auto ps-1 pe-0', textContent: `${count}건`}]
 					})));
 					break;
 				case 'level':
