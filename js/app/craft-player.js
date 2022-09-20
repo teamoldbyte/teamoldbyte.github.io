@@ -476,45 +476,62 @@
 				// 해석 표시
 				sentence.replaceChildren(currentBattle.kor)
 				// 보기 표시
+				const arrangedSection = view.querySelector('.arranged-examples');
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
 					options.push({ el: 'span', className: 'btn btn-outline-fico mb-1 me-1', textContent: eng.substring(start, end), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
-							view.querySelector('.arranged-examples').appendChild(clone);
-							/*const thrower = this.cloneNode(true);
+							const thrower = this.cloneNode(true);
 							clone.style.visibility = 'hidden';
-							thrower.position = 'absolute';
+							thrower.style.position = 'fixed';
+							arrangedSection.appendChild(clone);
 							
+							this.parentElement.appendChild(thrower);
+							// 정답공간으로 선택지 발사
 							anime({
 								targets: thrower,
-								begin: () => {
-									this.
-								},
 								top: [$(this).offset().top, $(clone).offset().top],
 								left: [$(this).offset().left, $(clone).offset().left],
+								easing: 'linear',
 								complete: () => {
 									thrower.remove();
 									clone.style.visibility = 'visible';
 								},
-								duration: 500
-							})*/
+								duration: 100
+							})
 							
 							clone.onclick = () => {
-								clone.remove();
-								$(this).removeClass('selected pe-none');	
-								view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
+								const throwBack = clone.cloneNode(true);
+								clone.style.visibility = 'hidden';
+								throwBack.style.position = 'fixed';
+								arrangedSection.appendChild(throwBack);
+								// 정답지에서 선택지로 발사
+								anime({
+									targets: throwBack,
+									top: [ $(clone).offset().top, $(this).offset().top ],
+									left: [ $(clone).offset().left, $(this).offset().left],
+									easing: 'linear',
+									complete: () => {
+										throwBack.remove();
+										clone.remove();
+										$(this).removeClass('selected pe-none');	
+										view.querySelector('.js-solve-btn').disabled = arrangedSection.childElementCount == 0;
+									},
+									duration: 100
+								})
+								
 							}
 							$(this).addClass('selected pe-none');
 						}
-						view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
+						view.querySelector('.js-solve-btn').disabled = arrangedSection.childElementCount == 0;
 					}
 					});
 				});	
 				view.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				// 선택 초기화
-				view.querySelector('.arranged-examples').replaceChildren();
-				$(view).find('.arranged-examples').sortable();
-				view.querySelector('.arranged-examples').style.minHeight = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
+				arrangedSection.replaceChildren();
+				$(arrangedSection).sortable();
+				arrangedSection.style.minHeight = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
 				
 				break;
 			case '6' :
