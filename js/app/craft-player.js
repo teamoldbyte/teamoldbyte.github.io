@@ -8,11 +8,12 @@
 	
 	$(function() {
 		// 스크롤을 내리면 메뉴를 화면 상단에 고정
-		const header = document.querySelector('.craft-header-section')
+		const header = document.querySelector('.craft-header-section');
+		const scSection = document.querySelector('.scrolling-section');
 		$(window).on('scroll', function(){
 			requestAnimationFrame(() => {
-				header.style.position = scrollY > 30 ? 'fixed' : 'relative';
-				header.classList[scrollY > 30 ? 'add' : 'remove']('min');
+				header.classList[scrollY > 0 ? 'add' : 'remove']('min');
+				scSection.style.marginTop = `${scrollY > 0 ? '35' : '0'}px`;
 			})
 		})
 	})
@@ -47,7 +48,26 @@
 	
 	let selectHistory = []; // 현재 문제에서 선택한 선택지들 모음(1,2,5유형용)
 	
-	$(document).on('click', '.js-solve-btn', function() {
+	$(document)
+	// 배틀 저장(ajax)
+	.on('click', '#save-btn', function() {
+		$.getJSON('/craft/battle/mybattle/save', 
+			{ memberId: _memberId, battleId: currentBattle.bid, save: !currentBattle.saved }, (saved) => {
+				currentBattle.saved = saved;
+				// 버튼 상태 전환
+				$(this).toggleClass('reverse', saved);
+				
+				// 저장여부를 알리는 메세지
+				const saveMsg = createElement({"el":"div","class":'toast align-items-center position-absolute end-0 top-0 mt-4 me-5 w-auto text-center',
+					"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "true", "data-bs-delay": 2000, "textContent": currentBattle.saved?"저장되었습니다.":"저장이 취소되었습니다."})
+				this.appendChild(saveMsg);
+				bootstrap.Toast.getOrCreateInstance(saveMsg).show();
+				saveMsg.addEventListener('hidden.bs.toast', () => saveMsg.remove())
+		});
+		
+	})
+	// 풀이 전송(ajax)
+	.on('click', '.js-solve-btn', function() {
 		const view = this.closest('.battle-section');
 		const answers = JSON.parse(currentBattle.answer||"[]");
 		const examples = JSON.parse(currentBattle.example||"[]");
@@ -142,7 +162,7 @@
 							"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "false", "textContent": correct?"정답입니다!":"틀렸어요.."});
 		view.append(resultToast);
 		bootstrap.Toast.getOrCreateInstance(resultToast).show();
-		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: false };
+		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
 		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment);
@@ -205,7 +225,7 @@
 		if(battlePool.length > 0) {
 			_askStep();
 		}
-		// 남은 문제가 없으면 새로 문제를 조회하여 진행	
+		// 남은 문제가 없으면 새로 문제를 조회(ajax)하여 진행	
 		else _getNextBattles();		
 	})
 	// svoc 분석이 펼쳐질 때 줄바꿈 재처리
@@ -433,15 +453,15 @@
 				// 보기 표시
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
 					options.push({ el: 'span', className: 'btn btn-outline-fico mb-1 me-1', textContent: eng.substring(start, end), onclick: function() {
-						if(!this.closest('.arranged-examples') && !this.matches('.text-secondary.bg-secondary')) {
+						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							view.querySelector('.arranged-examples').appendChild(clone);
 							clone.onclick = () => {
 								clone.remove();
-								$(this).removeClass('text-secondary bg-secondary');	
+								$(this).removeClass('selected');	
 								view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
 							}
-							$(this).addClass('text-secondary bg-secondary');
+							$(this).addClass('selected');
 						}
 						view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
 					}
@@ -451,7 +471,7 @@
 				// 선택 초기화
 				view.querySelector('.arranged-examples').replaceChildren();
 				$(view).find('.arranged-examples').sortable();
-				//view.querySelector('.arranged-examples').style.height = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
+				view.querySelector('.arranged-examples').style.minHeight = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
 				
 				break;
 		}
