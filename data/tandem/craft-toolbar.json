@@ -228,14 +228,14 @@
 		"className": "battles-counter-section p-3 bg-white row mx-0 mb-3 rounded-5",
 		"children": [
 			{
-				"el": "div", "className": "col-md row",
+				"el": "div", "className": "col-md-auto row",
 				"children": [
 					{ "el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "전체" },
 					{ "el": "span", "className": "counter-total col-auto", "textContent": "-"}
 				]
 			},
 			{
-				"el": "div", "className": "col-md-6 row",
+				"el": "div", "className": "col-md-7 row",
 				"children": [
 					{
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "배틀타입"
