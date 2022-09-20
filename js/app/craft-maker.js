@@ -591,9 +591,8 @@
 		if(battleType == 7) {
 			maker.appendChild(createElement({
 				el: 'div', className: 'col-12 row mt-3', children: [
-					{ el: 'label', className: 'col-auto lh-1 my-auto invisible', textContent: '추가'},
-					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '추가 단어'},
-					{ el: 'input', type: 'text', className: 'battle-kor-ext col lh-1 my-auto', placeholder: '선택지로 추가할 단어들을 입력해 주세요. 추가될 단어들은 / 기호로 구분됩니다. 예) 우리가/우리를'}
+					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '오답'},
+					{ el: 'input', type: 'text', className: 'battle-kor-ext form-control col lh-1 my-auto', placeholder: '선택지로 추가할 단어들을 입력해 주세요. 추가될 단어들은 / 기호로 구분됩니다. 예) 우리가/우리를'}
 				]
 			}))
 		}
