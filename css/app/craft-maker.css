@@ -38,14 +38,15 @@
 }
 .battle-context .modificand::after { 
 	content: "피수식어";
+	font-size: 1rem;
 }
 .battle-context .modifier::after { 
 	content: "수식어";
+	font-size: 1rem;
 }
 /* 정답은 푸른색 */
 .battle-context .answer,
-.battle-context .pick-right,
-.battle-context .fill-right,
+.battle-context .pick-right, 
 .battle-context .answer-wrong {
 	position:relative; 
 	color: blue;
