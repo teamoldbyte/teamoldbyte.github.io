@@ -10,10 +10,22 @@
 		// 스크롤을 내리면 메뉴를 화면 상단에 고정
 		const header = document.querySelector('.craft-header-section');
 		const scSection = document.querySelector('.scrolling-section');
-		$(window).on('scroll', function(){
+		let prevY = scrollY;
+		$(window).on('scroll', function(e){
 			requestAnimationFrame(() => {
-				header.classList[scrollY > 0 ? 'add' : 'remove']('min');
-				scSection.style.marginTop = `${scrollY > 0 ? '35' : '0'}px`;
+				// 헤더 크기(대:80px, 소:35px)에 맞춰서 스타일 변경
+				if(scrollY > prevY) { // 스크롤 내림
+					if(scrollY >= 45) {
+						scSection.style.marginTop = '80px';
+						header.classList.add('min');
+					}
+				}else { // 스크롤 올림 
+					if(scrollY < 45) {
+						scSection.style.marginTop = '0';
+						header.classList.remove('min');
+					}
+				}
+				prevY = scrollY;
 			})
 		})
 	})
@@ -76,6 +88,9 @@
 		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
 		$(this).toggleClass('js-solve-btn js-next-btn').text('다음').prop('disabled', true);
 		$(view).find('.ask-section,.example-btn-section,.arranged-examples').addClass('pe-none');
+		
+		// 배틀타입, 문제 축소버전으로 표시
+		$(view).find('.battle-type-block, .ask-block, .simple-ask-block').fadeToggle();
 		
 		// 각 배틀타입에 맞게 채점 진행
 		switch(currentBattle.battleType) {
@@ -158,7 +173,7 @@
 				break;
 		}
 		// 맞힘/틀림에 따른 알림
-		const resultToast = createElement({"el":"div","class":`toast align-items-center position-absolute top-0 start-50 w-50 text-white text-center ${correct?'bg-success':'bg-danger'} border-0 translate-middle`,
+		const resultToast = createElement({"el":"div","class":`toast align-items-center position-absolute top-0 start-50 w-50 text-white text-center ${correct?'bg-success':'bg-danger'} border-0 translate-middle-x mt-4`,
 							"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "false", "textContent": correct?"정답입니다!":"틀렸어요.."});
 		view.append(resultToast);
 		bootstrap.Toast.getOrCreateInstance(resultToast).show();
@@ -268,6 +283,10 @@
 		currentBattle = battlePool.shift();
 		selectHistory = [];
 		const view = document.getElementById(`battle-${currentBattle.battleType}`);
+		
+		$(view).find('.battle-type-block, .ask-block').show();
+		$(view).find('.simple-ask-block').hide();
+		
 		// 배틀 타입 표시
 		view.querySelector('.battle-type').textContent = currentBattle.battleType;
 		
@@ -293,6 +312,7 @@
 		$(view).find('.explain-section').hide().find('.collapse').collapse('hide');
 		
 		const ask = view.querySelector('.ask');
+		const simpleAsk = view.querySelector('.simple-ask-block');
 		const sentence = view.querySelector('.sentence');
 		const eng = currentBattle.eng;
 		const answers = JSON.parse(currentBattle.answer||"[]");
@@ -303,6 +323,7 @@
 			case '1' :
 				// 질문 표시
 				ask.textContent = `다음 문장의 ${currentBattle.ask}를 선택하세요.`;
+				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
 				examples.forEach(([ start, end ], j, arr) => {
 					leftStr = eng.substring(offsetPos, start);
@@ -329,6 +350,7 @@
 				}else {
 					ask.textContent = `[${currentBattle.ask}] 수식어와 피수식어를 선택하세요.`;
 				}
+				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
 			 	const [ modifiers, modificands ] = answers;
 			 	const optionDummy2 = { el: 'span', role: 'button', onclick: function() {
@@ -404,7 +426,7 @@
 					
 				view.querySelector('.example-btn-section').replaceChildren(
 					createElement(Array.from(options, option => {
-						return { el: 'button', className: 'btn btn-outline-fico w-100', textContent: option , onclick: function() {
+						return { el: 'button', className: 'btn btn-outline-fico', textContent: option , onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
 							view.querySelector('.js-solve-btn').disabled = false;
 						}};
@@ -434,7 +456,7 @@
 					}
 					contextChildren.push(span);
 					// 선택지 추가
-					options.push({ el: 'button', className: 'btn btn-outline-fico w-100', textContent: optionText, onclick: function() {
+					options.push({ el: 'button', className: 'btn btn-outline-fico', textContent: optionText, onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
 							view.querySelector('.js-solve-btn').disabled = false;
 						}});
@@ -459,12 +481,30 @@
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							view.querySelector('.arranged-examples').appendChild(clone);
+							/*const thrower = this.cloneNode(true);
+							clone.style.visibility = 'hidden';
+							thrower.position = 'absolute';
+							
+							anime({
+								targets: thrower,
+								begin: () => {
+									this.
+								},
+								top: [$(this).offset().top, $(clone).offset().top],
+								left: [$(this).offset().left, $(clone).offset().left],
+								complete: () => {
+									thrower.remove();
+									clone.style.visibility = 'visible';
+								},
+								duration: 500
+							})*/
+							
 							clone.onclick = () => {
 								clone.remove();
-								$(this).removeClass('selected');	
+								$(this).removeClass('selected pe-none');	
 								view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
 							}
-							$(this).addClass('selected');
+							$(this).addClass('selected pe-none');
 						}
 						view.querySelector('.js-solve-btn').disabled = view.querySelector('.arranged-examples').childElementCount == 0;
 					}
@@ -477,6 +517,11 @@
 				view.querySelector('.arranged-examples').style.minHeight = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
 				
 				break;
+			case '6' :
+				break;
+			case '7' :
+				break;
+			default: break;
 		}
 		
 		// 배틀 출처 표시
