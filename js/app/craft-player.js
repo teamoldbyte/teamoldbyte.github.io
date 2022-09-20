@@ -271,6 +271,9 @@
 		// 배틀 타입 표시
 		view.querySelector('.battle-type').textContent = currentBattle.battleType;
 		
+		// 저장여부 표시
+		$('#save-btn').toggleClass('reverse', Boolean(currentBattle.saved));
+		
 		// 선택지 표시
 		if(view.querySelector('.example-btn-section'))
 			view.querySelector('.example-btn-section').style.display = '';
@@ -490,6 +493,7 @@
 
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
+			document.querySelector('#save-btn').disabled = true;
 			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
 			req = window.indexedDB.open(DB_NAME, DB_VERSION);
 			req.onsuccess = function() {
