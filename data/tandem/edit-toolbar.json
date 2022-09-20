@@ -274,7 +274,7 @@
 				"class": "btn btn-outline-fico col-auto btn-sm lh-1",
 				"title": "저장 (단축키: Ctrl + S)",
 				"value": "save",
-				"html": "<i class=\"far fa-arrow-alt-circle-down fa-lg\"></i>"
+				"html": "<i class=\"fas fa-save fa-lg\"></i>"
 			}
 		]
 	},
