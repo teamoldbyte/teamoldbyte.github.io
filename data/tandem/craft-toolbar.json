@@ -440,6 +440,10 @@
 				"ask": "#1",
 				"tag": "to부정사 목적보어(부)",
 				"selector": ".tor>.oc:only-child, .oc>.tor:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "원형부정사"
 			}
 		],
 		[
