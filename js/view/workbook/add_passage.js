@@ -62,11 +62,9 @@ function pageinit(isHelloBook) {
 			const text = this.value.sentenceNormalize(), textLen = text.length;
 			// 입력어가 5자 미만 혹은 최대길이를 초과하거나,
 			// 특수문자를 포함, 혹은 이전 검색어(입력란의 첫번째 문장)와 차이가 없으면 검색 X
-			if(textLen < 5 || textLen > maxChars
+			return !(textLen < 5 || textLen > maxChars
 			|| text.match(invalidEnglishRegex)
-			|| searchSentence == tokenizer.sentences(text)[0])
-				return false;
-			else return true;
+			|| searchSentence == tokenizer.sentences(text)[0]);
 		},
     	source: (request, response) => {
 			searchSentence = tokenizer.sentences(request.term.sentenceNormalize())[0];
@@ -147,7 +145,7 @@ function pageinit(isHelloBook) {
 				{opacity: 1, easing: 'linear'},
 				{opacity: 0, easing: 'linear'},
 				{opacity: 1, easing: 'linear'},
-				{opacity: 0, easing: 'linear', duration: 1000, easing: 'cubicBezier(.7, .0, 1.0, 0.3)'},
+				{opacity: 0, duration: 1000, easing: 'cubicBezier(.7, .0, 1.0, 0.3)'},
 				{display: 'none', easing: 'steps(1)'}
 			],
 		})
@@ -391,6 +389,7 @@ function pageinit(isHelloBook) {
 		}
 		$('#newPassageText').val('').prop('disabled', false).trigger('input').focus();
 	});
+	let taghistory;
 	if(!isHelloBook) {
 		// [(워크북)검색결과 건너뛰기]----------------------------------------------------------
 		$('#jumpTo3').click(function() {
@@ -460,7 +459,7 @@ function pageinit(isHelloBook) {
 			$('.final-passage, .edit-passage').toggle();
 		});
 		// 워크북 지문 태그 목록을 localStorage로부터 조회하여 표시.
-		let taghistory = localStorage.getItem('PassageTagHistory');
+		taghistory = localStorage.getItem('PassageTagHistory');
 		if(taghistory != null) {
 			taghistory = JSON.parse(decodeURI(taghistory));
 			for(let i = 0, len = taghistory.length; i < len; i++){
