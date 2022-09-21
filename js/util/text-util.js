@@ -107,7 +107,8 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 	// 유효한 하나의 영어 문장인지 검사
 	str.isSentence = function() {
 	  try {
-		return /[A-Z\d'"]/.test(this.charAt()) && (this.match(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])`,'g'))?.index == this.length);
+		const invalidMatched = this.match(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])`,'g'));
+		return /[A-Z\d'"]/.test(this.charAt()) && invalidMatched != null && invalidMatched.index == this.length;
 	  } catch(e) {
 		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
 		if(/[A-Z\d'"]/.test(this.charAt()) && /[\.\?\!]['"]?$/.test(this)) {
@@ -161,7 +162,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 							arr.push({highlight: [match.index, match.index + 2]});
 							input = input.replace(match[0], match[i]);
 							break;
-						case 6: // 구두점 뒤의 영문자(숫자 및 알파벳)은 반드시 앞에 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
+						case 6: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
 							if(inputCursor >= match.index + 1) inputCursor += 1;
 							arr.push({highlight: [match.index + 2, match.index + 3]});
 							input = input.replace(match[0], `${match[i].substring(0,2)} ${match[i].substring(2)}`)
@@ -178,7 +179,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 			}
 		}
 		// 2. 인용구 교정(인용부호가 쌍으로 있을 경우만)
-		const prevArrLen = arr.length;
+		/*const prevArrLen = arr.length;
 		// 아포스트로피 축약어는 인용부호에서 제외하고 동일한 인용부호의 쌍으로 감싼 문자열을 찾는다.
 		const quotes = input.matchAll(/(["'])(?:(?!s|re|m|d|t|ll|ve)\s)((?:\u0021|[\u0023-\u0026]|[\u0028-\u007E]|\s|(?:'(?:s|re|m|d|t|ll|ve)\s))+)\1(?!(?:(?:s|re|m|d|t|ll|ve) ))/g);
 		for(const quote of quotes) {
@@ -215,7 +216,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 				substr += ' ';
 			}
 			input = input.replace(quote[0], substr);
-		}
+		}*/
 		// 3. 비정규 문자들(보이지 않는 문자 포함)을 × 문자로 치환
 		input = input.replaceAll(invalidEnglishRegex, '×');
 		return {input, inputCursor, arr};
