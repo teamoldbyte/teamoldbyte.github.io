@@ -93,7 +93,8 @@ html{
 body{
 	/*font-family: 'Open Sans', 'NanumBarunGothic';*/
 	font-family: 'RIDIBatang_ENG', 'HCRDotum';
-	background-color: var(--bg);
+	/*background-color: var(--bg);*/
+	background-color: #f9d37a;
 }
 @media (min-width: 768px) {
 	html, body{
@@ -105,12 +106,15 @@ body{
 	}
 }
 @media (max-width: 768px) {
-	
    html, body{
 		font-size: 16.5px;
 	}
 }
-
+@media (max-width: 320px) {
+   html, body{
+		font-size: 14px;
+	}
+}
 /**********************************************************
  *					a 태그 
  **********************************************************/
