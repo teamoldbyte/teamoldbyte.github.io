@@ -11,12 +11,76 @@
  *				색상  
  **********************************************************/
 :root {
+	--fc-logo-head: url(https://static.findsvoc.com/images/logo/main_logo_headonly.svg);
+	
+	--bg : #F6F5F8;
+	--block-bg : #ffffff;
+	--text-color : #000000;
+	
 	--fc-purple: #585174;
 	--fc-yellow: #f9d37a;
 	
+	--title-text: #585174;
+	--sub-title-text: #5c68b6;
 	
-	--fc-logo-head: url(https://static.findsvoc.com/images/logo/main_logo_headonly.svg);
+	--btn-bg-fico : #585174;
+	--btn-bg-outline-fico : #fff;
+	--btn-outline-fico-border : #585174;
+	--btn-outline-fico-color : #585174;
+	--btn-outline-fico-bg: #ffffff;
+	--btn-outline-fico-hover-bg : #6c6588;
+	--btn-outline-fico-hover-border : #585174;
+	--btn-outline-fico-hover-color : #ffffff;
+	--progress-bar-block-bg : #f7f7f7;
+	--progress-bar-bg : #585174;
+	--border: #585174;
+	
+	--text-emphasis: #a91461;
 }
+[data-color-mode=light][data-light-theme=dark], [data-color-mode=dark][data-dark-theme=dark] {
+	--bg : #F6F5F8;
+	--block-bg : #ffffff;
+	--text-color : #000000;
+	
+	--fc-purple: #585174;
+	--fc-yellow: #f9d37a;
+	
+	--title-text: #585174;
+	--sub-title-text: #5c68b6;
+	
+	--btn-bg-fico : #585174;
+	--btn-bg-outline-fico : #fff;
+	--btn-outline-fico-border : #585174;
+	--btn-outline-fico-color : #585174;
+	--btn-outline-fico-bg: #ffffff;
+	--btn-outline-fico-hover-bg : #6c6588;
+	--btn-outline-fico-hover-border : #585174;
+	--btn-outline-fico-hover-color : #ffffff;
+	--progress-bar-block-bg : #f7f7f7;
+	--progress-bar-bg : #585174;
+	--border: #585174;
+	
+	--text-emphasis: aqua;
+}
+/*
+@media (prefers-color-scheme: dark) {
+    [data-color-mode=auto][data-dark-theme=dark] {
+		--bg : #06101E;
+		--block-bg : #0f2639;
+		--text-color : #ffffff;
+		
+		--btn-bg-fico : #6FF1E3;
+		--btn-bg-outline-fico : transparent;
+		--btn-outline-fico-border : #ffffff;
+		--btn-outline-fico-color : #ffffff;
+		--btn-outline-fico-hover-bg : #6FF1E3;
+		--btn-outline-fico-hover-border : transparent;
+		--btn-outline-fico-hover-color : #06101E;
+		--progress-bar-block-bg : #36314B;
+		--progress-bar-bg : #D7D7D7;
+	}
+}
+*/
 
 /**********************************************************
  *					폰트 
@@ -24,26 +88,26 @@
 html{
 	font-family: 'RIDIBatang_ENG', 'HCRDotum';
 	font-size: 14px;
-	word-break: keep-all;
+	/*word-break: keep-all;*/
 }
 body{
 	/*font-family: 'Open Sans', 'NanumBarunGothic';*/
 	font-family: 'RIDIBatang_ENG', 'HCRDotum';
-	background-color: #f9d37a;
+	background-color: var(--bg);
 }
 @media (min-width: 768px) {
-   html{
+	html, body{
 		font-size: 14px;
+	}
+			
+	body{
+		background-color: var(--fc-yellow);
 	}
 }
 @media (max-width: 768px) {
-   html{
-		font-size: 16px;
-	}
-}
-@media (max-width: 320px) {
-   html{
-		font-size: 14px;
+	
+   html, body{
+		font-size: 16.5px;
 	}
 }
 
@@ -315,6 +379,9 @@ a:hover {
 	color: #424250 !important;
 }
 
+.text-blue-600{
+	color: #455bf1 !important;
+}
 .text-blue-700{
 	color: #30386e !important;
 }
@@ -486,6 +553,8 @@ u {
  *			버튼 
  **********************************************************/
 .btn-fico{
+	/*padding: .5rem 1rem;*/
+	/*background-color: var(--btn-bg-fico);*/
 	background-color: #585174;
 	border-color: #4e476a;
 	color: #fff;
@@ -496,21 +565,42 @@ u {
 	border-color: #585174;
 }
 .btn-outline-fico{
+	/*padding: .5rem 1rem;*/
 	background-color: #fff;
 	border-color: #585174;
 	color: #585174;
 }
+/*
+.btn-outline-fico{
+	padding: .5rem 1rem;
+	background-color: var(--btn-outline-fico-bg);
+	border-color: var(--btn-outline-fico-border);
+	color: var(--btn-outline-fico-color);
+}
+*/
 .btn-outline-fico:hover{
 	background-color: #6c6588;
 	border-color: #585174;
 	color: #fff;
 }
-
+/*
+.btn-outline-fico:hover{
+	background-color: var(--btn-outline-fico-hover-bg);
+	border-color: var(--btn-outline-fico-hover-border);
+	color: var(--btn-outline-fico-hover-color);
+}
+*/
 .btn-fico:disabled, .btn-outline-fico:disabled {
   opacity: 0.3;
 }
-
-
+/*
+@media (max-width: 992px) {
+	.btn-outline-fico,
+	.btn-fico{
+		border-radius: 25px;
+	}
+}
+*/
 /**********************************************************
  *			체크 박스 
  **********************************************************/
@@ -519,6 +609,11 @@ u {
     background-color: rgb(88, 81, 116);
     border-color: rgb(68, 61, 96);
 }
+/*.btn-check:active+.btn-outline-fico, .btn-check:checked+.btn-outline-fico, .btn-outline-fico.active, .btn-outline-fico.dropdown-toggle.show, .btn-outline-fico:active {
+    color: var(--btn-outline-fico-hover-color);
+    background-color: var(--btn-outline-fico-hover-bg);
+    border-color: var(--btn-outline-fico-hover-border);
+}*/
 .btn-check:active+.btn-outline-fico, .btn-check:checked+.btn-outline-fico, .btn-outline-fico.active, .btn-outline-fico.dropdown-toggle.show, .btn-outline-fico:active {
     color: #fff;
     background-color: #6c6588;
@@ -590,7 +685,14 @@ u {
    transform: rotate(180deg);
 }
 
-/*********6************************************************
+/**********************************************************
+ *			app-name 
+ **********************************************************/
+.app-name-text{
+	font-family: 'Otomanopee One',sans-serif;
+	color: #585174;
+}
+/**********************************************************
  *					logo.html
  **********************************************************/
 .logo-section{
