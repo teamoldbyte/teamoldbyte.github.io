@@ -13,14 +13,14 @@
 		let prevY = scrollY;
 		$(window).on('scroll', function(e){
 			requestAnimationFrame(() => {
-				// 헤더 크기(대:80px, 소:35px)에 맞춰서 스타일 변경
+				// 헤더 크기(대:150px, 소:35px)에 맞춰서 스타일 변경
 				if(scrollY > prevY) { // 스크롤 내림
-					if(scrollY >= 45) {
-						scSection.style.marginTop = '80px';
+					if(scrollY >= 115) {
+						scSection.style.marginTop = '150px';
 						header.classList.add('min');
 					}
 				}else { // 스크롤 올림 
-					if(scrollY < 45) {
+					if(scrollY < 115) {
 						scSection.style.marginTop = '0';
 						header.classList.remove('min');
 					}
@@ -30,10 +30,15 @@
 		})
 	})
 	
+	let nextBtnObserver = new IntersectionObserver((entries) => {
+		moveSolveBtn(!entries[0].isIntersecting);
+	}, { threshold: 1.0})
+	
 	let solveResults = []; // 연속 맞힘 기록
 	let _contentType; // 플레이 컨텐츠 종류(step, grammar, workbook)
 	let _contentId; // 지정된 컨텐츠가 있을 경우 해당 컨텐츠 아이디
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
+	let currentView;
 	let _memberId, _ageGroup; // 사용자 정보
 	let _battleRecord; // 배틀 전적 정보
 	let currRankTitle, currRankBase, nextRankBase; // 현재 계급명, 현재 및 다음 계급의 시작 정답수
@@ -80,13 +85,13 @@
 	})
 	// 풀이 전송(ajax)
 	.on('click', '.js-solve-btn', function() {
-		const view = this.closest('.battle-section');
+		const view = currentView;
 		const answers = JSON.parse(currentBattle.answer||"[]");
 		const examples = JSON.parse(currentBattle.example||"[]");
 		let correct = true;
 		
 		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
-		$(this).toggleClass('js-solve-btn js-next-btn').text('다음').prop('disabled', true);
+		$(this).toggleClass('js-solve-btn js-next-btn').text('다음');
 		$(view).find('.ask-section,.example-btn-section,.arranged-examples').addClass('pe-none');
 		
 		// 배틀타입, 문제 축소버전으로 표시
@@ -173,10 +178,32 @@
 				break;
 		}
 		// 맞힘/틀림에 따른 알림
-		const resultToast = createElement({"el":"div","class":`toast align-items-center position-absolute top-0 start-50 w-50 text-white text-center ${correct?'bg-success':'bg-danger'} border-0 translate-middle-x mt-4`,
-							"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "false", "textContent": correct?"정답입니다!":"틀렸어요.."});
-		view.append(resultToast);
-		bootstrap.Toast.getOrCreateInstance(resultToast).show();
+		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
+								"textContent": correct ? '정답입니다.' : '오답입니다.'});
+		document.querySelector('.craft-header-section').append(resultToast);
+		anime.timeline({
+			targets: resultToast,
+		}).add({
+			begin: () => {
+				resultToast.style.visibility = 'visible';
+				resultToast.style.color = '#00000000';
+			},
+			bottom: '-2rem',
+			backgroundColor: correct ? '#00bcd4' : '#f44336',
+			width: ['2rem', '50%'],
+			height: ['0rem', '2rem'],
+			easing: 'easeInOutExpo'
+		}).add({
+			color: '#FFF',
+			easing: 'linear'
+		}).add({
+			delay: 2000,
+			begin: () => resultToast.style.transformOrigin = 'top',
+			bottom: 0,
+			height: 0,
+			easing: 'easeInOutExpo',
+			complete: () => resultToast.remove()
+		})
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
@@ -213,29 +240,17 @@
 					};	
 				}
 				
-				const timerTitle = createElement({ el: 'span', className: 'toast-msg', textContent: '4초 뒤에 눌러주세요.' });
-				const nextBtn = view.querySelector('.js-next-btn');
-				nextBtn.parentElement.prepend(timerTitle);
-				let timeLeft = 4;
-				const nextTimer = setInterval(() => {
-					if(--timeLeft > 0) {
-						timerTitle.textContent = `${timeLeft}초 뒤에 눌러주세요.`;
-					}else {
-						timerTitle.remove();
-						nextBtn.disabled = false;
-						clearInterval(nextTimer);
-					}
-				}, 1000);
+				moveSolveBtn(true);
 				calcRank(); },
 			error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.')
 		})
 	})
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function() {
-		this.disabled = true;
-		const $battleSection = $(this).toggleClass('js-solve-btn js-next-btn').text('확인').closest('.battle-section');
-		$battleSection.find('.toast').remove();
-		$battleSection.find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
+		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
+		$(currentView).find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
+		
+		nextBtnObserver.disconnect();
 		// 클라이언트에 남은 다음 문제 진행
 		if(battlePool.length > 0) {
 			_askStep();
@@ -282,43 +297,49 @@
 	function _askStep() {
 		currentBattle = battlePool.shift();
 		selectHistory = [];
-		const view = document.getElementById(`battle-${currentBattle.battleType}`);
-		
-		$(view).find('.battle-type-block, .ask-block').show();
-		$(view).find('.simple-ask-block').hide();
-		
-		// 배틀 타입 표시
-		view.querySelector('.battle-type').textContent = currentBattle.battleType;
-		
-		// 저장여부 표시
-		$('#save-btn').toggleClass('reverse', Boolean(currentBattle.saved));
-		
-		// 선택지 표시
-		if(view.querySelector('.example-btn-section'))
-			view.querySelector('.example-btn-section').style.display = '';
-		
-		// 다른 배틀 섹션 숨김
-		$(view).show().siblings('.battle-section').hide();
-		anime({
-			targets: view,
-			easing: 'linear',
-			duration: 1000,
-			left: ['100vw', 0],
-		})
-		// 확인버튼 비활성화
-		$(view).find('.js-solve-btn').prop('disabled', true);
-			
-		// 해설 숨김
-		$(view).find('.explain-section').hide().find('.collapse').collapse('hide');
-		
-		const ask = view.querySelector('.ask');
-		const simpleAsk = view.querySelector('.simple-ask-block');
-		const sentence = view.querySelector('.sentence');
+		currentView = document.getElementById(`battle-${currentBattle.battleType}`);
+
+		const ask = currentView.querySelector('.ask');
+		const simpleAsk = currentView.querySelector('.simple-ask-block');
+		const sentence = currentView.querySelector('.sentence');
 		const eng = currentBattle.eng;
 		const answers = JSON.parse(currentBattle.answer||"[]");
 		const examples = JSON.parse(currentBattle.example||"[]");
 		let offsetPos = 0, leftStr, options = [];
 		const contextChildren = [];
+
+		scrollTo(0,0);
+		document.querySelector('.craft-header-section').classList.remove('min');
+		document.querySelector('.scrolling-section').style.marginTop = '0';
+		
+		$(currentView).find('.battle-type-block, .ask-block').show();
+		$(currentView).find('.simple-ask-block').hide();
+		
+		// 배틀 타입 표시
+		currentView.querySelector('.battle-type').textContent = currentBattle.battleType;
+		
+		// 저장여부 표시
+		$('#save-btn').toggleClass('reverse', Boolean(currentBattle.saved));
+		
+		// 선택지 표시
+		if(currentView.querySelector('.example-btn-section'))
+			currentView.querySelector('.example-btn-section').style.display = '';
+		
+		// 다른 배틀 섹션 숨김
+		$(currentView).show().siblings('.battle-section').hide();
+		anime({
+			targets: currentView,
+			duration: 1000,
+			delay: 300,
+			left: ['100vw', 0],
+		})
+		// 확인버튼 숨김
+		moveSolveBtn(true);
+			
+		// 해설 숨김
+		$(currentView).find('.explain-section').hide().find('.collapse').collapse('hide');
+		
+
 		switch(currentBattle.battleType) {
 			case '1' :
 				// 질문 표시
@@ -333,7 +354,8 @@
 						textContent: eng.substring(start, end),
 						onclick: function() {
 							$(this).toggleClass('selected');
-							$(view).find('.js-solve-btn').prop('disabled', sentence.querySelectorAll('.selected').length == 0);
+							
+							moveSolveBtn(sentence.querySelectorAll('.selected').length == 0);
 						}
 					});
 					if(j == arr.length - 1 && end < eng.length) {
@@ -372,7 +394,7 @@
 						this.classList.add('selected');
 						selectHistory.push(this);
 					}
-					view.querySelector('.js-solve-btn').disabled = selectHistory.length == 0;
+					moveSolveBtn(selectHistory.length == 0);
 				}}
 			 	// answerArr = [[start,end,class],[start,end,class],...] (class: modifier, modificand)
 			 	const answerArr = Array.from(modifiers, modifier => modifier.concat('modifier'))
@@ -424,11 +446,11 @@
 					contextChildren.push(eng.substring(blankEnd));
 				sentence.replaceChildren(createElement(contextChildren));	
 					
-				view.querySelector('.example-btn-section').replaceChildren(
+				currentView.querySelector('.example-btn-section').replaceChildren(
 					createElement(Array.from(options, option => {
 						return { el: 'button', className: 'btn btn-outline-fico', textContent: option , onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
-							view.querySelector('.js-solve-btn').disabled = false;
+							moveSolveBtn(false);
 						}};
 				})));
 				break;
@@ -458,7 +480,7 @@
 					// 선택지 추가
 					options.push({ el: 'button', className: 'btn btn-outline-fico', textContent: optionText, onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
-							view.querySelector('.js-solve-btn').disabled = false;
+							moveSolveBtn(false);
 						}});
 					if(j == arr.length - 1 && end < eng.length) {
 						contextChildren.push(eng.substring(end));
@@ -466,7 +488,7 @@
 					offsetPos = end;
 				});		
 				sentence.replaceChildren(createElement(contextChildren));		
-				view.querySelector('.example-btn-section').replaceChildren(createElement(options));
+				currentView.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				break;	
 			case '5' :
 				/* 배열하기.
@@ -476,9 +498,9 @@
 				// 해석 표시
 				sentence.replaceChildren(currentBattle.kor)
 				// 보기 표시
-				const arrangedSection = view.querySelector('.arranged-examples');
+				const arrangedSection = currentView.querySelector('.arranged-examples');
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
-					options.push({ el: 'span', className: 'btn btn-outline-fico mb-1 me-1', textContent: eng.substring(start, end), onclick: function() {
+					options.push({ el: 'span', className: 'btn btn-outline-fico', textContent: eng.substring(start, end), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							const thrower = this.cloneNode(true);
@@ -515,7 +537,7 @@
 										throwBack.remove();
 										clone.remove();
 										$(this).removeClass('selected pe-none');	
-										view.querySelector('.js-solve-btn').disabled = arrangedSection.childElementCount == 0;
+										moveSolveBtn(arrangedSection.childElementCount != examples.length);
 									},
 									duration: 100
 								})
@@ -523,21 +545,54 @@
 							}
 							$(this).addClass('selected pe-none');
 						}
-						view.querySelector('.js-solve-btn').disabled = arrangedSection.childElementCount == 0;
+						
+						moveSolveBtn(arrangedSection.childElementCount != examples.length);
 					}
 					});
 				});	
-				view.querySelector('.example-btn-section').replaceChildren(createElement(options));
+				currentView.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				// 선택 초기화
 				arrangedSection.replaceChildren();
 				$(arrangedSection).sortable();
-				arrangedSection.style.minHeight = `${view.querySelector('.example-btn-section').clientHeight * 0.5}px`;
 				
 				break;
 			case '6' :
+				/** 빈칸 채우기
+					example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트]]
+				 */
+				 examples.sort(([[a]],[[b]]) => a - b).forEach(([[ start, end ], text], j, arr) => {
+					leftStr = eng.substring(offsetPos, start);
+					if(leftStr) contextChildren.push(leftStr);
+					
+					text.split(/\s+/).forEach((token, i) => {
+						contextChildren.push((i > 0 ? ' ' : '') + token.substring(0, 1));
+						if(token.length > 1) {
+							contextChildren.push({
+								el: 'input', style: { width: `${token.length - 1}em`} 
+							});
+						}
+					})
+					if(j == arr.length - 1 && end < eng.length) {
+						contextChildren.push(eng.substring(end));
+					}
+					offsetPos = end;					
+				});
+				currentView.querySelector('.ask-section .sentence.kor').textContent = currentBattle.kor;
+				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
 				break;
 			case '7' :
-				break;
+				/** 해석 배열하기
+					example = [오답1, 오답2]
+				 */
+				/*let options = currentBattle.kor.split(/\s+/);
+				let tempOption = '';
+				options = options.reduce((acc, curr) => {
+					if(curr.length > 1) {
+						const newAcc = acc.concat([ tempOption + curr]);
+						
+					}
+				}, [])
+				break;*/
 			default: break;
 		}
 		
@@ -727,11 +782,6 @@
 	 */
 	function displayAnswerInfo(eng, explainSection, answerInfo) {
 		
-		// 한 줄 코멘트는 미리 펼치기
-		$(explainSection).find('.collapse').collapse('show');
-
-		// 구문분석 정보
-		tandem.showSemanticAnalysis(eng, answerInfo.svocTag.svocBytes, $(explainSection).find('.svoc-section').empty());
 		// 해석 정보
 		explainSection.querySelector('.trans-section').replaceChildren(createElement(Array.from(answerInfo.korList, kor => {
 			return { el: 'span', className: 'trans-text', textContent: kor.kor };
@@ -739,17 +789,35 @@
 		
 		// 단어 목록 정보
 		explainSection.querySelector('.words-section')
-		.replaceChildren(createElement(Array.from(answerInfo.wordList, (word, i) => {
-			return 	{ "el": "span", "class": `one-word-unit-section${i>0?' ms-3':''}`, "children": [
-				{ "el": "span", "class": "title fw-bold text-blue-700", textContent: word.title }].concat(Array.from(word.senseList, sense => {
-					return { "el": "span", "class": "one-part-unit-section ms-2", "children": [{ 
-						"el": "span", "class": "part text-palegreen", textContent: sense.partType },
-						{ "el": "span", "class": "meaning ms-1", textContent: sense.meaning }
+		.replaceChildren(createElement(Array.from(answerInfo.wordList, word => {
+			return 	{ "el": "span", "class": 'one-word-unit-section', "children": [
+				{ "el": "span", "class": "title", textContent: word.title }].concat(Array.from(word.senseList, sense => {
+					return { "el": "span", "class": "one-part-unit-section", "children": [{ 
+						"el": "span", "class": "part", textContent: sense.partType },
+						{ "el": "span", "class": "meaning", textContent: sense.meaning }
 					]};
 				}))
 			}
 		})));	
+		
+		// 한 줄 코멘트는 미리 펼치기
+		$(explainSection).find('.collapse').collapse('show');
+
+		// 구문분석 정보
+		tandem.showSemanticAnalysis(eng, answerInfo.svocTag.svocBytes, $(explainSection).find('.svoc-section').empty())
+		.then(() => nextBtnObserver.observe(explainSection.lastElementChild));
+		
+		// 계급 진행도만 보일 정도로 상태바 스크롤
+		document.querySelector('.craft-header-section').classList.remove('min');
+		document.querySelector('.scrolling-section').style.marginTop = '0';		
+		scrollTo(0, 75);
 	}	
+	
+	function moveSolveBtn(right) {
+		anime({
+			targets: '.js-solve-btn,.js-next-btn', duration: 500, easing: 'easeOutQuart', left: right? '110%' : '45%'
+		});
+	}
 	
 	window['craft'] = Object.assign({}, window['craft'], { initPlayer });
 })(jQuery, window, document);
