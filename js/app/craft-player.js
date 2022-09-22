@@ -176,6 +176,50 @@
 				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}));
 				view.querySelector('.example-btn-section').style.display = 'none';
 				break;
+			case '6':
+				const rightOptions = Array.from(examples, ([[],text]) => {
+					return text.split(/\s+/);
+				}).reduce((acc, curr) => acc.concat(curr),[]);
+				view.querySelectorAll('.example-btn-section input').forEach((input, i) => {
+					if(input.value == rightOptions[i].substring(1)) {
+						input.style.border = 'solid 1px #00bcd4';
+					}else {
+						input.style.border = 'solid 1px #f44336';
+						correct = false;
+					}
+				})
+				break;
+			case '7':
+				let options7 = currentBattle.kor.split(/\s+/);
+				let tempOption = '';
+				options7 = options7.reduce((acc, curr, i, arr) => {
+					if(curr.length > 1) {
+						const newAcc = acc.concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
+						tempOption = '';
+						return newAcc;
+					}else {
+						tempOption += tempOption.length > 0 ? ` ${curr}` : curr;
+						if(i == arr.length - 1) {
+							return acc.concat([ tempOption ]);
+						}
+					}
+				},[]);			
+				if(view.querySelectorAll('.arranged-examples .btn').length != options7.length) correct = false;
+				else {
+					view.querySelectorAll('.arranged-examples .btn').forEach( option => {
+						if(options7.includes(option.textContent)) {
+							option.style.border = 'solid 1px #00bcd4';
+						}else {
+							option.style.border = 'solid 1px #f44336';
+							correct = false;
+						}
+					})
+				}
+				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.kor}));
+				view.querySelector('.example-btn-section').style.display = 'none';
+				
+				break;
+			default: break;
 		}
 		// 맞힘/틀림에 따른 알림
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
@@ -579,20 +623,83 @@
 				});
 				currentView.querySelector('.ask-section .sentence.kor').textContent = currentBattle.kor;
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
+				$(currentView).on('input', '.example-btn-section input', function() {
+					moveSolveBtn(!Array.from(currentView.querySelectorAll('.example-btn-section input')).every(input => input.value.length > 0));
+				})
 				break;
 			case '7' :
 				/** 해석 배열하기
 					example = [오답1, 오답2]
 				 */
-				/*let options = currentBattle.kor.split(/\s+/);
+				let options7 = currentBattle.kor.split(/\s+/);
+				const arrangedSection7 = currentView.querySelector('.arranged-examples');
 				let tempOption = '';
-				options = options.reduce((acc, curr) => {
+				options7 = options7.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
-						const newAcc = acc.concat([ tempOption + curr]);
-						
+						const newAcc = acc.concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
+						tempOption = '';
+						return newAcc;
+					}else {
+						tempOption += tempOption.length > 0 ? ` ${curr}` : curr;
+						if(i == arr.length - 1) {
+							return acc.concat([ tempOption ]);
+						}
 					}
-				}, [])
-				break;*/
+				}, []).concat(examples).sort(() => Math.random() - 0.5);
+				options7.forEach( option => {
+					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico', textContent: option, onclick: function() {
+						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
+							const clone = this.cloneNode(true);
+							const thrower = this.cloneNode(true);
+							clone.style.visibility = 'hidden';
+							thrower.style.position = 'fixed';
+							arrangedSection7.appendChild(clone);
+							
+							this.parentElement.appendChild(thrower);
+							// 정답공간으로 선택지 발사
+							anime({
+								targets: thrower,
+								top: [$(this).offset().top, $(clone).offset().top],
+								left: [$(this).offset().left, $(clone).offset().left],
+								easing: 'linear',
+								complete: () => {
+									thrower.remove();
+									clone.style.visibility = 'visible';
+								},
+								duration: 100
+							})
+							
+							clone.onclick = () => {
+								const throwBack = clone.cloneNode(true);
+								clone.style.visibility = 'hidden';
+								throwBack.style.position = 'fixed';
+								arrangedSection7.appendChild(throwBack);
+								// 정답지에서 선택지로 발사
+								anime({
+									targets: throwBack,
+									top: [ $(clone).offset().top, $(this).offset().top ],
+									left: [ $(clone).offset().left, $(this).offset().left],
+									easing: 'linear',
+									complete: () => {
+										throwBack.remove();
+										clone.remove();
+										$(this).removeClass('selected pe-none');	
+										moveSolveBtn(arrangedSection7.childElementCount == 0);
+									},
+									duration: 100
+								})
+								
+							}
+							$(this).addClass('selected pe-none');
+						}
+						
+						moveSolveBtn(arrangedSection7.childElementCount == 0);
+					}
+					});					
+				})
+				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
+				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
+				break;
 			default: break;
 		}
 		
