@@ -251,7 +251,7 @@
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
-		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment);
+		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment || '작성된 코멘트가 없습니다.');
 		// (ajax) 해설정보 조회 및 표시
 		$.getJSON(`/craft/battle/${currentBattle.sentenceId}`, battleAnswerInfo => 
 				displayAnswerInfo(currentBattle.eng, view.querySelector('.explain-section'), battleAnswerInfo))
@@ -612,7 +612,7 @@
 						contextChildren.push((i > 0 ? ' ' : '') + token.substring(0, 1));
 						if(token.length > 1) {
 							contextChildren.push({
-								el: 'input', style: { width: `${token.length - 1}em`} 
+								el: 'input', style: { width: `${token.length - 1}em`}, pattern: '[0-9A-z!?.,]'
 							});
 						}
 					})
@@ -892,14 +892,16 @@
 		// 해석 정보
 		explainSection.querySelector('.trans-section').replaceChildren(createElement(Array.from(answerInfo.korList, (kor, i) => {
 			return { el : 'div', className: 'row', children: [
-				{ el : 'div', className: 'col-auto ps-2 pe-0', children: [{ el: 'span', className: 'material-icons fs-5', textContent: 'person', style: `color:${['#4285f4','#F49303','#3A1D1D'][i]}` }]},
+				{ el : 'div', className: 'col-auto ps-2 pe-0', children: [{ el: 'span', className: 'material-icons fs-5', 
+					textContent: i >= (answerInfo.korList.length - 3) ? 'manage_accounts' : 'person', 
+					style: `color:${i >= (answerInfo.korList.length - 3) ? ['#4F9BA7','#37728E','#1F4775'][i] : '#5169E6'}` }]},
 				{ el: 'div', className: 'trans-text col', textContent: kor.kor }
 			]} ;
 		})));
 		
 		// 단어 목록 정보
 		explainSection.querySelector('.words-section')
-		.replaceChildren(createElement(Array.from(answerInfo.wordList, word => {
+		.replaceChildren(answerInfo.wordList.length > 0 ? createElement(Array.from(answerInfo.wordList, word => {
 			return 	{ "el": "span", "class": 'one-word-unit-section', "children": [
 				{ "el": "span", "class": "title", textContent: word.title }].concat(Array.from(word.senseList, sense => {
 					return { "el": "span", "class": "one-part-unit-section", "children": [{ 
@@ -908,9 +910,9 @@
 					]};
 				}))
 			}
-		})));	
+		})) : '해당 문장에서 fico AI가 설정한 난이도 이상의 단어를 찾지 못했습니다.');	
 		
-		// 한 줄 코멘트는 미리 펼치기
+		// 미리 펼치기(구분분석 표시하기 전에)
 		$(explainSection).find('.collapse').collapse('show');
 
 		// 구문분석 정보
