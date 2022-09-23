@@ -8,10 +8,9 @@
 	  <stop offset="0.4" stop-color="#5a5376" />
 	  <stop offset="0.95" stop-color="transparent" />
 	</linearGradient>
-	<linearGradient id="cloth_vally_Grad" >
-	  <stop offset="0" stop-color="#5a5376" />
-	  <stop offset="0.5" stop-color="#312b4b" />
-	  <stop offset="1" stop-color="#5a5376" />
+	<linearGradient id="cloth_vally_Grad" gradientTransform="rotate(90)">
+	  <stop offset="0" stop-color="#312b4b" />
+	  <stop offset="1" stop-color="transparent" />
 	</linearGradient>
 	<linearGradient id="bear_Grad">
 		<stop offset="0" stop-color="#cccccc" />
