@@ -188,6 +188,7 @@
 						correct = false;
 					}
 				})
+				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}))
 				break;
 			case '7':
 				let options7 = currentBattle.kor.split(/\s+/);
@@ -225,6 +226,8 @@
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
 								"textContent": correct ? '정답입니다.' : '오답입니다.'});
 		document.querySelector('.craft-header-section').append(resultToast);
+		// 해설화면에 캐릭터 안보이도록 투명화
+		document.querySelector('.craft-layout-content-section').classList.add('bg-fc-transparent');
 		anime.timeline({
 			targets: resultToast,
 		}).add({
@@ -292,6 +295,7 @@
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function() {
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
+		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
 		$(currentView).find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
 		
 		nextBtnObserver.disconnect();
