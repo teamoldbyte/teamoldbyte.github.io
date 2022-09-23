@@ -890,8 +890,11 @@
 	function displayAnswerInfo(eng, explainSection, answerInfo) {
 		
 		// 해석 정보
-		explainSection.querySelector('.trans-section').replaceChildren(createElement(Array.from(answerInfo.korList, kor => {
-			return { el: 'span', className: 'trans-text', textContent: kor.kor };
+		explainSection.querySelector('.trans-section').replaceChildren(createElement(Array.from(answerInfo.korList, (kor, i) => {
+			return { el : 'div', className: 'row', children: [
+				{ el : 'div', className: 'col-auto ps-2 pe-0', children: [{ el: 'span', className: 'material-icons fs-5', textContent: 'person', style: `color:${['#4285f4','#F49303','#3A1D1D'][i]}` }]},
+				{ el: 'div', className: 'trans-text col', textContent: kor.kor }
+			]} ;
 		})));
 		
 		// 단어 목록 정보
