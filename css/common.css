@@ -416,11 +416,18 @@ a:hover {
 	color: #7e04b5 !important;
 }
 /**********************************************************
- *			background-color 
+ *			background
  **********************************************************/
 .bg-fc-logo-head {
   background: var(--fc-logo-head) center/cover no-repeat;
 }
+
+.bg-fc-transparent{
+	background: transparent!important;
+}
+/**********************************************************
+ *			background-color 
+ **********************************************************/
 
 .bg-fc-purple{
 	background-color: var(--fc-purple) !important;
