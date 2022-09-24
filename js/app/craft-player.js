@@ -177,11 +177,11 @@
 				view.querySelector('.example-btn-section').style.display = 'none';
 				break;
 			case '6':
-				const rightOptions = Array.from(examples, ([[],text]) => {
+				const rightOptions = Array.from(examples, ([ [], text ]) => {
 					return text.split(/\s+/);
-				}).reduce((acc, curr) => acc.concat(curr),[]);
+				}).reduce((acc, curr) => acc.concat(curr), []);
 				view.querySelectorAll('.example-btn-section input').forEach((input, i) => {
-					if(input.value == rightOptions[i].substring(1)) {
+					if(input.value.toLowerCase() == rightOptions[i].substring(1).toLowerCase()) {
 						input.style.border = 'solid 1px #00bcd4';
 					}else {
 						input.style.border = 'solid 1px #f44336';
@@ -616,7 +616,7 @@
 						contextChildren.push((i > 0 ? ' ' : '') + token.substring(0, 1));
 						if(token.length > 1) {
 							contextChildren.push({
-								el: 'input', style: { width: `${token.length - 1}em`}, pattern: '[0-9A-z!?.,]'
+								el: 'input', style: { width: `${token.length - 1}em`}, pattern: '[0-9A-z!?.,]', autocapitalize: 'off'
 							});
 						}
 					})
@@ -709,6 +709,8 @@
 		
 		// 배틀 출처 표시
 		//view.querySelector('.source').textContent = currentBattle.source;
+		
+		document.querySelector('.craft-layout-content-section').style.backgroundPositionY = `${currentView.querySelector('.ask-section').getBoundingClientRect().top - 328}px`;
 	}
 	
 	/** 플레이어 초기화
