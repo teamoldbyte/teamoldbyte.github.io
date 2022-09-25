@@ -617,7 +617,7 @@
 						moveSolveBtn(arrangedSection.childElementCount != examples.length);
 					}
 					});
-				});	
+				});
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				// 선택 초기화
 				arrangedSection.replaceChildren();
@@ -655,6 +655,7 @@
 					}
 					offsetPos = end;					
 				});
+				currentView.querySelector('.arranged-examples').replaceChildren();
 				currentView.querySelector('.ask-section .sentence.kor').textContent = currentBattle.kor;
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
 				$(currentView).on('input', '.example-btn-section input', function() {
@@ -731,6 +732,8 @@
 					}
 					});					
 				})
+				// 선택 초기화
+				arrangedSection7.replaceChildren();
 				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
 				break;
@@ -740,7 +743,8 @@
 		// 배틀 출처 표시
 		//view.querySelector('.source').textContent = currentBattle.source;
 		
-		document.querySelector('.craft-layout-content-section').style.backgroundPositionY = `${currentView.querySelector('.ask-section').getBoundingClientRect().top - 328}px`;
+		document.querySelector('.craft-layout-content-section').style.backgroundPositionY 
+		= `${currentView.querySelector('.ask-section').getBoundingClientRect().top - window.innerWidth * 285 / 355}px`;
 	}
 	
 	/** 플레이어 초기화
