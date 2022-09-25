@@ -209,9 +209,9 @@
 				else {
 					view.querySelectorAll('.arranged-examples .btn').forEach( option => {
 						if(options7.includes(option.textContent)) {
-							option.style.border = 'solid 1px #00bcd4';
+							option.classList.add('right');
 						}else {
-							option.style.border = 'solid 1px #f44336';
+							option.classList.add('wrong');
 							correct = false;
 						}
 					})
@@ -816,71 +816,71 @@
 	
 	function calcRank() {
 		const prevRankBase = currRankBase;
-		if(_battleRecord.correct > 3500) {
+		if(_battleRecord.correct > 3100) {
 			currRankTitle = '대장';
-			currRankBase = 3501;
+			currRankBase = 3101;
 			nextRankBase = 3501;
-		}else if(_battleRecord.correct > 2500) {
+		}else if(_battleRecord.correct > 2800) {
 			currRankTitle = '중장';
-			currRankBase = 2501;
-			nextRankBase = 3501;
-		}else if(_battleRecord.correct > 2000) {
+			currRankBase = 2801;
+			nextRankBase = 3101;
+		}else if(_battleRecord.correct > 2500) {
 			currRankTitle = '소장';
+			currRankBase = 2501;
+			nextRankBase = 2801;
+		}else if(_battleRecord.correct > 2000) {
+			currRankTitle = '준장';
 			currRankBase = 2001;
 			nextRankBase = 2501;
-		}else if(_battleRecord.correct > 1600) {
-			currRankTitle = '준장';
-			currRankBase = 1601;
-			nextRankBase = 2001;
-		}else if(_battleRecord.correct > 1300) {
+		}else if(_battleRecord.correct > 1700) {
 			currRankTitle = '대령';
-			currRankBase = 1301;
-			nextRankBase = 1601;
-		}else if(_battleRecord.correct > 1100) {
+			currRankBase = 1701;
+			nextRankBase = 2001;
+		}else if(_battleRecord.correct > 1500) {
 			currRankTitle = '중령';
+			currRankBase = 1501;
+			nextRankBase = 1701;
+		}else if(_battleRecord.correct > 1300) {
+			currRankTitle = '소령';
+			currRankBase = 1301;
+			nextRankBase = 1501;
+		}else if(_battleRecord.correct > 1100) {
+			currRankTitle = '대위';
 			currRankBase = 1101;
 			nextRankBase = 1301;
 		}else if(_battleRecord.correct > 900) {
-			currRankTitle = '소령';
+			currRankTitle = '중위';
 			currRankBase = 901;
 			nextRankBase = 1101;
-		}else if(_battleRecord.correct > 700) {
-			currRankTitle = '대위';
-			currRankBase = 701;
+		}else if(_battleRecord.correct > 750) {
+			currRankTitle = '소위';
+			currRankBase = 751;
 			nextRankBase = 901;
 		}else if(_battleRecord.correct > 600) {
-			currRankTitle = '중위';
+			currRankTitle = '상사';
 			currRankBase = 601;
-			nextRankBase = 701;
+			nextRankBase = 751;
 		}else if(_battleRecord.correct > 500) {
-			currRankTitle = '소위';
+			currRankTitle = '중사';
 			currRankBase = 501;
 			nextRankBase = 601;
 		}else if(_battleRecord.correct > 400) {
-			currRankTitle = '상사';
+			currRankTitle = '하사';
 			currRankBase = 401;
 			nextRankBase = 501;
 		}else if(_battleRecord.correct > 300) {
-			currRankTitle = '중사';
+			currRankTitle = '병장';
 			currRankBase = 301;
 			nextRankBase = 401;
-		}else if(_battleRecord.correct > 200) {
-			currRankTitle = '하사';
-			currRankBase = 201;
-			nextRankBase = 301;
-		}else if(_battleRecord.correct > 150) {
-			currRankTitle = '병장';
-			currRankBase = 151;
-			nextRankBase = 201;
-		}else if(_battleRecord.correct > 100) {
+		}else if(_battleRecord.correct > 170) {
 			currRankTitle = '상병';
 			currRankBase = 171;
 			nextRankBase = 301;
-		}else if(_battleRecord.correct > 50) {
+		}else if(_battleRecord.correct > 70) {
 			currRankTitle = '일병';
 			currRankBase = 71;
 			nextRankBase = 171;
-		}else if(_battleRecord.correct > 20) {
+		}else if(_battleRecord.correct > 30) {
 			currRankTitle = '이병';
 			currRankBase = 31;
 			nextRankBase = 71;
