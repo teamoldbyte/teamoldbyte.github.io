@@ -410,7 +410,7 @@ u {
 .explain-section .svoc-section{
 /*	border-radius: 5px;*/
 	background-color: #ffffff;
-	margin-top: 1rem;
+	margin-top: 2px;
 	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
 .explain-section .trans-section.show, 
@@ -530,11 +530,11 @@ u {
 
 .craft-layout-section .example-btn-section .btn:hover,
 .craft-layout-section .example-btn-section .btn.active{
-	color: #2A2F47;
-	background: #ffffff;
+	color: #ffffff;
+	background: #5169e6;
 }
 #battle-5 .example-btn-section .btn:hover{
-	background-color: #5A6497;
+	background-color: #5169e6;
 	color: #fff;
 }
 #battle-6 .example-btn-section{
