@@ -188,7 +188,7 @@ u {
 	font-weight: 500;
 }
 .ask-section .wrong{
-	color:#ed9954 !important;
+	color:#f44336 !important;
 	font-weight: 500;
 }
 .text-green{
@@ -353,10 +353,10 @@ u {
 #battle-2 .unselected.modificand::before {
 	color: #ffb266;
 	position: absolute;
-	top: -.625rem;
+	top: -.825rem;
 	left: auto!important;
-	right: .5rem;
-	font-size: .5rem;
+	/*right: .5rem;*/
+	font-size: .75rem;
 	min-width: 2rem;
 	width: max-content;
 	font-family: 'NanumBarunpen';
@@ -367,10 +367,10 @@ u {
 #battle-2 .unselected.modifier::before {
 	color: #ffb266;
 	position: absolute;
-	top: -.625rem;
+	top: -.825rem;
 	left: auto!important;
-	right: .5rem;
-	font-size: .5rem;
+	/*right: .5rem;*/
+	font-size: .75rem;
 	min-width: 2rem;
 	width: max-content;
 	font-family: 'NanumBarunpen';
@@ -592,6 +592,10 @@ u {
 	color: #fff;
 	border-bottom: 1px solid #fff;
 }
+#battle-6 .example-btn-section input.wrong{
+	color: #f44336;
+	border-bottom: 1px solid #f44336;
+}
 .craft-layout-section .example-btn-section .btn.selected{
 	opacity: 0.25;
 }
@@ -616,6 +620,9 @@ u {
 	border: none;
 	margin-bottom: 0.5rem;
 	margin-right: 0.5rem;
+}
+.arranged-examples .btn-outline-fico.wrong {
+	background-color: #f44336;
 }
 .arranged-examples .btn:hover{
 	background-color: #5A6497;
