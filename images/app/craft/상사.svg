@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+              "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 50 50">
+  <polygon points="15,18 15,21 25,26 25,23" fill="gold" />
+  <polygon points="25,26 25,23 35,18 35,21" fill="darkorange" />
+  <polygon points="15,22 15,25 25,30 25,27" fill="gold" />
+  <polygon points="25,30 25,27 35,22 35,25" fill="darkorange" />
+  <polygon points="15,26 15,29 25,34 25,31" fill="gold" />
+  <polygon points="25,34 25,31 35,26 35,29" fill="darkorange" />
+</svg>

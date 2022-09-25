@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+              "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 50 50">
+  <polygon points="10,25 15,17 20,25 25,17 30,25 35,17 35,25" fill="ghostwhite"/>
+  <polygon points="15,25 15,33 20,25 25,33 30,25 35,33 40,25" fill="silver"/>
+  <polygon points="10,25 15,33 15,17 25,33 25,17 35,33 35,17 40,25" fill="lightgray"/>
+</svg>
