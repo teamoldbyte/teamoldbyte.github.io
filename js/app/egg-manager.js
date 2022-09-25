@@ -111,7 +111,7 @@
 	
 	function createBucket(level) {
 		return createElement({
-			el: 'img', id: 'egg_tray', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level}.svg`,
+			el: 'img', id: 'egg_tray', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level > 5 ? (level%6+1):level}.svg`,
 			onclick: () => window.location.assign('/mypage'), 'data-bs-toggle': 'tooltip', title: '마이페이지로 가서 에그 확인',
 			style: {
 				position: 'fixed', left: `${window.innerWidth}px`, top: `${window.innerHeight - 150}px`, zIndex: 1072,
@@ -122,7 +122,7 @@
 	
 	function createNewBucket(level) {
 		return createElement({
-			el: 'img', className: 'new-obj', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level}.svg`,
+			el: 'img', className: 'new-obj', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level > 5 ? (level%6+1):level}.svg`,
 			style: {
 				position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', maxWidth: '50vmin', zIndex: 1071,
 				maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)'
