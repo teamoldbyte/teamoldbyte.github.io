@@ -117,6 +117,7 @@
 				break;	
 			case '2':
 				view.querySelectorAll('.option,.modifier,.modificand').forEach(opt => {
+					if(!opt.matches('.selected')) opt.classList.add('unselected');
 					if(currentBattle.ask.includes('모든')) {
 						if(opt.matches('.modifier, .modificand')) {
 							opt.classList.add('right');
@@ -205,7 +206,16 @@
 						}
 					}
 				},[]);			
-				if(view.querySelectorAll('.arranged-examples .btn').length != options7.length) correct = false;
+				if(view.querySelectorAll('.arranged-examples .btn').length != options7.length){
+					view.querySelectorAll('.arranged-examples .btn').forEach( option => {
+						if(options7.includes(option.textContent)) {
+							option.classList.add('right');
+						}else {
+							option.classList.add('wrong');
+						}
+					})					
+					correct = false;
+				} 
 				else {
 					view.querySelectorAll('.arranged-examples .btn').forEach( option => {
 						if(options7.includes(option.textContent)) {
