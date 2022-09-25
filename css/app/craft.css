@@ -343,6 +343,39 @@ u {
 	color: #ffffff;
 	font-weight: bold;
 }
+
+/* 배틀2 의 수식, 피수식 표시 */
+#battle-2 .ask-section .sentence.eng span{
+	position: relative;
+}
+#battle-2 .wrong.modificand::before,
+#battle-2 .right.modificand::before,
+#battle-2 .unselected.modificand::before {
+	color: #ffb266;
+	position: absolute;
+	top: -.625rem;
+	left: auto!important;
+	right: .5rem;
+	font-size: .5rem;
+	min-width: 2rem;
+	width: max-content;
+	font-family: 'NanumBarunpen';
+	content: '\d53c\c218\c2dd\c5b4';
+}
+#battle-2 .wrong.modifier::before,
+#battle-2 .right.modifier::before,
+#battle-2 .unselected.modifier::before {
+	color: #ffb266;
+	position: absolute;
+	top: -.625rem;
+	left: auto!important;
+	right: .5rem;
+	font-size: .5rem;
+	min-width: 2rem;
+	width: max-content;
+	font-family: 'NanumBarunpen';
+	content: '\c218\c2dd\c5b4';
+}
 /*
 .battle-type-block{
 	transform: translateY(25%);
@@ -410,8 +443,9 @@ u {
 .explain-section .svoc-section{
 /*	border-radius: 5px;*/
 	background-color: #ffffff;
-	margin-top: 2px;
+	margin-top: 4px;
 	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 6px 0px inset;
 }
 .explain-section .trans-section.show, 
 .explain-section .words-section.show, 
@@ -527,7 +561,13 @@ u {
 .example-btn-section .btn:last-child{
 	margin-right: 0;
 }
-
+/* 보기 버튼 영역 - 정답 오답 표시 */
+.example-btn-section .right{
+	
+}
+.example-btn-section .wrong{
+	
+}
 .craft-layout-section .example-btn-section .btn:hover,
 .craft-layout-section .example-btn-section .btn.active{
 	color: #ffffff;
@@ -547,6 +587,10 @@ u {
 }
 #battle-6 .example-btn-section input{
 	margin: 0 2px;
+	background: none;
+	border: none;
+	color: #fff;
+	border-bottom: 1px solid #fff;
 }
 .craft-layout-section .example-btn-section .btn.selected{
 	opacity: 0.25;
