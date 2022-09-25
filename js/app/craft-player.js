@@ -127,7 +127,7 @@
 					}else {
 						if(!selectHistory.includes(opt)) {
 							if(opt.matches('.modifier, .modificand')) {
-								opt.classList.add('right');
+								opt.classList.add('right');							
 								correct = false;
 							}
 						}else if(opt.matches(selectHistory.indexOf(opt) % 2 ? '.modifier' : '.modificand')) {
@@ -181,10 +181,10 @@
 					return text.split(/\s+/);
 				}).reduce((acc, curr) => acc.concat(curr), []);
 				view.querySelectorAll('.example-btn-section input').forEach((input, i) => {
-					if(input.value.toLowerCase() == rightOptions[i].substring(1).toLowerCase()) {
-						input.style.border = 'solid 1px #00bcd4';
+					if(input.value.toLowerCase() == rightOptions[i].toLowerCase()) {
+						input.className = 'right';
 					}else {
-						input.style.border = 'solid 1px #f44336';
+						input.className = 'wrong';
 						correct = false;
 					}
 				})
@@ -224,6 +224,7 @@
 		}
 		// 맞힘/틀림에 따른 알림
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
+								style: { transformOrigin: 'top'},
 								"textContent": correct ? '정답입니다.' : '오답입니다.'});
 		document.querySelector('.craft-header-section').append(resultToast);
 		// 해설화면에 캐릭터 안보이도록 투명화
@@ -243,14 +244,14 @@
 		}).add({
 			color: '#FFF',
 			easing: 'linear'
-		}).add({
+		})/*.add({
 			delay: 2000,
 			begin: () => resultToast.style.transformOrigin = 'top',
 			bottom: 0,
 			height: 0,
 			easing: 'easeInOutExpo',
 			complete: () => resultToast.remove()
-		})
+		})*/;
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
@@ -298,6 +299,15 @@
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
 		$(currentView).find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
 		
+		// 맞힘/틀림 메세지 숨김
+		anime({
+			targets: '.js-result-msg',
+			bottom: 0,
+			height: 0,
+			duration: 500,
+			easing: 'easeInOutExpo',
+			complete: anim => anim.animatables.forEach(msg => msg.target.remove())	
+		})
 		nextBtnObserver.disconnect();
 		// 클라이언트에 남은 다음 문제 진행
 		if(battlePool.length > 0) {
@@ -613,10 +623,20 @@
 					if(leftStr) contextChildren.push(leftStr);
 					
 					text.split(/\s+/).forEach((token, i) => {
-						contextChildren.push((i > 0 ? ' ' : '') + token.substring(0, 1));
-						if(token.length > 1) {
+						if(i > 0) contextChildren.push(' ')
+						if(token.length > 0) {
 							contextChildren.push({
-								el: 'input', style: { width: `${token.length - 1}em`}, pattern: '[0-9A-z!?.,]', autocapitalize: 'off'
+								el: 'input', style: { width: `${token.length}em`}, pattern: '[0-9A-z!?.,]',
+								placeholder: token.length > 1 ? token.substring(0,1) : '', autocapitalize: 'off',
+								onfocus: function() {
+									// 타이핑 위치와 확인버튼이 겹치면 스크롤 이동
+									const thisTop = this.getBoundingClientRect().top;
+									const nextBtnTop = document.querySelector('.js-next-btn, .js-solve-btn').getBoundingClientRect().top;
+									const topDiff = Math.abs(nextBtnTop - thisTop);
+									if(topDiff < 76.5) {
+										scrollTo(scrollX, scrollY + 76.5 - topDiff);
+									}
+								}
 							});
 						}
 					})
@@ -854,20 +874,20 @@
 			nextRankBase = 201;
 		}else if(_battleRecord.correct > 100) {
 			currRankTitle = '상병';
-			currRankBase = 101;
-			nextRankBase = 151;
+			currRankBase = 171;
+			nextRankBase = 301;
 		}else if(_battleRecord.correct > 50) {
 			currRankTitle = '일병';
-			currRankBase = 51;
-			nextRankBase = 101;
+			currRankBase = 71;
+			nextRankBase = 171;
 		}else if(_battleRecord.correct > 20) {
 			currRankTitle = '이병';
-			currRankBase = 21;
-			nextRankBase = 51;
+			currRankBase = 31;
+			nextRankBase = 71;
 		}else {
 			currRankTitle = '훈련병';
 			currRankBase = 0;
-			nextRankBase = 21;
+			nextRankBase = 31;
 		}		
 		
 		// 진급을 하면 축하 연출
