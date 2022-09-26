@@ -139,6 +139,7 @@
 						}
 					}
 				})
+				view.querySelector('.mod-guide-text').remove();
 				break;
 			case '3':
 				const selectedOpt3 = view.querySelector('.example-btn-section .active');
@@ -451,12 +452,24 @@
 					modGuideText.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'} 선택`;
 				}else {
 					ask.textContent = `[${currentBattle.ask}] 수식어와 피수식어를 선택하세요.`;
-					
+					modGuideText.textContent = '수식어 선택' // 항상 수식어부터 선택하도록.
 				}
+				anime.timeline({
+					targets: modGuideText
+				}).add({
+					begin: () => currentView.querySelector('.ask-section').appendChild(modGuideText),
+					width: [0, '70vw'],
+					delay: 1200
+				}).add({
+					delay: 0,
+					color: ['#ffffff', '#ffb266','#ffffff', '#ffb266','#ffffff', '#ffb266'],
+					easing: 'linear'
+				})
 				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
 			 	const [ modifiers, modificands ] = answers;
 			 	const optionDummy2 = { el: 'span', role: 'button', onclick: function() {
+					// 선택 해제
 					if(this.matches('.selected')) {
 						const searchedIndex = selectHistory.indexOf(this);
 						
@@ -470,10 +483,21 @@
 							if(selectHistory[indexToDelete]) {
 								(selectHistory.splice(indexToDelete, 1))[0].classList.remove('selected');
 							}
+							
+							modGuideText.textContent = '수식어 선택';
 						}
+						anime({
+							targets: modGuideText,
+							easing: 'linear',
+							color: ['#FFFFFF','#ffb266','#FFFFFF','#ffb266','#FFFFFF','#ffb266']
+						})
+					// 선택 추가
 					}else {
 						this.classList.add('selected');
 						selectHistory.push(this);
+						if(!currentBattle.ask.includes('모든')) {
+							modGuideText.textContent = `${['수식어','피수식어'][selectHistory.length % 2]} 선택`;
+						}
 					}
 					moveSolveBtn(selectHistory.length == 0);
 				}}
@@ -649,8 +673,9 @@
 						if(i > 0) contextChildren.push(' ')
 						if(token.length > 0) {
 							contextChildren.push({
-								el: 'input', style: { width: `${token.length}em`}, pattern: '[0-9A-z!?.,]',
+								el: 'input', type: 'text', style: { width: `${token.length}em`}, pattern: '[0-9A-z!?.,]',
 								placeholder: token.length > 1 ? token.substring(0,1) : '', autocapitalize: 'off',
+								autocomplete: 'off', autocorrect: 'off', spellcheck: "false",
 								onfocus: function() {
 									// 타이핑 위치와 확인버튼이 겹치면 스크롤 이동
 									const thisTop = this.getBoundingClientRect().top;
