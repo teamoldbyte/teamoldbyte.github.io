@@ -1,0 +1,20 @@
+[ 
+	{	"startValue": -1, "rankTitle": "훈련병", "maxLength": 30, "battleLevel": "이병" },
+	{	"startValue": 30, "rankTitle": "이병", "maxLength": 30, "battleLevel": "이병" },
+	{	"startValue": 70, "rankTitle": "일병", "maxLength": 60, "battleLevel": "일병" },
+	{	"startValue": 170, "rankTitle": "상병", "maxLength": 60, "battleLevel": "일병" },
+	{	"startValue": 300, "rankTitle": "병장", "maxLength": 80, "battleLevel": "병장" },
+	{	"startValue": 400, "rankTitle": "하사", "maxLength": 50, "battleLevel": "하사" },
+	{	"startValue": 500, "rankTitle": "중사", "maxLength": 50, "battleLevel": "하사" },
+	{	"startValue": 600, "rankTitle": "상사", "maxLength": 70, "battleLevel": "상사" },
+	{	"startValue": 750, "rankTitle": "소위", "maxLength": 100, "battleLevel": "소위" },
+	{	"startValue": 900, "rankTitle": "중위", "maxLength": 100, "battleLevel": "소위" },
+	{	"startValue": 1100, "rankTitle": "대위", "maxLength": 120, "battleLevel": "대위" },
+	{	"startValue": 1300, "rankTitle": "소령", "maxLength": 150, "battleLevel": "소령" },
+	{	"startValue": 1500, "rankTitle": "중령", "maxLength": 150, "battleLevel": "소령" },
+	{	"startValue": 1700, "rankTitle": "대령", "maxLength": 150, "battleLevel": "대령" },
+	{	"startValue": 2000, "rankTitle": "준장", "maxLength": 200, "battleLevel": "준장" },
+	{	"startValue": 2500, "rankTitle": "소장", "maxLength": 9999, "battleLevel": "소장" },
+	{	"startValue": 2800, "rankTitle": "중장", "maxLength": 9999, "battleLevel": "소장" },
+	{	"startValue": 3100, "rankTitle": "대장", "maxLength": 9999, "battleLevel": "소장" }
+]
