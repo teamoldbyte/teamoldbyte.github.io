@@ -35,6 +35,7 @@
 	}, { threshold: 1.0})
 	
 	let solveResults = []; // 연속 맞힘 기록
+	let rankClasses = []; // 계급도(ajax)
 	let _contentType; // 플레이 컨텐츠 종류(step, grammar, workbook)
 	let _contentId; // 지정된 컨텐츠가 있을 경우 해당 컨텐츠 아이디
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
@@ -250,6 +251,7 @@
 			backgroundColor: correct ? '#00bcd4' : '#f44336',
 			width: ['2rem', '50%'],
 			height: ['0rem', '2rem'],
+			duration: 1000,
 			easing: 'easeInOutExpo'
 		}).add({
 			color: '#FFF',
@@ -262,6 +264,14 @@
 			easing: 'easeInOutExpo',
 			complete: () => resultToast.remove()
 		})*/;
+		// 틀렸을 땐 짜릿한 진동 벌칙
+		if(!correct) {
+			if(window.ANI && window.ANI?.vibrate) {
+				window.ANI.vibrate([200,50,100,50,100]);
+			}else if(navigator?.vibrate) {
+				navigator.vibrate([200,50,100,50,100]);
+			}
+		}
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
@@ -830,79 +840,23 @@
 	
 	function calcRank() {
 		const prevRankBase = currRankBase;
-		if(_battleRecord.correct > 3100) {
-			currRankTitle = '대장';
-			currRankBase = 3101;
-			nextRankBase = 3501;
-		}else if(_battleRecord.correct > 2800) {
-			currRankTitle = '중장';
-			currRankBase = 2801;
-			nextRankBase = 3101;
-		}else if(_battleRecord.correct > 2500) {
-			currRankTitle = '소장';
-			currRankBase = 2501;
-			nextRankBase = 2801;
-		}else if(_battleRecord.correct > 2000) {
-			currRankTitle = '준장';
-			currRankBase = 2001;
-			nextRankBase = 2501;
-		}else if(_battleRecord.correct > 1700) {
-			currRankTitle = '대령';
-			currRankBase = 1701;
-			nextRankBase = 2001;
-		}else if(_battleRecord.correct > 1500) {
-			currRankTitle = '중령';
-			currRankBase = 1501;
-			nextRankBase = 1701;
-		}else if(_battleRecord.correct > 1300) {
-			currRankTitle = '소령';
-			currRankBase = 1301;
-			nextRankBase = 1501;
-		}else if(_battleRecord.correct > 1100) {
-			currRankTitle = '대위';
-			currRankBase = 1101;
-			nextRankBase = 1301;
-		}else if(_battleRecord.correct > 900) {
-			currRankTitle = '중위';
-			currRankBase = 901;
-			nextRankBase = 1101;
-		}else if(_battleRecord.correct > 750) {
-			currRankTitle = '소위';
-			currRankBase = 751;
-			nextRankBase = 901;
-		}else if(_battleRecord.correct > 600) {
-			currRankTitle = '상사';
-			currRankBase = 601;
-			nextRankBase = 751;
-		}else if(_battleRecord.correct > 500) {
-			currRankTitle = '중사';
-			currRankBase = 501;
-			nextRankBase = 601;
-		}else if(_battleRecord.correct > 400) {
-			currRankTitle = '하사';
-			currRankBase = 401;
-			nextRankBase = 501;
-		}else if(_battleRecord.correct > 300) {
-			currRankTitle = '병장';
-			currRankBase = 301;
-			nextRankBase = 401;
-		}else if(_battleRecord.correct > 170) {
-			currRankTitle = '상병';
-			currRankBase = 171;
-			nextRankBase = 301;
-		}else if(_battleRecord.correct > 70) {
-			currRankTitle = '일병';
-			currRankBase = 71;
-			nextRankBase = 171;
-		}else if(_battleRecord.correct > 30) {
-			currRankTitle = '이병';
-			currRankBase = 31;
-			nextRankBase = 71;
-		}else {
-			currRankTitle = '훈련병';
-			currRankBase = 0;
-			nextRankBase = 31;
-		}		
+		
+		if(rankClasses.length == 0) {
+			$.getJSON('https://static.findsvoc.com/data/craft/rank-list.json', arr => {
+				rankClasses = arr.reverse();
+				calcRank();
+			})
+			.fail(() => alert('계급도를 가져오는데 실패했습니다.'));
+			return;
+		}
+		for(let i = 0, len = rankClasses.length; i < len; i++) {
+			if(_battleRecord.correct > rankClasses[i].startValue) {
+				currRankTitle = rankClasses[i].rankTitle;
+				currRankBase = rankClasses[i].startValue + 1;
+				nextRankBase = (i > 0) ? rankClasses[i - 1].startValue : 9999;
+				break;
+			}
+		}
 		
 		// 진급을 하면 축하 연출
 		if(prevRankBase < currRankBase) {
