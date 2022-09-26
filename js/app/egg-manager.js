@@ -112,7 +112,7 @@
 	function createBucket(level) {
 		return createElement({
 			el: 'img', id: 'egg_tray', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level > 5 ? (level%6+1):level}.svg`,
-			onclick: () => window.location.assign('/mypage'), 'data-bs-toggle': 'tooltip', title: '마이페이지로 가서 에그 확인',
+			onclick: () => {if(window.location.pathname != '/craft/battle/step') window.location.assign('/mypage')}, 'data-bs-toggle': 'tooltip', title: '마이페이지에서 에그 확인',
 			style: {
 				position: 'fixed', left: `${window.innerWidth}px`, top: `${window.innerHeight - 150}px`, zIndex: 1072,
 				width: '70px', height: '70px', cursor: 'pointer'
@@ -132,13 +132,13 @@
 
 	function createPlasticBag() {
 		return createElement({
-			el: 'img', id: 'plasticbag_container', src: 'https://static.findsvoc.com/images/app/egg/bucket/plasticbag.svg',
+			el: 'div', id: 'plasticbag_container',
 			onclick: () => window.location.assign('/membership'), 'data-bs-toggle': 'tooltip', 
 			title: [ '깨진 에그가 아까워..→', '에그를 받아내는 방법 없나?→', '비닐봉지 말고 없나?→', '에그가 왜 깨지죠?→', '아직 회원이 아니군요?'][Math.floor(Math.random() * 5)],
 			style: {
-				position: 'fixed', right: '10px', top: `${window.innerHeight - 180}px`, width: '50px', height: '50px', zIndex: 1072,
+				position: 'fixed', left: `${window.innerWidth}px`, top: `${window.innerHeight - 175}px`, width: '70px', height: '70px', zIndex: 1072,
 				pointerEvents: 'auto', cursor: 'pointer'
-			}
+			}, innerHTML : '<svg xmlns="http://www.w3.org/2000/svg" width="70px" height="70px" viewBox="0 0 651 890"><path id="plasticBagPath" stroke="#000" d="M 6.00,30.50 C 6.00,30.50 1.50,785.00 1.50,785.00 1.50,785.00 228.50,773.50 250.50,772.00 272.50,770.50 339.50,768.00 366.00,767.00 392.50,766.00 411.00,762.00 430.00,761.50 449.00,761.00 649.50,750.50 649.50,750.50 649.50,750.50 612.00,2.00 612.00,2.00 612.00,2.00 493.50,11.00 493.50,11.00 493.50,11.00 499.50,237.50 499.50,237.50 499.50,237.50 133.50,248.00 133.50,248.00 133.50,248.00 133.50,24.50 133.50,24.50 133.50,24.50 6.00,30.50 6.00,30.50 Z"/></svg>'
 		});
 	}
 	
@@ -204,7 +204,7 @@
 			},
 			begin: () => {
 				// 회원용 트레이에 담기는 애니메이션
-				if(eggTray.length > 0) {
+				if(bucketLevel > 0) {
 					setTimeout(() => {
 						anime({
 							targets: bucket,
@@ -219,7 +219,7 @@
 				// 비회원에겐 비닐봉지가 채워짐과 동시에 툴팁 표시
 				else {
 					setTimeout(() => {
-						bucketTooltip = new bootstrap.Tooltip(bucket);
+						bucketTooltip = bootstrap.Tooltip.getOrCreateInstance(bucket);
 						bucketTooltip.show();
 					}, 1900);
 					anime({
@@ -234,7 +234,7 @@
 			},
 			complete: () => {
 				// 회원일 경우 에그가 다 담기고 에그와 에그 트레이 철수
-				if(eggTray.length > 0) {
+				if(bucketLevel > 0) {
 					// 버킷 레벨 새로 정의
 					const prevLevel = bucketLevel;
 					let eggTotal = 0;
@@ -329,7 +329,7 @@
 			}
 		})
 		// 비회원일 경우
-		if(eggTray.length == 0) {
+		if(bucketLevel == 0) {
 			
 			// 0.5초 뒤 순차적으로 에그 자유낙하
 			egg_timeline.add({
