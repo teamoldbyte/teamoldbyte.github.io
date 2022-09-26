@@ -132,20 +132,23 @@ u {
 .sub-block{
 	border-radius: 0;
 	position: relative;
-	background: linear-gradient(to right, #495493, #1B203A);
+	/*background: linear-gradient(to right, #495493, #1B203A);*/
+	background-color: #5169e6;
 }
 .sub-block .icon-section{
 	position: absolute;
 	right: 1.5rem;	
 }
 .sub-block .icon-section i{
-	color: #455bf1;
+	color: #dddddd;
 }
 .sub-block.disabled{
-	background: #b1b1b1;
+	background: #f0f0f0;
 }
+.sub-block.disabled .title,
+.sub-block.disabled .sub-title,
 .sub-block.disabled .icon-section i{
-	color: gray;
+	color: #c8c8c8;
 }
 .craft-index-section{
 	margin-top: 14rem;
@@ -519,13 +522,29 @@ u {
 	display: block;
 	margin-bottom: 5px;
 	padding-bottom: 5px;
-	border-bottom: 1px solid #ececec;
 }
-.explain-section .trans-section .trans-text:last-child{
+.explain-section .trans-section>.row:last-child{
 	margin-bottom: 0;
 	padding-bottom: 0;
 	border-bottom: none;
 }
+.trans-section .user-trans::before{
+	font-family: "Material Icons";
+	content: '\e7fd';
+	font-size: 1.25rem;
+}
+.trans-section .ai-trans::before {
+	font-family: "Material Icons";
+	/*content: '\ea4a';*/ 
+	content:'\f02e';
+	font-size: 1.25rem;
+}
+.trans-section .ai-trans:nth-child(4n) { color: #03b4d0;}
+.trans-section .ai-trans:nth-child(4n+1) { color: #ED9954}
+.trans-section .ai-trans:nth-child(4n+2) { color: #2acd18;}
+.trans-section .ai-trans:nth-child(4n+3) { color: #cd188e;}
+
+
 /* 해석 상세보기 - 단어 */
 .explain-section .one-word-unit-section{
 	display: inline-block;
