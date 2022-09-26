@@ -120,22 +120,21 @@
 				view.querySelectorAll('.option,.modifier,.modificand').forEach(opt => {
 					if(!opt.matches('.selected')) opt.classList.add('unselected');
 					if(currentBattle.ask.includes('모든')) {
-						if(opt.matches('.modifier, .modificand')) {
+						if(selectHistory.includes(opt) && opt.matches('.modifier, .modificand')) {
 							opt.classList.add('right');
-						}else if(selectHistory.includes(opt)) {
+						}else if(selectHistory.includes(opt) ^ opt.matches('.modifier, .modificand')) {
 							correct = false;
-							opt.classList.add('wrong');
+							if(selectHistory.includes(opt)) {
+								opt.classList.add('wrong');
+							}
 						}
 					}else {
-						if(!selectHistory.includes(opt)) {
-							if(opt.matches('.modifier, .modificand')) {
-								opt.classList.add('right');							
-								correct = false;
-							}
-						}else if(opt.matches(selectHistory.indexOf(opt) % 2 ? '.modifier' : '.modificand')) {
-							opt.classList.add('right');
-						}else {
+						if(selectHistory.includes(opt) && opt.matches(selectHistory.indexOf(opt) % 2 ? '.modifier' : '.modificand')) {
+							opt.classList.add('right');							
+						}else if(selectHistory.includes(opt)) {
 							opt.classList.add('wrong');
+							correct = false;
+						}else {
 							correct = false;
 						}
 					}
@@ -444,11 +443,15 @@
 				sentence.replaceChildren(createElement(contextChildren));
 				break;
 			case '2' :
+			
+				const modGuideText = createElement({el: 'span', class: 'mod-guide-text'});
 				// 질문 표시
 				if(currentBattle.ask.includes('모든')) {
 					ask.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'}를 모두 선택하세요.`;
+					modGuideText.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'} 선택`;
 				}else {
 					ask.textContent = `[${currentBattle.ask}] 수식어와 피수식어를 선택하세요.`;
+					
 				}
 				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
