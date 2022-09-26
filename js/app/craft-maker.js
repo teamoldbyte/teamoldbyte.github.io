@@ -105,10 +105,26 @@
 	})
 	// 에디터 메뉴의 질문(ask)을 선택하면 태그(tag) 프리셋값을 설정한다.
 	.on('change', '.ask-select', function() {
-		const tag = this.querySelector('option:checked').dataset.tag;
-		const tagInput = this.closest('.add-battle-section').querySelector('.askTag');
+		const addSection = this.closest('.add-battle-section');
+		const selected = this.querySelector('option:checked');
+		const tag = selected.dataset.tag;
+		const tagInput = addSection.querySelector('.askTag');
 		if(tag) tagInput.value = tag;
 		else tagInput.value = '';
+		
+		
+		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
+		if(battleType == '2' && (selected.value.includes('의 피수식') || selected.value.includes('의 수식'))) {
+			const selector = selected.value.includes('의 피수식')? '피수식' : '수식';
+			const key = selected.value.replace(`의 ${selector}`,'');
+			const newKey = prompt(`???의 ${selector}어를 고르세요.\n???에 들어갈 단어를 입력하세요.`, key);
+			if(newKey != null && newKey.length > 0) {
+				selected.value = `${newKey}의 ${selector}`;
+				selected.innerHTML = `(지정)${newKey}의 ${selector}어를 선택하세요.`;
+			}else {
+				selected.selected = false;
+			}
+		}
 	})
 	// 문법 카테고리 값을 변경하면 동일 문법에 대한 이전 askTag값을 사용. (내역이 없을 경우 빈 값)
 	.on('change', '.battle-category-section select', function() {
@@ -636,6 +652,11 @@
 		// 2유형 질문에는 정적 선택지 2개 제일 위에 추가
 		if(parseInt(battleType) == 2) {
 			const modifyExist = (askArray.find(v => v.recommended) != null);
+			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', 
+				value: '의 피수식', innerHTML: '(지정)___의 피수식어를 선택하세요.'
+			});
+			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', 
+				value: '의 수식', innerHTML: '(지정)___의 수식어를 선택하세요.'});
 			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', value: '모든 피수식', innerHTML: '피수식어를 모두 선택하세요.'});
 			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', value: '모든 수식', selected: true, innerHTML: '수식어를 모두 선택하세요.'});
 		}		
@@ -1036,10 +1057,12 @@
 	}
 	
 	// battleType과 ask값을 통해 질문을 완전한 문장으로 구성.
-	function combineAsk(battleType, tag) {
-		let completeAsk = battleAsks[battleType - 1].replace('{}', tag);
+	function combineAsk(battleType, ask) {
+		let completeAsk = battleAsks[battleType - 1].replace('{}', ask);
 		if(battleType == 1 && completeAsk.match(/종속절의|주절의/)) {
 			completeAsk = completeAsk.replace('문장의', '문장에서');
+		}else if(battleType == 2 && (ask.includes('의 수식') || ask.includes('의 피수식'))) {
+			completeAsk = `${completeAsk}어를 선택하세요.`;
 		}
 		return completeAsk;
 	}
