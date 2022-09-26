@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+              "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 50 50">
+  <g id="star_part">
+  <polygon points="25,25 23,22.25 25,16.10" fill="ghostwhite"/>
+  <polygon points="25,25 27,22.25 25,16.10" fill="silver"/>
+  </g>
+  <use href="#star_part" transform="rotate(72,25,25)"/>
+  <use href="#star_part" transform="rotate(144,25,25)"/>
+  <use href="#star_part" transform="rotate(216,25,25)"/>
+  <use href="#star_part" transform="rotate(288,25,25)"/>
+</svg>
