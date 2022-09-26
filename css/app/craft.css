@@ -539,10 +539,10 @@ u {
 	content:'\f02e';
 	font-size: 1.25rem;
 }
-.trans-section .ai-trans:nth-child(4n) { color: #03b4d0;}
-.trans-section .ai-trans:nth-child(4n+1) { color: #ED9954}
-.trans-section .ai-trans:nth-child(4n+2) { color: #2acd18;}
-.trans-section .ai-trans:nth-child(4n+3) { color: #cd188e;}
+.trans-section .ai-trans:nth-child(4n-3) { color: #03b4d0;}
+.trans-section .ai-trans:nth-child(4n-2) { color: #ED9954}
+.trans-section .ai-trans:nth-child(4n-1) { color: #2acd18;}
+.trans-section .ai-trans:nth-child(4n) { color: #cd188e;}
 
 
 /* 해석 상세보기 - 단어 */
