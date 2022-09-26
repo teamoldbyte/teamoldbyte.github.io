@@ -377,8 +377,8 @@
 		selectHistory = [];
 		currentView = document.getElementById(`battle-${currentBattle.battleType}`);
 
-		const ask = currentView.querySelector('.ask');
-		const simpleAsk = currentView.querySelector('.simple-ask-block');
+		const ask = currentView.querySelector('.ask-block .ask');
+		const simpleAsk = currentView.querySelector('.simple-ask-block .ask');
 		const sentence = currentView.querySelector('.sentence');
 		const eng = currentBattle.eng;
 		const answers = JSON.parse(currentBattle.answer||"[]");
@@ -450,6 +450,9 @@
 				if(currentBattle.ask.includes('모든')) {
 					ask.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'}를 모두 선택하세요.`;
 					modGuideText.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'} 선택`;
+				}else if(currentBattle.ask.match(/의 수식|의 피수식/)) {
+					ask.textContent = `${currentBattle.ask}어를 선택하세요.`;
+					modGuideText.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'} 선택`;
 				}else {
 					ask.textContent = `[${currentBattle.ask}] 수식어와 피수식어를 선택하세요.`;
 					modGuideText.textContent = '수식어 선택' // 항상 수식어부터 선택하도록.
@@ -459,7 +462,8 @@
 				}).add({
 					begin: () => currentView.querySelector('.ask-section').appendChild(modGuideText),
 					width: [0, '70vw'],
-					delay: 1200
+					delay: 1000,
+					duration: 500,
 				}).add({
 					delay: 0,
 					color: ['#ffffff', '#ffb266','#ffffff', '#ffb266','#ffffff', '#ffb266'],
@@ -476,7 +480,7 @@
 						(selectHistory.splice(searchedIndex, 1))[0].classList.remove('selected');
 						
 						// 선택 해제 시 수식어-피수식어 쌍을 선택하는 문제에서는 선택 같이 해제되도록.
-						if(!currentBattle.ask.includes('모든')) {
+						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							const pairNum = Math.floor(searchedIndex / 2) * 2 + (1 - searchedIndex % 2);
 							const indexToDelete = pairNum > searchedIndex ? searchedIndex : (searchedIndex - 1);
 							
@@ -495,7 +499,7 @@
 					}else {
 						this.classList.add('selected');
 						selectHistory.push(this);
-						if(!currentBattle.ask.includes('모든')) {
+						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							modGuideText.textContent = `${['수식어','피수식어'][selectHistory.length % 2]} 선택`;
 						}
 					}
@@ -881,7 +885,7 @@
 			if(_battleRecord.correct > rankClasses[i].startValue) {
 				currRankTitle = rankClasses[i].rankTitle;
 				currRankBase = rankClasses[i].startValue + 1;
-				nextRankBase = (i > 0) ? rankClasses[i - 1].startValue : 9999;
+				nextRankBase = (i > 0) ? (rankClasses[i - 1].startValue + 1) : 9999;
 				break;
 			}
 		}
@@ -914,9 +918,10 @@
 		// 해석 정보
 		explainSection.querySelector('.trans-section').replaceChildren(createElement(Array.from(answerInfo.korList, (kor, i) => {
 			return { el : 'div', className: 'row', children: [
-				{ el : 'div', className: 'col-auto ps-2 pe-0', children: [{ el: 'span', className: 'material-icons fs-5', 
-					textContent: i >= (answerInfo.korList.length - 3) ? 'manage_accounts' : 'person', 
-					style: `color:${i >= (answerInfo.korList.length - 3) ? ['#4F9BA7','#37728E','#1F4775'][i] : '#5169E6'}` }]},
+				{ el : 'div', className: 'col-auto ps-2 pe-0', children: [
+					{ el: 'span', className: `material-icons ${i >= (answerInfo.korList.length - 3) ? 'ai-trans' : 'user-trans'}`, 
+					/*textContent: i >= (answerInfo.korList.length - 3) ? 'manage_accounts' : 'person', 
+					style: `color:${i >= (answerInfo.korList.length - 3) ? ['#4F9BA7','#37728E','#1F4775'][i] : '#5169E6'}` */}]},
 				{ el: 'div', className: 'trans-text col', textContent: kor.kor }
 			]} ;
 		})));
