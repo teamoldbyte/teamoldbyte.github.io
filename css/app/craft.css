@@ -199,9 +199,10 @@ u {
 	line-height: 2rem;
 	position: absolute;
 	top: -2rem;
+	left: 50%;
 	text-align: center;
 	width: 70vw;
-	transform: translateX(15%);
+	transform: translateX(-50%);
 	background: linear-gradient(to right, #0000001a, #000, #0000001a);
 }
 #battle-4 .ask-section .right {
@@ -415,7 +416,7 @@ u {
 	padding : 1rem;
 	margin-bottom: 2rem;
 	background: linear-gradient(to right, #4f9ca7, #1f4675);
-	word-break: break-all;
+	word-break: break-word;
 	color: white;
 	position: relative;
 }
