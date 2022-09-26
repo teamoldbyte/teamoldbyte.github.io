@@ -1,8 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
-              "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-
-<svg xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 50 50">
-  <line x1="15" x2="35" y1="25" y2="25" stroke="black" stroke-width="3"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><style>.prefix__text{font-family:monoface;font-size:10px;transform:translateX(-7px)}</style><path stroke="#000" fill="transparent" d="M15 26.5v-2h20v2Z"/><text class="prefix__text" x="25" y="25">🐤</text></svg>
