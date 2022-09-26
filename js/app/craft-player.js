@@ -861,7 +861,7 @@
 		// 진급을 하면 축하 연출
 		if(prevRankBase < currRankBase) {
 			showFireworks({target:$('.battle-section:visible')[0], distance: 100, size: 10})
-			const newRankImage = createElement({ el: 'img', src: `https://static.findsvoc.com/images/app/craft/${currRankTitle}.png`, class: 'position-absolute start-50 top-50 w-50', style: 'transform: translate(-50%, -50%)'});
+			const newRankImage = createElement({ el: 'img', src: `https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg`, class: 'position-absolute start-50 top-50 w-50', style: 'transform: translate(-50%, -50%)'});
 			document.body.appendChild(newRankImage);
 			anime({
 				targets: newRankImage,
