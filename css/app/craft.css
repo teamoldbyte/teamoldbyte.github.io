@@ -203,7 +203,7 @@ u {
 	text-align: center;
 	width: 70vw;
 	transform: translateX(-50%);
-	background: linear-gradient(to right, #0000001a, #000, #0000001a);
+	background: linear-gradient(to right, #00000000, #000, #00000000);
 }
 #battle-4 .ask-section .right {
 	text-decoration-color: #8be3aa;
@@ -594,6 +594,11 @@ u {
 }
 .example-btn-section .wrong{
 	
+}
+.craft-layout-section .arranged-examples .btn:hover,
+.craft-layout-section .arranged-examples .btn.active{
+	color: #5169e6;
+	background: #ffffff;
 }
 .craft-layout-section .example-btn-section .btn:hover,
 .craft-layout-section .example-btn-section .btn.active{
