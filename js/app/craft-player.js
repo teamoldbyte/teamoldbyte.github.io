@@ -785,9 +785,9 @@
 		
 		// 배틀 출처 표시
 		//view.querySelector('.source').textContent = currentBattle.source;
-		
-		document.querySelector('.craft-layout-content-section').style.backgroundPositionY 
-		= `${currentView.querySelector('.ask-section').getBoundingClientRect().top - window.innerWidth * 285 / 355}px`;
+		const layoutSection = document.querySelector('.craft-layout-content-section');
+		layoutSection.style.backgroundPositionY 
+		= `${currentView.querySelector('.ask-section').getBoundingClientRect().top - ((window.innerWidth>=992)? (layoutSection.clientHeight/layoutSection.clientWidth > 334/355 ? layoutSection.clientWidth * 142 / 355 : layoutSection.clientHeight * 151 / 355) : (window.innerWidth * 285 / 355))}px`;
 	}
 	
 	/** 플레이어 초기화
