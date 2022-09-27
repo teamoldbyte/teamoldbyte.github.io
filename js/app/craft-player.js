@@ -70,7 +70,7 @@
 	// 배틀 저장(ajax)
 	.on('click', '#save-btn', function() {
 		$.getJSON('/craft/battle/mybattle/save', 
-			{ memberId: _memberId, battleId: currentBattle.bid, save: !currentBattle.saved }, (saved) => {
+			{ memberId: _memberId, battleBookId: _contentId, battleId: currentBattle.bid, save: !currentBattle.saved }, (saved) => {
 				currentBattle.saved = saved;
 				// 버튼 상태 전환
 				$(this).toggleClass('reverse', saved);
@@ -272,7 +272,8 @@
 				navigator.vibrate([200,50,100,50,100]);
 			}
 		}
-		const command = { memberId: _memberId, ageGroup: _ageGroup, battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
+		const command = { memberId: _memberId, ageGroup: _ageGroup, battleBookId: _contentId, 
+					battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
 		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment || '작성된 코멘트가 없습니다.');
@@ -344,7 +345,7 @@
 	/** 다음 20문제 가져오기
 	*/
 	function _getNextBattles() {
-		const contentPath = _contentId ? `/${ntoa(_contentId)}` : ''
+		const contentPath = (_contentType != 'step' && _contentId != null) ? `/${ntoa(_contentId)}` : ''
 		const url = `/craft/battle/${_contentType}${contentPath}/next`
 		$.getJSON(url, function(battles) {
 			battlePool = battles;
