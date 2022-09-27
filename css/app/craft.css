@@ -180,30 +180,32 @@ u {
 	border-radius: 50%;
 }
 /* 승률 퍼센트 바 */
-.winning-percentage-section {width: 200px;}
-.winning-percentage-section .winning-rate-cover {
-	width: 200px;
-	height: 100px;
-	border-radius: 100px 100px 0 0;
+.craft-index-section .winning-rate-cover{
+	position: relative;
+	margin: 4px;
+	text-align: center;
+	color: #000;
 }
-.winning-percentage-section .winning-rate-cover:after,
-.winning-percentage-section .rate-boundary {
-	background-color: #c7e2ff;
+.bar-overflow{ /* Wraps the rotating .bar */
+	position: relative;
+	overflow: hidden; /* Comment this line to understand the trick */
+	width: 100px; 
+	height: 50px; /* Half circle (overflow) */
+	margin-bottom: -14px; /* bring the numbers up */
 }
-.winning-percentage-section .winning-rate {
-	border-left-width: 100px;
-	border-bottom-width: 100px;
-	border-right-width: 100px;
-	border-top-width: 100px;
-	border-radius: 100px;
+.winning-rate-cover .bar{
+	position: absolute;
+	top: 0; 
+	left: 0;
+	width: 100px; 
+	height: 100px; /* full circle! */
+	border-radius: 50%;
+	box-sizing: border-box;
+	border: 15px solid #eee;     /* half gray, */
+	border-bottom-color: #5169e6;  /* half azure */
+	border-right-color: #5169e6;
 }
-.winning-percentage-section .rate-text-cover {
-	font-size: 1.5em;
-	letter-spacing: -1px;
-}
-.winning-percentage-section .rate-count-cover {
-	font-size: 2em;
-} 
+
 /* 배틀 북 타입 목록 */
 .book-type-list{
 	height: 100%;
