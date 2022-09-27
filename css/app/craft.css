@@ -150,10 +150,10 @@ u {
 .sub-block.disabled .icon-section i{
 	color: #c8c8c8;
 }
-.index-section .title{
+.craft-index-section .title{
 	color: #fff;
 }
-.index-section .sub-title{
+.craft-index-section .sub-title{
 	color: #EAEAF1;
 	font-size: 0.8rem;
 }
