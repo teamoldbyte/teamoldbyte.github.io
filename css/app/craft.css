@@ -150,14 +150,6 @@ u {
 .sub-block.disabled .icon-section i{
 	color: #c8c8c8;
 }
-.craft-index-section{
-	margin-top: 14rem;
-}
-@media (max-width: 576px){
-	.craft-index-section{
-		margin-top: 6rem;
-	}
-}
 .craft-index-section .title{
 	color: #fff;
 }
@@ -523,7 +515,7 @@ u {
 	margin-bottom: 5px;
 	padding-bottom: 5px;
 }
-.explain-section .trans-section>.row:last-child{
+.explain-section .trans-section>.row:last-child .trans-text{
 	margin-bottom: 0;
 	padding-bottom: 0;
 	border-bottom: none;
