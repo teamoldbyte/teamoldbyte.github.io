@@ -591,8 +591,8 @@
 		const categorySelect = maker.closest('.add-battle-section').querySelector('.battle-category-section select')
 		if(battleType >= 5) {
 			// 5유형의 배틀은 '어순'을 기본 문법 카테고리로 선택
-			categorySelect.value = GRAMMARID_ORDERING;
-			$(categorySelect).trigger('click');
+			//categorySelect.value = GRAMMARID_ORDERING;
+			//$(categorySelect).trigger('click');
 			// 5유형의 배틀은 해석을 선택하는 영역을 추가(ask로 지정됨)
 			maker.appendChild(createElement({
 				el: 'div', className: 'col-12 row mt-3',
