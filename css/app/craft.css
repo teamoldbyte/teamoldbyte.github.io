@@ -129,8 +129,20 @@ u {
 /**********************************************************
  *				index.html  
  **********************************************************/
+.craft-index-section .title-section{
+	margin-bottom: 2rem;
+}
+.craft-index-section .title-section .title-text {
+	font-size: 1.1rem;
+	color: #585174;
+	font-weight: 600;
+}
+.craft-index-section .title-section .sub-title {
+	font-size: .75rem;
+	color: #5c68b6;
+}
 .personal-info-block{
-	text-align: center;
+	
 	margin: 2rem 2rem 4rem 2rem;
 }
 .sub-block{
@@ -154,12 +166,22 @@ u {
 .sub-block.disabled .icon-section i{
 	color: #c8c8c8;
 }
-.craft-index-section .title{
+.craft-index-section .sub-block .title{
 	color: #fff;
 }
-.craft-index-section .sub-title{
+.craft-index-section .sub-block .sub-title{
 	color: #EAEAF1;
 	font-size: 0.8rem;
+}
+/* 계급 이미지 */
+.rank-section{
+	text-align: center;
+}
+.personal-info-block .rank-icon img{
+	background: linear-gradient(135deg,#fff,#797979);
+	backdrop-filter: blur( 15px );
+	-webkit-backdrop-filter: blur( 15px );
+	border-radius: 50%;
 }
 
 /**********************************************************
