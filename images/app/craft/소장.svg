@@ -4,10 +4,23 @@
 
 <svg xmlns="http://www.w3.org/2000/svg"
      viewBox="0 0 50 50">
+  <defs>
+	<linearGradient id="grad" gradientTransform="rotate(90)">
+      <stop offset="5%" stop-color="#70260A" />
+	  <stop offset="50%" stop-color="#C88410"/>
+      <stop offset="95%" stop-color="#F4F2AB" />
+    </linearGradient>	
+	<linearGradient id="grad2" gradientTransform="rotate(90)">
+      <stop offset="5%" stop-color="#F4F2AB" />
+	  <stop offset="50%" stop-color="#C88410"/>
+      <stop offset="95%" stop-color="#70260A" />
+    </linearGradient>	
+  </defs>
   <g id="g1">
   <g id="star_part">
-  <polygon points="16,25 14,22.25 16,16.10" fill="ghostwhite"/>
-  <polygon points="16,25 18,22.25 16,16.10" fill="silver"/>
+  <polygon points="16,25 14,22.25 16,16.10" fill="url(#grad)" stroke="darkgoldenrod" stroke-width="0.1"/>
+  <polygon points="16,25 18,22.25 16,16.10" fill="url(#grad2)" stroke="darkgoldenrod" stroke-width="0.1"/>
+  <line x1="16" x2="16" y1="25" y2="16.1" stroke="lightgoldenrodyellow" stroke-width="0.1"/>
   </g>
   <use href="#star_part" transform="rotate(72,16,25)"/>
   <use href="#star_part" transform="rotate(144,16,25)"/>
