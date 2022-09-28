@@ -293,6 +293,7 @@ u {
 }
 .ask-section .mod-guide-text{
 	color: #ffb266;
+	font-weight: bold;
 	height: 2rem;
 	line-height: 2rem;
 	position: absolute;
@@ -311,6 +312,10 @@ u {
 }
 .ask-section .pick-right{
 	font-weight: bold;
+	color: #00ff15;
+}
+.ask-section .pick-option{
+	color: #ffffff;
 }
 .text-green{
 	color: var(--green);
