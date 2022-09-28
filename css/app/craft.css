@@ -187,16 +187,16 @@ u {
 	border-radius: 50%;
 }
 .personal-info-block .rate-text-section{
-	width: 5px;
-	height: 140px;
+	width: 10px;
+	height: 90px;
 	display: inline-block;
 	left: 0;
 	right: 0;
 	position: absolute;
-	top: 0;
+	/*top: 0;*/
 	bottom: 0;
 	margin: auto auto auto auto;
-	-webkit-animation: move 7s infinite;
+	/*-webkit-animation: move 7s infinite;*/
 	transform: rotate(-90deg);
 	transform-origin: bottom;
 }
@@ -239,7 +239,7 @@ u {
 }
 .winning-rate-cover .needle{
 	width: 10px;
-	height: 100px;
+	height: 90px;
 	/*background: #018c41;*/
 	background: #026931;
 	border-bottom-left-radius: 5px;
@@ -250,10 +250,10 @@ u {
 	left: 0;
 	right: 0;
 	position: absolute;
-	top: 0;
+	/*top: 0;*/
 	bottom: 0;
 	margin: auto auto auto auto;
-	-webkit-animation: move 7s infinite;
+	/*-webkit-animation: move 7s infinite;*/
 	transform: rotate(-90deg);
 	transform-origin: bottom;
 }
@@ -312,7 +312,7 @@ u {
 }
 .ask-section .pick-right{
 	font-weight: bold;
-	color: #ff8700;
+	/*color: #ff8700;*/
 }
 .ask-section .pick-option{
 	color: #ffffff;
@@ -526,6 +526,7 @@ u {
 	color: white;
 	position: relative;
 }
+/*
 #battle-2 .ask-section{
 	background: linear-gradient(to right,#8360c3,#2ebf91);
 }
@@ -544,7 +545,7 @@ u {
 #battle-7 .ask-section{
 	background: linear-gradient(to right,#f12711,#f5af19);
 }
-
+*/
 .ask-section .eng{
 	font-size: 1.25rem;
 }
