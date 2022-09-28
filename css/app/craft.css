@@ -173,11 +173,25 @@ u {
 .rank-section{
 	text-align: center;
 }
+.personal-info-block .rank-icon {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
 .personal-info-block .rank-icon img{
 	background: linear-gradient(135deg,#fff,#797979);
 	backdrop-filter: blur( 15px );
 	-webkit-backdrop-filter: blur( 15px );
 	border-radius: 50%;
+}
+.personal-info-block .rate-text-block{
+	position: absolute;
+	left: 50%;
+	top: -25px;
+	transform: translateX(-50%);
+}
+.rank-section .record-stat{
+	padding-top:75px;
 }
 /* 승률 퍼센트 바 */
 .craft-index-section .winning-rate-cover{
@@ -189,16 +203,16 @@ u {
 .bar-overflow{ /* Wraps the rotating .bar */
 	position: relative;
 	overflow: hidden; /* Comment this line to understand the trick */
-	width: 100px; 
-	height: 50px; /* Half circle (overflow) */
+	width: 200px; 
+	height: 100px; /* Half circle (overflow) */
 	margin-bottom: -14px; /* bring the numbers up */
 }
 .winning-rate-cover .bar{
 	position: absolute;
 	top: 0; 
 	left: 0;
-	width: 100px; 
-	height: 100px; /* full circle! */
+	width: 200px; 
+	height: 200px; /* full circle! */
 	border-radius: 50%;
 	box-sizing: border-box;
 	border: 15px solid #eee;     /* half gray, */
