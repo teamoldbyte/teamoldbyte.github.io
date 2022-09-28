@@ -38,6 +38,8 @@
 	let rankClasses = []; // 계급도(ajax)
 	let _contentType; // 플레이 컨텐츠 종류(step, grammar, workbook)
 	let _contentId; // 지정된 컨텐츠가 있을 경우 해당 컨텐츠 아이디
+	let _todayBattleSolveCount; // 오늘자 배틀 풀이 횟수
+	const _todaySolveLimit = 50; // 일일 배틀 풀이 최대 횟수
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
 	let currentView;
 	let _memberId, _ageGroup; // 사용자 정보
@@ -164,9 +166,22 @@
 						answerIndexes4.push(i);
 				});
 				view.querySelectorAll('.sentence .option,.sentence .answer-wrong').forEach((sel, i) => {
-					if(answerIndexes4.includes(i))
+					if(answerIndexes4.includes(i)) {
 						sel.classList.add('right');
-					else if(i == selectedIndex4) {
+						// 정답 원문 텍스트 표시
+						const rightAnswer = createElement({ 
+							el: 'span', textContent: sel.dataset.answer, className: 'original-text', 
+							style: {
+								opacity: 0, position: 'absolute', left: `${sel.offsetLeft}px`, top: `${sel.offsetTop}px`
+						}});
+						sel.parentElement.appendChild(rightAnswer);
+						anime({
+							targets: rightAnswer,
+							top: '-=20',
+							opacity: 1,
+							delay: 600
+						})
+					}else if(i == selectedIndex4) {
 						correct = false;
 						sel.classList.add('wrong');
 					}
@@ -233,6 +248,9 @@
 				break;
 			default: break;
 		}
+		// 오늘자 풀이량 카운트
+		_todayBattleSolveCount.count++;
+		window.localStorage.setItem('TCBSC', JSON.stringify(_todayBattleSolveCount));
 		// 맞힘/틀림에 따른 알림
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
 								style: { transformOrigin: 'top'},
@@ -286,7 +304,7 @@
 			type: 'GET', contentType: 'application/json', data: command,
 			success: () => { 
 				if(correct) { 
-					_battleRecord.correct++; 
+					_battleRecord.correct++;
 				}
 				if(_memberId == 0) {
 					req = window.indexedDB.open(DB_NAME, DB_VERSION);
@@ -308,14 +326,19 @@
 						};
 					};	
 				}
-				
 				moveSolveBtn(true);
 				calcRank(); },
 			error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.')
 		})
 	})
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
-	.on('click', '.js-next-btn', function() {
+	.on('click', '.js-next-btn', function(e) {
+		if(_todayBattleSolveCount.count >= _todaySolveLimit) {
+			solveLimitExceed();
+			e.preventDefault();
+			e.stopPropagation();
+			return;
+		}
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
 		$(currentView).find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
@@ -341,6 +364,7 @@
 	.on('shown.bs.collapse', '.svoc-section', function() {
 		tandem.correctMarkLine(this.querySelector('.semantics-result'))
 	})
+	
 	
 	/** 다음 20문제 가져오기
 	*/
@@ -726,6 +750,7 @@
 				}, []).concat(examples).sort(() => Math.random() - 0.5);
 				options7.forEach( option => {
 					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico', textContent: option, onclick: function() {
+						
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							const thrower = this.cloneNode(true);
@@ -797,6 +822,20 @@
 		_contentId = contentId;
 		_contentType = contentType;
 		_battleRecord = battleRecord;
+		
+		// Today Craft Battle Solve Count
+		if(window.localStorage.getItem('TCBSC')) {
+			_todayBattleSolveCount = JSON.parse(window.localStorage.TCBSC);
+			if(_todayBattleSolveCount.date != new Date().toLocaleDateString()) {
+			// 풀이기록이 없다면 0으로 기록
+				_todayBattleSolveCount.date = new Date().toLocaleDateString();
+				_todayBattleSolveCount.count = 0;
+			}else if(_todayBattleSolveCount.count >= _todaySolveLimit) {
+			// 풀이제한량을 초과했다면 종료
+				solveLimitExceed();
+				return;
+			}
+		}else _todayBattleSolveCount = { date: new Date().toLocaleDateString(), count: 0}
 
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
@@ -854,21 +893,21 @@
 		calcRank();		
 	}
 	
-	/** 컨테이너 속에서 지정한 선택자에 해당하는 요소들의 위치 반환
-	@param container 부모 html 요소
-	@param matcher 선택자
-	@returns [[start,end], [start,end],...] start/end: Number
-	*/
-	function findPositions(container, matcher) {
-		let pos = 0, arr = [];
-		container.childNodes.forEach(child => {
-			const textLength = child.textContent.replaceAll(/[\n\u200b]/gm, '').length;
-			if(child.className && (typeof matcher == 'string' ? child.matches(matcher) : (child == matcher))) {
-				arr.push([pos, pos + textLength]);
-			}
-			pos += textLength;
-		})
-		return arr;
+	/** 일일 최대 플레이 횟수 초과 모달
+	 */
+	function solveLimitExceed() {
+		if(!document.getElementById('battleExceedModal')) {
+			document.querySelector('.craft-layout-content-section').appendChild(createElement({
+				"el":"div","id":"battleExceedModal","class":"modal fade","data-bs-backdrop":"static","data-bs-keyboard":"false","tabIndex":-1,"children":[
+					{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+						{"el":"div","class":"modal-content","children":[
+							{"el":"div","class":"modal-body row g-0","children":[
+								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"일일 최대 플레이 횟수에 도달하였습니다.<br>내일 다시 찾아와 주세요."},
+								{"el":"div","class":"button-section row g-1","children":[
+									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/craft/main'),"textContent":"크래프트 메인으로 이동"}
+			]}]}]}]}]}));
+		}
+		bootstrap.Modal.getOrCreateInstance(document.getElementById('battleExceedModal')).show();
 	}
 	
 	function calcRank() {
@@ -953,11 +992,14 @@
 		scrollTo(0, 75);
 	}	
 	
+	/** 확인/다음 버튼을 옆으로 움직인다(true: 우측, false: 좌측)
+	 */
 	function moveSolveBtn(right) {
 		anime({
 			targets: '.js-solve-btn,.js-next-btn', duration: 500, easing: 'easeOutQuart', left: right? '110%' : '45%'
 		});
 	}
+	
 	
 	window['craft'] = Object.assign({}, window['craft'], { initPlayer });
 })(jQuery, window, document);
