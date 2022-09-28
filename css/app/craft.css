@@ -312,7 +312,7 @@ u {
 }
 .ask-section .pick-right{
 	font-weight: bold;
-	color: #00ff15;
+	color: #ff8700;
 }
 .ask-section .pick-option{
 	color: #ffffff;
@@ -525,6 +525,24 @@ u {
 	word-break: break-word;
 	color: white;
 	position: relative;
+}
+#battle-2 .ask-section{
+	background: linear-gradient(to right,#8360c3,#2ebf91);
+}
+#battle-3 .ask-section{
+	background: linear-gradient(to right,#654ea3,#eaafc8);
+}
+#battle-4 .ask-section{
+	background: linear-gradient(to right,#c31432,#240b36);
+}
+#battle-5 .ask-section{
+	background: linear-gradient(to right, #005aa7, #ccc58b);
+}
+#battle-6 .ask-section{
+	background: linear-gradient(to right,#DA4453,#89216B);
+}
+#battle-7 .ask-section{
+	background: linear-gradient(to right,#f12711,#f5af19);
 }
 
 .ask-section .eng{
