@@ -173,6 +173,8 @@ u {
 .rank-section{
 	text-align: center;
 	padding-top: 2rem;
+	font-family: 'NanumBarunGothic', sans-serif;
+	padding-bottom: 3rem;
 }
 .personal-info-block .rank-icon {
 	position: absolute;
@@ -184,14 +186,30 @@ u {
 	background-color: #eee;
 	border-radius: 50%;
 }
+.personal-info-block .rate-text-section{
+	width: 5px;
+	height: 140px;
+	display: inline-block;
+	left: 0;
+	right: 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin: auto auto auto auto;
+	-webkit-animation: move 7s infinite;
+	transform: rotate(-90deg);
+	transform-origin: bottom;
+}
 .personal-info-block .rate-text-block{
 	position: absolute;
-	left: 50%;
-	top: -25px;
-	transform: translateX(-50%);
+	top: -30px;
+	left: -10px;
 }
 .rank-section .record-stat{
-	padding-top:75px;
+	padding-top: calc(50px + 0.5rem);
+}
+.rank-section .record{
+	margin-bottom: 1.75rem;
 }
 /* 승률 퍼센트 바 */
 .craft-index-section .winning-rate-cover{
@@ -215,11 +233,30 @@ u {
 	height: 200px; /* full circle! */
 	border-radius: 50%;
 	box-sizing: border-box;
-	border: 15px solid #eee;     /* half gray, */
-	border-bottom-color: #5169e6;  /* half azure */
-	border-right-color: #5169e6;
+	border: 15px solid #e2f5f9;     /* half gray, */
+	border-bottom-color: #3c498b;  /* half azure */
+	border-right-color: #3c498b;
 }
-
+.winning-rate-cover .needle{
+	width: 10px;
+	height: 100px;
+	/*background: #018c41;*/
+	background: #026931;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-top-left-radius: 100%;
+	border-top-right-radius: 100%;
+	display: inline-block;
+	left: 0;
+	right: 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin: auto auto auto auto;
+	-webkit-animation: move 7s infinite;
+	transform: rotate(-90deg);
+	transform-origin: bottom;
+}
 /* 배틀 북 타입 목록 */
 .book-type-list{
 	height: 100%;
@@ -271,6 +308,9 @@ u {
 }
 #battle-4 .ask-section .wrong {
 	text-decoration-color: #f44336;
+}
+.ask-section .pick-right{
+	font-weight: bold;
 }
 .text-green{
 	color: var(--green);
@@ -481,6 +521,7 @@ u {
 	color: white;
 	position: relative;
 }
+
 .ask-section .eng{
 	font-size: 1.25rem;
 }
@@ -702,6 +743,9 @@ u {
 	border-bottom: 1px solid #fff;
 	border-radius: 0;
 	outline:none;
+}
+#battle-6 .example-btn-section input::placeholder{
+	color: rgba(255,255,255,0.8);
 }
 #battle-6 .example-btn-section input.right{
 	color: #8be3aa;
