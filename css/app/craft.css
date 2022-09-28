@@ -172,16 +172,16 @@ u {
 /* 계급 이미지 */
 .rank-section{
 	text-align: center;
+	padding-top: 2rem;
 }
 .personal-info-block .rank-icon {
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
+	bottom: -50px;
 }
 .personal-info-block .rank-icon img{
-	background: linear-gradient(135deg,#fff,#797979);
-	backdrop-filter: blur( 15px );
-	-webkit-backdrop-filter: blur( 15px );
+	background-color: #eee;
 	border-radius: 50%;
 }
 .personal-info-block .rate-text-block{
