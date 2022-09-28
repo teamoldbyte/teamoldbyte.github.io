@@ -6,7 +6,7 @@
 	let eggTray = [], eggConfirmed = false, newEggColors = [], bucketLevel = 1, bucketSize = 1;
 	// 회원용 에그획득 확인뱃지
 	const eggConfirm = { el: 'span', style: 'padding: 0.33rem;',
-		className: 'egg-confirm position-absolute top-0 end-0 translate-middle bg-danger border border-light rounded-circle'
+		className: 'egg-confirm position-absolute top-0 end-0 translate-middle-y bg-danger border border-light rounded-circle'
 	}
 	
 	// 에그 및 버킷 연출 x좌표 (스크롤바 너비를 빼고 계산)
