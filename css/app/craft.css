@@ -419,8 +419,19 @@ u {
 }
 .exit-button-section .exit-btn,
 .save-button-section .save-btn{
+	font-size: 1.75rem;
 	padding: 0;
 	color: #455BF1;
+}
+.save-button-section .save-btn::before{
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	content: "\f65e";
+}
+.save-button-section .save-btn.reverse::before{
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	content: "\f65d";
 }
 /*
 .exit-button-section .exit-btn{
