@@ -25,7 +25,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			]}
 		]
 	};	
-/*	const noteSectionJson = {
+	const noteSectionJson = {
 		el: 'div', className: 'note-block one-block row g-0', children: [
 			{ el: 'div', className: 'note text-section', children: [
 				{ el: 'div', className: 'note-text', textContent: '노트 본문' },
@@ -70,7 +70,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			]}
 		]
 	};
-*/
+
 	const transModifyBtnsJson = {
 		el: 'div', className: 'trans-mdf-btns', children: [
 			{ el: 'button', type: 'button', className: 'js-edit-trans-open login-required btn btn-sm py-0 pe-0 pt-0',
@@ -389,7 +389,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		               $target.find('.ailoading').remove();
 		               $target.find('.afterload').fadeIn(300);
 	            }, 1000);
-			}).on('shown.bs.tab', function(e) {
+			}).on('shown.bs.tab', function() {
 				$target.collapse('show');
 			}).on('hidden.bs.tab', function() {
 				$target.removeClass('show');
@@ -501,7 +501,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 				var senseListLen = senseList.length;
 				
 				for(let k = 0; k < senseListLen; k++) {
-					const sense = senseList[k]; $partBlock = $partCopySection.clone();
+					const sense = senseList[k], $partBlock = $partCopySection.clone();
 					
 					$wordBlock.append($partBlock);
 					$partBlock.find('.part').text(sense.partType);
@@ -510,10 +510,23 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			}
 		}
 	}
+	
+	function showWorkBookInfo(workbookInfo, $section) {
+		const $workbookSection = $section.find('.workbook-overview-section');
+		$section.data('workbookId', workbookInfo.workbookId);
+		$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
+		$workbookSection.find('.text-section .title').text(workbookInfo.title);
+		$workbookSection.find('.text-section .reg-date').text(new Date(workbookInfo.regDate).format('yyyy-MM-dd'));
+		$workbookSection.find('.description').text(workbookInfo.description);
+		$workbookSection.find('.writer-section .alias').text(workbookInfo.alias);
+		$workbookSection.find('.writer-section .profile-image').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.aliasImage})`);
+		
+	}
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
 	$(document).on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
 		if(e.target != e.currentTarget) return;
 		const $unitSection = $(this).closest('.one-sentence-unit-section');
+		const sentenceId = $unitSection.data('sentenceId');
 		$unitSection.toggleClass('active', e.type == 'show')
 		.find('.origin-sentence-section')
 		.attr('aria-expanded', e.type == 'show');
@@ -521,10 +534,14 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			$unitSection[0].scrollIntoView();
 			if(!$unitSection.is('.loaded,.loading')) {
 				$unitSection.addClass('loading')
-				$.getJSON('/ssam/sentence/' + $unitSection.data('sentenceId'), sentenceInfo => {
+				$.getJSON(`/ssam/sentence/${sentenceId}`, sentenceInfo => {
 					showSentenceDetail(sentenceInfo, $unitSection);
 					$unitSection.removeClass('loading').addClass('loaded');
 				});
+				// 워크북 정보 조회
+				$.getJSON(`/ssam/workbookinfo/${sentenceId}`, workbookInfo => {
+					showWorkBookInfo(workbookInfo, $unitSection);
+				})
 			}
 		}
 	}).on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
@@ -536,7 +553,8 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			$(e.target).find('.dashboard-section').show(0).trigger('show.bs.collapse');
 		}
 		
-	})
+	});
+	
 
 	// [분석 결과 평가]------------------------------------------------------------
 	const checkModalContents = {'S': '<b>평가를 하는 이유</b><br><br>A.I.는 인간의 언어를 이해하면서 분석하지 않습니다.<br>학습자들에게 도움이 될 수 있도록 분석 결과를 평가해주세요.<br>평가도 하고 다양한 fico Egg도 모아보세요.',
@@ -544,8 +562,8 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	const resultStatusMap = {'S': {icon: '🥳', status: 'S', tooltip: '평가를 받은 문장이예요.'},
 							'F': {icon: '🤯', status: 'F', tooltip: '분석이 틀렸대요.'} };
 	// 분석 평가 모달을 띄운 버튼에 따라 모달 속 내용 설정(문장정보, metaStatus)
-	$('#check-modal').on('show.bs.modal', function() {
-		const modalBtn = event.target.closest('button');
+	$('#check-modal').on('show.bs.modal', function(e) {
+		const modalBtn = e.target.closest('button');
 		const submitBtn = this.querySelector('.status-submit');
 		const metaStatus = modalBtn.dataset.metaStatus;
 		submitBtn.dataset.metaStatus = metaStatus;
@@ -793,9 +811,10 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		}
 	})
 	// [문장의 노트 목록 가져오기(1회)]------------------------------------------------
-	/*.on('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=note]', async function(){
+	.on('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=note]', async function(){
 		const $nav = $(this);
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
+		const workbookId = $sentenceSection.data('workbookId');
 		const sentenceId = $sentenceSection.data('sentenceId');
 		const $noteSection = $(this.dataset.bsTarget);
 		
@@ -804,9 +823,8 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		$(this).addClass('loading');
 		$noteSection.find('.empty-list').show();
 		// 문장의 노트 새로 가져오기(ajax)-------------------------------------
-		await $.getJSON('/workbook/sentence/note/list/'+ workbookId 
-				+ '/' + sentenceId + '/' + memberId, notes => listNotes(notes))
-		.fail( jqxhr => alert('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		await $.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentenceId}/${memberId}`, notes => listNotes(notes))
+		.fail( () => alert('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//---------------------------------------------------------------
 		
 		function listNotes(notes){
@@ -829,6 +847,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	.on('click', '.js-add-sentence-note-btn', function() {
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
 		const sentenceId = Number($sentenceSection.data('sentenceId'));
+		const workbookId = Number($sentenceSection.data('workbookId'));
 		const $addSection = $(this).closest('.add-section');
 		const content = $addSection.find('.text-input').val().trim();
 		const publicOpen = $addSection.find(':checkbox').is(':checked');
@@ -867,7 +886,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		// 문장의 질문목록 새로 가져오기(ajax)----------------------------------
 		$.getJSON(['/qnastack/question/workbook/sentence',workbookId,sentenceId].join('/'), 
 					questions => listQuestions(questions))
-		.fail( jqxhr => alert('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		.fail( () => alert('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//---------------------------------------------------------------
 		
 		function listQuestions(questions){
@@ -922,11 +941,11 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			})
 		}
 	})
-	*/
+	
 /* -------------------------------- 지문/문장 공통------------------------------ */
 	
 	// [지문/문장의 노트 수정 폼 열기]-------------------------------------------------
-/*	.on('click', '.js-edit-note-open', async function() {
+	.on('click', '.js-edit-note-open', async function() {
 		const $noteSection = $(this).closest('.note-block')
 		const $textSection = $noteSection.find('.text-section');
 		$noteSection.find('.note-mdf-btns').hide();
@@ -953,11 +972,12 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	.on('click', '.js-edit-note', function() {
 		const $textSection = $(this).closest('.text-section');
 		const $noteSection = $(this).closest('.note-block');
+		const $sentenceSection = $textSection.closest('.one-sentence-unit-section');
 		const noteId = Number($noteSection.data('noteId'));
+		const workbookId = Number($sentenceSection.data('workbookId'));
 		const publicOpen = $textSection.find('.open-input').is(':checked');
 		const content = $textSection.find('.text-input').val().trim();
 		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
-		const $sentenceSection = $textSection.closest('.one-sentence-unit-section');
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
 		if(content.length == 0) return;
@@ -986,7 +1006,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		if(confirm('삭제하시겠습니까?')){
 			// 노트 삭제
 			const $noteBlock = $(this).closest('.note-block'),
-				$noteSection = $noteBlock.closest('.note-section');
+				$noteSection = $noteBlock.closest('.note-section'),
 				noteId = Number($noteBlock.data('noteId')),
 				$sentenceSection = $noteBlock.closest('.one-sentence-unit-section'),
 				ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
@@ -1087,9 +1107,9 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	})
 	// [질문 수정폼 열기]-----------------------------------------------------------
 	.on('click', '.js-edit-question-open', function() {
-		$question = $(this).closest('.question-section');
-		$contentSection = $question.find('.text-section').slideUp();
-		$editSection = $question.find('.edit-section').slideDown();
+		const $question = $(this).closest('.question-section'),
+		$contentSection = $question.find('.text-section').slideUp(),
+		$editSection = $question.find('.edit-section').slideDown(),
 		$qnaUnit = $question.closest('.qna-unit');
 		// 제목
 		$editSection.find('.q-title').val($qnaUnit.find('.title-block .question-text:eq(0)').text());
@@ -1449,8 +1469,24 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 				$addSection.closest('.survey-section').find('.js-satisfy-btn').trigger('click');
 			}
 		}			
-	});
-	*/
+	})
+	// 크래프트 출제 패널 동작
+	.on('show.bs.tab', '[role=tab][data-type=craft]', function(e) {
+		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
+		$sentenceSection.find('.dashboard-section').collapse('hide');
+		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
+			return {id: $(transBlock).data('korTid'), text: transBlock.textContent}
+		})
+		if(document.querySelector(this.dataset.bsTarget).querySelector('.battle-section-panel') == null) {
+			craft.openBattleMakerPanel(document.querySelector(this.dataset.bsTarget),
+				memberId,
+				$sentenceSection.data('sentenceId'), 
+				$sentenceSection.find('.semantics-result')[0],
+				translations);
+		}
+	})	
+	
+	
 /* ------------------------------ Embed functions --------------------------- */
 	// 노트 정보를 DOM으로 생성
 	function createNoteDOM(note) {
