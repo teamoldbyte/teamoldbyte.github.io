@@ -514,12 +514,14 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	function showWorkBookInfo(workbookInfo, $section) {
 		const $workbookSection = $section.find('.workbook-overview-section');
 		$section.data('workbookId', workbookInfo.workbookId);
-		$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
+		if(workbookInfo.imagePath)
+			$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
 		$workbookSection.find('.text-section .title').text(workbookInfo.title);
 		$workbookSection.find('.text-section .reg-date').text(new Date(workbookInfo.regDate).format('yyyy-MM-dd'));
 		$workbookSection.find('.description').text(workbookInfo.description);
 		$workbookSection.find('.writer-section .alias').text(workbookInfo.alias);
-		$workbookSection.find('.writer-section .profile-image').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.aliasImage})`);
+		if(workbookInfo.aliasImage)
+			$workbookSection.find('.writer-section .profile-image').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.aliasImage})`);
 		
 	}
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
