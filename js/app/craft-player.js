@@ -215,7 +215,7 @@
 				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}))
 				break;
 			case '7':
-				let options7 = currentBattle.kor.split(/\s+/);
+				let options7 = Array.from(currentBattle.kor.split(/\s+/), option => option.replace(/[,.!?]$/,''));
 				let tempOption = '';
 				options7 = options7.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
@@ -515,6 +515,7 @@
 					delay: 1000,
 					duration: 500,
 					complete: () => {
+						modGuideText.style.color = '#ffb266';
 						guideBlinkAnim = anime({
 							targets: modGuideText,
 							color: ['#ffffff', '#ffb266','#ffffff', '#ffb266','#ffffff', '#ffb266'],
@@ -665,7 +666,9 @@
 				// 보기 표시
 				const arrangedSection = currentView.querySelector('.arranged-examples');
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
-					options.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: eng.substring(start, end), onclick: function() {
+					// 문장의 끝이 아닌 어구가 구두점으로 끝날 경우 구두점까지 포함하여 보기로 표시
+					const endWithComma = end + ((end < eng.length - 1 && /[,.]/.test(eng.charAt(end)))? 1 : 0)
+					options.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: eng.substring(start, endWithComma), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							const thrower = this.cloneNode(true);
@@ -780,7 +783,8 @@
 					}
 				}, []).concat(examples).sort(() => Math.random() - 0.5);
 				options7.forEach( option => {
-					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: option, onclick: function() {
+					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', 
+						textContent: option.replace(/[,.!?]$/,''), onclick: function() {
 						
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
