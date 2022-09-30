@@ -1801,7 +1801,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		$sentenceSection.find('.dashboard-section').collapse('hide');
 		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
-			return {id: $(transBlock).data('korTid'), text: transBlock.textContent}
+			return {id: $(transBlock).data('korTid'), text: transBlock.querySelector('.translation-text').textContent}
 		})
 		if(document.querySelector(this.dataset.bsTarget).querySelector('.battle-section-panel') == null) {
 			craft.openBattleMakerPanel(document.querySelector(this.dataset.bsTarget),
