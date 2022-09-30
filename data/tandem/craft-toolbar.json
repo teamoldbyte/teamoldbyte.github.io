@@ -200,7 +200,7 @@
 									{
 										"el": "textarea",
 										"className": "comment form-control d-inline col h-auto",
-										"rows": "2",
+										"rows": "4",
 										"placeholder": "문제에 대한 한 줄 코멘트, 참조 링크 등"
 									}
 								]
