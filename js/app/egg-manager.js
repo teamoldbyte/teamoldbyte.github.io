@@ -245,8 +245,11 @@
 
 					// 새로 획득한 에그가 있거나 버킷이 바뀌었으면 표시
 					if(newEggColors.length > 0 || prevLevel < bucketLevel) {
-						if(document.getElementById('newEggModal') == null)
+						if(document.getElementById('newEggModal') == null) {
 							document.body.prepend(createElement(newEggModal));
+							if(location.pathname.includes('/craft/battle/'))
+								document.querySelector('#newEggModal .js-verify-btn').remove();
+						}
 						$('#newEggModal .modal-body .new-obj').remove();
 						
 						const newEggs = [];
@@ -298,15 +301,17 @@
 							}, 500 +  1000 * i);
 						})
 						eggsAllConfirmed = false;
-						anime({
-							targets: '#newEggModal .modal-footer .js-verify-btn',
-							loop: true,
-							scale: [1, 1.05],
-							direction: 'alternate',
-							easing: 'linear',
-							duration: 1000,
-							delay: 500
-						})
+						if(!location.pathname.includes('/craft/battle/')) {
+							anime({
+								targets: '#newEggModal .modal-footer .js-verify-btn',
+								loop: true,
+								scale: [1, 1.05],
+								direction: 'alternate',
+								easing: 'linear',
+								duration: 1000,
+								delay: 500
+							})
+						}
 					}
 					let eggEndInterval = setInterval(() => {
 						if(bucket.dataset.pause == null && eggsAllConfirmed) {
