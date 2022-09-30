@@ -460,7 +460,7 @@ u {
 }
 .exit-button-section .exit-btn,
 .save-button-section .save-btn{
-	font-size: 1.75rem;
+	font-size: 1.5rem;
 	padding: 0;
 	color: #455BF1;
 }
@@ -475,22 +475,22 @@ u {
 .save-button-section .save-btn::after{
 	font-family: "Font Awesome 5 Free";
 	font-weight: 900;
-	content: "\f062";
-	color:#fff;
-	position: absolute;
-	left: 0.5rem;
-	top: -.5rem;
-	font-size: 1rem;
-}
-.save-button-section .save-btn.reverse::after{
-	font-family: "Font Awesome 5 Free";
-	font-weight: 900;
 	content: "\f063";
 	color:#fff;
 	position: absolute;
 	left: 0.5rem;
 	top: -.5rem;
-	font-size: 1rem;
+	font-size: 0.75rem;
+}
+.save-button-section .save-btn.reverse::after{
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	content: "\f062";
+	color:#fff;
+	position: absolute;
+	left: 0.5rem;
+	top: -.5rem;
+	font-size: 0.75rem;
 }
 /* 크래프트 플레이 상단 헤더 - 저장 버튼 메세지 */
 .craft-header-section .battle-save-result-msg{
