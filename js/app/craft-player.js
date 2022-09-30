@@ -383,11 +383,11 @@
 	// 햅틱 효과
 	.on('click', '.haptic-btn', function() {
 		WebAudioJS.play();
-		if(window.ANI && window.ANI?.vibrate) {
+		/*if(window.ANI && window.ANI?.vibrate) {
 			window.ANI.vibrate([100],[25]);
 		}else if(navigator?.vibrate) {
 			navigator.vibrate([100]);
-		}
+		}*/
 	})
 	
 	/** 다음 20문제 가져오기
