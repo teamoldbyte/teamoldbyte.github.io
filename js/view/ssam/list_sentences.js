@@ -521,9 +521,6 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		$workbookSection.find('.text-section .reg-date').text(new Date(workbookInfo.regDate).format('yyyy-MM-dd'));
 		$workbookSection.find('.description').text(workbookInfo.description);
 		$workbookSection.find('.writer-section .alias').text(workbookInfo.alias);
-		if(workbookInfo.aliasImage)
-			$workbookSection.find('.writer-section .profile-image').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.aliasImage})`);
-		
 	}
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
 	$(document).on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
@@ -1478,7 +1475,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		$sentenceSection.find('.dashboard-section').collapse('hide');
 		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
-			return {id: $(transBlock).data('korTid'), text: transBlock.textContent}
+			return {id: $(transBlock).data('korTid'), text: transBlock.querySelector('.translation-text').textContent}
 		})
 		if(document.querySelector(this.dataset.bsTarget).querySelector('.battle-section-panel') == null) {
 			craft.openBattleMakerPanel(document.querySelector(this.dataset.bsTarget),
