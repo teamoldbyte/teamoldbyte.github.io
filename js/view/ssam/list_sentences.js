@@ -514,6 +514,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 	function showWorkBookInfo(workbookInfo, $section) {
 		const $workbookSection = $section.find('.workbook-overview-section');
 		$section.data('workbookId', workbookInfo.workbookId);
+		$workbookSection.find('.wb-id').text(workbookInfo.workbookId);
 		if(workbookInfo.imagePath)
 			$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
 		$workbookSection.find('.text-section .title').text(workbookInfo.title);
@@ -1485,6 +1486,13 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 				$sentenceSection.data('sentenceId'), 
 				$sentenceSection.find('.semantics-result')[0],
 				translations);
+			const workbookTitle = $sentenceSection.find('.workbook-overview-section .title').text();
+			if(workbookTitle != 'HELLO-BOOK') {
+				setTimeout(() => {
+					document.querySelector(this.dataset.bsTarget).querySelector('.battle-source-section .source').value 
+					= workbookTitle;
+				}, 1000)
+			}
 		}
 	})	
 	
