@@ -494,7 +494,7 @@
 				break;
 			case '2' :
 			
-				const modGuideText = createElement({el: 'span', class: 'mod-guide-text'});
+				const modGuideText = createElement({el: 'span', class: 'mod-guide-text', style: { color: 'transparent'}});
 				// 질문 표시
 				if(currentBattle.ask.includes('모든')) {
 					ask.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'}를 모두 선택하세요.`;
