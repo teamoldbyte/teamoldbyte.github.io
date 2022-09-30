@@ -11,7 +11,7 @@
 		const header = document.querySelector('.craft-header-section');
 		const scSection = document.querySelector('.scrolling-section');
 		let prevY = scrollY;
-		$(window).on('scroll', function(e){
+		$(window).on('scroll', function(){
 			requestAnimationFrame(() => {
 				// 헤더 크기(대:150px, 소:35px)에 맞춰서 스타일 변경
 				if(scrollY > prevY) { // 스크롤 내림
@@ -27,7 +27,16 @@
 				}
 				prevY = scrollY;
 			})
-		})
+		});
+		// 화면 꺼짐 방지 https://cdn.jsdelivr.net/npm/nosleep.js@0.12.0/dist/NoSleep.min.js (play_craft.html)
+		let noSleep = new NoSleep();
+		document.addEventListener('click', function enableNoSleep() {
+		  document.removeEventListener('click', enableNoSleep, false);
+		  noSleep.enable();
+		}, false);
+		
+		// 사운드 로드
+		WebAudioJS.load('https://static.findsvoc.com/sound/popdrop.mp3');
 	})
 	
 	let nextBtnObserver = new IntersectionObserver((entries) => {
@@ -45,8 +54,6 @@
 	let _memberId, _ageGroup; // 사용자 정보
 	let _battleRecord; // 배틀 전적 정보
 	let currRankTitle, currRankBase, nextRankBase; // 현재 계급명, 현재 및 다음 계급의 시작 정답수
-	
-	
 	
 	/*
 	TBD:
@@ -78,12 +85,12 @@
 				$(this).toggleClass('reverse', saved);
 				
 				// 저장여부를 알리는 메세지
-				const saveMsg = createElement({"el":"div","class":'toast align-items-center position-absolute end-0 top-0 mt-4 me-5 w-auto text-center',
+				const saveMsg = createElement({"el":"div","class":'toast battle-save-result-msg fade show',
 					"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "true", "data-bs-delay": 2000, "textContent": currentBattle.saved?"저장되었습니다.":"저장이 취소되었습니다."})
-				this.appendChild(saveMsg);
+				this.parentElement.appendChild(saveMsg);
 				bootstrap.Toast.getOrCreateInstance(saveMsg).show();
 				saveMsg.addEventListener('hidden.bs.toast', () => saveMsg.remove())
-		});
+		}).always((_x,s) => {if(s == 'parsererror') loginExpiredModal();});
 		
 	})
 	// 풀이 전송(ajax)
@@ -131,12 +138,12 @@
 							}
 						}
 					}else {
-						if(selectHistory.includes(opt) && opt.matches(selectHistory.indexOf(opt) % 2 ? '.modifier' : '.modificand')) {
+						if(selectHistory.includes(opt) && opt.matches(selectHistory.indexOf(opt) % 2 ? '.modificand' : '.modifier')) {
 							opt.classList.add('right');							
 						}else if(selectHistory.includes(opt)) {
 							opt.classList.add('wrong');
 							correct = false;
-						}else {
+						}else if(opt.matches('.modificand.unselected,.modifier.unselected')){
 							correct = false;
 						}
 					}
@@ -198,7 +205,7 @@
 					return text.split(/\s+/);
 				}).reduce((acc, curr) => acc.concat(curr), []);
 				view.querySelectorAll('.example-btn-section input').forEach((input, i) => {
-					if(input.value.toLowerCase() == rightOptions[i].toLowerCase()) {
+					if(input.value.trim().toLowerCase() == rightOptions[i].toLowerCase()) {
 						input.className = 'right';
 					}else {
 						input.className = 'wrong';
@@ -298,38 +305,47 @@
 		// (ajax) 해설정보 조회 및 표시
 		$.getJSON(`/craft/battle/${currentBattle.sentenceId}`, battleAnswerInfo => 
 				displayAnswerInfo(currentBattle.eng, view.querySelector('.explain-section'), battleAnswerInfo))
-		// (ajax) 배틀 채점 정보 전송
-		$.ajax({
-			url: '/craft/battle/evaluation/add',
-			type: 'GET', contentType: 'application/json', data: command,
-			success: () => { 
-				if(correct) { 
-					_battleRecord.correct++;
-				}
-				if(_memberId == 0) {
-					req = window.indexedDB.open(DB_NAME, DB_VERSION);
-					req.onsuccess = function() {
-						idb = this.result;
-						const tx = idb.transaction(['StepBattle'], 'readwrite');
-						idbstore = tx.objectStore('StepBattle');
-						idbstore.index('bid').openCursor().onsuccess = function() {
-							let cursor = this.result;
-							if(cursor) {
-								if(cursor.key == currentBattle.bid) {
-									const record = cursor.value;
-									record.solve = correct? 'O': 'X';
-									cursor.update(record);
-									return;
-								}
-								cursor.continue();
-							}
-						};
-					};	
-				}
-				moveSolveBtn(true);
-				calcRank(); },
-			error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.')
-		})
+		.always((_x, s) => {
+			if(s == 'parsererror') {
+				loginExpiredModal();
+			}else {
+				// (ajax) 배틀 채점 정보 전송
+				$.ajax({
+					url: '/craft/battle/evaluation/add',
+					type: 'GET', contentType: 'application/json', data: command,
+					success: () => { 
+						if(correct) { 
+							_battleRecord.correct++;
+						}
+						if(_memberId == 0) {
+							req = window.indexedDB.open(DB_NAME, DB_VERSION);
+							req.onsuccess = function() {
+								idb = this.result;
+								const tx = idb.transaction(['StepBattle'], 'readwrite');
+								idbstore = tx.objectStore('StepBattle');
+								idbstore.index('bid').openCursor().onsuccess = function() {
+									let cursor = this.result;
+									if(cursor) {
+										if(cursor.key == currentBattle.bid) {
+											const record = cursor.value;
+											record.solve = correct? 'O': 'X';
+											cursor.update(record);
+											return;
+										}
+										cursor.continue();
+									}
+								};
+							};	
+						}
+						moveSolveBtn(true);
+						calcRank(); },
+					error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
+					complete: (_x,s) => {
+						if(s == 'parsererror') loginExpiredModal();
+					}
+				})
+			}
+		});
 	})
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function(e) {
@@ -364,7 +380,15 @@
 	.on('shown.bs.collapse', '.svoc-section', function() {
 		tandem.correctMarkLine(this.querySelector('.semantics-result'))
 	})
-	
+	// 햅틱 효과
+	.on('click', '.haptic-btn', function() {
+		WebAudioJS.play();
+		if(window.ANI && window.ANI?.vibrate) {
+			window.ANI.vibrate([100],[25]);
+		}else if(navigator?.vibrate) {
+			navigator.vibrate([100]);
+		}
+	})
 	
 	/** 다음 20문제 가져오기
 	*/
@@ -453,7 +477,7 @@
 					leftStr = eng.substring(offsetPos, start);
 					if(leftStr) contextChildren.push(leftStr);
 					contextChildren.push({
-						el: 'span', role: 'button', className: 'option', 
+						el: 'span', role: 'button', className: 'option haptic-btn', 
 						textContent: eng.substring(start, end),
 						onclick: function() {
 							$(this).toggleClass('selected');
@@ -482,17 +506,22 @@
 					ask.textContent = `[${currentBattle.ask}] 수식어와 피수식어를 선택하세요.`;
 					modGuideText.textContent = '수식어 선택' // 항상 수식어부터 선택하도록.
 				}
-				anime.timeline({
-					targets: modGuideText
-				}).add({
+				
+				let guideBlinkAnim;
+				anime({
+					targets: modGuideText,
 					begin: () => currentView.querySelector('.ask-section').appendChild(modGuideText),
 					width: [0, '70vw'],
 					delay: 1000,
 					duration: 500,
-				}).add({
-					delay: 0,
-					color: ['#ffffff', '#ffb266','#ffffff', '#ffb266','#ffffff', '#ffb266'],
-					easing: 'linear'
+					complete: () => {
+						guideBlinkAnim = anime({
+							targets: modGuideText,
+							color: ['#ffffff', '#ffb266','#ffffff', '#ffb266','#ffffff', '#ffb266'],
+							easing: 'linear',
+							loop: true
+						})
+					}
 				})
 				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
@@ -514,18 +543,20 @@
 							}
 							
 							modGuideText.textContent = '수식어 선택';
+							guideBlinkAnim.play();
+						}else if(selectHistory.length == 0) {
+							guideBlinkAnim.play();
 						}
-						anime({
-							targets: modGuideText,
-							easing: 'linear',
-							color: ['#FFFFFF','#ffb266','#FFFFFF','#ffb266','#FFFFFF','#ffb266']
-						})
 					// 선택 추가
 					}else {
 						this.classList.add('selected');
 						selectHistory.push(this);
 						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							modGuideText.textContent = `${['수식어','피수식어'][selectHistory.length % 2]} 선택`;
+							guideBlinkAnim.play();
+						}else {
+							guideBlinkAnim.pause();
+							modGuideText.style.color = '#ffb266';
 						}
 					}
 					moveSolveBtn(selectHistory.length == 0);
@@ -538,16 +569,16 @@
 					if(leftStr) {
 						if(leftStr.includes(' ')) {
 							Array.from(leftStr.split(' ').filter(s => s.length > 0), s => {
-								return Object.assign({ className: 'option d-inline-block', textContent: s }, optionDummy2);
+								return Object.assign({ className: `option d-inline-block haptic-btn`, textContent: s }, optionDummy2);
 							}).forEach( el => contextChildren.push(el, ' '));
 						}else contextChildren.push(leftStr, ' ');
 					}
-					contextChildren.push(Object.assign({ className: `${className} d-inline-block`, textContent: eng.substring(start, end) }, optionDummy2));
+					contextChildren.push(Object.assign({ className: `${className} d-inline-block haptic-btn`, textContent: eng.substring(start, end) }, optionDummy2));
 					if(end < eng.length) contextChildren.push(' ');
 					if(j == arr.length - 1 && end < eng.length) {
 						if(eng.indexOf(' ', end) > -1) {
 							Array.from(eng.substring(end).split(' ').filter(s => s.length > 0), s => {
-								return Object.assign({ className: 'option d-inline-block', textContent: s }, optionDummy2);
+								return Object.assign({ className: 'option d-inline-block haptic-btn', textContent: s }, optionDummy2);
 							}).forEach( el => contextChildren.push(el, ' '));
 						}else contextChildren.push(eng.substring(end));
 					}
@@ -582,7 +613,7 @@
 					
 				currentView.querySelector('.example-btn-section').replaceChildren(
 					createElement(Array.from(options, option => {
-						return { el: 'button', className: 'btn btn-outline-fico', textContent: option , onclick: function() {
+						return { el: 'button', className: 'btn btn-outline-fico haptic-btn', textContent: option , onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
 							moveSolveBtn(false);
 						}};
@@ -612,7 +643,7 @@
 					}
 					contextChildren.push(span);
 					// 선택지 추가
-					options.push({ el: 'button', className: 'btn btn-outline-fico', textContent: optionText, onclick: function() {
+					options.push({ el: 'button', className: 'btn btn-outline-fico haptic-btn', textContent: optionText, onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
 							moveSolveBtn(false);
 						}});
@@ -634,7 +665,7 @@
 				// 보기 표시
 				const arrangedSection = currentView.querySelector('.arranged-examples');
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
-					options.push({ el: 'span', className: 'btn btn-outline-fico', textContent: eng.substring(start, end), onclick: function() {
+					options.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: eng.substring(start, end), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							const thrower = this.cloneNode(true);
@@ -749,7 +780,7 @@
 					}
 				}, []).concat(examples).sort(() => Math.random() - 0.5);
 				options7.forEach( option => {
-					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico', textContent: option, onclick: function() {
+					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: option, onclick: function() {
 						
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
@@ -892,6 +923,23 @@
 		// 진급 진행도 표시
 		calcRank();		
 	}
+
+	/** 회원의 세션이 만료됐을 때 표시하는 모달
+	 */
+	function loginExpiredModal() {
+		if(!document.getElementById('loginExpiredModal')) {
+			document.querySelector('.craft-layout-content-section').appendChild(createElement({
+				"el":"div","id":"loginExpiredModal","class":"modal fade","data-bs-backdrop":"static","data-bs-keyboard":"false","tabIndex":-1,"children":[
+					{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+						{"el":"div","class":"modal-content","children":[
+							{"el":"div","class":"modal-body row g-0","children":[
+								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"로그인 시간이 만료되었습니다."},
+								{"el":"div","class":"button-section row g-1","children":[
+									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/auth/login'),"textContent":"로그인"}
+			]}]}]}]}]}));
+		}
+		bootstrap.Modal.getOrCreateInstance(document.getElementById('loginExpiredModal')).show();
+	}
 	
 	/** 일일 최대 플레이 횟수 초과 모달
 	 */
@@ -904,7 +952,7 @@
 							{"el":"div","class":"modal-body row g-0","children":[
 								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"일일 최대 플레이 횟수에 도달하였습니다.<br>내일 다시 찾아와 주세요."},
 								{"el":"div","class":"button-section row g-1","children":[
-									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/craft/main'),"textContent":"크래프트 메인으로 이동"}
+									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"}
 			]}]}]}]}]}));
 		}
 		bootstrap.Modal.getOrCreateInstance(document.getElementById('battleExceedModal')).show();
