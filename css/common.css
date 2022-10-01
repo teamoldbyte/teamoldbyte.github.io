@@ -88,7 +88,8 @@
 html{
 	font-family: 'RIDIBatang_ENG', 'HCRDotum';
 	font-size: 14px;
-	word-break: break-all;
+	/*word-break: break-all;*/
+	word-break: keep-all;
 }
 body{
 	/*font-family: 'Open Sans', 'NanumBarunGothic';*/
