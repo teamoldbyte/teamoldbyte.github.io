@@ -145,7 +145,7 @@
 .block-section{
 	padding: 3rem;
 	
-	background-color: #F6F5F8;
+	background-color: var(--slate);
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 10px;
 	min-height: 600px;
@@ -182,7 +182,7 @@
 	height: 6rem;
 	border: 10px solid #585174;
 	border-radius: 10px;
-	background-color: #f7f5f5;
+	background-color: var(--white);
 	padding: 5px 40px 5px 10px;
     resize: none;
 	overflow-x:  hidden;
@@ -266,7 +266,6 @@
 	overflow: hidden;
 }
 .index-section .input-example-section{
-	background-color: #F6F5F8;
 	border-radius: 10px;
 	/*height: 100%;*/
 	height: 20vh;
