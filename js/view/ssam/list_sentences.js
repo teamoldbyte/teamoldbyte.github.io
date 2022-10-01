@@ -525,7 +525,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		$workbookSection.find('.writer-section .personacon-alias').text(workbookInfo.alias);
 		$wordCopySection.find('.age').text((new Date().getFullYear() + 1 - new Date(workbookInfo.birthYear).getFullYear()));
 		if(workbookInfo.aliasImage)
-			$workbookSection.find('.personacon-profile').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
+			$workbookSection.find('.personacon-profile').css('backgroundImage', `url(/resource/profile/images/${workbookInfo.aliasImage})`);
 	}
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
 	$(document).on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
