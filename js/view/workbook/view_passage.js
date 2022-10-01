@@ -808,7 +808,9 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		
 		//대시보드의 팁 문구 랜덤 변경
 		$(this).find('.tip-content-section').hide(0, function() {
-			$(this).html(tandem?.tip?.showRandomTip()).fadeIn();
+			const sentence = $(this).closest('.one-sentence-unit-section').find('.origin-sentence .sentence-text').text();
+			
+			$(this).html(tandem?.tip?.showRandomTip(sentence.match(/['"]/)?5:undefined)).fadeIn();
 		});
 	}).on('hidden.bs.collapse', '.dashboard-section', function() {
 		$(this).prev('.result-semantic-section').removeClass('border-bottom-0');
