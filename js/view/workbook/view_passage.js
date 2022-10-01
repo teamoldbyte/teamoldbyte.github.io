@@ -804,11 +804,15 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	})
 	// 평가 대시보드 펼치기
 	$(document).on('show.bs.collapse', '.dashboard-section', function() {
+		$(this).prev('.result-semantic-section').addClass('border-bottom-0');
+		
 		//대시보드의 팁 문구 랜덤 변경
 		$(this).find('.tip-content-section').hide(0, function() {
 			$(this).html(tandem?.tip?.showRandomTip()).fadeIn();
 		});
-	});
+	}).on('hidden.bs.collapse', '.dashboard-section', function() {
+		$(this).prev('.result-semantic-section').removeClass('border-bottom-0');
+	})
 	
 	// [문장의 번역 영역 펼치고 접기]------------------------------------------------------- 
 	$(document).on('click', '.open-kor-btn,.ai-translation-block .translation-text', function() {
