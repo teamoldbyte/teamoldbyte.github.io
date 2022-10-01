@@ -244,7 +244,8 @@ u {
 .personal-info-block .rate-text-block{
 	position: absolute;
 	top: -30px;
-	left: -10px;
+	left: -14px;
+	width: 50px;
 }
 .rank-section .record-stat{
 	padding-top: calc(50px + 0.5rem);
@@ -1211,7 +1212,7 @@ u {
 	}
 	/* 메뉴 아이콘 영역 */
 	.workbook-menu-section .menu-icon-section .navbar-nav{
-		background-color: #fff;
+		background-color: #F6F5F8;
 		padding: 0 1rem;
 		border-bottom: 1px solid #dee2e6;
 		box-shadow: 0 9px 11px 0 rgba(0,0,0,.1),0 19px 19px 0 rgba(0,0,0,.1);
