@@ -517,10 +517,15 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		$workbookSection.find('.wb-id').text(workbookInfo.workbookId);
 		if(workbookInfo.imagePath)
 			$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
-		$workbookSection.find('.text-section .title').text(workbookInfo.title);
+		$workbookSection.find('.text-section .wb-title').text(workbookInfo.title);
 		$workbookSection.find('.text-section .reg-date').text(new Date(workbookInfo.regDate).format('yyyy-MM-dd'));
 		$workbookSection.find('.description').text(workbookInfo.description);
-		$workbookSection.find('.writer-section .alias').text(workbookInfo.alias);
+		$wordCopySection.find('.text-section .p-title').text(workbookInfo.passageTitle);
+		$wordCopySection.find('.text-section .p-id').text(workbookInfo.passageId);
+		$workbookSection.find('.writer-section .personacon-alias').text(workbookInfo.alias);
+		$wordCopySection.find('.age').text((new Date().getFullYear() + 1 - new Date(workbookInfo.birthYear).getFullYear()));
+		if(workbookInfo.aliasImage)
+			$workbookSection.find('.personacon-profile').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
 	}
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
 	$(document).on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
@@ -1483,7 +1488,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 				$sentenceSection.data('sentenceId'), 
 				$sentenceSection.find('.semantics-result')[0],
 				translations);
-			const workbookTitle = $sentenceSection.find('.workbook-overview-section .title').text();
+			const workbookTitle = $sentenceSection.find('.workbook-overview-section .wb-title').text();
 			if(workbookTitle != 'HELLO-BOOK') {
 				setTimeout(() => {
 					document.querySelector(this.dataset.bsTarget).querySelector('.battle-source-section .source').value 
