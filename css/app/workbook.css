@@ -359,7 +359,7 @@
 	}
 	/* 메뉴 아이콘 영역 */
 	.workbook-menu-section .menu-icon-section .navbar-nav{
-		background-color: #fff;
+		background-color: #F6F5F8;
 		padding: 0 1rem;
 		border-bottom: 1px solid #dee2e6;
 		box-shadow: 0 9px 11px 0 rgba(0,0,0,.1),0 19px 19px 0 rgba(0,0,0,.1);
@@ -785,7 +785,6 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center;
-	background-color: #f9d37a;
 }
 .workbook-section .book .book-title {
 	position: absolute;
@@ -1276,7 +1275,7 @@
 .list-question-section .one-block,
 .overview-workbook-section .one-block{
 	/*cursor: pointer;*/
-	background: #fff;
+	background: #f6f5f8;
 	border-radius: 10px;
 	padding: 10px;
 	margin-bottom: 5px;
@@ -1439,7 +1438,7 @@
 	color: #019c9e;
 }
 .view-passage-section .tab-section .nav-tabs .nav-link{
-	background-color: #f6f6f6;
+	background-color: #fafafd;
 }
 /* 탭 타이틀 영역 */
 @media (max-width: 1199.5px) {
@@ -1481,11 +1480,16 @@
 }
 /* 구문분석 결과영역 */
 .view-passage-section .result-section .one-sentence-unit-section{
-	border: none;
+	/*border: none;
 	box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
 	border-radius: 5px;
 	margin-bottom: 1rem;
-	background-color: #f6f6f6;
+	background-color: #f6f6f6;*/
+	border: none;
+    box-shadow: rgb(0 0 0 / 16%) 0px 1px 1px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    background-color: #fafafd;
 }
 .view-passage-section .result-section .one-sentence-unit-section .removable-section{
 	margin: 0 1.5rem;
@@ -1514,7 +1518,15 @@
 	border-radius: 10px;
 }
 .view-passage-section .origin-sentence-section .origin-sentence .numbering-text{
-	background-color: #8f1a5a;
+	/*background-color: #8f1a5a;*/
+    background-color: #5c68b6;
+    border-radius: 5px;
+    color: #fff;
+    padding: 0.4px 0 0.5px 0;
+    margin-right: 5px;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
 }
 .view-passage-section .result-section .one-sentence-unit-section .semantic-menu button{
 	width: 50px;
@@ -1525,6 +1537,7 @@
 }
 .view-passage-section .result-section .result-semantic-section{
 	/*background-color: #f6f6f6;*/
+	background-color: #f6f5f8;
 	box-shadow: none;
 	padding: 0 0.5rem;
 	position: relative;
@@ -1542,6 +1555,7 @@
 	min-height: 7.5rem;
 	border-top: 1px solid #f6f6f6;
 	border-radius: 0 0 10px 10px;
+	background-color: #f6f5f8;
 }
 @media (max-width: 767px) {
 	.view-passage-section .result-section .one-sentence-unit-section .semantic-menu{
