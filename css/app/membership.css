@@ -1,6 +1,6 @@
 .feature-section{
 	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
-	background-color:  #f9f9ff;
+	background-color:  var(--white);
 }
 /* 멤버십 안내 블록 */
 .feature-block{
