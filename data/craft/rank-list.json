@@ -1,6 +1,6 @@
 [ 
 	{	"startValue": -1, "rankTitle": "훈련병", "maxLength": 30, "battleLevel": "이병" },
-	{	"startValue": 30, "rankTitle": "이병", "maxLength": 30, "battleLevel": "이병" },
+	{	"startValue": 20, "rankTitle": "이병", "maxLength": 30, "battleLevel": "이병" },
 	{	"startValue": 70, "rankTitle": "일병", "maxLength": 60, "battleLevel": "일병" },
 	{	"startValue": 170, "rankTitle": "상병", "maxLength": 60, "battleLevel": "일병" },
 	{	"startValue": 300, "rankTitle": "병장", "maxLength": 80, "battleLevel": "병장" },
