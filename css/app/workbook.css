@@ -1569,12 +1569,15 @@
 
 /* 구문분석 대시보드 */
 .dashboard-section{
-    min-height: 7.5rem;
+    /*min-height: 7.5rem;*/
     border-top: 1px solid #f6f6f6;
     border-radius: 0 0 10px 10px;
     background-color: #f6f5f8;
     border: solid 2px #5c68b645;
     border-top: none;
+}
+.dashboard-section .evaluation-section{
+	border-right: 1px solid #dee2e6;
 }
 @media (max-width: 767px) {
 	.view-passage-section .result-section .one-sentence-unit-section .semantic-menu{
@@ -1585,6 +1588,7 @@
 		width: calc(100% + 1rem);
 		left: -0.5rem;
 		border-radius: 0;
+		border:none;
 	}
 
 	.view-passage-section .result-section .svoc-section{
@@ -1599,6 +1603,14 @@
 		position: absolute;
 		right: 4rem;
 		top: -4rem;
+	}
+	
+	.dashboard-section{
+		border: none;
+	}
+	
+	.dashboard-section .evaluation-section{
+		border-right: none;
 	}
 }
 
