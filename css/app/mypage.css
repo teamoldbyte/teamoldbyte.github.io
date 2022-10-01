@@ -95,6 +95,7 @@
 @media (max-width: 768px){
 	.egg-info{
 		width: 32%;
+		background-color: transparent;
 	}
 	.egg-info:nth-child(5n-4),
 	.egg-info:nth-child(5n){
