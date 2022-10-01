@@ -88,7 +88,7 @@
 html{
 	font-family: 'RIDIBatang_ENG', 'HCRDotum';
 	font-size: 14px;
-	/*word-break: keep-all;*/
+	word-break: break-all;
 }
 body{
 	/*font-family: 'Open Sans', 'NanumBarunGothic';*/
@@ -107,7 +107,7 @@ body{
 }
 @media (max-width: 768px) {
    html, body{
-		font-size: 16.5px;
+		font-size: 16px;
 	}
 }
 @media (max-width: 320px) {
@@ -703,6 +703,8 @@ u {
 	font-family: 'Otomanopee One',sans-serif;
 	color: #585174;
 }
+
+
 /**********************************************************
  *					logo.html
  **********************************************************/
@@ -774,5 +776,30 @@ u {
 		width: 200px;
 		top: 10px;
 		left: 40px;
+	}
+}
+
+
+
+
+
+/**********************************************************
+ *					badge
+ **********************************************************/
+.beta-badge{
+	font-size: 0.5rem;
+}
+@media (min-width: 768px) {
+	.workbook-menu-section .menu-icon-section ul li:hover a .beta-badge{
+		transform: translateY(-35px);
+		transition: 0.5s;
+	}
+}
+@media (max-width: 767px) {
+	.workbook-menu-section .menu-icon-section .beta-badge{
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		margin-left: 0.25rem;
 	}
 }
