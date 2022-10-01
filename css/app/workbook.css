@@ -1532,7 +1532,8 @@
     background-color: #5c68b6;
     border-radius: 5px;
     color: #fff;
-    padding: 0.25px 0 0.5px 0;
+    /*padding: 0.25px 0 0.5px 0;*/
+	padding: 0;
     margin-right: 5px;
     display: inline-block;
     width: 20px;
@@ -1547,19 +1548,17 @@
 }
 .view-passage-section .result-section .result-semantic-section{
 	/*background-color: #f6f6f6;*/
-	
-	box-shadow: none;
-	padding: 0 0.5rem;
-	position: relative;
     background-color: var(--white);
     box-shadow: none;
     padding: 0 0.5rem;
     position: relative;
     border: solid 2px #5c68b645;
-    border-bottom: none;
 	border-radius: 10px 10px 0 0;
 }
-
+.view-passage-section .result-section .result-semantic-section.border-bottom-0{
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
 .view-passage-section .result-section .svoc-section{
 	/*background-color: #fff;*/
 	/*border-radius: 10px 10px 0 0;*/
