@@ -1553,7 +1553,7 @@
     padding: 0 0.5rem;
     position: relative;
     border: solid 2px #5c68b645;
-	border-radius: 10px 10px 0 0;
+	border-radius: 10px;
 }
 .view-passage-section .result-section .result-semantic-section.border-bottom-0{
 	border-bottom-right-radius: 0px;
