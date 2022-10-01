@@ -538,7 +538,9 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		if(e.type == 'show') {
 			$unitSection[0].scrollIntoView();
 			if(!$unitSection.is('.loaded,.loading')) {
-				$unitSection.addClass('loading')
+				$unitSection.find('.s-id').text(sentenceId);
+				
+				$unitSection.addClass('loading');
 				$.getJSON(`/ssam/sentence/${sentenceId}`, sentenceInfo => {
 					showSentenceDetail(sentenceInfo, $unitSection);
 					$unitSection.removeClass('loading').addClass('loaded');
