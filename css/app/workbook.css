@@ -1691,3 +1691,18 @@
 		margin-bottom: 10px;
 	}
 }
+/*------------------------------------------------------------------------------
+                              edit_passage.html
+ -----------------------------------------------------------------------------*/
+.edit-passage-section .one-sentence-unit-section{
+	width: 100%;
+	background: var(--white);
+	border-radius: 10px;
+	resize: none;
+}
+.edit-passage-section .edit-btn-section{
+	border-radius: .3rem;
+	border-width: 2px;
+	border-color: var(--slate);
+	float: right;
+}
