@@ -11,28 +11,28 @@
 	
 	const audioCtx = new AudioContext();
 	
-	let source, request;
+	let source;
 	
-	let cachedArrayBuffer;
+	const cachedArrayBufferList = {};
 	
 	// use XHR to load an audio track, and
 	// decodeAudioData to decode it and OfflineAudioContext to render it
 	
 	function load(src) {
-	  request = new XMLHttpRequest();
+	  const request = new XMLHttpRequest();
 	
 	  request.open('GET', src, true);
 	
 	  request.responseType = 'arraybuffer';
 	
 	  request.onload = () => {
-	    cachedArrayBuffer = request.response;
+	    cachedArrayBufferList[src] = request.response;
 	  }
 	  request.send();
 	}
 	
-	function play() {
-		audioCtx.decodeAudioData(cachedArrayBuffer.slice(), (buff) => {
+	function play(src) {
+		audioCtx.decodeAudioData(cachedArrayBufferList[src].slice(), (buff) => {
 			// Create a source node from the buffer
 			source = audioCtx.createBufferSource();
 			source.buffer = buff;
