@@ -11,7 +11,7 @@ function pageinit(sentenceList) {
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
 	
 	const oneSentenceJSON = {
-		"el": "div", "class": "one-sentence-unit-section rounded-gray-border p-2 p-lg-4 mb-2 border-0",
+		"el": "div", "class": "one-sentence-unit-section p-2 p-lg-4 mb-2 border-0",
 		"data-ordernum": "0", "data-sid": "0", "data-psid": "0", "children": [
 			{
 				"el": "div", "class": "origin-sentence-section my-auto", "children": [
