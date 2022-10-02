@@ -520,10 +520,10 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		$workbookSection.find('.text-section .wb-title').text(workbookInfo.title);
 		$workbookSection.find('.text-section .reg-date').text(new Date(workbookInfo.regDate).format('yyyy-MM-dd'));
 		$workbookSection.find('.description').text(workbookInfo.description);
-		$wordCopySection.find('.text-section .p-title').text(workbookInfo.passageTitle);
-		$wordCopySection.find('.text-section .p-id').text(workbookInfo.passageId);
+		$workbookSection.find('.text-section .p-title').text(workbookInfo.passageTitle);
+		$workbookSection.find('.text-section .p-id').text(workbookInfo.passageId);
 		$workbookSection.find('.writer-section .personacon-alias').text(workbookInfo.alias);
-		$wordCopySection.find('.age').text((new Date().getFullYear() + 1 - new Date(workbookInfo.birthYear).getFullYear()));
+		$workbookSection.find('.age').text((new Date().getFullYear() + 1 - new Date(workbookInfo.birthYear).getFullYear()));
 		if(workbookInfo.aliasImage)
 			$workbookSection.find('.personacon-profile').css('backgroundImage', `url(/resource/profile/images/${workbookInfo.aliasImage})`);
 	}
