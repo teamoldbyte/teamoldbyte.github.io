@@ -785,6 +785,7 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center;
+	background-color: var(--fc-yellow);
 }
 .workbook-section .book .book-title {
 	position: absolute;
