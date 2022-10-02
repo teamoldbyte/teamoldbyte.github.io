@@ -16,19 +16,19 @@ function pageinit(sentenceList) {
 			{
 				"el": "div", "class": "origin-sentence-section my-auto", "children": [
 					{	// 문장 메뉴(데스크탑)
-						"el": "div", "class": "d-none d-md-block border border-2 border-white rounded-3 float-end", "children": [
+						"el": "div", "class": "d-none d-md-block edit-btn-section", "children": [
 							{
-								"el": "span", "role": "button", "class": "js-move-sentence btn float-end border border-2 border-white rounded-0 ui-sortable-handle", "data-toggle": "tooltip", "title": "위치 이동", "children": [
+								"el": "span", "role": "button", "class": "js-move-sentence btn edit-btn ui-sortable-handle", "data-toggle": "tooltip", "title": "위치 이동", "children": [
 									{ "el": "span", "class": "fas fa-arrows-alt" }
 								]
 							},
 							{
-								"el": "button", "type": "button", "class": "js-del-sentence btn float-end border border-2 border-white rounded-0", "data-toggle": "tooltip", "title": "문장 삭제", "children": [
+								"el": "button", "type": "button", "class": "js-del-sentence btn edit-btn", "data-toggle": "tooltip", "title": "문장 삭제", "children": [
 									{ "el": "span", "class": "fas fa-trash-alt" }
 								]
 							},
 							{
-								"el": "button", "type": "button", "class": "edit-icon-section btn float-end border border-2 border-white rounded-0", "data-toggle": "collapse", "children": [
+								"el": "button", "type": "button", "class": "edit-icon-section btn edit-btn", "data-toggle": "collapse", "children": [
 									{ "el": "span", "class": "edit-icon fas fa-pen" }
 								]
 							}
