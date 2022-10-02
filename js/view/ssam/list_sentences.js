@@ -560,7 +560,13 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 			$(e.target).find('.dashboard-section').show(0).trigger('show.bs.collapse');
 		}
 		
-	});
+	})
+	// 평가 대시보드 펼치기
+	.on('show.bs.collapse', '.dashboard-section', function() {
+		$(this).prev('.result-semantic-section').addClass('border-bottom-0');
+	}).on('hidden.bs.collapse', '.dashboard-section', function() {
+		$(this).prev('.result-semantic-section').removeClass('border-bottom-0');
+	})
 	
 
 	// [분석 결과 평가]------------------------------------------------------------
