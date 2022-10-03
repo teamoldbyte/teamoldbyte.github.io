@@ -163,6 +163,7 @@
 		anime({
 			targets: bucket,
 			left: [window.innerWidth, LEFT_END_EGGSHOW - 70],
+			translateZ: 0,
 			duration: 500,
 		});
 
@@ -176,6 +177,7 @@
 		egg_timeline.add({
 			duration: 500,
 			scale: [0,1],
+			translateZ: 0,
 			translateY: [10, -10],
 			easing: 'cubicBezier(0,2,1,2)',
 			rotateZ: {
@@ -209,6 +211,7 @@
 						anime({
 							targets: bucket,
 							translateY: [5, 0],
+							translateZ: 0,
 							delay: anime.stagger(200),
 							duration: 200,
 							loop: eggArray.length,
@@ -227,6 +230,7 @@
 						d: {
 							value: [plasticBagPaths[0],plasticBagPaths[1]]
 						},
+						translateZ: 0,
 						delay: 1900,
 						duration: 500
 					});
@@ -267,10 +271,12 @@
 						anime({
 							targets: '#newEggModal .circle-dark object',
 							scale: [0,1],
+							translateZ: 0,
 							duration: 1200
 						})
 						newEggAnim = anime({
 							targets: '#newEggModal .circle-dark-dashed',
+							translateZ: 0,
 							rotateZ: 360,
 							duration: 8000,
 							loop: true,
@@ -291,6 +297,7 @@
 									targets: v,
 									duration: 1000,
 									scale: [0,1],
+									translateZ: 0,
 									opacity: [0,1],
 									complete: () => {
 										if(i + 1 != newEggs.length) {
@@ -306,6 +313,7 @@
 								targets: '#newEggModal .modal-footer .js-verify-btn',
 								loop: true,
 								scale: [1, 1.05],
+								translateZ: 0,
 								direction: 'alternate',
 								easing: 'linear',
 								duration: 1000,
@@ -319,6 +327,7 @@
 							anime({ 
 								targets: [eggArray, bucket],
 								left: [window.innerWidth], 
+								translateZ: 0,
 								duration: 1000,
 								easing: 'easeInElastic',
 								delay: 400,
@@ -349,6 +358,7 @@
 						delay: 500,
 						duration: 500,
 						easing: 'cubicBezier(1,0,1,0)',
+						translateZ: 0,
 						d: {
 							value: plasticBagPaths[2]
 						}
@@ -360,6 +370,7 @@
 					$(document.body).append(crashedArray);
 					// 깨진 에그 표현
 					anime.timeline({
+						translateZ: 0,
 						targets: crashedArray,
 					}).add({
 						delay: anime.stagger(200, {start: 700}),
@@ -379,6 +390,7 @@
 							anime({ 
 								targets: bucket,
 								left: window.innerWidth, 
+								translateZ: 0,
 								duration: 500, 
 								delay: 500,
 								complete: () => {
