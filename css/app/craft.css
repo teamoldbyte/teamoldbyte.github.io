@@ -212,10 +212,21 @@ u {
 }
 /* 계급 이미지 */
 .rank-section{
+	position: relative;
 	text-align: center;
 	padding-top: 2rem;
 	font-family: 'NanumBarunGothic', sans-serif;
 	padding-bottom: 3rem;
+}
+.rank-section .circle-section{
+	position: absolute;
+	width: 250px;
+	height: 250px;
+	border-radius: 50%;
+	background: var(--white);
+	left: 50%;
+	transform: translateX(-50%);
+	top: 0.5rem;
 }
 .personal-info-block .rank-icon {
 	position: absolute;
@@ -250,8 +261,15 @@ u {
 .rank-section .record-stat{
 	padding-top: calc(50px + 0.5rem);
 }
+.rank-section .record-stat .alias{
+	font-size: 1.2rem;
+}
 .rank-section .record{
+	position: absolute;
 	margin-bottom: 1.75rem;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: -0.25rem;
 }
 /* 승률 퍼센트 바 */
 .craft-index-section .winning-rate-cover{
