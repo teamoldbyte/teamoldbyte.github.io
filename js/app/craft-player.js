@@ -6,7 +6,34 @@
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
 	
+	const CLICK_SOUND = 'https://static.findsvoc.com/sound/popdrop.mp3',
+		NEXT_SOUND = 'https://static.findsvoc.com/sound/page-flip.mp3',
+		CORRECT_SOUND = 'https://static.findsvoc.com/sound/coin.mp3',
+		INCORRECT_SOUND = 'https://static.findsvoc.com/sound/egg_crack.mp3';
+	
+	const newRankModal = { el: 'div', id: 'newRankModal', className: 'modal', tabIndex: '-1', 'data-bs-backdrop': 'static', style: { zIndex: 1071, background: 'radial-gradient(circle, white 25%, #fff4)' }, children: [
+		{ el: 'div', className: 'modal-dialog modal-dialog-centered overflow-hidden m-0', style: 'max-width: 100%', children: [
+			{ el: 'div', className: 'modal-content bg-transparent border-0', children: [
+				{ el: 'div', className: 'modal-header border-0 d-block text-center' },
+				{ el: 'div', className: 'modal-body w-100 text-center', style: 'min-height: 77vmin', children: [
+					{ el: 'span', className: 'circle-dark', 
+					style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '70vmin', height: '70vmin', backgroundColor: 'var(--fc-purple)', borderRadius: '37vmin', zIndex: 1 }
+					, children: [ { el: 'object', data: 'https://static.findsvoc.com/images/app/egg/new-title.svg',
+						style: { position: 'absolute', top: '3vmin', left: '37.5%', width: '25%', height: '20%', zIndex: 2, overflow: 'visible'}}] 
+					},
+					{ el: 'span', className: 'circle-dark-dashed', style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', borderRadius: '37vmin', backgroundColor: 'transparent', border: '2vmin dashed var(--fc-purple)', width: '76vmin', height: '76vmin' }
+					}
+				]},
+				{ el: 'div', className: 'modal-footer d-block border-0 text-center', children: [
+					{ el: 'button', className: 'btn btn-outline-fico rounded-5 col-md-2 col-4 fs-5 fw-bold', 'data-bs-dismiss': 'modal', textContent: '닫기'}
+				]}
+			]}
+		]}
+	]};
+	const tts = new FicoTTS();
 	$(function() {
+		
+		
 		// 스크롤을 내리면 메뉴를 화면 상단에 고정
 		const header = document.querySelector('.craft-header-section');
 		const scSection = document.querySelector('.scrolling-section');
@@ -36,7 +63,10 @@
 		}, false);
 		
 		// 사운드 로드
-		WebAudioJS.load('https://static.findsvoc.com/sound/popdrop.mp3');
+		WebAudioJS.load(CLICK_SOUND);
+		WebAudioJS.load(NEXT_SOUND);
+		WebAudioJS.load(CORRECT_SOUND);
+		WebAudioJS.load(INCORRECT_SOUND);
 	})
 	
 	let nextBtnObserver = new IntersectionObserver((entries) => {
@@ -259,6 +289,7 @@
 		_todayBattleSolveCount.count++;
 		window.localStorage.setItem('TCBSC', JSON.stringify(_todayBattleSolveCount));
 		// 맞힘/틀림에 따른 알림
+		WebAudioJS.play(correct ? CORRECT_SOUND : INCORRECT_SOUND);
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
 								style: { transformOrigin: 'top'},
 								"textContent": correct ? '정답입니다.' : '오답입니다.'});
@@ -355,6 +386,8 @@
 			e.stopPropagation();
 			return;
 		}
+		
+		WebAudioJS.play(NEXT_SOUND);
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
 		$(currentView).find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
@@ -382,12 +415,10 @@
 	})
 	// 햅틱 효과
 	.on('click', '.haptic-btn', function() {
-		WebAudioJS.play();
-		/*if(window.ANI && window.ANI?.vibrate) {
-			window.ANI.vibrate([100],[25]);
-		}else if(navigator?.vibrate) {
-			navigator.vibrate([100]);
-		}*/
+		if(!this.textContent.match(/[^\w\s,.!?'"]/))
+			tts.speak(this.textContent);
+		else
+			WebAudioJS.play(CLICK_SOUND);
 	})
 	
 	/** 다음 20문제 가져오기
@@ -671,8 +702,13 @@
 					options.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: eng.substring(start, endWithComma), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
-							const thrower = this.cloneNode(true);
+							let thrower = $(this).data('clickedOnce');
+							if(!thrower) {
+								thrower = this.cloneNode(true);
+								$(this).data('clickedOnce',thrower);
+							}
 							clone.style.visibility = 'hidden';
+							thrower.style.display = 'block';
 							thrower.style.position = 'fixed';
 							arrangedSection.appendChild(clone);
 							
@@ -682,27 +718,29 @@
 								targets: thrower,
 								top: [$(this).offset().top, $(clone).offset().top],
 								left: [$(this).offset().left, $(clone).offset().left],
+								translateZ: 0,
 								easing: 'linear',
 								complete: () => {
-									thrower.remove();
+									thrower.style.display = 'none';
 									clone.style.visibility = 'visible';
 								},
 								duration: 100
 							})
 							
 							clone.onclick = () => {
-								const throwBack = clone.cloneNode(true);
 								clone.style.visibility = 'hidden';
-								throwBack.style.position = 'fixed';
-								arrangedSection.appendChild(throwBack);
+								thrower.style.display = 'block';
+								//arrangedSection.appendChild(throwBack);
 								// 정답지에서 선택지로 발사
 								anime({
-									targets: throwBack,
+									targets: thrower,
 									top: [ $(clone).offset().top, $(this).offset().top ],
 									left: [ $(clone).offset().left, $(this).offset().left],
+									translateZ: 0,
 									easing: 'linear',
 									complete: () => {
-										throwBack.remove();
+										//throwBack.remove();
+										thrower.style.display = 'none';
 										clone.remove();
 										$(this).removeClass('selected pe-none');	
 										moveSolveBtn(arrangedSection.childElementCount != examples.length);
@@ -740,6 +778,7 @@
 								placeholder: token.length > 1 ? token.substring(0,1) : '', autocapitalize: 'off',
 								autocomplete: 'off', autocorrect: 'off', spellcheck: "false",
 								onfocus: function() {
+									this.placeholder = '';
 									// 타이핑 위치와 확인버튼이 겹치면 스크롤 이동
 									const thisTop = this.getBoundingClientRect().top;
 									const nextBtnTop = document.querySelector('.js-next-btn, .js-solve-btn').getBoundingClientRect().top;
@@ -747,6 +786,8 @@
 									if(topDiff < 76.5) {
 										scrollTo(scrollX, scrollY + 76.5 - topDiff);
 									}
+								}, onblur: function() {
+									this.placeholder = token.length > 1 ? token.substring(0,1) : '';
 								}
 							});
 						}
@@ -786,10 +827,18 @@
 					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', 
 						textContent: option.replace(/[,.!?]$/,''), onclick: function() {
 						
+						
+						
+						
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
-							const thrower = this.cloneNode(true);
+							let thrower = $(this).data('clickedOnce');
+							if(!thrower) {
+								thrower = this.cloneNode(true);
+								$(this).data('clickedOnce',thrower);
+							}
 							clone.style.visibility = 'hidden';
+							thrower.style.display = 'block';
 							thrower.style.position = 'fixed';
 							arrangedSection7.appendChild(clone);
 							
@@ -799,27 +848,29 @@
 								targets: thrower,
 								top: [$(this).offset().top, $(clone).offset().top],
 								left: [$(this).offset().left, $(clone).offset().left],
+								translateZ: 0,
 								easing: 'linear',
 								complete: () => {
-									thrower.remove();
+									thrower.style.display = 'none';
 									clone.style.visibility = 'visible';
 								},
 								duration: 100
 							})
 							
 							clone.onclick = () => {
-								const throwBack = clone.cloneNode(true);
 								clone.style.visibility = 'hidden';
-								throwBack.style.position = 'fixed';
-								arrangedSection7.appendChild(throwBack);
+								thrower.style.display = 'block';
+								//arrangedSection.appendChild(throwBack);
 								// 정답지에서 선택지로 발사
 								anime({
-									targets: throwBack,
+									targets: thrower,
 									top: [ $(clone).offset().top, $(this).offset().top ],
 									left: [ $(clone).offset().left, $(this).offset().left],
+									translateZ: 0,
 									easing: 'linear',
 									complete: () => {
-										throwBack.remove();
+										//throwBack.remove();
+										thrower.style.display = 'none';
 										clone.remove();
 										$(this).removeClass('selected pe-none');	
 										moveSolveBtn(arrangedSection7.childElementCount == 0);
@@ -837,6 +888,7 @@
 				})
 				// 선택 초기화
 				arrangedSection7.replaceChildren();
+				$(arrangedSection7).sortable();
 				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
 				break;
@@ -984,7 +1036,50 @@
 		
 		// 진급을 하면 축하 연출
 		if(prevRankBase < currRankBase) {
-			showFireworks({target:$('.battle-section:visible')[0], distance: 100, size: 10})
+			if(!document.getElementById('newRankModal')) {
+				document.body.prepend(createElement(newRankModal));
+			}
+			$('#newRankModal .modal-body .new-obj').remove();
+			
+			const newRank = createElement({
+			el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
+				maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)',
+				borderRadius: '50% 50% 50% 50%/60% 60% 40% 40%',
+				background: `center/ contain url(https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg) no-repeat`
+			}
+		})
+			$('#newRankModal .modal-body').append(newRank);
+			$('#newRankModal').modal('show');
+			anime({
+				targets: '#newRankModal .circle-dark object',
+				scale: [0,1],
+				translateZ: 0,
+				duration: 1200
+			})
+			anime({
+				targets: '#newRankModal .circle-dark-dashed',
+				translateZ: 0,
+				rotateZ: 360,
+				duration: 8000,
+				loop: true,
+				easing: 'linear'
+			})
+
+			showFireworks({
+				target: $('#newRankModal .modal-body')[0],
+				particles: 20, 
+				distance: 100,
+				interval: 200, 
+				size: 15
+			});
+			anime({
+				targets: newRank,
+				duration: 1000,
+				scale: [0,1],
+				translateZ: 0,
+				opacity: [0,1]
+			})
+			/*showFireworks({target:$('.battle-section:visible')[0], distance: 100, size: 10})
 			const newRankImage = createElement({ el: 'img', src: `https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg`, class: 'position-absolute start-50 top-50 w-50', style: 'transform: translate(-50%, -50%)'});
 			document.body.appendChild(newRankImage);
 			anime({
@@ -993,7 +1088,7 @@
 				easing: 'cubicBezier(0,2,1,2)',
 				duration: 1000,
 				complete: () => setTimeout( () => newRankImage.remove(), 3000)
-			})
+			})*/
 		}
 		const rankProgress = document.querySelector('.progress-bar');
 		
