@@ -108,6 +108,7 @@
 	$(document)
 	// 배틀 저장(ajax)
 	.on('click', '#save-btn', function() {
+		WebAudioJS.play(CLICK_SOUND)
 		$.getJSON('/craft/battle/mybattle/save', 
 			{ memberId: _memberId, battleBookId: _contentId, battleId: currentBattle.bid, save: !currentBattle.saved }, (saved) => {
 				currentBattle.saved = saved;
@@ -132,7 +133,7 @@
 		
 		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
 		$(this).toggleClass('js-solve-btn js-next-btn').text('다음');
-		$(view).find('.ask-section,.example-btn-section,.arranged-examples').addClass('pe-none');
+		$(view).find('.example-btn-section,.arranged-examples').addClass('pe-none');
 		
 		// 배틀타입, 문제 축소버전으로 표시
 		$(view).find('.battle-type-block, .ask-block, .simple-ask-block').fadeToggle();
@@ -285,26 +286,51 @@
 				break;
 			default: break;
 		}
+		// 정답문장 듣기 버튼 표시
+		view.querySelector('.ask-section .sentence').appendChild(createElement({
+			el: 'button', id: 'ttsPlay', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none',
+			'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-active': 'on', textContent: 'play_circle',
+			style: { transform: 'scale(0)'},
+			onclick: function() {
+				const on = this.dataset.active == 'on';
+				this.dataset.active = on?'off':'on';
+				this.textContent = on?'stop_circle':'play_circle';
+				if(on) {
+					tts.speak(currentBattle.eng, () => {
+						this.dataset.active = 'on';
+						this.textContent = 'play_circle';
+					});
+				}else {
+					tts.stop();
+				}
+			}
+		}));
+		anime({
+			targets: view.querySelector('#ttsPlay'),
+			scale: 1,
+			delay: 600
+		})
 		// 오늘자 풀이량 카운트
 		_todayBattleSolveCount.count++;
 		window.localStorage.setItem('TCBSC', JSON.stringify(_todayBattleSolveCount));
 		// 맞힘/틀림에 따른 알림
 		WebAudioJS.play(correct ? CORRECT_SOUND : INCORRECT_SOUND);
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
-								style: { transformOrigin: 'top'},
-								"textContent": correct ? '정답입니다.' : '오답입니다.'});
+								style: { transformOrigin: 'top'}});
 		document.querySelector('.craft-header-section').append(resultToast);
 		// 해설화면에 캐릭터 안보이도록 투명화
 		document.querySelector('.craft-layout-content-section').classList.add('bg-fc-transparent');
 		anime.timeline({
 			targets: resultToast,
 		}).add({
-			begin: () => {
-				resultToast.style.visibility = 'visible';
-				resultToast.style.color = '#00000000';
+			begin: function(anim) {
+				const _this = anim.animatables[0].target;
+				_this.textContent = correct ? '정답입니다.' : '오답입니다.';
+				_this.style.visibility = 'visible';
+				_this.style.color = '#00000000';
+				_this.style.backgroundColor = correct ? '#00bcd4' : '#f44336';
 			},
-			bottom: '-2rem',
-			backgroundColor: correct ? '#00bcd4' : '#f44336',
+			bottom: '-2em',
 			width: ['2rem', '50%'],
 			height: ['0rem', '2rem'],
 			duration: 1000,
@@ -387,6 +413,8 @@
 			return;
 		}
 		
+		tts.stop();
+		currentView.querySelector('#ttsPlay').remove();
 		WebAudioJS.play(NEXT_SOUND);
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
@@ -508,7 +536,7 @@
 					leftStr = eng.substring(offsetPos, start);
 					if(leftStr) contextChildren.push(leftStr);
 					contextChildren.push({
-						el: 'span', role: 'button', className: 'option haptic-btn', 
+						el: 'span', role: 'button', className: 'option haptic-btn shadow-none', 
 						textContent: eng.substring(start, end),
 						onclick: function() {
 							$(this).toggleClass('selected');
@@ -601,16 +629,16 @@
 					if(leftStr) {
 						if(leftStr.includes(' ')) {
 							Array.from(leftStr.split(' ').filter(s => s.length > 0), s => {
-								return Object.assign({ className: `option d-inline-block haptic-btn`, textContent: s }, optionDummy2);
+								return Object.assign({ className: `option d-inline-block haptic-btn shadow-none`, textContent: s }, optionDummy2);
 							}).forEach( el => contextChildren.push(el, ' '));
 						}else contextChildren.push(leftStr, ' ');
 					}
-					contextChildren.push(Object.assign({ className: `${className} d-inline-block haptic-btn`, textContent: eng.substring(start, end) }, optionDummy2));
+					contextChildren.push(Object.assign({ className: `${className} d-inline-block haptic-btn shadow-none`, textContent: eng.substring(start, end) }, optionDummy2));
 					if(end < eng.length) contextChildren.push(' ');
 					if(j == arr.length - 1 && end < eng.length) {
 						if(eng.indexOf(' ', end) > -1) {
 							Array.from(eng.substring(end).split(' ').filter(s => s.length > 0), s => {
-								return Object.assign({ className: 'option d-inline-block haptic-btn', textContent: s }, optionDummy2);
+								return Object.assign({ className: 'option d-inline-block haptic-btn shadow-none', textContent: s }, optionDummy2);
 							}).forEach( el => contextChildren.push(el, ' '));
 						}else contextChildren.push(eng.substring(end));
 					}
@@ -645,7 +673,7 @@
 					
 				currentView.querySelector('.example-btn-section').replaceChildren(
 					createElement(Array.from(options, option => {
-						return { el: 'button', className: 'btn btn-outline-fico haptic-btn', textContent: option , onclick: function() {
+						return { el: 'button', className: 'btn btn-outline-fico haptic-btn shadow-none', textContent: option , onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
 							moveSolveBtn(false);
 						}};
@@ -675,7 +703,7 @@
 					}
 					contextChildren.push(span);
 					// 선택지 추가
-					options.push({ el: 'button', className: 'btn btn-outline-fico haptic-btn', textContent: optionText, onclick: function() {
+					options.push({ el: 'button', className: 'btn btn-outline-fico haptic-btn shadow-none', textContent: optionText, onclick: function() {
 							$(this).addClass('active').siblings().removeClass('active');
 							moveSolveBtn(false);
 						}});
@@ -699,7 +727,7 @@
 			 	examples.sort(() => Math.random() - 0.5).forEach(([ start, end ]) => {
 					// 문장의 끝이 아닌 어구가 구두점으로 끝날 경우 구두점까지 포함하여 보기로 표시
 					const endWithComma = end + ((end < eng.length - 1 && /[,.]/.test(eng.charAt(end)))? 1 : 0)
-					options.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', textContent: eng.substring(start, endWithComma), onclick: function() {
+					options.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn shadow-none', textContent: eng.substring(start, endWithComma), onclick: function() {
 						if(!this.closest('.arranged-examples') && !this.matches('.selected')) {
 							const clone = this.cloneNode(true);
 							let thrower = $(this).data('clickedOnce');
@@ -824,7 +852,7 @@
 					}
 				}, []).concat(examples).sort(() => Math.random() - 0.5);
 				options7.forEach( option => {
-					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn', 
+					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn shadow-none', 
 						textContent: option.replace(/[,.!?]$/,''), onclick: function() {
 						
 						
@@ -1044,8 +1072,7 @@
 			const newRank = createElement({
 			el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
 				maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)',
-				borderRadius: '50% 50% 50% 50%/60% 60% 40% 40%',
-				background: `center/ contain url(https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg) no-repeat`
+				background: `center/ cover url(https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg) no-repeat`
 			}
 		})
 			$('#newRankModal .modal-body').append(newRank);
