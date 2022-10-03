@@ -551,6 +551,7 @@
 .workbook-overview-section .image-section img{
 	width: 10rem;
 	height: 15rem;
+	background-color: var(--fc-yellow);
 }
 @media (max-width: 767px) {
     .workbook-overview-section .image-section img{
@@ -1702,6 +1703,12 @@
 }
 .edit-passage-section .edit-btn-section{
 	border-radius: .3rem;
+	border-width: 2px;
+	border-color: var(--slate);
+	float: right;
+}
+.edit-passage-section .edit-btn{
+	border-radius: 0;
 	border-width: 2px;
 	border-color: var(--slate);
 	float: right;
