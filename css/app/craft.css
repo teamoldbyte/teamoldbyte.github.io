@@ -171,7 +171,7 @@ u {
  *				index.html  
  **********************************************************/
 .craft-index-section .title-section{
-	margin-bottom: 3rem;
+	margin-bottom: 2rem;
 }
 .craft-index-section .title-section .title-text {
 	font-size: 1.1rem;
@@ -212,11 +212,12 @@ u {
 }
 /* 계급 이미지 */
 .rank-section{
+	font-family: 'NanumBarunGothic', sans-serif;
 	position: relative;
 	text-align: center;
 	padding-top: 2rem;
-	font-family: 'NanumBarunGothic', sans-serif;
 	padding-bottom: 3rem;
+	margin-bottom: 2rem;
 }
 .rank-section .circle-section{
 	position: absolute;
@@ -262,6 +263,7 @@ u {
 	padding-top: calc(50px + 0.5rem);
 }
 .rank-section .record-stat .alias{
+	position: relative;
 	font-size: 1.2rem;
 }
 .rank-section .record{
