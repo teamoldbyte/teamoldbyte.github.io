@@ -2,7 +2,6 @@
 @author LGM
  */
 function pageinit(memberId, memberAlias, memberImage){
-	let offsetIndex = 0;
 	const svocSectionJson = {
 		el: 'div', className: 'svoc-section row position-relative', children: [
 			{ el: 'div', className: 'svoc-block col my-auto' },
@@ -352,7 +351,6 @@ function pageinit(memberId, memberAlias, memberImage){
 	function displaySentences(sentenceList) {
 		
 		$results.find('.one-sentence-unit-section').remove();
-		console.log($copySection)
 		for(let i = 0, len = sentenceList.length; i < len; i++) {
 			const sentence = sentenceList[i];
 			let $sectionClone;
@@ -405,7 +403,7 @@ function pageinit(memberId, memberAlias, memberImage){
 			
 			// 1. 원문 표시--------------------------------------------------------
 			$sectionClone.find('.origin-sentence').append(
-					'<span class=\'numbering-text print-removed\'>' + (offsetIndex + i+1) + '</span>' + 
+					'<span class=\'numbering-text print-removed\'>' + (i+1) + '</span>' + 
 					'<span class=\'sentence-text\'>' + sentence.text + '</span>');
 			
 			$results.collapse('show')
@@ -548,12 +546,12 @@ function pageinit(memberId, memberAlias, memberImage){
 				$unitSection.find('.s-id').text(sentenceId);
 				
 				$unitSection.addClass('loading');
-				$.getJSON(`/ssam/sentence/${sentenceId}`, sentenceInfo => {
+				$.getJSON(`/adminxyz/workbook/sentence/${sentenceId}`, sentenceInfo => {
 					showSentenceDetail(sentenceInfo, $unitSection);
 					$unitSection.removeClass('loading').addClass('loaded');
 				});
 				// 워크북 정보 조회
-				$.getJSON(`/ssam/workbookinfo/${sentenceId}`, workbookInfo => {
+				$.getJSON(`/adminxyz/workbook/info/${sentenceId}`, workbookInfo => {
 					showWorkBookInfo(workbookInfo, $unitSection);
 				})
 			}
