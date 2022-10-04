@@ -30,7 +30,10 @@
 			]}
 		]}
 	]};
-	const tts = new FicoTTS();
+	const tts = new FicoTTS({autoplay: false, initSuccessCallback: () => {
+		// 자동재생 조작 금지
+		document.querySelector('#ttsSettings .form-switch').remove();
+	}});
 	$(function() {
 		
 		
@@ -133,7 +136,7 @@
 		
 		// 채점 전송 버튼을 단계 넘김 버튼으로 전환 
 		$(this).toggleClass('js-solve-btn js-next-btn').text('다음');
-		$(view).find('.example-btn-section,.arranged-examples').addClass('pe-none');
+		$(view).find('.haptic-btn').addClass('pe-none');
 		
 		// 배틀타입, 문제 축소버전으로 표시
 		$(view).find('.battle-type-block, .ask-block, .simple-ask-block').fadeToggle();
@@ -154,7 +157,7 @@
 						sel.classList.add('wrong');
 					}
 				})
-				
+				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;	
 			case '2':
 				view.querySelectorAll('.option,.modifier,.modificand').forEach(opt => {
@@ -180,6 +183,7 @@
 					}
 				})
 				view.querySelector('.mod-guide-text').remove();
+				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
 			case '3':
 				const selectedOpt3 = view.querySelector('.example-btn-section .active');
@@ -195,6 +199,7 @@
 					}
 				})
 				view.querySelector('.example-btn-section').style.display = 'none';
+				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
 			case '4':
 				const selectedIndex4 = $(view).find('.example-btn-section .active').index();
@@ -225,11 +230,13 @@
 					}
 				})
 				view.querySelector('.example-btn-section').style.display = 'none';
+				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
 			case '5':
 				correct = view.querySelector('.arranged-examples').textContent.replace(/\W/g,'').trim() == currentBattle.eng.replace(/\W/g,'').trim();
 				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}));
 				view.querySelector('.example-btn-section').style.display = 'none';
+				appendSentenceTTSBtns(view.querySelector('.arranged-examples .full-sentence'));
 				break;
 			case '6':
 				const rightOptions = Array.from(examples, ([ [], text ]) => {
@@ -244,6 +251,7 @@
 					}
 				})
 				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}))
+				appendSentenceTTSBtns(view.querySelector('.arranged-examples .full-sentence'));
 				break;
 			case '7':
 				let options7 = Array.from(currentBattle.kor.split(/\s+/), option => option.replace(/[,.!?]$/,''));
@@ -282,34 +290,43 @@
 				}
 				view.querySelector('.arranged-examples').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.kor}));
 				view.querySelector('.example-btn-section').style.display = 'none';
-				
+				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
 			default: break;
 		}
 		// 정답문장 듣기 버튼 표시
-		view.querySelector('.ask-section .sentence').appendChild(createElement({
-			el: 'button', id: 'ttsPlay', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none',
-			'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-active': 'on', textContent: 'play_circle',
-			style: { transform: 'scale(0)'},
-			onclick: function() {
-				const on = this.dataset.active == 'on';
-				this.dataset.active = on?'off':'on';
-				this.textContent = on?'stop_circle':'play_circle';
-				if(on) {
-					tts.speak(currentBattle.eng, () => {
-						this.dataset.active = 'on';
-						this.textContent = 'play_circle';
-					});
-				}else {
-					tts.stop();
+		function appendSentenceTTSBtns(parent) {
+			parent.appendChild(createElement([{
+				el: 'button', id: 'ttsPlay', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
+				'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-active': 'on', textContent: 'play_circle',
+				style: { transform: 'scale(0)'},
+				onclick: function() {
+					const on = this.dataset.active == 'on';
+					this.dataset.active = on?'off':'on';
+					this.textContent = on?'stop_circle':'play_circle';
+					if(on) {
+						tts.speak(currentBattle.eng, () => {
+							this.dataset.active = 'on';
+							this.textContent = 'play_circle';
+						});
+					}else {
+						tts.stop();
+					}
 				}
-			}
-		}));
-		anime({
-			targets: view.querySelector('#ttsPlay'),
-			scale: 1,
-			delay: 600
-		})
+			},{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
+				'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune', style: { transform: 'scale(0)'}, onclick: function() {
+					tts.stop();
+					const playBtn = this.previousElementSibling;
+					playBtn.dataset.active = 'on';
+					playBtn.textContent = 'play_circle';
+					tts.openSettings();
+				}}]));
+			anime({
+				targets: view.querySelectorAll('#ttsPlay, #ttsSetting'),
+				scale: 1,
+				delay: 600
+			})
+		}
 		// 오늘자 풀이량 카운트
 		_todayBattleSolveCount.count++;
 		window.localStorage.setItem('TCBSC', JSON.stringify(_todayBattleSolveCount));
@@ -414,11 +431,10 @@
 		}
 		
 		tts.stop();
-		currentView.querySelector('#ttsPlay').remove();
+		currentView.querySelectorAll('#ttsPlay,#ttsSetting').forEach(ttsBtn=>ttsBtn.remove());
 		WebAudioJS.play(NEXT_SOUND);
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
-		$(currentView).find('.ask-section,.example-btn-section,.arranged-examples').removeClass('pe-none');
 		
 		// 맞힘/틀림 메세지 숨김
 		anime({
@@ -603,9 +619,9 @@
 							}
 							
 							modGuideText.textContent = '수식어 선택';
-							guideBlinkAnim.play();
+							guideBlinkAnim?.play();
 						}else if(selectHistory.length == 0) {
-							guideBlinkAnim.play();
+							guideBlinkAnim?.play();
 						}
 					// 선택 추가
 					}else {
@@ -613,9 +629,9 @@
 						selectHistory.push(this);
 						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							modGuideText.textContent = `${['수식어','피수식어'][selectHistory.length % 2]} 선택`;
-							guideBlinkAnim.play();
+							guideBlinkAnim?.play();
 						}else {
-							guideBlinkAnim.pause();
+							guideBlinkAnim?.pause();
 							modGuideText.style.color = '#ffb266';
 						}
 					}
