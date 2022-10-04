@@ -191,6 +191,7 @@
 		else if('speechSynthesis' in window) {
 			let loopNum = 1, loopInterval = 200, loopTimer, endCallback;
 			this.init = () => {
+				appendModal();
 				utterance = new SpeechSynthesisUtterance();
 				utterance.onend =  function() {
 					if(loopNum > 1) {
@@ -207,7 +208,6 @@
 				if('onvoiceschanged' in speechSynthesis) {
 					speechSynthesis.onvoiceschanged = initVoices;
 				}else initVoices();
-				appendModal();
 			}
 			this.speak = (text, callback = () => {}) => {
 				if(this.initialized == undefined) {
