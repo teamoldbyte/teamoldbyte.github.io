@@ -346,9 +346,13 @@ function pageinit(memberId, memberAlias, memberImage){
 		$.getJSON(`/adminxyz/ssam/today/${passageId}`, sentenceList => displaySentences(sentenceList));
 	})
 	var $copySection = $('.one-sentence-unit-section').clone();
-	
+	var $transCopyBlock = $copySection.find('.ai-translation-block');
+	var $wordCopySection = $copySection.find('.one-word-unit-section');
+	var $partCopySection = $copySection.find('.one-part-unit-section');	
 	function displaySentences(sentenceList) {
 		
+		$results.find('.one-sentence-unit-section').remove();
+		console.log($copySection)
 		for(let i = 0, len = sentenceList.length; i < len; i++) {
 			const sentence = sentenceList[i];
 			let $sectionClone;
@@ -385,14 +389,7 @@ function pageinit(memberId, memberAlias, memberImage){
 						$target.collapse('hide');
 					}
 				}).one('shown.bs.tab', function() {
-					// 로딩 표시
-					$target.find('.ailoading').prepend(createElement(aiLoadingIconJson));
-					setTimeout(() => {
-			               // 로딩 제거
-			               $target.find('lottie-player')[0]?.stop();
-			               $target.find('.ailoading').remove();
-			               $target.find('.afterload').fadeIn(300);
-		            }, 1000);
+	               $target.find('.afterload').fadeIn(300);
 				}).on('shown.bs.tab', function() {
 					$target.collapse('show');
 				}).on('hidden.bs.tab', function() {
@@ -409,7 +406,7 @@ function pageinit(memberId, memberAlias, memberImage){
 			// 1. 원문 표시--------------------------------------------------------
 			$sectionClone.find('.origin-sentence').append(
 					'<span class=\'numbering-text print-removed\'>' + (offsetIndex + i+1) + '</span>' + 
-					'<span class=\'sentence-text\'>' + sentence.eng + '</span>');
+					'<span class=\'sentence-text\'>' + sentence.text + '</span>');
 			
 			$results.collapse('show')
 		}	
@@ -418,9 +415,7 @@ function pageinit(memberId, memberAlias, memberImage){
 	
 	
 	async function showSentenceDetail(sentenceInfo, $section) {
-		var $transCopyBlock = $copySection.find('.ai-translation-block');
-		var $wordCopySection = $copySection.find('.one-word-unit-section');
-		var $partCopySection = $copySection.find('.one-part-unit-section');
+
 		
 		// 2. SVOC 표시------------------------------------------------
 		const text = $section.find('.origin-sentence .sentence-text').text(), svocList = sentenceInfo.svocList,
@@ -588,7 +583,7 @@ function pageinit(memberId, memberAlias, memberImage){
 							'F': {icon: '🤯', status: 'F', tooltip: '분석이 틀렸대요.'} };
 	// 분석 평가 모달을 띄운 버튼에 따라 모달 속 내용 설정(문장정보, metaStatus)
 	$('#check-modal').on('show.bs.modal', function(e) {
-		const modalBtn = e.target.closest('button');
+		const modalBtn = e.relatedTarget.closest('button');
 		const submitBtn = this.querySelector('.status-submit');
 		const metaStatus = modalBtn.dataset.metaStatus;
 		submitBtn.dataset.metaStatus = metaStatus;
