@@ -15,14 +15,16 @@
 	2. var tts = new FicoTTS(() => tts.openSettings()); // after initialization, the parmeter function can be called.
 	3. var tts = new FicoTTS({lang: 'en', pitch: 1.2, ...}) // initialize with options including callback functions.
 	 */
-	var FicoTTS = function(options) {
-		if(typeof options == 'function') {
-			options = {initSuccessCallback: options};
-		}
-		const globalOptions = JSON.parse(localStorage.getItem('FicoTTSOptions'));
-		_options = Object.assign({},_options, FicoTTS.defaults, globalOptions, options);
-		this.init();
-	}
+	class FicoTTS {
+        constructor(options) {
+            if (typeof options == 'function') {
+                options = { initSuccessCallback: options };
+            }
+            const globalOptions = JSON.parse(localStorage.getItem('FicoTTSOptions'));
+            _options = Object.assign({}, _options, FicoTTS.defaults, globalOptions, options);
+            this.init();
+        }
+    }
 	const _actors = {	
 		// Mobile browsers including mobile chrome are not supported.
 		// Android Webview
@@ -292,55 +294,58 @@
 		}
 		
 		const appendModal = () => {
-			if(document.querySelector('#ttsSettings') == null) document.body.insertAdjacentHTML('afterend',
-				'<div class="modal fade" id="ttsSettings" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-8">'
-				+ '<style>'
-				+ '#ttsSettings input[type=range]::-webkit-slider-thumb {background:var(--fc-purple);}'
-				+ '#ttsSettings .form-check-input:checked {'
-				+ 'background-color:var(--fc-purple);border-color:var(--fc-purple);}'
-				+ '#ttsSettings .btn-check:checked+.btn {'
-				+ '-webkit-animation: pulsate-bck 1s linear infinite both;'
-				+ 'animation: pulsate-bck 1s linear infinite both;}'
-				+ '@-webkit-keyframes pulsate-bck {'
-				+ '0% {-webkit-transform: scale(1);transform: scale(1);}'
-				+ '50% {-webkit-transform: scale(0.9);transform: scale(0.9);}'
-				+ '100% {-webkit-transform: scale(1);transform: scale(1);}'
-				+ '}@keyframes pulsate-bck {'
-				+ '0% {-webkit-transform: scale(1);transform: scale(1);}'
-				+ '50% {-webkit-transform: scale(0.9);transform: scale(0.9);}'
-				+ '100% {-webkit-transform: scale(1);transform: scale(1);}}'
-				+ '#ttsSettings .form-check-input:focus {'
-				+ 'border-color:var(--fc-purple);box-shadow:0 0 0 0.25rem #58517440;'
-				+ 'background-image:url("data:image\/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'-4 -4 8 8\'%3e%3ccircle r=\'3\' fill=\'%23847aaf\'/%3e%3c/svg%3e")}'
-				+ '#ttsSettings input[type=range]::after {content:attr(data-range);margin-left:10px}'
-				+ '</style>'
-				+ '<div class="modal-header">'
-				+ '<h5 class="modal-title fw-bold text-fc-purple">음성 환경설정</h5>'
-				+ '<div class="ms-auto text-align-end form-check form-switch">'
-				+ `<input class="form-check-input" type="checkbox" id="ttsToggle" ${_options.autoplay?'checked':''}>`
-				+ '<label class="form-check-label" for="ttsToggle">자동 재생</label></div>'
-				+ '<button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close" title="닫기"></button>'
-				+ '</div>'
-				+ '<div class="modal-body">'
-				+ '<label for="ttsList" class="form-label sub-title fs-6">목소리 선택</label>'
-				+ '<div class="col-12 mb-3 row g-0" id="ttsList"></div>'
-				+ '<label for="ttsRateRange" class="form-label sub-title fs-6">목소리 빠르기 <span class="text-secondary">(기본: 0.8)</span></label>'
-				+ `<input type="range" class="form-range" id="ttsRateRange" min="0.1" max="2" step="0.1" data-range="${_options.rate.toFixed(1)}" value="${_options.rate.toFixed(1)}" oninput="this.dataset.range=parseFloat(this.value).toFixed(1)">`
-				+ '<label for="ttsPitchRange" class="form-label sub-title fs-6">목소리 높이 <span class="text-secondary">(기본: 1.0)</span></label>'
-				+ `<input type="range" class="form-range" id="ttsPitchRange" min="0" max="2" step="0.1" data-range="${_options.pitch.toFixed(1)}" value="${_options.pitch.toFixed(1)}" oninput="this.dataset.range=parseFloat(this.value).toFixed(1)">`
-				+ '</div></div></div></div>');
+			if(document.querySelector('#ttsSettings') == null) 
+				document.body.appendChild(createElement({
+					"el":"div","class":"modal fade","id":"ttsSettings","tabIndex":"-1",
+					"aria-modal":"true","role":"dialog","children":[
+						{ "el":"div","class":"modal-dialog modal-dialog-centered","children":[
+							{ "el":"div","class":"modal-content rounded-8","children":[
+								{ "el":"style","textContent":"#ttsSettings input[type=range]::-webkit-slider-thumb {background:var(--fc-purple);}#ttsSettings .form-check-input:checked {background-color:var(--fc-purple);border-color:var(--fc-purple);}#ttsSettings .btn-check:checked+.btn {-webkit-animation: pulsate-bck 1s linear infinite both;animation: pulsate-bck 1s linear infinite both;}@-webkit-keyframes pulsate-bck {0% {-webkit-transform: scale(1);transform: scale(1);}50% {-webkit-transform: scale(0.9);transform: scale(0.9);}100% {-webkit-transform: scale(1);transform: scale(1);}}@keyframes pulsate-bck {0% {-webkit-transform: scale(1);transform: scale(1);}50% {-webkit-transform: scale(0.9);transform: scale(0.9);}100% {-webkit-transform: scale(1);transform: scale(1);}}#ttsSettings .form-check-input:focus {border-color:var(--fc-purple);box-shadow:0 0 0 0.25rem #58517440;background-image:url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23847aaf'/%3e%3c/svg%3e\")}#ttsSettings input[type=range]::after {content:attr(data-range);margin-left:10px}"},
+								{ "el":"div","class":"modal-header","children":[
+									{ "el":"h5","class":"modal-title fw-bold text-fc-purple","textContent":"음성 환경설정"},
+									{ "el":"div","class":"ms-auto text-align-end form-check form-switch", children: [
+										{ "el":"input","type":"checkbox","id":"ttsToggle","class":"form-check-input","checked":_options.autoplay},
+										{ "el":"label","class":"form-check-label","htmlFor":"ttsToggle","textContent":"자동 재생"}
+									]},
+									{ "el":"button","type":"button","class":"btn-close ms-2","data-bs-dismiss":"modal","aria-label":"Close","title":"닫기"}
+								]},
+								{ "el":"div","class":"modal-body","children":[
+									{ "el":"label","for":"ttsList","class":"form-label sub-title fs-6","textContent":"목소리 선택"},
+									{ "el":"div","class":"col-12 mb-3 row g-0","id":"ttsList"},
+									{"el":"label","for":"ttsRateRange","class":"form-label sub-title fs-6","children":[
+										"목소리 빠르기 ",{"el":"span","class":"text-secondary","textContent":"(기본: 0.8)"}
+									]},
+									{ "el":"input","type":"range","class":"form-range","id":"ttsRateRange",
+									"min":"0.1","max":"2","step":"0.1","data-range":_options.rate.toFixed(1),"value":_options.rate.toFixed(1),"oninput": function() {
+										this.dataset.range = parseFloat(this.value).toFixed(1)
+									}},
+									{ "el":"label","for":"ttsPitchRange","class":"form-label sub-title fs-6","children":[
+										"목소리 높이 ",{"el":"span","class":"text-secondary","textContent":"(기본: 1.0)"}
+									]},
+									{ "el":"input","type":"range","class":"form-range","id":"ttsPitchRange",
+									"min":"0","max":"2","step":"0.1","data-range":_options.pitch.toFixed(1),"value":_options.pitch.toFixed(1),"oninput": function() {
+										this.dataset.range = parseFloat(this.value).toFixed(1)
+									}}
+								]}
+							]}
+						]}
+					]}
+				));
 		}
 		
 		const showLists = () => {
 			const select = document.getElementById('ttsList');
-			while(select.hasChildNodes()) {
-				select.removeChild(select.firstChild);
-			}
-			for(let i = 0, len = voices.length; i < len; i++) {
-				const voice = voices[i];
-				select.insertAdjacentHTML('beforeend',
-					`<div class="col-3 p-1 p-sm-3"><input value="${i}" id="ttsVoice${i}" name="ttsVoice" type="radio" class="btn-check d-none" ${(i==_options.voiceIndex)?'checked':''}><label for="ttsVoice${i}" class="btn btn-outline-fico position-relative border-0 mx-auto p-1"><img class="rounded-circle w-100" src="https://static.findsvoc.com/images/app/tts/profile/${_actors[voice.name]||'default'}.jpg"><img class="rounded-3 position-absolute bottom-0 end-0 border" style="width:33%" src="https://flagcdn.com/w40/${voice.lang.replace('scotland','GB-SCT').toLowerCase().substring(3)}.png"></label><span class="d-block ps-2 text-fico">${_actors[voice.name]||voice.name}</span></div>`);
-			}
+			
+			select.replaceChildren(createElement(Array.from(voices, (voice,i) => {
+				return { el: 'div', class: 'col-3 p-1 p-sm-3', children: [
+					{ el: 'input', value: i, id: `ttsVoice${i}`, name: 'ttsVoice', type: 'radio', class: 'btn-check d-none', checked: i==_options.voiceIndex},
+					{ el: 'label', htmlFor: `ttsVoice${i}`, class: 'btn btn-outline-fico position-relative border-0 mx-auto p-1', children: [
+						{ el: 'img', class: 'rounded-circle w-100', src: `https://static.findsvoc.com/images/app/tts/profile/${_actors[voice.name]||'default'}.jpg`},
+						{ el: 'img', class: 'rounded-3 position-absolute bottom-0 end-0 border', src: `https://flagcdn.com/w40/${voice.lang.replace('scotland','GB-SCT').toLowerCase().substring(3)}.png`, style: 'width:33%'}
+					]},
+					{ el: 'span', class: 'd-block ps-2 text-fico', textContent: _actors[voice.name]||voice.name}
+				]}
+			})))
 			$('#ttsSettings').modal('show');
 		}
 		$(document)
