@@ -61,6 +61,11 @@ function editWorkbookPlainInfo(url, json, callback) {
 function editWorkbookMultiInfo(url, form, callback) {
 	postForm(url, form, callback, () => alert('수정에 실패했습니다.'));
 }
+/** 지문 제목 수정
+ */
+function editPassageTitle(command, callback, failback) {
+	$.ajax({type: 'post', url:'/workbook/passage/title/edit', data: command, success: callback, error:failback});
+}
 /** 지문 삭제
  */
 function deletePassage(command, callback) {
