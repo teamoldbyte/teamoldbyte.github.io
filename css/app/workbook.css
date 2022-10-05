@@ -592,8 +592,8 @@
 .list-passage-section .passage{
 	font-family: 'Roboto';
 	color: #5a5a5a;
-	background-color: var(--white);
-    border-radius: 5px;
+	background-color: #fff;
+    border-radius: 0 5px 5px 5px;
 	width: calc(33% - 3px);
 	height: auto;
 	padding: 10px 15px;
@@ -1036,6 +1036,7 @@
 .overview-workbook-section .passage {
 	counter-increment: psgCounter;
 	word-break: break-all;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .edit-workbook-section .passage-text {
 	display: inline-block;
@@ -1072,7 +1073,56 @@
 	top: 0;
 	right: 0;
 }
-
+/* 워크북 수정 및 개요보기 - 지문 타이틀 */
+.edit-workbook-section .passage-title-section{
+	position: absolute;
+	top: -25px;
+	left: 0;
+	width: 150px;
+	border-bottom: 25px solid #fff;
+	/* border-left: 20px solid transparent; */
+	border-right: 20px solid transparent;
+	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
+	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+}
+.edit-workbook-section .passage-title-section .passage-title{
+	position: absolute;
+	width: 130px;
+	padding-left: 5px;
+	display: block;
+	line-height: 25px;
+	overflow: hidden;
+	white-space: nowrap;
+	color: #000;
+	text-overflow: ellipsis;
+}
+.edit-workbook-section .passage-title-section.edit{
+	width: 200px;
+	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
+}
+.edit-workbook-section .passage-title-section.edit .passage-title{
+	display: none;
+}
+.edit-workbook-section .passage-title-section.edit input{
+	display: block;
+	position: absolute;
+	padding-left: 5px;
+	width: 130px;
+	height: 25px;
+	left: 0;
+	color: var(--white);
+	background: transparent;
+	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
+}
+.edit-workbook-section .passage-title-section.edit .title-edit-btn-section{
+	display: block;
+	position: absolute;
+	right: 0;
+}
+.edit-workbook-section .passage-title-section.edit .title-edit-btn-section .btn{
+	padding: 0 0.25rem 0 0;
+	color: var(--white);
+}
 @media (max-width: 1199.5px) {
 	.overview-workbook-section .list-passage-section .passage{
 		width: 100%;
@@ -1491,7 +1541,8 @@
 	border: none;
 }
 /* 구문분석 결과영역 */
-.view-passage-section .result-section .one-sentence-unit-section{
+/*.view-passage-section .result-section .one-sentence-unit-section{*/
+.view-passage-section .one-sentence-unit-section{
 	/*border: none;
 	box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
 	border-radius: 5px;
@@ -1503,24 +1554,24 @@
     margin-bottom: 1rem;
     background-color: var(--white);
 }
-.view-passage-section .result-section .one-sentence-unit-section .removable-section{
+.view-passage-section .one-sentence-unit-section .removable-section{
 	margin: 0 1.5rem;
 }
-.view-passage-section .result-section .one-sentence-unit-section .origin-sentence .sentence-text{
+.view-passage-section .one-sentence-unit-section .origin-sentence .sentence-text{
 	color: #002060;
 }
-.view-passage-section .result-section .one-sentence-unit-section .sentence-text{
+.view-passage-section .one-sentence-unit-section .sentence-text{
 	font-size: 1.25rem;
 	font-family: 'Corbel', sans-serif;
 }
-.view-passage-section .result-section .one-sentence-unit-section .origin-sentence-section{
+.view-passage-section .one-sentence-unit-section .origin-sentence-section{
 	cursor: pointer;
 	padding: 1.5rem;
 }
-.view-passage-section .result-section .one-sentence-unit-section.folded{
+.view-passage-section .one-sentence-unit-section.folded{
 	padding-bottom: 0.25rem;
 }
-.view-passage-section .result-section .one-sentence-unit-section .semantic-menu{
+.view-passage-section .one-sentence-unit-section .semantic-menu{
 	/*position: absolute;*/
 	right: 0.5rem;
 	margin: auto;
@@ -1541,14 +1592,14 @@
     width: 20px;
     text-align: center;
 }
-.view-passage-section .result-section .one-sentence-unit-section .semantic-menu button{
+.view-passage-section .one-sentence-unit-section .semantic-menu button{
 	width: 50px;
 	color: #5d6a85;
 }
 .view-passage-section .result-section{
 	margin: 1rem 0 2rem 0;
 }
-.view-passage-section .result-section .result-semantic-section{
+.view-passage-section .result-semantic-section{
 	/*background-color: #f6f6f6;*/
     background-color: var(--white);
     box-shadow: none;
@@ -1557,11 +1608,11 @@
     border: solid 2px #5c68b645;
 	border-radius: 10px;
 }
-.view-passage-section .result-section .result-semantic-section.border-bottom-0{
+.view-passage-section .result-semantic-section.border-bottom-0{
 	border-bottom-right-radius: 0px;
 	border-bottom-left-radius: 0px;
 }
-.view-passage-section .result-section .svoc-section{
+.view-passage-section .svoc-section{
 	/*background-color: #fff;*/
 	/*border-radius: 10px 10px 0 0;*/
 	/*box-shadow: inset 0 4px 8px 0 rgb(0 0 0 / 2%), 0 6px 20px 0 rgb(0 0 0 / 1%);*/
