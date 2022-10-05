@@ -404,7 +404,7 @@ function pageinit(memberId, memberAlias, memberImage){
 			// 1. 원문 표시--------------------------------------------------------
 			$sectionClone.find('.origin-sentence').append(
 					'<span class=\'numbering-text print-removed\'>' + (i+1) + '</span>' + 
-					'<span class=\'sentence-text\'>' + sentence.text + '</span>');
+					'<span class=\'sentence-text\'>' + sentence.eng + '</span>');
 			
 			$results.collapse('show')
 		}	
