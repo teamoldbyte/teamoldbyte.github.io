@@ -1044,7 +1044,7 @@
 }
 /* 지문 번호 표시(수정화면엔 지문 수정메뉴 툴팁이 있으므로, 자식요소에 적용) */
 .edit-workbook-section .passage-title::before,
-.overview-workbook-section .passage::before { 
+.overview-workbook-section .passage-title::before { 
 	content: counter(psgCounter);
 	color: white;
 	background-color: #585174;
