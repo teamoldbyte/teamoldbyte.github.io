@@ -353,13 +353,8 @@ function pageinit(memberId, memberAlias, memberImage){
 		$results.find('.one-sentence-unit-section').remove();
 		for(let i = 0, len = sentenceList.length; i < len; i++) {
 			const sentence = sentenceList[i];
-			let $sectionClone;
-			if(i > 0) {
-				$sectionClone = $copySection.clone();
-				$results.append($sectionClone);
-			}else {
-				$sectionClone = $('.one-sentence-unit-section:eq(0)');
-			}
+			let $sectionClone = $copySection.clone();
+			$results.append($sectionClone);
 			// 문장 Id 설정
 			$sectionClone.data('sentenceId', sentence.sentenceId).attr('id','sentence' + (i+1));
 			
