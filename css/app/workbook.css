@@ -593,7 +593,8 @@
 	font-family: 'Roboto';
 	color: #5a5a5a;
 	background-color: #fff;
-    border-radius: 0 5px 5px 5px;
+	border-radius: 5px;
+    /*border-radius: 0 5px 5px 5px;*/
 	width: calc(33% - 3px);
 	height: auto;
 	padding: 10px 15px;
@@ -1036,7 +1037,7 @@
 .overview-workbook-section .passage {
 	counter-increment: psgCounter;
 	word-break: break-all;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
 }
 .edit-workbook-section .passage-text {
 	display: inline-block;
