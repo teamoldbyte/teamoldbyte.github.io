@@ -593,12 +593,12 @@
 	font-family: 'Roboto';
 	color: #5a5a5a;
 	background-color: #fff;
-	border-radius: 5px;
-    /*border-radius: 0 5px 5px 5px;*/
+	/*border-radius: 5px;*/
+    border-radius: 0 5px 5px 5px;
 	width: calc(33% - 3px);
 	height: auto;
 	padding: 10px 15px;
-	margin-bottom: 10px;
+	margin-bottom: 30px;
 	cursor: pointer;
 }
 /* 워크북 작성자 */
@@ -1037,13 +1037,13 @@
 .overview-workbook-section .passage {
 	counter-increment: psgCounter;
 	word-break: break-all;
-	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .edit-workbook-section .passage-text {
 	display: inline-block;
 }
 /* 지문 번호 표시(수정화면엔 지문 수정메뉴 툴팁이 있으므로, 자식요소에 적용) */
-.edit-workbook-section .passage-text::before,
+.edit-workbook-section .passage-title::before,
 .overview-workbook-section .passage::before { 
 	content: counter(psgCounter);
 	color: white;
@@ -1075,20 +1075,20 @@
 	right: 0;
 }
 /* 워크북 수정 및 개요보기 - 지문 타이틀 */
-.edit-workbook-section .passage-title-section{
+.passage-title-section{
 	position: absolute;
 	top: -25px;
 	left: 0;
-	width: 150px;
+	width: 160px;
 	border-bottom: 25px solid #fff;
 	/* border-left: 20px solid transparent; */
 	border-right: 20px solid transparent;
 	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
 	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
 }
-.edit-workbook-section .passage-title-section .passage-title{
+.passage-title-section .passage-title{
 	position: absolute;
-	width: 130px;
+	width: 140px;
 	padding-left: 5px;
 	display: block;
 	line-height: 25px;
@@ -1097,32 +1097,32 @@
 	color: #000;
 	text-overflow: ellipsis;
 }
-.edit-workbook-section .passage-title-section.edit{
+.passage-title-section.edit{
 	width: 200px;
 	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
 }
-.edit-workbook-section .passage-title-section.edit .passage-title{
+.passage-title-section.edit .passage-title{
 	display: none;
 }
-.edit-workbook-section .passage-title-section.edit input{
+.passage-title-section.edit input{
 	display: block;
 	position: absolute;
 	padding-left: 5px;
-	width: 130px;
+	width: 140px;
 	height: 25px;
 	left: 0;
-	color: var(--white);
+	color: black;
 	background: transparent;
 	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
 }
-.edit-workbook-section .passage-title-section.edit .title-edit-btn-section{
+.passage-title-section.edit .title-edit-btn-section{
 	display: block;
 	position: absolute;
 	right: 0;
 }
-.edit-workbook-section .passage-title-section.edit .title-edit-btn-section .btn{
+.passage-title-section.edit .title-edit-btn-section .btn{
 	padding: 0 0.25rem 0 0;
-	color: var(--white);
+	color: black;
 }
 @media (max-width: 1199.5px) {
 	.overview-workbook-section .list-passage-section .passage{
