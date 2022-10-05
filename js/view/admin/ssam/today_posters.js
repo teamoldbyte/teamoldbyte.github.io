@@ -341,7 +341,7 @@ function pageinit(memberId, memberAlias, memberImage){
 	var $results = $('#passagePosterDetailSection');
 	
 	$(document).on('click', '.js-open-detail', function() {
-		const passageId = parseInt(this.textContent);
+		const passageId = parseInt(this.dataset.pid);
 		$.getJSON(`/adminxyz/ssam/today/${passageId}`, sentenceList => displaySentences(sentenceList));
 	})
 	var $copySection = $('.one-sentence-unit-section').clone();
