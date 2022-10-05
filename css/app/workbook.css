@@ -604,7 +604,7 @@
 /* 워크북 작성자 */
 .workbook-overview-section .personacon img{
 	max-width: 6rem;
-	border-radius: 5px;
+	border-radius: 50%;
 	background-color: #fff!important;
 }
 .workbook-overview-section .alias{
@@ -1037,7 +1037,7 @@
 .overview-workbook-section .passage {
 	counter-increment: psgCounter;
 	word-break: break-all;
-	box-shadow: -1px 1px 6px 0 rgba(0, 0, 0, 0.19), 1px -1px 6px 0 rgba(0, 0, 0, 0.1);
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
 .edit-workbook-section .passage-text {
 	display: inline-block;
