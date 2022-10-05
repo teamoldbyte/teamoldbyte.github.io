@@ -680,12 +680,13 @@ u {
 }
 */
 .next-btn-section .next-btn{
-   position: fixed;
+	position: fixed;
    bottom: 1rem;
    z-index: 1000;
    width: 55%;
    left:110%; 
    outline:none;
+	box-shadow: none;
 }
 /* 해설 상세보기 영역 */
 .explain-section{
