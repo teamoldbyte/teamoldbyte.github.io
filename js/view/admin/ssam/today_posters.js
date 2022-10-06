@@ -342,6 +342,9 @@ function pageinit(memberId, memberAlias, memberImage){
 	
 	$(document).on('click', '.js-open-detail', function() {
 		const passageId = parseInt(this.dataset.pid);
+		const currentRow = this.closest('tr');
+		$(currentRow).addClass('bg-info')
+		.siblings('tr').removeClass('bg-info');
 		$.getJSON(`/adminxyz/ssam/today/${passageId}`, sentenceList => displaySentences(sentenceList));
 	})
 	var $copySection = $('.one-sentence-unit-section').clone();
@@ -401,9 +404,8 @@ function pageinit(memberId, memberAlias, memberImage){
 					'<span class=\'numbering-text print-removed\'>' + (i+1) + '</span>' + 
 					'<span class=\'sentence-text\'>' + sentence.eng + '</span>');
 			
-			$results.collapse('show')
 		}	
-		
+		$results.collapse('show').get(0).scrollIntoView()
 	}
 	
 	
