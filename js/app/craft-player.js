@@ -296,33 +296,32 @@
 		}
 		// 정답문장 듣기 버튼 표시
 		function appendSentenceTTSBtns(parent) {
-			parent.appendChild(createElement([{
-				el: 'button', id: 'ttsPlay', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
-				'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-active': 'on', textContent: 'play_circle',
-				style: { transform: 'scale(0)'},
-				onclick: function() {
-					const on = this.dataset.active == 'on';
-					this.dataset.active = on?'off':'on';
-					this.textContent = on?'stop_circle':'play_circle';
-					if(on) {
-						tts.speak(currentBattle.eng, () => {
-							this.dataset.active = 'on';
-							this.textContent = 'play_circle';
-						});
-					}else {
-						tts.stop();
+			parent.appendChild(createElement({ el: 'div', className: 'tts-block text-end', style: { transform: 'scale(0)'}, children:[
+				{ el: 'button', id: 'ttsPlay', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
+					'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-active': 'on', textContent: 'play_circle',
+					onclick: function() {
+						const on = this.dataset.active == 'on';
+						this.dataset.active = on?'off':'on';
+						this.textContent = on?'stop_circle':'play_circle';
+						if(on) {
+							tts.speak(currentBattle.eng, () => {
+								this.dataset.active = 'on';
+								this.textContent = 'play_circle';
+							});
+						}else {
+							tts.stop();
+						}
 					}
-				}
-			},{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
-				'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune', style: { transform: 'scale(0)'}, onclick: function() {
-					tts.stop();
-					const playBtn = this.previousElementSibling;
-					playBtn.dataset.active = 'on';
-					playBtn.textContent = 'play_circle';
-					tts.openSettings();
-				}}]));
+				},{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
+					'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune', onclick: function() {
+						tts.stop();
+						const playBtn = this.previousElementSibling;
+						playBtn.dataset.active = 'on';
+						playBtn.textContent = 'play_circle';
+						tts.openSettings();
+			}}]}));
 			anime({
-				targets: view.querySelectorAll('#ttsPlay, #ttsSetting'),
+				targets: view.querySelector('.tts-block'),
 				scale: 1,
 				delay: 600
 			})
@@ -431,7 +430,7 @@
 		}
 		
 		tts.stop();
-		currentView.querySelectorAll('#ttsPlay,#ttsSetting').forEach(ttsBtn=>ttsBtn.remove());
+		currentView.querySelector('.tts-block').remove();
 		WebAudioJS.play(NEXT_SOUND);
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
