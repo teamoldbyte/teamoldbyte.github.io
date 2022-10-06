@@ -2,11 +2,8 @@
 @author LGM
  */
 function pageinit(sentenceList) {
-	const MOBILE_WIDTH_MAX_BOUNDARY = 576;
 	const passageId = Number(sessionStorage.getItem('editingPassageId')),
 		workbookId = Number(sessionStorage.getItem('workbookId'));
-	// 모바일에선 문장 블럭 배경이 흰색
-	const sentenceSectionColor = (window.innerWidth >= MOBILE_WIDTH_MAX_BOUNDARY) ? '#f6f6f6' : '#fff';
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
 	
@@ -344,7 +341,7 @@ function pageinit(sentenceList) {
 	// - - - - - - - - - - - Embeded functions - - - - - - - - - - - - - - - - -
 	// 문장섹션을 잠깐 강조 효과 적용
 	function focusEffectSentence(targets) {
-		anime({ targets, duration: 1000, easing: 'linear', backgroundColor: ['#ffc107', sentenceSectionColor] });
+		anime({ targets, duration: 1000, easing: 'linear', direction: 'alternate', backgroundColor: '#ffc107'});
 	}
 
 	// 전체 문장을 orderNum을 기준으로 재정렬
