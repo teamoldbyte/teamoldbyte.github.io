@@ -288,6 +288,11 @@
 		transition: 0.5s;
 		transform: translateX(calc(50px * 7 + 9px));
 	}
+	.workbook-menu-section .menu-icon-section ul li:nth-child(9):hover ~ .indicator{
+		display: block;
+		transition: 0.5s;
+		transform: translateX(calc(50px * 8 + 9px));
+	}
 }
 @media (max-width: 992px) {
 	.workbook-menu-section .menu-icon-section ul li:hover a .icon,
@@ -552,7 +557,7 @@
 .workbook-overview-section .image-section img{
 	width: 10rem;
 	height: 15rem;
-	background-color: var(--fc-yellow);
+	background-color: #121E34;
 }
 @media (max-width: 767px) {
     .workbook-overview-section .image-section img{
@@ -606,7 +611,7 @@
 .workbook-overview-section .personacon img{
 	max-width: 6rem;
 	border-radius: 50%;
-	background-color: #fff!important;
+	background-color: #cbcbcb;
 }
 .workbook-overview-section .alias{
 	margin-left: 0 5px;
@@ -788,7 +793,7 @@
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center;
-	background-color: var(--fc-yellow);
+	background-color: #121E34;
 }
 .workbook-section .book .book-title {
 	position: absolute;
@@ -799,7 +804,8 @@
 	font-size: 14px;
 	font-weight: 600;
 	padding: 5px 2px;
-	background-color: rgba(249, 211, 122, 0.5);
+	color: #fff;
+	background-color: #b50e0eb8;
 	transform-origin: 0 50%;
 	transform: translateY(-10%);
 	transition: all 0.45s ease;
@@ -1139,6 +1145,9 @@
 /*------------------------------------------------------------------------------
                               view_passage.html
  -----------------------------------------------------------------------------*/
+.workbook-cover-section .workbook-cover img{
+	background-color: #121E34;
+}
 .placeholder-wave {
   mask-image: linear-gradient(130deg, black 55%, rgba(0, 0, 0, .25) 75%, black 95%);
   -webkit-mask-image: linear-gradient(130deg, black 55%, rgba(0, 0, 0, .25) 75%, black 95%);
