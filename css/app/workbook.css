@@ -810,6 +810,7 @@
 	transform: translateY(-10%);
 	transition: all 0.45s ease;
 	word-break: keep-all;
+	text-align: center;
 }
 .workbook-section .book:hover .book-title {
 	transform: translateY(-10%) rotateY(-25deg);}
