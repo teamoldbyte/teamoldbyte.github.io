@@ -609,7 +609,7 @@
 }
 /* 워크북 작성자 */
 .workbook-overview-section .personacon img{
-	max-width: 6rem;
+	max-width: 4rem;
 	border-radius: 50%;
 	background-color: #cbcbcb;
 }
@@ -1045,7 +1045,7 @@
 	counter-increment: psgCounter;
 	word-break: break-all;
 	/*box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;*/
-	box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 4px 0px inset;
+	box-shadow: #62626214 0px 2px 1px 0px inset;
 }
 .edit-workbook-section .passage-text {
 	display: inline-block;
@@ -1091,7 +1091,7 @@
 	height: 25px;
 	border-radius: 5px 5px 0 0;
 	background-color: #fff;
-	box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 4px 0px inset;
+	box-shadow: #62626214 0px 2px 1px 0px inset;
 	/*border-bottom: 25px solid #fff;*/
 	/* border-left: 20px solid transparent; */
 	/*border-right: 20px solid transparent;*/
@@ -1115,10 +1115,11 @@
 	line-height: 37px;
 	overflow: hidden;
 	white-space: nowrap;
-	color: #000;
 	text-overflow: ellipsis;
 	font-family: Rubik;
 	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--fc-purple);
 }
 .passage-title-section.edit{
 	width: 200px;
