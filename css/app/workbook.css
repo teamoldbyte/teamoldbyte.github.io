@@ -1095,7 +1095,7 @@
 	/*border-bottom: 25px solid #fff;*/
 	/* border-left: 20px solid transparent; */
 	/*border-right: 20px solid transparent;*/
-	/*transition: all .2s cubic-bezier(0, 0, 0.2, 1);*/
+	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
 	/*filter: drop-shadow(1px -1px 1px #eee);*/
 	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
 }
