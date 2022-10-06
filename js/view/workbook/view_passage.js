@@ -424,7 +424,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			? workbookCoverImg : ('/resource/workbook/cover/' + workbookCoverImg)) 
 			+ ') center/cover no-repeat');
 	}else{
-		$workbookCover.css('background', 'var(--fc-logo-head) center/cover no-repeat');
+		$workbookCover.css('background', 'var(--fc-logo-head) center/cover no-repeat #121E34');
 	}
 
 /* ------------------------------- 지문 관련 ---------------------------------- */
