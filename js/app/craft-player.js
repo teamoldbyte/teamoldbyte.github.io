@@ -1133,8 +1133,7 @@
 			})*/
 		}
 		const rankProgress = document.querySelector('.progress-bar');
-		
-		const rankPercent = ((_battleRecord.correct - currRankBase) * 100 / nextRankBase).toFixed(1);
+		const rankPercent = ((_battleRecord.correct - currRankBase) * 100 / (nextRankBase - currRankBase)).toFixed(1);
 		rankProgress.ariaValueNow = rankPercent;
 		rankProgress.textContent = `${rankPercent}%`;
 		rankProgress.style.width = `${rankPercent}%`;
