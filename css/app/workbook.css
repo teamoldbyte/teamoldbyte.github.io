@@ -89,6 +89,20 @@
 	width: inherit;
 	height: inherit;
 }
+/* 열리는 애니메이션을 갖고 있는 북 커버 */
+.book.opening .book-cover{
+	width: inherit;
+	height: inherit;
+	transform-origin: 0 50%;
+	transform: rotateY(0);
+	transition: all 0.45s ease;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+.book.opening:hover .book-cover{
+	transform: rotateY(-25deg);
+	box-shadow: 1px 1px 5px 5px rgba(0, 0, 0, 0.2);
+}
 .book-cover img{
 	width: inherit;
 	height: inherit;
@@ -96,8 +110,14 @@
 	background-size: cover;
 	background-position: center;
 }
+
 /* 이미지가 없는 워크북 */
 .book-cover.default{
+	background: 
+	top / 20rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg), 
+	#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg); 
+}
+.book.cover.default img{
 	background: 
 	top / 20rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg), 
 	#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg); 
