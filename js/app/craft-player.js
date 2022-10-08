@@ -208,6 +208,8 @@
 					if(null != answers.find(([aStart,aEnd]) => start == aStart && end == aEnd))
 						answerIndexes4.push(i);
 				});
+				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
+				view.querySelector('.example-btn-section').style.display = 'none';
 				view.querySelectorAll('.sentence .option,.sentence .answer-wrong').forEach((sel, i) => {
 					if(answerIndexes4.includes(i)) {
 						sel.classList.add('right');
@@ -229,8 +231,6 @@
 						sel.classList.add('wrong');
 					}
 				})
-				view.querySelector('.example-btn-section').style.display = 'none';
-				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
 			case '5':
 				correct = view.querySelector('.arranged-examples').textContent.replace(/\W/g,'').trim() == currentBattle.eng.replace(/\W/g,'').trim();
@@ -374,7 +374,7 @@
 					battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
 		
 		// 설명 펼치기
-		$(view).find('.explain-section').show().find('.comment-section').text(currentBattle.comment || '작성된 코멘트가 없습니다.');
+		$(view).find('.explain-section').slideDown(500).find('.comment-section').text(currentBattle.comment || '작성된 코멘트가 없습니다.');
 		// (ajax) 해설정보 조회 및 표시
 		$.getJSON(`/craft/battle/${currentBattle.sentenceId}`, battleAnswerInfo => 
 				displayAnswerInfo(currentBattle.eng, view.querySelector('.explain-section'), battleAnswerInfo))
