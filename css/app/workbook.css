@@ -103,7 +103,8 @@
 	transform: rotateY(-25deg);
 	box-shadow: 1px 1px 5px 5px rgba(0, 0, 0, 0.2);
 }
-.book.opening .book-cover.default img{
+.book.opening .book-cover.default img,
+.book.opening .book-cover.hello-book img{
 	background-color: transparent;
 }
 .book.opening:hover .book-cover.default img{
@@ -137,7 +138,8 @@
 }
 .book-cover.default::after{
 	position: absolute;
-	content: 'FICO WORKBOOK';
+	white-space: pre-wrap;
+	content: 'FICO \AWORKBOOK';
 	font-family: 'Amatic SC', cursive;
 	font-size: 35px;
 	text-align: center;
