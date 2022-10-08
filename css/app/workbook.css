@@ -639,7 +639,7 @@
 .workbook-overview-section .image-section img{
 	width: 10rem;
 	height: 15rem;
-	background-color: #121E34;
+	/*background-color: #121E34;*/
 }
 @media (max-width: 767px) {
     .workbook-overview-section .image-section img{
