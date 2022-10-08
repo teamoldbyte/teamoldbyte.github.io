@@ -103,6 +103,12 @@
 	transform: rotateY(-25deg);
 	box-shadow: 1px 1px 5px 5px rgba(0, 0, 0, 0.2);
 }
+.book.opening .book-cover.default img{
+	background-color: transparent;
+}
+.book.opening:hover .book-cover.default img{
+	box-shadow: none;
+}
 .book-cover img{
 	width: inherit;
 	height: inherit;
@@ -113,11 +119,6 @@
 
 /* 이미지가 없는 워크북 */
 .book-cover.default{
-	background: 
-	top / 20rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg), 
-	#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg); 
-}
-.book.cover.default img{
 	background: 
 	top / 20rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg), 
 	#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg); 
