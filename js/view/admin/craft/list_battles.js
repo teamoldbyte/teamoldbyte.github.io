@@ -361,10 +361,17 @@ function pageinit(battlePage) {
 		askDetailSection.querySelector('.battle-type').dataset.org = battle.battleType;
 		// 질문
 		askDetailSection.querySelector('.battle-ask').dataset.org = battle.ask;
-		askDetailSection.querySelector('.battle-ask').replaceChildren(createElement(Array.from(craft.createAskOptions(battle.battleType, craft.getAsks(battle.battleType)), option => {
-			if(option.value == battle.ask) option.selected = true;
-			return option;
-		})))
+		askDetailSection.querySelector('.battle-ask').replaceChildren(
+			createElement(Array.from(
+				craft.createAskOptions(battle.battleType, 
+					craft.getAsks(battle.battleType)), option => {
+						if(option.value == battle.ask) option.selected = true;
+						if(battle.battleType >= 5) option.value = battle.ask;
+						return option;
+					}
+				)
+			)
+		)
 		// 계급
 		askDetailSection.querySelector('.battle-engLevel').dataset.org = battle.engLevel;
 		askDetailSection.querySelector('.battle-engLevel').textContent = battle.engLevel;
