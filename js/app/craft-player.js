@@ -392,7 +392,7 @@
 							_battleRecord.correct++;
 						}
 						if(_memberId == 0) {
-							req = window.indexedDB.open(DB_NAME, DB_VERSION);
+							req = window.indexedDB.open(DB_NAME/*, DB_VERSION*/);
 							req.onsuccess = function() {
 								idb = this.result;
 								const tx = idb.transaction(['StepBattle'], 'readwrite');
@@ -475,7 +475,7 @@
 			if(battles.length == 0) alert('조회된 문제가 없습니다.')
 			else {
 				if(_memberId == 0) {
-					req = window.indexedDB.open(DB_NAME, DB_VERSION);
+					req = window.indexedDB.open(DB_NAME/*, DB_VERSION*/);
 					req.onsuccess = function() {
 						idb = this.result;
 						const tx = idb.transaction(['StepBattle'], 'readwrite');
@@ -984,7 +984,7 @@
 			
 			document.querySelector('#save-btn').disabled = true;
 			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
-			req = window.indexedDB.open(DB_NAME, DB_VERSION);
+			req = window.indexedDB.open(DB_NAME/*, DB_VERSION*/);
 			req.onsuccess = function() {
 				idb = this.result;
 				const tx = idb.transaction(['StepBattle'], 'readonly');
