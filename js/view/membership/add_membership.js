@@ -158,7 +158,7 @@ function pageinit(membershipCommand) {
 												{ el: 'label', htmlFor: 'passwd', className: 'col-form-label text-smd fw-bold', textContent: '비밀번호' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'password', className: 'form-control', id: 'passwd', name: 'passwd', autocomplete: 'off', 'aria-describedby': 'passwordHelpInline', required: !loggedin, pattern: "[A-z0-9!+-./\u0022#$%&'()*:;?@\[\]^_`{|}~\\]{8,16}"/*, oninput: document.getElementById('passwdCheck').setAttribute('pattern',this.value);*/},
+												{ el: 'input', type: 'password', className: 'form-control', id: 'passwd', name: 'passwd', autocomplete: 'off', 'aria-describedby': 'passwordHelpInline', required: !loggedin, pattern: ".{8,16}"/*, oninput: document.getElementById('passwdCheck').setAttribute('pattern',this.value);*/},
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -427,14 +427,20 @@ function pageinit(membershipCommand) {
 		this.querySelector('[name=phone]').value = $('#inputPhone').val().trim();
 	})
 	// 비밀번호 입력시 확인패턴도 변경
-	.on('input', '#passwd', function() {
-		document.getElementById('passwdCheck').setAttribute('pattern',this.value);
+	.on('input', '#passwd,#passwdCheck', function() {
+		if(this.closest('form').matches('.was-validated')) {
+			$('#passwdCheck').toggleClass('is-invalid', $('#passwd').val() != $('#passwdCheck').val());
+		}
 	})
 	// phase-3 완료
 	.on('submit', '#membershipForm', function(e) {
 		e.preventDefault();
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
+			$('#passwdCheck').toggleClass('is-invalid', $('#passwd').val() != $('#passwdCheck').val());
+			
+			if(this.querySelector('.is-invalid')) return;
+			
 			data["orderItemList"] = orderItemList;
 			postJSON('/membership',data, msg => {
 				alert(msg + '\n\'확인\'을 누르면 ' + (loggedin?'메인':'로그인') +' 화면으로 이동합니다.');
