@@ -84,7 +84,7 @@
 	const _todaySolveLimit = 50; // 일일 배틀 풀이 최대 횟수
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
 	let currentView;
-	let _memberId, _ageGroup; // 사용자 정보
+	let _memberId, _ageGroup, memberId56; // 사용자 정보
 	let _battleRecord; // 배틀 전적 정보
 	let currRankTitle, currRankBase, nextRankBase; // 현재 계급명, 현재 및 다음 계급의 시작 정답수
 	
@@ -372,6 +372,7 @@
 		}
 		const command = { memberId: _memberId, ageGroup: _ageGroup, battleBookId: _contentId, 
 					battleId: currentBattle.bid, correct, save: Boolean(currentBattle.saved) };
+		if(_memberId == 0 && memberId56 != null) command['memberId56'] = memberId56; 
 		
 		// 설명 펼치기
 		$(view).find('.explain-section').slideDown(500).find('.comment-section').text(currentBattle.comment || '작성된 코멘트가 없습니다.');
@@ -969,6 +970,18 @@
 
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
+			if(typeof Cookies == 'undefined') {
+				$.getScript('https://cdn.jsdelivr.net/combine/npm/js-cookie/dist/js.cookie.min.js', function() {
+					const fmId = Cookies.get('FMID');
+					if(!fmId) location.replace('/craft/main');
+					else memberId56 = fmId;
+				})
+			}else {
+				const fmId = Cookies.get('FMID');
+				if(!fmId) location.replace('/craft/main');
+				else memberId56 = fmId;
+			}
+			
 			document.querySelector('#save-btn').disabled = true;
 			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
 			req = window.indexedDB.open(DB_NAME, DB_VERSION);
