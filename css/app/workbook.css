@@ -716,7 +716,7 @@
 .workbook-overview-section .personacon img{
 	max-width: 4rem;
 	border-radius: 50%;
-	background-color: #cbcbcb;
+	background-color: #318693;
 }
 .workbook-overview-section .alias{
 	margin-left: 0 5px;
@@ -1260,7 +1260,7 @@
 		width: 100%;
 		height: auto;
 		padding: 10px;
-		margin-bottom: 10px;
+		margin-bottom: 20px;
 	}
 }
 /*------------------------------------------------------------------------------
