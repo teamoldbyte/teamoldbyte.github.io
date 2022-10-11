@@ -481,6 +481,9 @@ function pageinit(isHelloBook) {
 			});
 			createHidden($form, 'text', sentences.join('\n'));
 		}else {
+			if($('#title').val().length == 0) {
+				$('#title').removeAttr('name');
+			}
 			let dirty = false;
 			const $selectedPassage = $('.search-result-section .list-group-item.active');
 			if($selectedPassage.length > 0) {
