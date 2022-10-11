@@ -2,6 +2,11 @@
  @author LGM
  */
 function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, passageId, sentenceList) {
+	const tts = new FicoTTS({autoplay: false, initSuccessCallback: () => {
+		// 자동재생 조작 금지
+		document.querySelector('#ttsSettings .form-switch').remove();
+	}});
+	
 	const svocSectionJson = {
 		el: 'div', className: 'svoc-section row position-relative', children: [
 			{ el: 'div', className: 'svoc-block col my-auto' },
@@ -612,8 +617,17 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		
 		// 접기/펼치기 설정
 		const originSentence = $sectionClone.find('.origin-sentence-section').get(0);
-		originSentence.dataset.bsTarget = '#sentence' + (i+1) + '>.collapse';
-		originSentence.dataset.bsToggle = 'collapse';
+		
+		$sectionClone.on('click', '.origin-sentence-section', function(e) {
+			// TTS 버튼을 제외하고 원문블럭 클릭 시 Collapse 동작
+			if(e.target.matches('.js-tts-play,.js-tts-setting')) {
+				return;
+			}else {
+				$sectionClone.children('.collapse').collapse('toggle')
+			}
+		})
+		//originSentence.dataset.bsTarget = '#sentence' + (i+1) + '>.collapse';
+		//originSentence.dataset.bsToggle = 'collapse';
 		
 		// 탭 설정
 		$sectionClone.find('[role="tab"]').each(function() {
@@ -651,9 +665,19 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		});
 		
 		// 1. 원문 표시--------------------------------------------------------
-		$sectionClone.find('.origin-sentence').append(
-				'<span class=\'numbering-text print-removed\'>' + (i+1) + '</span>' + 
-				'<span class=\'sentence-text\'>' + sentence.text + '</span>');
+		$sectionClone.find('.origin-sentence').append(createElement(
+			[
+				{ el: 'span', className: 'numbering-text print-removed', textContent: (i + 1) },
+				{ el: 'span', className: 'sentence-text', textContent: sentence.text },
+				{ el: 'span', children: [
+					{ el: 'button', type: 'button', className: 'btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play', 
+						'data-bs-toggle': 'tooltip', title: '재생/중지', 'data-active': 'on', textContent: 'play_circle'
+					},
+					{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-fc-purple m-0 p-0 ps-2 material-icons-outlined fs-3 border-0 shadow-none bg-transparent js-tts-setting',
+					'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune' }
+				]}
+			]
+		))
 		// 2. SVOC 표시------------------------------------------------
 		const text = sentence.text, svocList = sentence.svocList,
 			svocListLen = svocList?.length;
@@ -793,7 +817,33 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		if(e.type == 'show') {
 			$unitSection[0].scrollIntoView();
 		}
-	}).on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
+	})
+	.on('click', '.js-tts-play', function(e) {
+		const on = this.dataset.active == 'on';
+		document.querySelectorAll('.js-tts-play').forEach(playBtn => {
+			playBtn.dataset.active = 'on';
+			playBtn.textContent = 'play_circle';
+		})		
+		this.dataset.active = on?'off':'on';
+		this.textContent = on?'stop_circle':'play_circle';
+		if(on) {
+			tts.speak(this.closest('.origin-sentence').querySelector('.sentence-text').textContent, () => {
+				this.dataset.active = 'on';
+				this.textContent = 'play_circle';
+			});
+		}else {
+			tts.stop();
+		}
+	})
+	.on('click', '.js-tts-setting', function(e) {
+		tts.stop();
+		document.querySelectorAll('.js-tts-play').forEach(playBtn => {
+			playBtn.dataset.active = 'on';
+			playBtn.textContent = 'play_circle';
+		})
+		tts.openSettings();
+	})
+	.on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
 		// 문장/구문분석이 펼쳐지면 구문분석 스타일 새로고침
 		if(e.target.matches('.removable-section') && e.target == e.currentTarget) {
 			$(e.target).find('.semantics-result').filter(':visible').each(function() {
