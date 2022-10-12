@@ -669,7 +669,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			[
 				{ el: 'span', className: 'numbering-text print-removed', textContent: (i + 1) },
 				{ el: 'span', className: 'sentence-text', textContent: sentence.text },
-				{ el: 'span', children: [
+				{ el: 'div', className: 'd-inline-block', children: [
 					{ el: 'button', type: 'button', className: 'btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play', 
 						'data-bs-toggle': 'tooltip', title: '재생/중지', 'data-active': 'on', textContent: 'play_circle'
 					},
