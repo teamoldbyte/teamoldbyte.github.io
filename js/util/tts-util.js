@@ -222,8 +222,8 @@
 				speechSynthesis.speak(utterance);
 			}
 			this.speakRepeat = (text, loop, interval, callback = () => {}) => {
-				if(speechSynthesis.speaking) speechSynthesis.cancel();
 				clearTimeout(loopTimer);
+				if(speechSynthesis.speaking) speechSynthesis.cancel();
 				utterance.text = text;
 				loopNum = loop;
 				loopInterval = interval;
@@ -240,8 +240,8 @@
 				speechSynthesis.speak(utterance);
 			}
 			this.stop = (callback = (() => {})) => {
-				speechSynthesis.cancel();
 				clearTimeout(loopTimer);
+				speechSynthesis.cancel();
 				callback();
 			}
 			this.autoEnabled = () => _options.autoplay;
