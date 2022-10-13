@@ -306,21 +306,21 @@
 									{ "el":"h5","class":"modal-title fw-bold text-fc-purple","textContent":"음성 환경설정"},
 									{ "el":"div","class":"ms-auto text-align-end form-check form-switch", children: [
 										{ "el":"input","type":"checkbox","id":"ttsToggle","class":"form-check-input","checked":_options.autoplay},
-										{ "el":"label","class":"form-check-label","htmlFor":"ttsToggle","textContent":"자동 재생"}
+										{ "el":"label","class":"form-check-label text-dark","htmlFor":"ttsToggle","textContent":"자동 재생"}
 									]},
 									{ "el":"button","type":"button","class":"btn-close ms-2","data-bs-dismiss":"modal","aria-label":"Close","title":"닫기"}
 								]},
 								{ "el":"div","class":"modal-body","children":[
-									{ "el":"label","for":"ttsList","class":"form-label sub-title fs-6","textContent":"목소리 선택"},
+									{ "el":"label","for":"ttsList","class":"form-label sub-title fs-6 text-dark","textContent":"목소리 선택"},
 									{ "el":"div","class":"col-12 mb-3 row g-0","id":"ttsList"},
-									{"el":"label","for":"ttsRateRange","class":"form-label sub-title fs-6","children":[
+									{"el":"label","for":"ttsRateRange","class":"form-label sub-title fs-6 text-dark","children":[
 										"목소리 빠르기 ",{"el":"span","class":"text-secondary","textContent":"(기본: 0.8)"}
 									]},
 									{ "el":"input","type":"range","class":"form-range","id":"ttsRateRange",
 									"min":"0.1","max":"2","step":"0.1","data-range":_options.rate.toFixed(1),"value":_options.rate.toFixed(1),"oninput": function() {
 										this.dataset.range = parseFloat(this.value).toFixed(1)
 									}},
-									{ "el":"label","for":"ttsPitchRange","class":"form-label sub-title fs-6","children":[
+									{ "el":"label","for":"ttsPitchRange","class":"form-label sub-title fs-6 text-dark","children":[
 										"목소리 높이 ",{"el":"span","class":"text-secondary","textContent":"(기본: 1.0)"}
 									]},
 									{ "el":"input","type":"range","class":"form-range","id":"ttsPitchRange",
