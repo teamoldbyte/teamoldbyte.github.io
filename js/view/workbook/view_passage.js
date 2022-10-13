@@ -827,7 +827,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		this.dataset.active = on?'off':'on';
 		this.textContent = on?'stop_circle':'play_circle';
 		if(on) {
-			tts.speak(this.closest('.origin-sentence').querySelector('.sentence-text').textContent, () => {
+			tts.speakRepeat(this.closest('.origin-sentence').querySelector('.sentence-text').textContent, 2, 500, () => {
 				this.dataset.active = 'on';
 				this.textContent = 'play_circle';
 			});
