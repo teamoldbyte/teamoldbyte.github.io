@@ -240,6 +240,7 @@
 				speechSynthesis.speak(utterance);
 			}
 			this.stop = (callback = (() => {})) => {
+				loopNum = 0;
 				clearTimeout(loopTimer);
 				speechSynthesis.cancel();
 				callback();
