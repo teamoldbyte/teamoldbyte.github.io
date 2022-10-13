@@ -103,8 +103,9 @@
 	
 	
 	const DB_NAME = 'findsvoc-idb';	// url 호스트별로 유일한 데이터베이스명을 가집니다.
-	const DB_VERSION = 1;	// 데이터베이스 버전(테이블 스키마 변경이 필요할 경우 올리세요.)
+	let DB_VERSION = 1;	// 데이터베이스 버전(테이블 스키마 변경이 필요할 경우 올리세요.)
 	let req, idb, idbstore;
+	const indexedDB = window.indexedDB;
 	
 	let selectHistory = []; // 현재 문제에서 선택한 선택지들 모음(1,2,5유형용)
 	
@@ -304,7 +305,7 @@
 						this.dataset.active = on?'off':'on';
 						this.textContent = on?'stop_circle':'play_circle';
 						if(on) {
-							tts.speak(currentBattle.eng, () => {
+							tts.speakRepeat(currentBattle.eng, 2, 1000, () => {
 								this.dataset.active = 'on';
 								this.textContent = 'play_circle';
 							});
@@ -323,7 +324,8 @@
 			anime({
 				targets: view.querySelector('.tts-block'),
 				scale: 1,
-				delay: 600
+				delay: 600,
+				complete: () => view.querySelector('#ttsPlay').dispatchEvent(new Event('click'))
 			})
 		}
 		// 오늘자 풀이량 카운트
@@ -392,10 +394,11 @@
 							_battleRecord.correct++;
 						}
 						if(_memberId == 0) {
-							req = window.indexedDB.open(DB_NAME/*, DB_VERSION*/);
+							req = indexedDB.open(DB_NAME, DB_VERSION);
 							req.onsuccess = function() {
 								idb = this.result;
 								const tx = idb.transaction(['StepBattle'], 'readwrite');
+								tx.onabort = idbAbort;												
 								idbstore = tx.objectStore('StepBattle');
 								idbstore.index('bid').openCursor().onsuccess = function() {
 									let cursor = this.result;
@@ -406,7 +409,7 @@
 											cursor.update(record);
 											return;
 										}
-										cursor.continue();
+										//cursor.continue();
 									}
 								};
 							};	
@@ -475,10 +478,11 @@
 			if(battles.length == 0) alert('조회된 문제가 없습니다.')
 			else {
 				if(_memberId == 0) {
-					req = window.indexedDB.open(DB_NAME/*, DB_VERSION*/);
+					req = indexedDB.open(DB_NAME, DB_VERSION);
 					req.onsuccess = function() {
 						idb = this.result;
 						const tx = idb.transaction(['StepBattle'], 'readwrite');
+						tx.onabort = idbAbort;										
 						idbstore = tx.objectStore('StepBattle');
 						let i = 0;
 						insertNext();
@@ -487,7 +491,9 @@
 								const battle = battles[i++];
 								idbstore.add({ bid: battle.bid, data: battle, solve: '' }, battle.bid)
 										.onsuccess = insertNext;
-							}else _askStep();
+							}else {
+								_askStep();	
+							}
 						}
 					};				
 				}else _askStep();
@@ -971,7 +977,7 @@
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
 			if(typeof Cookies == 'undefined') {
-				$.getScript('https://cdn.jsdelivr.net/combine/npm/js-cookie/dist/js.cookie.min.js', function() {
+				$.getScript('https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js', function() {
 					const fmId = Cookies.get('FMID');
 					if(!fmId) location.replace('/craft/main');
 					else memberId56 = fmId;
@@ -984,42 +990,60 @@
 			
 			document.querySelector('#save-btn').disabled = true;
 			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
-			req = window.indexedDB.open(DB_NAME/*, DB_VERSION*/);
-			req.onsuccess = function() {
+			indexedDB.databases()
+			req = indexedDB.open(DB_NAME, DB_VERSION);
+			req.onsuccess = function listBattles() {
 				idb = this.result;
-				const tx = idb.transaction(['StepBattle'], 'readonly');
-				idbstore = tx.objectStore('StepBattle');
-				// 전체 레코드를 조회
-				req = idbstore.openCursor();
-				req.onsuccess = function() {
-					const cursor = this.result;
-					if(cursor) {
-						switch(cursor.value.solve) {
-							case 'O':
-								_battleRecord.correct++;
-								break;
-							case 'X':
-								_battleRecord.incorrect++;
-								break;
-							default:
-							 	battlePool.push(cursor.value.data);
-								break;	
-						}
-						cursor.continue();
-					}else initDatas(age);
+				if(!idb.objectStoreNames.contains('StepBattle')) {
+					req = indexedDB.open(DB_NAME, ++DB_VERSION);
+					
+					req.onsuccess = listBattles;
+					req.onupgradeneeded = createBattleStore;
+				}else {
+					const tx = idb.transaction(['StepBattle'], 'readonly');
+					
+					tx.onabort = idbAbort;			
+					idbstore = tx.objectStore('StepBattle');
+					// 전체 레코드를 조회
+					req = idbstore.openCursor();
+					req.onsuccess = getBattlesFromIDB
 				}
 			};
 			// 테이블 스키마 변경이 필요할 경우 아래 코드를 변경하세요.
-			req.onupgradeneeded = function() {
-				idb = this.result;
-				idbstore = idb.createObjectStore('StepBattle');
-				idbstore.createIndex('bid', 'bid', { unique: true});
-				idbstore.createIndex('data', 'data'); // 실제 Battle
-				idbstore.createIndex('solve', 'solve', { unique: false}); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
-			}
+			req.onupgradeneeded = createBattleStore;
+			
 		}else initDatas(age);
 		
+		function createBattleStore() {
+			idb = this.result;
+			idbstore = idb.createObjectStore('StepBattle');
+			idbstore.createIndex('bid', 'bid', { unique: true});
+			idbstore.createIndex('data', 'data'); // 실제 Battle
+			idbstore.createIndex('solve', 'solve', { unique: false}); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
+			initDatas(age);
+		}
+		
+		function getBattlesFromIDB() {
+			const cursor = this.result;
+			if(cursor) {
+				switch(cursor.value.solve) {
+					case 'O':
+						_battleRecord.correct++;
+						break;
+					case 'X':
+						_battleRecord.incorrect++;
+						break;
+					default:
+					 	battlePool.push(cursor.value.data);
+						break;	
+				}
+				cursor.continue();
+			}else {
+				initDatas(age);
+			} 			
+		}
 	}
+	
 	
 	/** 연령그룹 계산, 문제를 조회하고 프로그레스 표시
 	 */
@@ -1200,6 +1224,14 @@
 			targets: '.js-solve-btn,.js-next-btn', duration: 500, easing: 'easeOutQuart', left: right? '110%' : '45%'
 		});
 	}
+	
+	function idbAbort(event) {
+	  const error = event.target.error; // DOMException
+	  if (error.name == 'QuotaExceededError') {
+	    alert('웹 저장공간을 정리 후 다시 이용해 주세요.');
+	    location.replace('/craft/main');
+	  }
+	};					
 	
 	
 	window['craft'] = Object.assign({}, window['craft'], { initPlayer });
