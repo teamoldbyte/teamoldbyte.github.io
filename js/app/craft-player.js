@@ -30,10 +30,7 @@
 			]}
 		]}
 	]};
-	const tts = new FicoTTS({autoplay: false, initSuccessCallback: () => {
-		// 자동재생 조작 금지
-		document.querySelector('#ttsSettings .form-switch').remove();
-	}});
+	const tts = new FicoTTS();
 	$(function() {
 		
 		
@@ -325,7 +322,11 @@
 				targets: view.querySelector('.tts-block'),
 				scale: 1,
 				delay: 600,
-				complete: () => view.querySelector('#ttsPlay')?.dispatchEvent(new Event('click'))
+				complete: () => {
+					if(tts.autoEnabled()) {
+						view.querySelector('#ttsPlay')?.dispatchEvent(new Event('click'));
+					}
+				} 
 			})
 		}
 		// 오늘자 풀이량 카운트
