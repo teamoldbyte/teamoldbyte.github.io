@@ -337,7 +337,9 @@
 			const select = document.getElementById('ttsList');
 			
 			select.replaceChildren(createElement(Array.from(voices, (voice,i) => {
-				return { el: 'div', class: 'col-3 p-1 p-sm-3', children: [
+				// [Google UK English Female 목소리는 현재(2022.10.13) 남자 목소리로 나오기 때문에 제외.]
+				if(voice.name == 'Google UK English Female') return '';
+				else return { el: 'div', class: 'col-3 p-1 p-sm-3', children: [
 					{ el: 'input', value: i, id: `ttsVoice${i}`, name: 'ttsVoice', type: 'radio', class: 'btn-check d-none', checked: i==_options.voiceIndex},
 					{ el: 'label', htmlFor: `ttsVoice${i}`, class: 'btn btn-outline-fico position-relative border-0 mx-auto p-1', children: [
 						{ el: 'img', class: 'rounded-circle w-100', src: `https://static.findsvoc.com/images/app/tts/profile/${_actors[voice.name]||'default'}.jpg`},
