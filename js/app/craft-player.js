@@ -325,7 +325,7 @@
 				targets: view.querySelector('.tts-block'),
 				scale: 1,
 				delay: 600,
-				complete: () => view.querySelector('#ttsPlay').dispatchEvent(new Event('click'))
+				complete: () => view.querySelector('#ttsPlay')?.dispatchEvent(new Event('click'))
 			})
 		}
 		// 오늘자 풀이량 카운트
@@ -809,7 +809,9 @@
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				// 선택 초기화
 				arrangedSection.replaceChildren();
-				$(arrangedSection).sortable();
+				$(arrangedSection).sortable({
+					items: '> .haptic-btn'
+				});
 				
 				break;
 			case '6' :
@@ -938,7 +940,9 @@
 				})
 				// 선택 초기화
 				arrangedSection7.replaceChildren();
-				$(arrangedSection7).sortable();
+				$(arrangedSection7).sortable({
+					items: '> .haptic-btn'
+				});
 				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
 				break;
@@ -990,7 +994,6 @@
 			
 			document.querySelector('#save-btn').disabled = true;
 			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
-			indexedDB.databases()
 			req = indexedDB.open(DB_NAME, DB_VERSION);
 			req.onsuccess = function listBattles() {
 				idb = this.result;
