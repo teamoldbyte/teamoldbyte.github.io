@@ -118,6 +118,7 @@ body{
 }
 .service-info-list .link-section{
 	text-align: right;
+	font-weight: bold;
 }
 /* 서비스 안내 영역 - 텍스트 */
 .service-info-list h5{
@@ -143,7 +144,7 @@ body{
 @media (max-width: 991px) {
 	.sub-block {
 		width: 100%;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0;
 		height: auto;
 	}
 	.service-info-list > div{
@@ -159,6 +160,15 @@ body{
 	}
 	.service-info-list .hellobook-info{
 		background-size: auto;
+	}
+	
+	.service-list .sub-block:nth-child(1) {
+		background: radial-gradient(#E68181, #cc0303, #660202);
+		border-radius: 5px 5px 0 0;
+	}
+	.service-list .sub-block:nth-child(5) {
+		background: radial-gradient(#809BCA, #003695, #001B4B);
+		border-radius: 0 0 5px 5px;
 	}
 }
 /*------------------------------------------------------------------------------
