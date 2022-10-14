@@ -22,19 +22,19 @@ body{
 }
 /**/
 .sub-block {
-	width: 33%;
-	border-radius: 5px;
+	width: 33.33333333%;
 	position: relative;
 	background-color: #fff;
-	border: 1px solid #dddddd;
 	margin: auto;
 	/*height: 15vw;*/
 }
 .service-list .sub-block:nth-child(1) {
 	background: radial-gradient(#E68181, #cc0303, #660202);
+	border-radius: 5px 0 0 5px;
 }
 .service-list .sub-block:nth-child(5) {
 	background: radial-gradient(#809BCA, #003695, #001B4B);
+	border-radius: 0 5px 5px 0;
 }
 .service-list .sub-block:nth-child(1) .title,
 .service-list .sub-block:nth-child(5) .title{
@@ -78,7 +78,7 @@ body{
 	center/cover no-repeat url('https://static.findsvoc.com/images/app/index/red-round-1.svg'),
 	top/150% url('https://static.findsvoc.com/images/app/index/red-round-2.svg'), 
 	center/cover no-repeat url('https://static.findsvoc.com/images/app/index/red-round-3.svg'),
-	url('https://static.findsvoc.com/images/app/index/red-round-4.svg') #fff;
+	url('https://static.findsvoc.com/images/app/index/red-round-4.svg') #f4f9ff;
 
 }
 .service-info-list .hellobook-info{
@@ -92,15 +92,15 @@ body{
 	background: url('https://static.findsvoc.com/images/app/index/blue-scatter.svg');
 	background-repeat: no-repeat;
 	background-size: cover;
-	background-color: #fff;
+	background-color: #f1f7fd;
 }
 .service-info-list .workbook-info::before{
 	left: calc(16.66% + 2px);
-	border-bottom: 1rem solid #fff;
+	border-bottom: 1rem solid #f4f9ff;
 }
 .service-info-list .battle-craft-info::before{
 	left: calc(83.99% + 2px);
-	border-bottom: 1rem solid #fff;
+	border-bottom: 1rem solid #f1f7fd;
 }
 /* 서비스 안내 영역 - 말풍선 화살표 */
 .service-info-list > div::before{
@@ -122,15 +122,16 @@ body{
 /* 서비스 안내 영역 - 텍스트 */
 .service-info-list h5{
 	font-family: 'Open Sans', 'NanumBarunGothic';
-	color: #000;
+	color: var(--fc-purple);
 	font-weight: bold;
 }
 .service-info-list .msg{
+	color: #310909;
 	display: block;
 	margin-bottom: 0.5rem;
 }
 .service-info-list b{
-	color: #cc0303;
+	color: #670e0e;
 }
 /* 서비스 안내 영역 - 로티 애니메이션 */
 .sub-block .lottie-section{
