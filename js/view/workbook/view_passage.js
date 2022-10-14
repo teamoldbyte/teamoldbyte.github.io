@@ -613,8 +613,8 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			$sectionClone = $('.one-sentence-unit-section:eq(0)');
 		}
 		// 문장 Id 설정
-		$sectionClone.data('sentenceId', sentence.sentenceId).attr('id','sentence' + (i+1));
-		
+		$sectionClone.data('sentenceId', sentence.sentenceId).attr('id','sentence' + (i+1))
+					.data('metaEvaluated', ['S','F'].includes(sentence.metaStatus))
 		// 접기/펼치기 설정
 		const originSentence = $sectionClone.find('.origin-sentence-section').get(0);
 		
@@ -849,7 +849,8 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			$(e.target).find('.semantics-result').filter(':visible').each(function() {
 				tandem.correctMarkLine(this);
 			});
-			$(e.target).find('.dashboard-section').show(0).trigger('show.bs.collapse');
+			if(!$(this).closest('.one-sentence-unit-section').data('metaEvaluated'))
+			$(e.target).find('.dashboard-section').collapse('show');
 		}
 	})
 	// 평가 대시보드 펼치기
