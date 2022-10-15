@@ -179,6 +179,19 @@
 	background-size: cover;
 	background-position: center;
 }
+@media (max-width: 767px) {
+	.book-cover.default{
+		background: 
+		top / 15rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg), 
+		#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg); 
+	}
+	.book-cover.default::before{
+		font-size: 5px;
+	}
+	.book-cover.default::after{
+		font-size: 30px;
+	}
+}
 
 /*------------------------------------------------------------------------------
                                  workbook_menu.html
@@ -1260,7 +1273,7 @@
 		width: 100%;
 		height: auto;
 		padding: 10px;
-		margin-bottom: 20px;
+		margin-bottom: 30px;
 	}
 }
 /*------------------------------------------------------------------------------
