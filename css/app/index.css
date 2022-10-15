@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+@font-face {
+    font-family: 'Chosunilbo_myungjo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 /**********************************************************
  *			index.html 
  **********************************************************/
@@ -12,29 +19,89 @@ body{
 }
 
 .title-section .title-text {
-	font-size: 1.1rem;
+	font-family: 'Nanum Pen Script', cursive;
+	font-size: 3.25rem;
 	color: #585174;
 	font-weight: 600;
 }
+.title-section .title-text .app-name-text {
+	font-size: 2.5rem;
+	font-weight: 500;
+}
+.title-section .app-name-text.super{
+	font-size: 0.75rem;
+	color: #fff;
+	vertical-align: super;
+	top: -0.25rem;
+	position: relative;
+}
+.sentence-burger{
+	color: #DD191D;
+}
+.sub-title .eng{
+	font-family: 'Baloo Bhai 2';
+	font-size: 1.5rem;
+	display: inline-block;
+	/*margin-top: 0.5rem;*/
+}
 .title-section .sub-title {
-	font-size: .75rem;
-	color: #5c68b6;
+	font-family: 'Chosunilbo_myungjo';
+	/*font-size: .75rem;*/
+	font-size: 1.25rem;
+	color: #000;
+}
+@media (max-width: 767px) {
+	.title-section .title-text {
+		font-size: 1.75rem;
+	}
+	.title-section .title-text .app-name-text {
+		font-size: 1.25rem;
+	}
+	.title-section .sub-title {
+		font-size: 1.125rem;
+	}
+}
+.service-type-section{
+	margin-bottom: 9rem;
+}
+
+.service-type-section .title-section:nth-child(1){
+	margin-bottom: 3rem;
+	text-align: center;
+}
+.service-type-section .title-section:last-child{
+	margin-top: 3rem;
+}
+@media (max-width: 767px) {
+	.service-type-section{
+		padding-top:0;
+	}
+	.service-type-section .title-section:nth-child(1){
+		margin-bottom: 1rem;
+		text-align: left;
+	}
+	.service-type-section .title-section:last-child{
+		margin-top: 1rem;
+	}
 }
 /**/
 .sub-block {
-	width: 33.33333333%;
+	width: 30%;
 	position: relative;
 	background-color: #fff;
 	margin: auto;
 	/*height: 15vw;*/
+	border-radius: 5px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
 }
 .service-list .sub-block:nth-child(1) {
 	background: radial-gradient(#E68181, #cc0303, #660202);
-	border-radius: 5px 0 0 5px;
+}
+.service-list .sub-block:nth-child(3) {
+	background: radial-gradient(#fff 60%, var(--slate));
 }
 .service-list .sub-block:nth-child(5) {
 	background: radial-gradient(#809BCA, #003695, #001B4B);
-	border-radius: 0 5px 5px 0;
 }
 .service-list .sub-block:nth-child(1) .title,
 .service-list .sub-block:nth-child(5) .title{
@@ -86,7 +153,7 @@ body{
 	background-position-y: 90%;
 	background-repeat: no-repeat;
 	background-size: cover;
-	background-color: #fff;
+	background-color: #fafafa;
 }
 .service-info-list .battle-craft-info{
 	background: url('https://static.findsvoc.com/images/app/index/blue-scatter.svg');
@@ -111,7 +178,7 @@ body{
 	transform: translateX(-50%);
 	width: 0;
 	height: 0;
-	border-bottom: 1rem solid #fff;
+	border-bottom: 1rem solid #fafafa;
 	border-top: 1rem solid transparent;
 	border-left: 1rem solid transparent;
 	border-right: 1rem solid transparent;
@@ -144,8 +211,9 @@ body{
 @media (max-width: 991px) {
 	.sub-block {
 		width: 100%;
-		margin-bottom: 0;
+		margin-bottom: 0.5rem;
 		height: auto;
+		border-radius: 5px;
 	}
 	.service-info-list > div{
 		width: 100%;
@@ -164,11 +232,9 @@ body{
 	
 	.service-list .sub-block:nth-child(1) {
 		background: radial-gradient(#E68181, #cc0303, #660202);
-		border-radius: 5px 5px 0 0;
 	}
 	.service-list .sub-block:nth-child(5) {
 		background: radial-gradient(#809BCA, #003695, #001B4B);
-		border-radius: 0 0 5px 5px;
 	}
 }
 /*------------------------------------------------------------------------------
