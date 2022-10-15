@@ -28,32 +28,32 @@
 	const _actors = {	
 		// Mobile browsers including mobile chrome are not supported.
 		// Android Webview
-		"en-au-x-aub-network":"Braith", //호주 남자
-		"en-au-x-aud-network":"Lachlan", //호주 남자
 		"en-au-x-afh-network":"Narelle", //호주 여자
-		"en-au-x-auc-network":"Kayla", //호주 여자
 		"en-au-x-aua-network":"Abigail", //호주 여자
-		"en-gb-x-gbb-network":"Taylor", //영국 남자
-		"en-gb-x-gbd-network":"Nicholas", //영국 남자
+		"en-au-x-aub-network":"Braith", //호주 남자
+		"en-au-x-auc-network":"Kayla", //호주 여자
+		"en-au-x-aud-network":"Lachlan", //호주 남자
 		"en-gb-x-fis-network":"Keira", //영국 여자
 		"en-gb-x-gba-network":"Grace", //영국 여자
+		"en-gb-x-gbb-network":"Taylor", //영국 남자
 		"en-gb-x-gbc-network":"Lauren", //영국 여자
-		"en-gb-x-rjs-network":"Peter", //영국 남자
+		"en-gb-x-gbd-network":"Nicholas", //영국 남자
 		"en-gb-x-gbg-network":"Libby", //영국 여자
-		"en-in-x-ene-network":"Salah", //인도 남자
-		"en-in-x-enc-network":"Atika", //인도 여자
-		"en-in-x-ena-network":"Farah", //인도 여자
+		"en-gb-x-rjs-network":"Peter", //영국 남자
 		"en-in-x-ahp-network":"Sayyar", //인도 여자
 		"en-in-x-cxx-network":"Bahiya", //인도 여자
+		"en-in-x-ena-network":"Farah", //인도 여자
+		"en-in-x-enc-network":"Atika", //인도 여자
 		"en-in-x-end-network":"Husam", //인도 남자
+		"en-in-x-ene-network":"Salah", //인도 남자
 		"en-ng-x-tfn-network":"Jenete", //나이지리아 여자
-		"en-us-x-sfg-network":"Mary", //미국 여자
-		"en-us-x-tpd-network":"James", //미국 남자
-		"en-us-x-tpc-network":"Michelle", //미국 여자
 		"en-us-x-iob-network":"Josephine", //미국 여자
+		"en-us-x-iog-network":"Gloria", //미국 여자
 		"en-us-x-iol-network":"Joe", //미국 남자
 		"en-us-x-iom-network":"Paul", //미국 남자
-		"en-us-x-iog-network":"Gloria", //미국 여자
+		"en-us-x-sfg-network":"Mary", //미국 여자
+		"en-us-x-tpc-network":"Michelle", //미국 여자
+		"en-us-x-tpd-network":"James", //미국 남자
 		"en-us-x-tpf-network":"Cathy", //미국 여자
 	  
 		// MacOS + iOS
@@ -75,27 +75,27 @@
 		"Google UK English Male":"Alexander", //영국 남자
 		
 		// Edge
-		"Microsoft Natasha Online (Natural) - English (Australia)":"Natasha", //호주 여자
-		"Microsoft Clara Online (Natural) - English (Canada)":"Clara", //캐나다 여자
-		"Microsoft Neerja Online (Natural) - English (India)":"Neerja", //인도 여자
-		"Microsoft Emily Online (Natural) - English (Ireland)":"Emily", //아일랜드 여자
 		"Microsoft Abeo Online (Natural) - English (Nigeria)":"Abeo", //나이지리아 남자
-		"Microsoft Rosa Online (Natural) - English (Philippines)":"Rosa", //필리핀 여자
-		"Microsoft Leah Online (Natural) - English (South Africa)":"Leah", //남아프리카 여자
-		"Microsoft Sonia Online (Natural) - English (United Kingdom)":"Sonia", //영국 여자
 		"Microsoft Aria Online (Natural) - English (United States)":"Aria", //미국 여자
+		"Microsoft Clara Online (Natural) - English (Canada)":"Clara", //캐나다 여자
+		"Microsoft Emily Online (Natural) - English (Ireland)":"Emily", //아일랜드 여자
 		"Microsoft Guy Online (Natural) - English (United States)":"Guy", //미국 남자
 		"Microsoft Jenny Online (Natural) - English (United States)":"Jenny", //미국 여자
+		"Microsoft Leah Online (Natural) - English (South Africa)":"Leah", //남아프리카 여자
+		"Microsoft Natasha Online (Natural) - English (Australia)":"Natasha", //호주 여자
+		"Microsoft Neerja Online (Natural) - English (India)":"Neerja", //인도 여자
+		"Microsoft Rosa Online (Natural) - English (Philippines)":"Rosa", //필리핀 여자
+		"Microsoft Sonia Online (Natural) - English (United Kingdom)":"Sonia", //영국 여자
 		
 		//Firefox
 		 "Microsoft Zira Desktop - English (United States)":"Zira" //미국 여자
 	}
 	const sampleText = 'Hi. I\'m fico advisor.';
-	let voices;
+	let voices, reOrderedVoices;
 	let utterance;
 	let _options = {initSuccessCallback: function(){}, initFailCallback: function(){}};
 	FicoTTS.defaults = {
-		autoplay: false, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0
+		autoplay: true, lang: 'en', pitch: 1, rate: 0.8, voiceIndex: 0
 	};
 	(function() {
 		// ANI(App Native Interface)가 구현돼있을 경우 흐름
@@ -112,6 +112,8 @@
 			let ANI_Initialized = makeFunc2Callback(() => {
 				console.info('initialize success')
 				voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
+				reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
+				this.changeOptions();
 				window.addEventListener('pagehide', () => this.stop());
 				if(typeof _options.initSuccessCallback == 'function') _options.initSuccessCallback();
 			});
@@ -124,10 +126,8 @@
 					}));
 				appendModal();
 			}
-			this.changeOptions = (options) => {
-				_options = Object.assign(_options, options);
-				localStorage.setItem('FicoTTSOptions', JSON.stringify(_options));				
-				ANI.changeTTSOptions(JSON.stringify(options));
+			this.changeOptions = () => {
+				ANI.changeTTSOptions(JSON.stringify(Object.assign({}, _options, {voiceIndex: voices.indexOf(reOrderedVoices[_options.voiceIndex])})));
 			}
 			
 			this.speak = (text, ...callback) => {
@@ -142,8 +142,9 @@
 			}
 			
 			this.speakSample = (idx, rate, pitch) => {
-				ANI.ttsSpeakSample(sampleText, idx, rate, pitch, [makeFunc2Callback(()=> {
-					ANI.changeTTSOptions(JSON.stringify(_options));
+				ANI.ttsSpeakSample(sampleText, 
+				voices.indexOf(reOrderedVoices[idx]), rate, pitch, [makeFunc2Callback(()=> {
+					ANI.changeTTSOptions(JSON.stringify(Object.assign({}, _options, {voiceIndex: voices.indexOf(reOrderedVoices[idx])})));
 				})]);
 			}
 			
@@ -161,6 +162,7 @@
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
 						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
+						reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 						waitVoices = setInterval(this.openSettings, 250);
 					}
 					// 아직 초기화 완료 안됐고 재시도 횟수 20회 미만
@@ -233,7 +235,7 @@
 			}
 			this.speakSample = (idx, rate, pitch) => {
 				utterance.text = sampleText;
-				utterance.voice = voices[idx];
+				utterance.voice = reOrderedVoices[idx];
 				utterance.rate = rate;
 				utterance.pitch = pitch;
 				if(speechSynthesis.speaking) speechSynthesis.cancel();
@@ -246,20 +248,19 @@
 				callback();
 			}
 			this.autoEnabled = () => _options.autoplay;
-			this.changeOptions = (options) => {
-				_options = Object.assign(_options, options);
-				localStorage.setItem('FicoTTSOptions', JSON.stringify(_options));
+			this.changeOptions = () => {
 				utterance.lang = _options.lang;
 				utterance.pitch = _options.pitch;
 				utterance.rate = _options.rate;
-				utterance.voice = voices[_options.voiceIndex];
+				utterance.voice = reOrderedVoices[_options.voiceIndex];
 			}
 			let waitVoices, voiceTryCount = 0;
 			this.openSettings = () => {
 				if(voices == null || voices.length == 0) {
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
-						voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
+						voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-') && v.name != 'Google UK English Female');
+						reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 						waitVoices = setInterval(this.openSettings, 250);
 					}else if(voiceTryCount < 20) {
 						voiceTryCount++
@@ -279,8 +280,9 @@
 				}
 			}
 			const initVoices = () => {
-				voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-'));
-				utterance.voice = voices[_options.voiceIndex];
+				voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-') && v.name != 'Google UK English Female');
+				reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
+				utterance.voice = reOrderedVoices[_options.voiceIndex];
 				this.initialized = true;
 				window.addEventListener('pagehide', () => {this.stop()});
 				if(voices.length > 0 && _options.initSuccessCallback != null) 
@@ -337,18 +339,19 @@
 		const showLists = () => {
 			const select = document.getElementById('ttsList');
 			
-			select.replaceChildren(createElement(Array.from(voices, (voice,i) => {
+			select.replaceChildren(createElement(
 				// [Google UK English Female 목소리는 현재(2022.10.13) 남자 목소리로 나오기 때문에 제외.]
-				if(voice.name == 'Google UK English Female') return '';
-				else return { el: 'div', class: 'col-3 p-1 p-sm-3', children: [
-					{ el: 'input', value: i, id: `ttsVoice${i}`, name: 'ttsVoice', type: 'radio', class: 'btn-check d-none', checked: i==_options.voiceIndex},
+				Array.from(voices, (voice,i) => {
+				return { el: 'div', class: 'col-3 p-1 p-sm-3', children: [
+					{ el: 'input', value: i, id: `ttsVoice${i}`, name: 'ttsVoice', type: 'radio', class: 'btn-check d-none', 'data-v-name': voice.name},
 					{ el: 'label', htmlFor: `ttsVoice${i}`, class: 'btn btn-outline-fico position-relative border-0 mx-auto p-1', children: [
 						{ el: 'img', class: 'rounded-circle w-100', src: `https://static.findsvoc.com/images/app/tts/profile/${_actors[voice.name]||'default'}.jpg`},
 						{ el: 'img', class: 'rounded-3 position-absolute bottom-0 end-0 border', src: `https://flagcdn.com/w40/${voice.lang.replace('scotland','GB-SCT').toLowerCase().substring(3)}.png`, style: 'width:33%'}
 					]},
 					{ el: 'span', class: 'd-block ps-2 text-fico', textContent: _actors[voice.name]||voice.name}
 				]}
-			})))
+			}).sort((a,b) => a.children[0]["data-v-name"].localeCompare(b.children[0]["data-v-name"]))));
+			$(select).find(`[name="ttsVoice"]:eq(${_options.voiceIndex})`).prop('checked', true);
 			$('#ttsSettings').modal('show');
 		}
 		$(document)
@@ -358,17 +361,20 @@
 		})
 		// 설정값 변경(변경과 동시에 미리 들어보기)
 		.on('click change','[name=ttsVoice], #ttsRateRange, #ttsPitchRange', () => {
-			this.speakSample(parseInt($('#ttsSettings [name="ttsVoice"]:checked').val()), 
+			this.speakSample(parseInt($('#ttsSettings [name="ttsVoice"]:checked').index('[name="ttsVoice"]')), 
 				parseFloat($('#ttsRateRange').val()), parseFloat($('#ttsPitchRange').val()));
 		})
 		// 변경된 설정값을 전역 적용
 		.on('hide.bs.modal', '#ttsSettings', () => {
-			this.changeOptions({
-				voiceIndex: parseInt($('#ttsSettings [name="ttsVoice"]:checked').val()),
+			const options = {
+				voiceIndex: $('#ttsSettings [name="ttsVoice"]:checked').index('[name="ttsVoice"]'),
 				pitch: parseFloat($('#ttsPitchRange').val()),
 				rate: parseFloat($('#ttsRateRange').val())
-			});
+			};
+			_options = Object.assign(_options, options);
+			this.changeOptions();
 			this.stop();
+			localStorage.setItem('FicoTTSOptions', JSON.stringify(Object.assign({}, _options)));	
 		});
 		
 	}).call(FicoTTS.prototype);
