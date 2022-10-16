@@ -331,7 +331,7 @@
 		}
 		// 오늘자 풀이량 카운트
 		_todayBattleSolveCount.count++;
-		window.localStorage.setItem('TCBSC', JSON.stringify(_todayBattleSolveCount));
+		window.localStorage.setItem(`TCBSC_${ntoa(_memberId)}`, JSON.stringify(_todayBattleSolveCount));
 		// 맞힘/틀림에 따른 알림
 		WebAudioJS.play(correct ? CORRECT_SOUND : INCORRECT_SOUND);
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
@@ -966,8 +966,8 @@
 		_battleRecord = battleRecord;
 		
 		// Today Craft Battle Solve Count
-		if(window.localStorage.getItem('TCBSC')) {
-			_todayBattleSolveCount = JSON.parse(window.localStorage.TCBSC);
+		if(window.localStorage.getItem(`TCBSC_${ntoa(_memberId)}`)) {
+			_todayBattleSolveCount = JSON.parse(window.localStorage.get(`TCBSC_${ntoa(_memberId)}`));
 			if(_todayBattleSolveCount.date != new Date().toLocaleDateString()) {
 			// 풀이기록이 없다면 0으로 기록
 				_todayBattleSolveCount.date = new Date().toLocaleDateString();
