@@ -967,7 +967,7 @@
 		
 		// Today Craft Battle Solve Count
 		if(window.localStorage.getItem(`TCBSC_${ntoa(_memberId)}`)) {
-			_todayBattleSolveCount = JSON.parse(window.localStorage.get(`TCBSC_${ntoa(_memberId)}`));
+			_todayBattleSolveCount = JSON.parse(window.localStorage.getItem(`TCBSC_${ntoa(_memberId)}`));
 			if(_todayBattleSolveCount.date != new Date().toLocaleDateString()) {
 			// 풀이기록이 없다면 0으로 기록
 				_todayBattleSolveCount.date = new Date().toLocaleDateString();
