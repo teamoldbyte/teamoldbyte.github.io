@@ -111,7 +111,7 @@
 			}			
 			let ANI_Initialized = makeFunc2Callback(() => {
 				console.info('initialize success')
-				voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
+				voices = JSON.parse(ANI.getVoices()).filter(v => /^en[-_]/.test(v.lang));
 				reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 				this.changeOptions();
 				window.addEventListener('pagehide', () => this.stop());
@@ -161,7 +161,7 @@
 					// 타이머 미세팅
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
-						voices = JSON.parse(ANI.getVoices()).filter(v => v.lang.startsWith('en-'));
+						voices = JSON.parse(ANI.getVoices()).filter(v => /^en[-_]/.test(v.lang));
 						reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 						waitVoices = setInterval(this.openSettings, 250);
 					}
@@ -259,7 +259,7 @@
 				if(voices == null || voices.length == 0) {
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
-						voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-') && v.name != 'Google UK English Female');
+						voices = speechSynthesis.getVoices().filter(v => /^en-/.test(v.lang) && v.name != 'Google UK English Female');
 						reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 						waitVoices = setInterval(this.openSettings, 250);
 					}else if(voiceTryCount < 20) {
@@ -268,8 +268,51 @@
 						voiceTryCount = 0;
 						clearInterval(waitVoices);
 						waitVoices = null;
-						alert('목소리 목록을 가져올 수 없습니다.');
-						showLists();
+						// 음성 목록 초기화 실패 시, 안드로이드 기기지만 앱이 아닌 경우 앱을 설치하라고 모달 표시
+						// (안드로이드 브라우저는 시스템 기본을 따르므로 필터링해야 함. 모바일 크롬은 음성 lang값이 en_로 시작해서 필터링됨.) 
+						if(/Android/i.test(window.navigator.userAgent)
+						&& !/FicoApp/i.test(window.navigator.userAgent)) {
+							if(document.querySelector('#appPromotionModal') == null) {
+								document.body.appendChild(createElement({
+									el: 'div', className: 'modal fade', id: 'appPromotionModal', tabIndex: '-1', role: 'dialog', children: [
+										{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
+											{ el: 'div', className: 'modal-content rounded-8', children: [
+												{ el: 'div', className: 'modal-header', children: [
+													{ "el":"h5","class":"modal-title fw-bold text-fc-purple col-9","textContent":"앱을 설치해 보세요."},
+													{ "el":"button","type":"button","class":"btn-close ms-2","data-bs-dismiss":"modal","aria-label":"Close","title":"닫기"}
+												]},
+												{ "el":"div","class":"modal-body","children":[
+													{ el: 'div', className: 'row g-0', children: [
+														{ el: 'img', className: 'col-auto rounded-8 my-auto', 
+														src: 'https://static.findsvoc.com/images/logo/app_logo_square.png', 
+														width: '100', height: '100', onclick: function() {
+															window.open('market://details?id=com.varxyz.demofico')
+														}},
+														{ el: 'div', className: 'col-8 col-lg-9 ms-3 my-auto', children: [
+															'음성 설정이 지원되지 않습니다.',
+															{ el: 'br'},
+															{ el: 'span', style: 'font-family: "Open Sans";', textContent: 'Google Play'},
+															'에서 ',
+															{ el: 'span', className: 'app-name-text', textContent: 'fico'},
+															'앱을 설치하면 ',
+															{ el: 'br', className: 'd-none d-md-block'},
+															{ el: 'b', textContent: '다양한 음성 설정'},
+															'이 가능합니다.'
+														]}
+													]},
+													{ el: 'a', href: 'https://play.google.com/store/apps/details?id=com.varxyz.demofico&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1',
+													children: [
+														{ el: 'img', className: 'w-100 mx-auto d-block', alt: '다운로드하기 Google Play', src: 'https://play.google.com/intl/en_us/badges/static/images/badges/ko_badge_web_generic.png'}
+													]}
+												]}
+											]}
+										]}
+									]
+								}));
+							}
+							$('#appPromotionModal').modal('show');
+						}else
+							alert('목소리 목록을 가져올 수 없습니다.');
 					}
 					return false;
 				}else {
@@ -280,7 +323,7 @@
 				}
 			}
 			const initVoices = () => {
-				voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en-') && v.name != 'Google UK English Female');
+				voices = speechSynthesis.getVoices().filter(v => /^en-/.test(v.lang) && v.name != 'Google UK English Female');
 				reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 				utterance.voice = reOrderedVoices[_options.voiceIndex];
 				this.initialized = true;
