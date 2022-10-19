@@ -1434,6 +1434,11 @@
 .guide-modal-section{
 	font-family: 'Corbel', 'HCRDotum', sans-serif;
 }
+@media (max-width: 576px) {
+	.guide-modal-section{
+		font-family: 'Frutiger', 'HCRDotum', sans-serif;
+	}
+}
 .guide-modal-section .modal-title{
     font-weight: 600;
 }
@@ -1463,6 +1468,11 @@
 	top: -5px;
 	margin-top: auto;
 	margin-bottom: auto;
+}
+@media (max-width: 576px) {
+	.guide-modal-section .example-image{
+		font-family: 'Frutiger', sans-serif;
+	}
 }
 .guide-modal-section .example-image .example{
 	position: relative;
@@ -1527,6 +1537,11 @@
     color: #b01a2c;
 	letter-spacing: 0;
 }
+@media (max-width: 576px) {
+	.tag-guide-text{
+		font-family: 'Open Sans', 'Frutiger', sans-serif;
+	}
+}
 .title-section .download-icon{
     color: #008613;
 }
@@ -1548,7 +1563,11 @@
 	vertical-align: middle;
 	font-family: 'Corbel', sans-serif;
 }
-
+@media (max-width: 576px) {
+	.origin-sentence-section .origin-sentence{
+		font-family: 'Frutiger', sans-serif;
+	}
+}
 .origin-sentence-section .origin-sentence .numbering-text{
     background-color: #5c68b6;
 	border-radius: 10px;
@@ -1565,6 +1584,12 @@
     vertical-align: middle;
     font-family: 'Corbel', sans-serif;
 	font-size: 18px;
+}
+@media (max-width: 576px) {
+	.origin-sentence-section .origin-sentence .sentence-text{
+	    font-family: 'Frutiger', sans-serif;
+		font-size: 1.125rem;
+	}
 }
 /* */
 .removable-section .edit-icons-section span{
@@ -1739,6 +1764,11 @@
 /* 인덱스 핑거 센텐스 영역 */
 .index-finger-sentence-section{
 	font-family: 'Corbel', sans-serif;
+}
+@media (max-width: 576px) {
+	.index-finger-sentence-section{
+		font-family: 'Frutiger', sans-serif;
+	}
 }
 .index-finger-sentence-section .btn-area{
 	float: right;

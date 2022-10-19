@@ -22,6 +22,12 @@
 		width: 100%;
 	}
 }
+@media (max-width: 576px) {
+	.semantics-result {
+		font-family: 'Frutiger', sans-serif;
+		font-size: 1.125rem;
+	}
+}
 /* @media (max-width: 1199.5px) {
 	.semantics-result {
 		margin: 0 0.5rem;
