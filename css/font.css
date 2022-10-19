@@ -11,9 +11,6 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Serif&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
-@import url('http://fonts.cdnfonts.com/css/avenir-next-lt-pro');
-@import url('http://fonts.cdnfonts.com/css/corbel');
-
                 
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
@@ -23,7 +20,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Cabin&display=swap');
 
 /* 나눔스퀘어 */
 @font-face {
@@ -70,15 +66,20 @@
     src: local('RIDIBatang'), url('https://cdn.jsdelivr.net/npm/@kfonts/ridi-batang/RIDIBatang.woff2');
 }
 
-
+/* 구문분석 영어(PC)*/
+@font-face {
+	font-family: 'Corbel';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Corbel'), url('https://static.findsvoc.com/font/corbel/CORBEL.TTF') format('truetype');
+}
+/* 구문분석 영어(모바일)*/
 @font-face {
 	font-family: 'Frutiger';
 	font-style: normal;
 	font-weight: normal;
 	src: local('Frutiger'), url('https://static.findsvoc.com/font/frutiger/Frutiger.otf') format('opentype');
 }
-
-
 @font-face {
 	font-family: 'Frutiger Bold';
 	font-style: normal;
