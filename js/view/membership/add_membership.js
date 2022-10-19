@@ -25,7 +25,7 @@ function pageinit(membershipCommand) {
 										{ el: 'label', htmlFor: 'inputName', className: 'col-form-label text-smd fw-bold', textContent: '후원자명' }
 									]},
 									{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-										{ el: 'input', type: 'text', id: 'inputName', name: 'remitter', value: membershipCommand.remitter, autocomplete: 'off', className: 'form-control', 'aria-describedby': 'nameHelpInline', required: true },
+										{ el: 'input', type: 'text', id: 'inputName', name: 'remitter', maxLength: 10, value: membershipCommand.remitter, autocomplete: 'off', className: 'form-control', 'aria-describedby': 'nameHelpInline', required: true },
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;후원자명은 비울 수 없습니다.' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -37,7 +37,7 @@ function pageinit(membershipCommand) {
 										{ el: 'label', htmlFor: 'inputPhone', className: 'col-form-label text-smd fw-bold', textContent: '전화번호' }
 									]},
 									{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-										{ el: 'input', type: 'text', id: 'inputPhone', name: 'phone', className: 'form-control', placeholder: '예) 01012345678', autocomplete: 'off', pattern: '[0-9]{9,12}', value: membershipCommand.phone, 'aria-describedby': 'phoneHelpInline', required: true },
+										{ el: 'input', type: 'text', id: 'inputPhone', name: 'phone', className: 'form-control', placeholder: '예) 01012345678', autocomplete: 'off', pattern: '[0-9]{8,11}', value: membershipCommand.phone, 'aria-describedby': 'phoneHelpInline', required: true },
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 전화번호를 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -53,14 +53,14 @@ function pageinit(membershipCommand) {
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 이메일을 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'd-none d-md-block col-12 col-md-3 text-end mb-auto', children: [
-										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true },
+										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxLength: 100},
 										{ el: 'button', type: 'button', className: 'check-email-btn btn btn-outline-fico', disabled: true, textContent: '중복 검사' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 										{ el: 'span', id: 'emailHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '생성될 계정의 이메일을 입력해 주세요.' }
 									]},
 									{ el: 'div', className: 'd-block d-md-none col-9 text-end mb-auto ms-auto mt-1', children: [
-										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true },
+										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxLength: 100},
 										{ el: 'button', type: 'button', className: 'check-email-btn btn btn-outline-fico w-100', disabled: true, textContent: '중복 검사' }
 									]}
 								]},
@@ -146,7 +146,7 @@ function pageinit(membershipCommand) {
 												{ el: 'label', className: 'col-form-label text-smd fw-bold', textContent: '이메일' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'email', name: 'email', className: 'form-control', value: membershipCommand.email, 'aria-describedby': 'emailHelpInline', required: !loggedin, readOnly: true },
+												{ el: 'input', type: 'email', name: 'email', className: 'form-control', value: membershipCommand.email, 'aria-describedby': 'emailHelpInline', required: !loggedin, readOnly: true, maxLength: 100 },
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 이메일을 입력해 주십시오.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -158,7 +158,7 @@ function pageinit(membershipCommand) {
 												{ el: 'label', htmlFor: 'passwd', className: 'col-form-label text-smd fw-bold', textContent: '비밀번호' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'password', className: 'form-control', id: 'passwd', name: 'passwd', autocomplete: 'off', 'aria-describedby': 'passwordHelpInline', required: !loggedin, pattern: ".{8,16}"/*, oninput: document.getElementById('passwdCheck').setAttribute('pattern',this.value);*/},
+												{ el: 'input', type: 'password', className: 'form-control', id: 'passwd', name: 'passwd', autocomplete: 'off', 'aria-describedby': 'passwordHelpInline', required: !loggedin, pattern: ".{8,16}"},
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -182,7 +182,7 @@ function pageinit(membershipCommand) {
 												{ el: 'label', className: 'col-form-label text-smd fw-bold', textContent: '이름' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'text', name: 'name', value: membershipCommand.name, className: 'form-control', 'aria-describedby': 'nameHelpInline', required: !loggedin},
+												{ el: 'input', type: 'text', name: 'name', value: membershipCommand.name, className: 'form-control', 'aria-describedby': 'nameHelpInline', required: !loggedin, maxLength: 10},
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;이름은 비울 수 없습니다.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
