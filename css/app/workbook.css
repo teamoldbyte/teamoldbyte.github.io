@@ -1712,6 +1712,12 @@
 	font-size: 1.25rem;
 	font-family: 'Corbel', sans-serif;
 }
+@media (max-width: 576px) {
+	.view-passage-section .one-sentence-unit-section .sentence-text{
+		font-size: 1.125rem;
+		font-family: 'Frutiger', sans-serif;
+	}
+}
 .view-passage-section .one-sentence-unit-section .origin-sentence-section{
 	cursor: pointer;
 	padding: 1.5rem;
