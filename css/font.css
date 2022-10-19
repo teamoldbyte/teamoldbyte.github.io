@@ -75,7 +75,7 @@
 	font-family: 'Frutiger';
 	font-style: normal;
 	font-weight: normal;
-	src: local('Frutiger'), url('https://static.findsvoc.com/font/frutiger/Frutiger.otf') format('otf');
+	src: local('Frutiger'), url('https://static.findsvoc.com/font/frutiger/Frutiger.otf') format('opentype');
 }
 
 
