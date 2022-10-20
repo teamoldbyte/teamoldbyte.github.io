@@ -439,6 +439,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		if(passageIdList.indexOf(passageId) > 0) {
 			const prevId = passageIdList[passageIdList.indexOf(passageId) - 1];
 			$('.js-prev-passage').on('click', function(){
+				$('#loadingModal').modal('show');
 				location.assign('/workbook/passage/' + ntoa(workbookId) + '/' + ntoa(prevId));
 			});
 		}else {
@@ -449,6 +450,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		&& passageIdList.indexOf(passageId) < passageIdList.length - 1) {
 			const nextId = passageIdList[passageIdList.indexOf(passageId) + 1];
 			$('.js-next-passage').on('click', function(){
+				$('#loadingModal').modal('show');
 				location.assign('/workbook/passage/' + ntoa(workbookId) + '/' + ntoa(nextId));
 			});
 		}else {
@@ -605,6 +607,10 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	const sentenceListLen = sentenceList.length;
 	for(let i = 0; i < sentenceListLen; i++){
 		const sentence = sentenceList[i];
+		/*
+		$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
+		*/
+		
 		let $sectionClone;
 		if(i > 0) {
 			$sectionClone = $copySection.clone();
@@ -650,7 +656,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		               // 로딩 제거
 		               $target.find('.ailoading').remove();
 		               $target.find('.afterload').fadeIn(300);
-	            }, /*readTime * 15*/ 1000);
+	            }, 1000);
 			}).on('shown.bs.tab', function(e) {
 				$target.collapse('show');
 			}).on('hidden.bs.tab', function() {
@@ -685,6 +691,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		$sectionClone.find('.js-collapse-svoc').toggle((svocListLen > 1));
 
 		for(let j = 0; j < svocListLen; j++) {
+			
 			let svocTag = svocList[j];
 			const $svocBlock = $(createElement(svocSectionJson));
 			$svocBlock.appendTo($sectionClone.find('.result-semantic-section'));
@@ -795,6 +802,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 							.find('.sentence-text').text(finger.eng);
 			}
 		}
+		
 	}
 	
 	// [모든 문장 렌더링 완료 - 로딩 이미지 제거]----------------------------------------
