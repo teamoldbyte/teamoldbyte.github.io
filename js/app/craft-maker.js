@@ -151,6 +151,10 @@
 	.on('click', '.battle-context *', function() {
 		if(this.closest('.battle-maker')) {
 			if(this.nodeName == 'SPAN') {
+				if(this.closest('.add-battle-section').querySelector('.battle-type-section .btn-check:checked').value == 7) {
+					this.closest('.battle-maker').querySelector('.select-kor .custom-trans').remove();
+					this.closest('.battle-maker').querySelector('.select-kor').classList.remove('pe-none');
+				}
 				this.outerHTML = this.innerHTML;
 			}else {
 				this.remove();
@@ -251,9 +255,8 @@
 												wrong4.textContent.trim(), wrong4.dataset.wrong.trim() ]);
 				break;
 			case '5':
-				if(Array.from(battleContext.querySelectorAll('.option'), opt => opt.textContent).join('').replace(/\W/g,'')
-				!= battleContext.textContent.replace(/\W/g,'')) {
-					alert('보기를 모두 더하면 원문이 되도록 선택해 주세요.');
+				if(battleContext.querySelectorAll('.option').length == 0) {
+					alert('보기를 추가해 주세요.');
 					return;
 				}
 				// 목록에서 선택한 해석id는 ask로
@@ -276,7 +279,10 @@
 				}));
 				break;
 			case '7':
-				// 목록에서 선택한 해석id는 ask로
+				if(battleContext.querySelectorAll('.option').length > 0) {
+					command.answer = JSON.stringify(findPositions(battleContext, '.option')[0])
+				}
+				// 목록에서 선택한 해석id는 ask로(영문 구간을 따로 선택했다면 입력한 해석내용을 ask로)
 				command.ask = addSection.querySelector('.select-kor').value;
 				// [ 추가단어1, 추가단어2, ... ]
 				command.example = JSON.stringify(Array.from(addSection.querySelector('.battle-kor-ext').value.trim().split('/'), ext => ext.trim()));
@@ -299,6 +305,11 @@
 				pushToCache(source, cachedSources);
 				// 카테고리-태그 갱신
 				cachedCateAskTagMap[categoryId] = askTag;
+				// 커스텀 해석 삭제
+				if(addSection.querySelector('.select-kor .custom-trans')) {
+					addSection.querySelector('.select-kor .custom-trans').remove();
+					addSection.querySelector('.select-kor').classList.remove('pe-none');
+				}
 				
 				if(!document.getElementById('craftResultModal')) {
 					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
@@ -318,7 +329,9 @@
 				command.battleId = response.battleId;
 				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
 				if(command.battleType == '7') {
-					command.kor = $(battlePanel).data('transList').find(t => t.id == parseInt(command.ask)).text.trim();
+					command.kor = (command.answer != null) 
+						? command.ask 
+						: $(battlePanel).data('transList').find(t => t.id == parseInt(command.ask)).text.trim();
 				}
 				const battleList = battlePanel.querySelector('.existing-battles-section');
 				const newBattle = previewBattle($(battlePanel).data('eng'), command);
@@ -686,14 +699,15 @@
 			REGEX_SHORT_VERB = /('m|'re|'s|'d|'ll|'ve)$/;
 		if(!sel.isCollapsed && chkdBtn) {
 			const context = maker.querySelector('.battle-context');
-			if(sel.toString().trim() == context.textContent.trim()
+			if(sel.toString().replace(/\W/g,'') == context.textContent.replace(/\W/g,'')
 			|| !(8 & sel.anchorNode.compareDocumentPosition(context)
 				 & sel.focusNode.compareDocumentPosition(context))) return;
 			
 			const battleType = parseInt(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
 			
-			// 배틀 3,4 유형에 정답을 두 개 이상 선택하려는 경우 취소 
-			if([3,4].includes(battleType) && chkdBtn.value.match(/pick-right|answer-wrong/) && context.getElementsByClassName(chkdBtn.value).length > 0) {
+			// 배틀 3,4,7 유형에 정답을 두 개 이상 선택하려는 경우 취소 
+			if(([3,4].includes(battleType) && chkdBtn.value.match(/pick-right|answer-wrong/) && context.getElementsByClassName(chkdBtn.value).length > 0)
+			|| (battleType == 7 && context.getElementsByClassName(chkdBtn.value).length > 0)) {
 				alert('이 유형의 배틀은 복수 정답을 허용하지 않습니다.\n기존 정답을 눌러 지워 주세요.');
 				return;
 			}
@@ -730,8 +744,8 @@
 			while(sel.toString().match(REGEX_ENDSWITH_WHITESPACE_PUNCT)) {
 				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset - 1);
 			}
-			if(sel.toString().trim().length == 0) return;
-			
+			if(sel.toString().trim().length == 0 || sel.toString().replace(/\W/g,'') == context.textContent.replace(/\W/g,'')) 
+				return;
 			pushEditHistory(context);
 			
 			const wrapper = document.createElement('span');
@@ -746,6 +760,17 @@
 				const wrong = prompt(`${wrapper.textContent}의 오답을 입력하세요.`);
 				if(wrong) {
 					wrapper.dataset.wrong = wrong;
+				}else {
+					$(wrapper.firstChild).unwrap();
+				}
+			}
+			if(battleType == 7) {
+				const kor = prompt('선택한 구간의 해석을 입력하세요.');
+				if(kor) {
+					maker.querySelector('.select-kor').appendChild(createElement({
+						el: 'option', className: 'custom-trans', value: kor, 'data-trans': kor, textContent: kor, selected: true
+					}));
+					maker.querySelector('.select-kor').classList.add('pe-none');
 				}else {
 					$(wrapper.firstChild).unwrap();
 				}
