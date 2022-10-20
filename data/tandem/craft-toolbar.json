@@ -707,6 +707,17 @@
 		]
 	},
 	"battle7": {
-		"el": "div"
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "해석구간 선택",
+				"innerHTML": "해석구간",
+				"value": "option"
+			}
+		]		
 	}
 }
