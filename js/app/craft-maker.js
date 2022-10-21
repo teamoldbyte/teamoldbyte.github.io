@@ -280,7 +280,7 @@
 				break;
 			case '7':
 				if(battleContext.querySelectorAll('.option').length > 0) {
-					command.answer = JSON.stringify(findPositions(battleContext, '.option')[0])
+					command.answer = JSON.stringify(findPositions(battleContext, '.option'))
 				}
 				// 목록에서 선택한 해석id는 ask로(영문 구간을 따로 선택했다면 입력한 해석내용을 ask로)
 				command.ask = addSection.querySelector('.select-kor').value;
