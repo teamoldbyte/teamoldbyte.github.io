@@ -50,9 +50,10 @@ body{
 	font-family: 'Chosunilbo_myungjo';
 	/*font-size: .75rem;*/
 	font-size: 1.25rem;
-	color: #fff;
-	background-color: var(--fc-purple);
+	color: var(--fc-yellow);
+	background:  linear-gradient(to right, #24243e, #302b63, #0f0c29);
 	padding: 1rem;
+	border-radius: 5px;
 }
 @media (max-width: 767px) {
 	.title-section .title-text {
