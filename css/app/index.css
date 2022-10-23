@@ -39,16 +39,19 @@ body{
 	color: #DD191D;
 }
 .sub-title .eng{
-	font-family: 'Baloo Bhai 2';
-	font-size: 1.5rem;
+	font-family: 'Corbel';
+	font-weight: 600;
+	font-size: 1.75rem;
 	display: inline-block;
-	/*margin-top: 0.5rem;*/
+	color: #fff;
 }
 .title-section .sub-title {
 	font-family: 'Chosunilbo_myungjo';
 	/*font-size: .75rem;*/
 	font-size: 1.25rem;
-	color: #000;
+	color: #fff;
+	background-color: var(--fc-purple);
+	padding: 1rem;
 }
 @media (max-width: 767px) {
 	.title-section .title-text {
@@ -86,7 +89,7 @@ body{
 }
 /**/
 .sub-block {
-	width: 30%;
+	width: 31%;
 	position: relative;
 	background-color: #fff;
 	margin: auto;
@@ -96,12 +99,14 @@ body{
 }
 .service-list .sub-block:nth-child(1) {
 	background: radial-gradient(#E68181, #cc0303, #660202);
+	margin-left: 0;
 }
 .service-list .sub-block:nth-child(3) {
 	background: radial-gradient(#fff 60%, var(--slate));
 }
 .service-list .sub-block:nth-child(5) {
 	background: radial-gradient(#809BCA, #003695, #001B4B);
+	margin-right: 0;
 }
 .service-list .sub-block:nth-child(1) .title,
 .service-list .sub-block:nth-child(5) .title{
@@ -132,6 +137,10 @@ body{
 	color: #5169e6;
 }
 /* 서비스 안내 영역 */
+.service-info-list{
+	width: 97%;
+	margin: auto;
+}
 .service-info-list > div{
 	width: 100%;
 	/*margin: 0 auto;*/
