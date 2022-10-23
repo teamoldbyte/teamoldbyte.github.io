@@ -44,6 +44,7 @@ body{
 	font-size: 1.75rem;
 	display: inline-block;
 	color: #fff;
+	width: 100%;
 }
 .title-section .sub-title {
 	font-family: 'Chosunilbo_myungjo';
@@ -137,10 +138,6 @@ body{
 	color: #5169e6;
 }
 /* 서비스 안내 영역 */
-.service-info-list{
-	width: 97%;
-	margin: auto;
-}
 .service-info-list > div{
 	width: 100%;
 	/*margin: 0 auto;*/
