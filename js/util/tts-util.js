@@ -90,7 +90,7 @@
 		//Firefox
 		 "Microsoft Zira Desktop - English (United States)":"Zira" //미국 여자
 	}
-	const sampleText = 'Hi. I\'m fico advisor.';
+	const SAMPLE_TEXT = 'Welcome to fico. We are making all of the sentences in reading comprehension.';
 	let voices, reOrderedVoices;
 	let utterance;
 	let _options = {initSuccessCallback: function(){}, initFailCallback: function(){}};
@@ -142,7 +142,7 @@
 			}
 			
 			this.speakSample = (idx, rate, pitch) => {
-				ANI.ttsSpeakSample(sampleText, 
+				ANI.ttsSpeakSample(SAMPLE_TEXT, 
 				voices.indexOf(reOrderedVoices[idx]), rate, pitch, [makeFunc2Callback(()=> {
 					ANI.changeTTSOptions(JSON.stringify(Object.assign({}, _options, {voiceIndex: voices.indexOf(reOrderedVoices[idx])})));
 				})]);
@@ -234,7 +234,7 @@
 				speechSynthesis.speak(utterance);
 			}
 			this.speakSample = (idx, rate, pitch) => {
-				utterance.text = sampleText;
+				utterance.text = SAMPLE_TEXT;
 				utterance.voice = reOrderedVoices[idx];
 				utterance.rate = rate;
 				utterance.pitch = pitch;
