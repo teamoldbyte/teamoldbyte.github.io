@@ -18,6 +18,9 @@ body{
 	margin-top: 6rem;
 }
 
+.fico-index-section .title-section.catchphrase{
+	margin: auto auto 2rem auto;
+}
 .title-section .title-text {
 	font-family: 'Nanum Pen Script', cursive;
 	font-size: 3.25rem;
@@ -38,24 +41,57 @@ body{
 .sentence-burger{
 	color: #DD191D;
 }
-.sub-title .eng{
+.thanx-text, 
+.catchphrase{
 	font-family: 'Corbel';
-	font-weight: 600;
-	font-size: 1.75rem;
-	display: inline-block;
+   /* font-weight: 600; */
+   font-size: 1.5rem;
+   display: inline-block;
+   color: #FFE05A;
+   width: 100%;
+}
+.thanx-text{
 	color: #fff;
-	width: 100%;
+	text-align: center;
+	margin: 25px 0;
+}
+.catchphrase{
+	/*height: 2.2rem;*/
+	height: 48px;
+	font-size: 1.125rem;
+	text-align: right;
+	margin-top: 23px; 
+	margin-bottom: 5px;
+}
+.catchphrase .eng{
+/*	height: 1.5rem;*/	
+	display: block;
+}
+.catchphrase .upper-text{
+	font-size: 10px;
+	transform:scale(0.5);
+	 display: inline-block;
+	vertical-align: super;
+	border: 0.5px solid var(--fc-yellow);
+	border-radius: 50%;
+	padding: 0 3px;
+    right: -7px;
+    top: -2px;
 }
 .title-section .sub-title {
-	font-family: 'Chosunilbo_myungjo';
-	/*font-size: .75rem;*/
-	font-size: 1.25rem;
-	color: var(--fc-yellow);
-	background:  linear-gradient(to right, #24243e, #302b63, #0f0c29);
-	padding: 1rem;
-	border-radius: 5px;
+	 font-family: 'Chosunilbo_myungjo';
+   /*font-size: .75rem;*/
+   font-size: 1.25rem;
+   color: var(--fc-yellow);
+   background:  linear-gradient(to right, #24243e, #302b63, #0f0c29);
+   padding: 0.7rem;
+   border-radius: 5px;
 }
 @media (max-width: 767px) {
+	.fico-index-section .title-section.catchphrase{
+		margin: auto auto 0.5rem auto;
+	}
+
 	.title-section .title-text {
 		font-size: 1.75rem;
 	}
@@ -65,9 +101,25 @@ body{
 	.title-section .sub-title {
 		font-size: 1.125rem;
 	}
+	.sub-title .eng{
+		font-size: 1.35rem;
+	}
+	.thanx-text, 
+	.catchphrase{
+	   color: #0a214a;
+	}
+	.thanx-text{
+	   padding: 0 0 5px 0;
+	}
+	.catchphrase{
+	    padding: 0;
+	}
 }
 .service-type-section{
-	margin-bottom: 9rem;
+	/*margin-bottom: 9rem;*/
+	padding: 0 calc(50px + 1.5rem);
+	background-color: #262841;
+	border-radius: 5px;
 }
 
 .service-type-section .title-section:nth-child(1){
@@ -78,8 +130,13 @@ body{
 	margin-top: 3rem;
 }
 @media (max-width: 767px) {
+	.sub-title .eng{
+		color: #0a214a;
+	}
+
 	.service-type-section{
-		padding-top:0;
+		padding:0;
+		background-color: transparent;
 	}
 	.service-type-section .title-section:nth-child(1){
 		margin-bottom: 1rem;
@@ -91,13 +148,14 @@ body{
 }
 /**/
 .sub-block {
-	width: 31%;
+	width: 32%;
 	position: relative;
 	background-color: #fff;
 	margin: auto;
 	/*height: 15vw;*/
 	border-radius: 5px;
-	box-shadow: 0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
+	/*box-shadow: 0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);*/
+	box-shadow: rgb(0 0 0 / 6%) 0px 2px 4px 0px inset;
 }
 .service-list .sub-block:nth-child(1) {
 	background: radial-gradient(#E68181, #cc0303, #660202);
@@ -146,6 +204,7 @@ body{
 	padding: 1rem;
 	position: relative;
 	border-radius: 5px;
+	margin-top: 0.5rem;
 }
 .service-info-list .workbook-info{
 	background: 
@@ -225,6 +284,7 @@ body{
 	.service-info-list > div{
 		width: 100%;
 		position: relative;
+		margin-top: 0;
 		margin-bottom: 0.5rem;
 		background-color: #e4e4e4;
 	}

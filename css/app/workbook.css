@@ -1292,11 +1292,56 @@
 	text-align: right;
 	color: var(--fc-purple);
 }
-.workbook-cover-section .passage-title{
+.full-text-section .passage-title-block{
+	position: absolute;
+	right: 0;
+	bottom: 0;
 	text-align: right;
 	color: #5c68b6;
-	font-size: 0.75rem;
+	font-size: 1rem;
 }
+.view-passage-section .book-cover-section{
+	width: 5rem; 
+	height: 7rem;
+}
+.view-passage-section .book-cover.default{
+	background: top/10rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg),#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg);
+}
+.view-passage-section .book-cover.default::before{
+	font-size: 10px;
+	transform: scale(0.3);
+	
+	display: none;
+}
+.view-passage-section .book-cover.default::after{
+	font-size: 15px;
+}
+.view-passage-section .book-cover.default .book-title{
+	font-size: 10px;
+}
+@media (max-width: 576px) {
+	.full-text-section .passage-title-block{
+		position: relative;
+	}
+	.full-text-section .passage-title-block .edit-block input{
+		padding: 0.25rem;
+	}
+}
+.full-text-section .passage-title-block .passage-title-text{
+	font-weight: 700;
+	color: var(--fc-purple);
+	text-decoration: underline;
+	text-underline-offset: 0.25rem;
+}
+.full-text-section .passage-title-block .display-block,
+.full-text-section .passage-title-block .edit-block{
+	transition: all .2s cubic-bezier(0,0,.2,1);
+}
+.full-text-section .passage-title-block .edit-block input{
+	/*height: 25px;*/
+	font-size: 0.9rem;
+}
+
 .placeholder-wave {
   mask-image: linear-gradient(130deg, black 55%, rgba(0, 0, 0, .25) 75%, black 95%);
   -webkit-mask-image: linear-gradient(130deg, black 55%, rgba(0, 0, 0, .25) 75%, black 95%);
@@ -1353,6 +1398,7 @@
 
 /* 전체 지문 영역 */
 .view-passage-section .full-text{
+	font-family: 'Avenir';
 	border-radius: 10px;
 	padding: 1rem 1.5rem;
 	background-color: #002060;
@@ -1379,6 +1425,11 @@
 	letter-spacing: 0;
 	position: relative;
 } 
+@media (max-width: 576px) {
+	.view-passage-section .title-section{
+		margin-bottom: 0;
+	} 
+}
 .view-passage-section .title-section .title{
 	font-family: 'NanumBarunGothic', sans-serif;
 	font-size: 20px;
