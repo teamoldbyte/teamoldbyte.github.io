@@ -181,10 +181,11 @@ u {
 	color: #5c68b6;
 }
 .sub-block{
-	border-radius: 5px;
+	border-radius: 10px;
 	position: relative;
 	/*background: linear-gradient(to right, #495493, #1B203A);*/
 	background-color: #5169e6;
+	margin-bottom: 0.5rem;
 }
 .sub-block .icon-section{
 	position: absolute;
@@ -232,10 +233,13 @@ u {
 	left: 50%;
 	transform: translateX(-50%);
 	bottom: -50px;
+	height: 100px;
 }
+.personal-info-block .rank-icon object,
 .personal-info-block .rank-icon img{
 	background-color: #eee;
 	border-radius: 50%;
+	width: 100px;
 }
 .personal-info-block .rate-text-section{
 	width: 10px;
@@ -320,6 +324,142 @@ u {
 /* 배틀 북 타입 목록 */
 .book-type-list{
 	height: 100%;
+}
+.battle-book-list::before {
+	content: '';
+	position: absolute;
+	top: -2rem;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 0;
+	height: 0;
+	border-bottom: 1rem solid #fff;
+	border-top: 1rem solid transparent;
+	border-left: 1rem solid transparent;
+	border-right: 1rem solid transparent;
+}
+.book-type-list .book-type.my .sub-block{
+	margin-bottom: 0;
+}
+/* 배틀 타입 별 배틀북 목록 */
+.battle-book-list{
+	background-color: #fff;
+	position:relative;
+	padding: 1rem;
+	border-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px; 
+}
+.my-book-type .book{
+	margin-bottom: 0.5rem;
+	height: 50px;
+	background-color: #ececec;
+	border-radius: 5px;
+	padding: 0.125rem 0.5rem;
+	display: flex;
+	width: calc((100% - 1rem) / 3);
+}
+.battle-book-list .my-book-type:last-child .book{
+	margin-bottom: 0;
+}
+.my-book-type.step .book{
+	background-color: #f6e9ff;
+}
+.my-book-type.theme .book{
+	background-color: #e9f8ff;
+}
+.my-book-type.grammar .book{
+	background-color: #fff6e9;
+}
+.my-book-type .book:nth-child(3n-1){
+	margin: 0 0.5rem;
+}
+.my-book-type .book .title{
+	min-width: 50%;
+}
+.my-book-type .book .title-text{
+	display: inline-block;
+	width: 100%;
+	text-align: left;
+	line-height: 50px;
+	color: var(--fc-purple);
+}
+.my-book-type .book .icon{
+	font-size: 1rem;
+}
+.my-book-type .book .wrong-book-btn{
+	color: var(--bs-danger);
+}
+.battle-book-list .book.disabled{
+	opacity: 0.5;
+}
+.my-book-type .book .button-section button{
+	background: rgba(255,255,255,.75);
+	backdrop-filter: blur( 15px );
+	-webkit-backdrop-filter: blur( 15px );
+	border-radius: 5px;
+	border: 1px solid rgba(255,255,255,.05);
+	height: 60%;
+	margin: auto;
+	width: 33%;
+	position: relative;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 2px 0px;
+}
+/*
+.my-book-type.theme .book .button-section button,
+.my-book-type.grammar .book .button-section button{
+	width: 33%;
+}
+*/
+.my-book-type .book .button-section .icon{
+	position: absolute;
+	left: 50%;
+	/*top: 50%;*/
+	transform: translate(-50%, -50%);
+}
+.my-book-type .book .button-section .play-book-btn .icon{
+	color: #201ed1;
+}
+.my-book-type .book .button-section .wrong-book-btn .icon,
+.my-book-type .book.step .title-text .wrong{
+	color: #c30000;
+}
+.my-book-type .book .button-section .save-book-btn .icon,
+.my-book-type .book.step .title-text .save{
+/*	color: #007100;*/
+	color: #06aa06; 
+}
+.craft-index-section .save-button-section .save-btn::after{
+	color: #000;
+}
+
+.my-book-type .book .title-text{
+	font-family: 'Frutiger', 'NanumBarunGothic';
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+@media(max-width: 768px){
+	/* 배틀 타입 별 배틀북 목록 */
+	.battle-book-list{
+		padding: 0.25rem;
+	}
+
+	.my-book-type .book .button-section button{
+		height: 75%;
+	}
+	.my-book-type .book{
+		width: 100%;
+		margin-bottom: 0.25rem;
+	}
+	.my-book-type .book:nth-child(3n-1){
+		margin: 0 0 0.25rem 0;
+	}
+	.battle-book-list .my-book-type:last-child .book{
+		margin-bottom: 0.25;
+	}
+	.battle-book-list .my-book-type .book:last-child{
+		margin-bottom: 0;
+	}
 }
 /**********************************************************
  *				play.html  
@@ -860,8 +1000,8 @@ u {
 .example-btn-section .wrong{
 	
 }
-.craft-layout-section .arranged-examples .btn:hover,
-.craft-layout-section .arranged-examples .btn.active{
+.craft-layout-section .arranged-example-section .btn:hover,
+.craft-layout-section .arranged-example-section .btn.active{
 	color: #5169e6;
 	background: #ffffff;
 }
@@ -906,18 +1046,18 @@ u {
 	opacity: 0.25;
 }
 /* 선택한 보기 영역 */
-.arranged-examples{
+.arranged-example-section{
 	padding: 0 1rem;
 	margin-bottom: 2rem;
 	text-align: center;
 	/*background: linear-gradient(to right, #49549D, #393E58);*/
 }
-.arranged-examples .full-sentence{
+.arranged-example-section .full-sentence{
 	font-size: 1.25rem;
 	color: #ffffff;
 	margin-bottom: 2rem;
 }
-.arranged-examples .btn-outline-fico {
+.arranged-example-section .btn-outline-fico {
 	height: auto;
 	font-size: 1.125rem;
 	/*padding: 0.25rem 0.5rem;*/
@@ -927,14 +1067,18 @@ u {
 	margin-bottom: 0.5rem;
 	margin-right: 0.5rem;
 }
-.arranged-examples .btn-outline-fico.wrong {
+.arranged-example-section .btn-outline-fico.wrong {
 	background-color: #f44336;
 }
-.arranged-examples .btn:hover{
+.arranged-example-section .btn:hover{
 	background-color: #5A6497;
 	color: #fff;
 }
-
+/* 선택한 보기 영역 - 배틀5에 생길 빈칸 부분 */
+.arranged-example.ui-sortable:not(.full) {
+    min-width: 3em;
+    height: 2em;
+}
 /* 간단한 질문 보기 영역 */
 .simple-ask-block{
 	text-align: center;
