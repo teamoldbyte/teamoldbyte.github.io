@@ -434,7 +434,6 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		}
 	}
 
-
 /* ------------------------------- 지문 관련 ---------------------------------- */
 	
 	if(passageIdList != null) {
@@ -802,13 +801,16 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				var senseListLen = senseList.length;
 				
 				for(let k = 0; k < senseListLen; k++) {
-					const sense = senseList[k]; $partBlock = $partCopySection.clone();
+					const sense = senseList[k], $partBlock = $partCopySection.clone();
 					
 					$wordBlock.append($partBlock);
 					$partBlock.find('.part').text(sense.partType);
 					$partBlock.find('.meaning').text(sense.meaning);
 				}
 			}
+			// 데스크탑에서는 단어리스트 미리 표시
+			if(window.innerWidth > 576)
+				$sectionClone.find('.nav-link[data-type="word-list"]').tab('show');
 		}
 		
 		// 6. 유사 문장 표시 
