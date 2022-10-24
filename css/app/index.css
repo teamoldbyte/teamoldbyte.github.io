@@ -54,6 +54,7 @@ body{
 	color: #fff;
 	text-align: center;
 	margin: 25px 0;
+	word-spacing: 5px;
 }
 .catchphrase{
 	/*height: 2.2rem;*/
@@ -109,10 +110,13 @@ body{
 	   color: #0a214a;
 	}
 	.thanx-text{
-	   padding: 0 0 5px 0;
+	   margin: 0 0 5px 0;
 	}
 	.catchphrase{
-	    padding: 0;
+	    margin: 0;
+	}
+	.catchphrase .upper-text{
+		border: 0.5px solid #0a214a;
 	}
 }
 .service-type-section{
@@ -152,6 +156,7 @@ body{
 	position: relative;
 	background-color: #fff;
 	margin: auto;
+	padding: 1rem;
 	/*height: 15vw;*/
 	border-radius: 5px;
 	/*box-shadow: 0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);*/
@@ -302,6 +307,17 @@ body{
 	}
 	.service-list .sub-block:nth-child(5) {
 		background: radial-gradient(#809BCA, #003695, #001B4B);
+	}
+}
+@media (max-width: 768px) {
+	.sub-block {
+		padding: 0.5rem;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
+	}
+	/* 서비스 안내 영역 - 로티 애니메이션 */
+	.sub-block .lottie-section{
+		width: auto;
+		height: 150px;
 	}
 }
 /*------------------------------------------------------------------------------
