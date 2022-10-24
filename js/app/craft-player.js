@@ -1273,11 +1273,14 @@
 				rankProgress.style.width = `${rankPercent}%`;			
 			}			
 		}else {
-			const bookProgress = document.querySelector('.progress-bar');
-			const bookPercent = (_progressNum * 100 / _battleSize).toFixed(1);
-			bookProgress.ariaValueNow = bookPercent;
-			bookProgress.textContent = `${bookPercent}%`;
-			bookProgress.style.width = `${bookPercent}%`;				
+			return new Promise(resolve => {
+				const bookProgress = document.querySelector('.progress-bar');
+				const bookPercent = (_progressNum * 100 / _battleSize).toFixed(1);
+				bookProgress.ariaValueNow = bookPercent;
+				bookProgress.textContent = `${bookPercent}%`;
+				bookProgress.style.width = `${bookPercent}%`;				
+				resolve();
+			})
 		}
 	}
 	
