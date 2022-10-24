@@ -423,14 +423,17 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		$('#addPassageBtn, #editPassageBtn, #editWorkbookBtn').remove();
 	}
 	// 워크북 커버 이미지가 있을 경우 표시, 없으면(혹은 확장자명 없을 경우) 기본 이미지 표시
-	if(workbookCoverImg != null && /.+\.[A-Za-z]+$/.test(workbookCoverImg)) {
-		$workbookCover.css('background', 'url(' +
-			((workbookCoverImg.indexOf('https://') > -1)
-			? workbookCoverImg : ('/resource/workbook/cover/' + workbookCoverImg)) 
-			+ ') center/cover no-repeat');
-	}else{
-		$workbookCover.css('background', 'var(--fc-logo-head) center/cover no-repeat #121E34');
+	if(!document.querySelector('.book-title')) {
+		if(workbookCoverImg != null && /.+\.[A-Za-z]+$/.test(workbookCoverImg)) {
+			$workbookCover.css('background', 'url(' +
+				((workbookCoverImg.indexOf('https://') > -1)
+				? workbookCoverImg : ('/resource/workbook/cover/' + workbookCoverImg)) 
+				+ ') center/cover no-repeat');
+		}else{
+			$workbookCover.css('background', 'var(--fc-logo-head) center/cover no-repeat #121E34');
+		}
 	}
+
 
 /* ------------------------------- 지문 관련 ---------------------------------- */
 	
@@ -467,7 +470,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// [지문 타이틀 수정]-----------------------------------------------------------
 	$('.passage-title-block').on('click', '.display-block', function() {
 		if($(this).siblings('.edit-block').length > 0)
-			$(this).add($(this).siblings('.edit-block')).toggle();
+			$(this).add($(this).siblings('.edit-block')).collapse('toggle');
 	}).on('click','.js-edit-ptitle', function() {
 		const titleSection = this.closest('.passage-title-block');
 		const passageTitle = $(titleSection).find('.title-input').val().trim();
@@ -480,14 +483,14 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// (ajax) 지문 타이틀 수정-----------
 		editPassageTitle(command, () => {
 			alert('지문 제목이 수정되었습니다.');
-			$(titleSection).find('.edit-block').hide();
-			$(titleSection).find('.display-block').show().find('.passage-title-text').text(passageTitle||'제목 없음');
+			$(titleSection).find('.edit-block').collapse('hide');
+			$(titleSection).find('.display-block').collapse('show').find('.passage-title-text').text(passageTitle||'제목 없음');
 		}, () => alert('지문 제목 수정 중 오류가 발생했습니다.'));
 		//-----------------------------------------------
 	}).on('click', '.js-cancel-ptitle', function() {
 		const titleSection = this.closest('.passage-title-block');
-		const $title = $(titleSection).find('.display-block').show().find('.passage-title-text');
-		$(titleSection).find('.edit-block').hide().find('.title-input').val($title.text());
+		const $title = $(titleSection).find('.display-block').collapse('show').find('.passage-title-text');
+		$(titleSection).find('.edit-block').collapse('hide').find('.title-input').val($title.text());
 	})
 	
 	// 지문의 노트/질문 토글 설정-----------------------------------------------------
