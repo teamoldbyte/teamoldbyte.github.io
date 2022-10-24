@@ -429,7 +429,9 @@
 							};	
 						}
 						moveSolveBtn(true);
-						calcProgress(); },
+						if(_progressNum != null) _progressNum++;
+						calcProgress(); 
+					},
 					error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
 					complete: (_x,s) => {
 						if(s == 'parsererror') loginExpiredModal();
@@ -968,8 +970,8 @@
 		_memberId = command?.memberId||0;
 		_battleBookId = command.battleBookId;
 		_lastBattleId = command.lastBattleId;
-		_progressNum = progressNum - 1; // progressNum은 현재의 순서값(지나온 갯수X)
-		_battleSize = battleSize;
+		if(progressNum != null) _progressNum = progressNum - 1; // progressNum은 현재의 순서값(지나온 갯수X)
+		if(battleSize != null) _battleSize = battleSize;
 		
 		// Today Craft Battle Solve Count
 		if(_contentType == 'step') {
