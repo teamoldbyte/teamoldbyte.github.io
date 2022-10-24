@@ -502,6 +502,7 @@
 				// 다시 첫문제로 돌아온 후 아직 풀이를 안 한 상황
 				if(currentBattle == null && _lastBattleId != -1) {
 					_lastBattleId = -1;
+					_progressNum = 0;
 					_getNextBattles();
 				}else solveAllsOfBook();
 			}
@@ -970,7 +971,7 @@
 		_memberId = command?.memberId||0;
 		_battleBookId = command.battleBookId;
 		_lastBattleId = command.lastBattleId;
-		if(progressNum != null) _progressNum = progressNum - 1; // progressNum은 현재의 순서값(지나온 갯수X)
+		if(progressNum != null) _progressNum = progressNum; // progressNum은 현재의 지나온 갯수
 		if(battleSize != null) _battleSize = battleSize;
 		
 		// Today Craft Battle Solve Count
@@ -1162,6 +1163,7 @@
 									{"el":"button","class":"btn btn-outline-fico", 'data-bs-dismiss': 'modal', onclick: () => {
 										isLastPageOfTheBook = false;
 										_lastBattleId = -1;
+										_progressNum = 0;
 										_getNextBattles();
 										
 									},"textContent":"첫 배틀부터 다시 플레이"}
