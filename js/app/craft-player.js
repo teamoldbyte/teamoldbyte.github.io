@@ -503,6 +503,7 @@
 				if(currentBattle == null && _lastBattleId != -1) {
 					_lastBattleId = -1;
 					_progressNum = 0;
+					calcProgress();
 					_getNextBattles();
 				}else solveAllsOfBook();
 			}
