@@ -1057,6 +1057,7 @@
 				}
 				cursor.continue();
 			}else {
+				battlePool.sort((a,b) => a.rnum - b.rnum);
 				initDatas(age);
 			} 			
 		}
