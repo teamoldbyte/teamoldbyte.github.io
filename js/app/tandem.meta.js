@@ -341,6 +341,11 @@
 			if (['AP', 'PP'].includes(role) && !hasKey(metaSet, 'name', 'PTC')) {
 				metaSet.push({ depth: depth + 1, name: 'PTC' });
 			}
+			// 분사구문(PTCPHR)이 있으면 PTCPHR을 GramMeta에 추가
+			if(child.ptcphr) {
+				metaSet.push({ depth: depth + 1, name: 'PTCPHR'});
+			}
+			
 			// '의미상 주어'가 있으면 태그 추가
 			if(child.rc == SENSE_SUBJ) 
 				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'});
