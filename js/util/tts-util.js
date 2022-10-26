@@ -184,6 +184,10 @@
 				else {
 					voiceTryCount = 0;
 					clearInterval(waitVoices);
+					if(!localStorage.getItem('FicoTTSOptions') && reOrderedVoices.find(v => v.name == 'en-us-x-tpc-network')) {
+						_options.voiceIndex = reOrderedVoices.findIndex(v => v.name == 'en-us-x-tpc-network');
+						this.changeOptions();
+					}
 					waitVoices = null;
 					showLists();
 				}
