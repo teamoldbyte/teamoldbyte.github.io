@@ -21,7 +21,7 @@
 					, children: [ { el: 'object', data: 'https://static.findsvoc.com/images/app/egg/new-title.svg',
 						style: { position: 'absolute', top: '3vmin', left: '37.5%', width: '25%', height: '20%', zIndex: 2, overflow: 'visible'}}] 
 					},
-					{ el: 'span', className: 'circle-dark-dashed', style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', borderRadius: '37vmin', backgroundColor: 'transparent', border: '2vmin dashed var(--fc-purple)', width: '76vmin', height: '76vmin' }
+					{ el: 'span', className: 'circle-dark-dashed', style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%) translateZ(0)', borderRadius: '37vmin', backgroundColor: 'transparent', border: '2vmin dashed var(--fc-purple)', width: '76vmin', height: '76vmin' }
 					}
 				]},
 				{ el: 'div', className: 'modal-footer d-block border-0 text-center', children: [
@@ -1080,6 +1080,7 @@
 		clone.style.visibility = 'hidden';
 		thrower.style.display = 'block';
 		thrower.style.position = 'fixed';
+		thrower.style.transform = 'translateZ(0)';
 		if(targetSection.matches('.arranged-example-section') && !targetSection.querySelector('.arranged-example'))
 			targetSection.appendChild(createElement({ el: 'span', className: 'arranged-example'}));
 		
@@ -1105,7 +1106,6 @@
 			},
 			top: [$(_this).offset().top, $(clone).offset().top],
 			left: [$(_this).offset().left, $(clone).offset().left],
-			translateZ: 0,
 			easing: 'linear',
 			complete: () => {
 				thrower.remove();
@@ -1239,22 +1239,20 @@
 					$('#newRankModal .modal-body .new-obj').remove();
 					
 					const newRank = createElement({
-					el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
-						maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)',
-						background: `center/ cover url(https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg) no-repeat`
-					}
-				})
+						el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
+							maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%) translateZ(0)',
+							background: `center/ cover url(https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg) no-repeat`
+						}
+					});
 					$('#newRankModal .modal-body').append(newRank);
 					$('#newRankModal').modal('show');
 					anime({
 						targets: '#newRankModal .circle-dark object',
 						scale: [0,1],
-						translateZ: 0,
 						duration: 1200
 					})
 					anime({
 						targets: '#newRankModal .circle-dark-dashed',
-						translateZ: 0,
 						rotateZ: 360,
 						duration: 8000,
 						loop: true,
@@ -1272,7 +1270,6 @@
 						targets: newRank,
 						duration: 1000,
 						scale: [0,1],
-						translateZ: 0,
 						opacity: [0,1]
 					})
 					/*showFireworks({target:$('.battle-section:visible')[0], distance: 100, size: 10})
