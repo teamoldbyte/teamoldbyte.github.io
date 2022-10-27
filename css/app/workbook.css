@@ -622,14 +622,17 @@
 	height: 3rem;
 	margin-bottom: 0;
 	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	overflow: hidden;
+ 	-webkit-box-orient: vertical;
+ 	-webkit-line-clamp: 2;
+ 	overflow: hidden;
 }
-/*.workbook-index-section .book-section .book-title{
-	white-space: break-spaces;
+.workbook-index-section .book-section .book-title{
+	white-space: pre-wrap;
 	word-break: break-all;
-}*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+}
 .workbook-index-section .book-section .book-price{
 	display: block;
 	position: relative;
