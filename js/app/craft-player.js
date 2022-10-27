@@ -82,7 +82,7 @@
 	let isLastPageOfTheBook = false; // 현재 페이지에서는 더 풀 문제가 없음 여부
 	let _battleBookId; // 지정된 컨텐츠가 있을 경우 해당 컨텐츠 아이디
 	let _todayBattleSolveCount; // 오늘자 배틀 풀이 횟수
-	const _todaySolveLimit = 50; // 일일 배틀 풀이 최대 횟수
+	let _todaySolveLimit = 50; // 일일 배틀 풀이 최대 횟수
 	const MAX_NUMS_PER_POOL = 25; // 한 번에 가져올 수 있는 최대 배틀 수(이 미만을 가져왔다는 것은 문제가 모자라다는 것)
 	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
 	let currentView;
@@ -129,7 +129,10 @@
 				this.parentElement.appendChild(saveMsg);
 				bootstrap.Toast.getOrCreateInstance(saveMsg).show();
 				saveMsg.addEventListener('hidden.bs.toast', () => saveMsg.remove())
-		}).always((_x,s) => {if(s == 'parsererror') loginExpiredModal();});
+		}).always((_x,s) => {
+			if(s == 'parsererror') {
+				loginExpiredModal();
+			}});
 		
 	})
 	// 풀이 전송(ajax)
@@ -970,6 +973,7 @@
 		bookMarkCommand = command
 		bookMarkCommand.regDate = new Date(command.regDate);
 		_memberId = command?.memberId||0;
+		if(_memberId == 0) _todaySolveLimit = 25;
 		_battleBookId = command.battleBookId;
 		_lastBattleId = command.lastBattleId;
 		if(progressNum != null) _progressNum = progressNum; // progressNum은 현재의 지나온 갯수
@@ -1125,6 +1129,11 @@
 		else if(age < 16) _ageGroup = 'M';
 		else if(age < 19) _ageGroup = 'H';
 		else  _ageGroup = 'C';
+		// 지난 회차에 배틀북에 포함된 문제를 다 푼 경우
+		if((_battleSize & _progressNum) != 0) {
+			_progressNum = 0;
+			_lastBattleId = -1;
+		}
 		// 진급 진행도 표시
 		calcProgress().then(() => {
 			// 문제 풀이 비어있다면 다음 문제 가져오기
@@ -1142,9 +1151,11 @@
 					{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 						{"el":"div","class":"modal-content","children":[
 							{"el":"div","class":"modal-body row g-0","children":[
-								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"로그인 시간이 만료되었습니다."},
+								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"이용 시간이 만료되었습니다."},
 								{"el":"div","class":"button-section row g-1","children":[
-									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/auth/login'),"textContent":"로그인"}
+									{"el":"button","class":"btn btn-fico",onclick: () => {
+										location.replace(_memberId == 0 ? '/craft/main' : '/auth/login');
+									},"textContent": _memberId == 0 ? '시작 화면으로' : "로그인"}
 			]}]}]}]}]}));
 		}
 		bootstrap.Modal.getOrCreateInstance(document.getElementById('loginExpiredModal')).show();
@@ -1161,7 +1172,7 @@
 							{"el":"div","class":"modal-body row g-0","children":[
 								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"마지막 배틀입니다."},
 								{"el":"div","class":"button-section row g-1","children":[
-									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"},
+									{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"},
 									{"el":"button","class":"btn btn-outline-fico", 'data-bs-dismiss': 'modal', onclick: () => {
 										isLastPageOfTheBook = false;
 										_lastBattleId = -1;
@@ -1185,7 +1196,7 @@
 							{"el":"div","class":"modal-body row g-0","children":[
 								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"일일 최대 플레이 횟수에 도달하였습니다.<br>내일 다시 찾아와 주세요."},
 								{"el":"div","class":"button-section row g-1","children":[
-									{"el":"button","class":"btn btn-fico",onclick: () => location.assign('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"}
+									{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"}
 			]}]}]}]}]}));
 		}
 		bootstrap.Modal.getOrCreateInstance(document.getElementById('battleExceedModal')).show();
@@ -1345,7 +1356,7 @@
 	    alert('웹 저장공간을 정리 후 다시 이용해 주세요.');
 	    location.replace('/craft/main');
 	  }
-	};					
+	}			
 	
 	
 	window['craft'] = Object.assign({}, window['craft'], { initPlayer });
