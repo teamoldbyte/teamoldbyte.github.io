@@ -28,13 +28,13 @@
 					{ el: 'span', className: 'circle-dark', 
 					style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '70vmin', height: '70vmin', backgroundColor: 'var(--fc-purple)', borderRadius: '37vmin', zIndex: 1 }
 					, children: [ { el: 'object', data: 'https://static.findsvoc.com/images/app/egg/new-title.svg',
-						style: { position: 'absolute', top: '3vmin', left: '37.5%', width: '25%', height: '20%', zIndex: 2, overflow: 'visible'}}] 
+						style: { position: 'absolute', top: '3vmin', left: '37.5%', width: '25%', height: '20%', zIndex: 2, overflow: 'visible', transform: 'translateZ(0)'}}] 
 					},
-					{ el: 'span', className: 'circle-dark-dashed', style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', borderRadius: '37vmin', backgroundColor: 'transparent', border: '2vmin dashed var(--fc-purple)', width: '76vmin', height: '76vmin' }
+					{ el: 'span', className: 'circle-dark-dashed', style: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%) translateZ(0)', borderRadius: '37vmin', backgroundColor: 'transparent', border: '2vmin dashed var(--fc-purple)', width: '76vmin', height: '76vmin' }
 					}
 				]},
 				{ el: 'div', className: 'modal-footer d-block border-0 text-center', children: [
-					{ el: 'button', className: 'btn btn-fico rounded-5 col-md-2 col-4 fs-5 fw-bold js-verify-btn', 'data-bs-dismiss': 'modal', onclick: () => location.assign('/mypage'), textContent: '확인하기' },
+					{ el: 'button', className: 'btn btn-fico rounded-5 col-md-2 col-4 fs-5 fw-bold js-verify-btn', 'data-bs-dismiss': 'modal', onclick: () => location.assign('/mypage'), textContent: '확인하기', style: 'transform: translateZ(0)'},
 					{ el: 'button', className: 'btn btn-outline-fico rounded-5 col-md-2 col-4 fs-5 fw-bold', 'data-bs-dismiss': 'modal', textContent: '닫기'}
 				]}
 			]}
@@ -95,14 +95,14 @@
 		return createElement({ 
 			el: 'img', src: `https://static.findsvoc.com/images/app/egg/min/${colorIndex+1}.png`, 
 			style: {
-				position: 'fixed', zIndex: 1071, left: `${clickedOffset.x - 25}px`, top: `${clickedOffset.y - 25}px`
+				position: 'fixed', zIndex: 1071, left: `${clickedOffset.x - 25}px`, top: `${clickedOffset.y - 25}px`, transform: 'translateZ(0)'
 			}
 		});
 	}
 	function createNewEgg(colorIndex) {
 		return createElement({
 			el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
-				maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)',
+				maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%) translateZ(0)',
 				borderRadius: '50% 50% 50% 50%/60% 60% 40% 40%',
 				background: `center/ 102% 101% url(https://static.findsvoc.com/images/app/egg/egg-${colorIndex+1}.png) no-repeat`
 			}
@@ -115,7 +115,7 @@
 			onclick: () => {if(window.location.pathname != '/craft/battle/step') window.location.assign('/mypage')}, 'data-bs-toggle': 'tooltip', title: '마이페이지에서 에그 확인',
 			style: {
 				position: 'fixed', left: `${window.innerWidth}px`, top: `${window.innerHeight - 150}px`, zIndex: 1072,
-				width: '70px', height: '70px', cursor: 'pointer'
+				width: '70px', height: '70px', cursor: 'pointer', transform: 'translateZ(0)'
 			}
 		});
 	}
@@ -125,7 +125,7 @@
 			el: 'img', className: 'new-obj', src: `https://static.findsvoc.com/images/app/egg/bucket/bucket-${level > 5 ? (level%6+1):level}.svg`,
 			style: {
 				position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', maxWidth: '50vmin', zIndex: 1071,
-				maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%)'
+				maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%) translateZ(0)'
 			}
 		});
 	}
@@ -138,7 +138,7 @@
 			style: {
 				position: 'fixed', left: `${window.innerWidth}px`, top: `${window.innerHeight - 175}px`, width: '70px', height: '70px', zIndex: 1072,
 				pointerEvents: 'auto', cursor: 'pointer'
-			}, innerHTML : '<svg xmlns="http://www.w3.org/2000/svg" width="70px" height="70px" viewBox="0 0 651 890"><path id="plasticBagPath" stroke="#000" d="M 6.00,30.50 C 6.00,30.50 1.50,785.00 1.50,785.00 1.50,785.00 228.50,773.50 250.50,772.00 272.50,770.50 339.50,768.00 366.00,767.00 392.50,766.00 411.00,762.00 430.00,761.50 449.00,761.00 649.50,750.50 649.50,750.50 649.50,750.50 612.00,2.00 612.00,2.00 612.00,2.00 493.50,11.00 493.50,11.00 493.50,11.00 499.50,237.50 499.50,237.50 499.50,237.50 133.50,248.00 133.50,248.00 133.50,248.00 133.50,24.50 133.50,24.50 133.50,24.50 6.00,30.50 6.00,30.50 Z"/></svg>'
+			}, innerHTML : '<svg xmlns="http://www.w3.org/2000/svg" width="70px" height="70px" viewBox="0 0 651 890"><path id="plasticBagPath" stroke="#000" fill="#e0e0e8" style="transform:translateZ(0)" d="M 6.00,30.50 C 6.00,30.50 1.50,785.00 1.50,785.00 1.50,785.00 228.50,773.50 250.50,772.00 272.50,770.50 339.50,768.00 366.00,767.00 392.50,766.00 411.00,762.00 430.00,761.50 449.00,761.00 649.50,750.50 649.50,750.50 649.50,750.50 612.00,2.00 612.00,2.00 612.00,2.00 493.50,11.00 493.50,11.00 493.50,11.00 499.50,237.50 499.50,237.50 499.50,237.50 133.50,248.00 133.50,248.00 133.50,248.00 133.50,24.50 133.50,24.50 133.50,24.50 6.00,30.50 6.00,30.50 Z"/></svg>'
 		});
 	}
 	
@@ -147,7 +147,7 @@
 			el: 'img', src: 'https://static.findsvoc.com/images/app/egg/bucket/egg-crashed.svg',
 			style: {
 				position: 'fixed', right: '0px', top: `${window.innerHeight - 27.5}px`, width: '76.2px', height: '27.5px',
-				transformOrigin: 'bottom', transform: 'scaleY(0)'
+				transformOrigin: 'bottom', transform: 'scaleY(0) translateZ(0)'
 			}
 		});	
 	}
@@ -156,6 +156,7 @@
 	function throwEggs(eggArray, callback) {
 		const bucket = bucketLevel > 0 ? createBucket(bucketLevel) : createPlasticBag();
 		document.body.appendChild(bucket);
+		bucket.style.transform += ' translateZ(0)';
 		bucket.onmouseover =  () => {bucket.dataset.pause = true};
 		bucket.onmouseout = () => {delete bucket.dataset.pause};
 		let bucketTooltip;
@@ -163,7 +164,6 @@
 		anime({
 			targets: bucket,
 			left: [window.innerWidth, LEFT_END_EGGSHOW - 70],
-			translateZ: 0,
 			duration: 500,
 		});
 
@@ -177,7 +177,6 @@
 		egg_timeline.add({
 			duration: 500,
 			scale: [0,1],
-			translateZ: 0,
 			translateY: [10, -10],
 			easing: 'cubicBezier(0,2,1,2)',
 			rotateZ: {
@@ -211,7 +210,6 @@
 						anime({
 							targets: bucket,
 							translateY: [5, 0],
-							translateZ: 0,
 							delay: anime.stagger(200),
 							duration: 200,
 							loop: eggArray.length,
@@ -230,7 +228,6 @@
 						d: {
 							value: [plasticBagPaths[0],plasticBagPaths[1]]
 						},
-						translateZ: 0,
 						delay: 1900,
 						duration: 500
 					});
@@ -271,12 +268,10 @@
 						anime({
 							targets: '#newEggModal .circle-dark object',
 							scale: [0,1],
-							translateZ: 0,
 							duration: 1200
 						})
 						newEggAnim = anime({
 							targets: '#newEggModal .circle-dark-dashed',
-							translateZ: 0,
 							rotateZ: 360,
 							duration: 8000,
 							loop: true,
@@ -297,7 +292,6 @@
 									targets: v,
 									duration: 1000,
 									scale: [0,1],
-									translateZ: 0,
 									opacity: [0,1],
 									complete: () => {
 										if(i + 1 != newEggs.length) {
@@ -313,7 +307,6 @@
 								targets: '#newEggModal .modal-footer .js-verify-btn',
 								loop: true,
 								scale: [1, 1.05],
-								translateZ: 0,
 								direction: 'alternate',
 								easing: 'linear',
 								duration: 1000,
@@ -327,7 +320,6 @@
 							anime({ 
 								targets: [eggArray, bucket],
 								left: [window.innerWidth], 
-								translateZ: 0,
 								duration: 1000,
 								easing: 'easeInElastic',
 								delay: 400,
@@ -358,7 +350,6 @@
 						delay: 500,
 						duration: 500,
 						easing: 'cubicBezier(1,0,1,0)',
-						translateZ: 0,
 						d: {
 							value: plasticBagPaths[2]
 						}
@@ -370,7 +361,6 @@
 					$(document.body).append(crashedArray);
 					// 깨진 에그 표현
 					anime.timeline({
-						translateZ: 0,
 						targets: crashedArray,
 					}).add({
 						delay: anime.stagger(200, {start: 700}),
@@ -390,7 +380,6 @@
 							anime({ 
 								targets: bucket,
 								left: window.innerWidth, 
-								translateZ: 0,
 								duration: 500, 
 								delay: 500,
 								complete: () => {
