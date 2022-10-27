@@ -617,15 +617,19 @@
 .workbook-index-section .book-section .workbook-title-section{
 	position: relative;
 	top: 0;
-	width: 100%;
+	/*width: 100%;*/
+	width: 10rem;
 	height: 3rem;
 	margin-bottom: 0;
-	
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
 }
-.workbook-index-section .book-section .book-title{
+/*.workbook-index-section .book-section .book-title{
 	white-space: break-spaces;
 	word-break: break-all;
-}
+}*/
 .workbook-index-section .book-section .book-price{
 	display: block;
 	position: relative;
@@ -1168,8 +1172,13 @@
 	/*box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;*/
 	box-shadow: #62626214 0px 2px 1px 0px inset;
 }
-.edit-workbook-section .passage-text {
-	display: inline-block;
+.edit-workbook-section .passage-text ,
+.overview-workbook-section .passage-text {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 5;
+	overflow: hidden;
+	min-height: 7.5rem;
 }
 /* 지문 번호 표시(수정화면엔 지문 수정메뉴 툴팁이 있으므로, 자식요소에 적용) */
 .edit-workbook-section .passage-title::before,
