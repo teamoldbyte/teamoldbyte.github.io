@@ -1044,20 +1044,23 @@
 			idbstore.createIndex('solve', 'solve', { unique: false}); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
 			initDatas(age);
 		}
-		
+		let lastRnum = 0;
 		function getBattlesFromIDB() {
 			const cursor = this.result;
 			if(cursor) {
-				switch(cursor.value.solve) {
-					case 'O':
-						_battleRecord.correct++;
-						break;
-					case 'X':
-						_battleRecord.incorrect++;
-						break;
-					default:
-					 	battlePool.push(cursor.value.data);
-						break;	
+				const battle = cursor.value.data;
+				// 풀었던 배틀일 경우
+				if(/[OX]/.test(cursor.value.solve)) {
+					// 레코드(전적)에 합산
+					_battleRecord[cursor.value.solve == 'O' ? 'correct':'incorrect']++;
+					// 마지막으로 푼 배틀 찾아서 lastBattleId 할당하기
+					if(battle.rnum > lastRnum) {
+						lastRnum = battle.rnum;
+						_lastBattleId = battle.bid;
+					}
+				}else {
+					// 아직 풀지 않은 배틀은 이제 풀어야 할 배틀 풀에 저장
+				 	battlePool.push(battle);
 				}
 				cursor.continue();
 			}else {
