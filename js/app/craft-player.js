@@ -421,9 +421,8 @@
 											const record = cursor.value;
 											record.solve = correct? 'O': 'X';
 											cursor.update(record);
-											return;
 										}
-										//cursor.continue();
+										cursor.continue();
 									}
 								};
 							};	
@@ -513,17 +512,18 @@
 					req.onsuccess = function() {
 						idb = this.result;
 						const tx = idb.transaction(['StepBattle'], 'readwrite');
-						tx.onabort = idbAbort;										
+						tx.onabort = idbAbort;
 						idbstore = tx.objectStore('StepBattle');
+						idbstore.openCursor().onsuccess = insertNext;
+						
 						let i = 0;
-						insertNext();
 						function insertNext() {
 							if(i < battles.length) {
 								const battle = battles[i++];
 								idbstore.add({ bid: battle.bid, data: battle, solve: '' }, battle.bid)
 										.onsuccess = insertNext;
 							}else {
-								_askStep();	
+								_askStep();
 							}
 						}
 					};				
