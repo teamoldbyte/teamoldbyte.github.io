@@ -88,7 +88,7 @@
 	let currentView;
 	let _memberId, _ageGroup, memberId56; // 사용자 정보
 	let _battleRecord; // 배틀 전적 정보
-	let currRankTitle, currRankBase, nextRankBase; // 현재 계급명, 현재 및 다음 계급의 시작 정답수
+	let currRank, currRankBase, nextRankBase; // 현재 계급명, 현재 및 다음 계급의 시작 정답수
 	let _progressNum, _battleSize; // 배틀북 내에서 진행도를 표시하기 위한 변수
 	
 	/*
@@ -494,7 +494,7 @@
 		
 		const url = _contentType == 'step' ? '/craft/battle/step/next':'/craft/battlebook/next';
 		$.getJSON(url, _contentType == 'step' 
-			? Object.assign({}, stepCommand, bookMarkCommand, {lastBattleId: _lastBattleId, rankLevel: currRankTitle})
+			? Object.assign({}, stepCommand, bookMarkCommand, {lastBattleId: _lastBattleId, rankLevel: currRank.battleLevel})
 			: Object.assign({}, bookMarkCommand, { lastBattleId: _lastBattleId }) 
 		,function(battles) {
 			battlePool = battles;
@@ -1224,8 +1224,8 @@
 			function synchronousCalcRank() {
 				for(let i = 0, len = rankClasses.length; i < len; i++) {
 					if(_battleRecord.correct > rankClasses[i].startValue) {
-						currRankTitle = rankClasses[i].rankTitle;
-						currRankBase = rankClasses[i].startValue + 1;
+						currRank = rankClasses[i];
+						currRankBase = currRank.startValue + 1;
 						nextRankBase = (i > 0) ? (rankClasses[i - 1].startValue + 1) : 9999;
 						break;
 					}
@@ -1241,7 +1241,7 @@
 					const newRank = createElement({
 						el: 'div', className: 'new-obj', style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', width: '37.5vmin', height: '50vmin', 
 							maxWidth: '50vmin', zIndex: 1071, maxHeight: '50vmin', transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%) translateZ(0)',
-							background: `center/ cover url(https://static.findsvoc.com/images/app/craft/${currRankTitle}.svg) no-repeat`
+							background: `center/ cover url(https://static.findsvoc.com/images/app/craft/${currRank.rankTitle}.svg) no-repeat`
 						}
 					});
 					$('#newRankModal .modal-body').append(newRank);
