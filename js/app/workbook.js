@@ -54,7 +54,9 @@ function addWorkbook(command) {
 	title, price, workBookType, description
  */
 function editWorkbookPlainInfo(url, json, callback) {
-	postJSON(url, json, callback, () => alert('수정에 실패했습니다.'));
+	postJSON(url, json, callback, (xhr) => {
+		alert(url.match(/\/edit\/type/)?`워크북 공개를 위한 최소 문장수는 50개이며 ${50-xhr.responseJSON.count}개가 부족합니다.`:'수정에 실패했습니다.')	
+	});
 }
 /** 워크북의 멀티파트 타입 정보 수정
  */
