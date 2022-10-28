@@ -91,3 +91,20 @@ function parseHTML(html) {
 	if(json.length == 1) json = json[0];
 	return json;
 }
+
+// alert를 대신하여 BootStrap Modal을 생성해서 표시
+function alertModal(msg) {
+	if(!document.getElementById('alertModal')) {
+		document.body.appendChild(createElement({
+			"el":"div","id":"alertModal","class":"modal fade","data-bs-backdrop":"static","tabIndex":0,"children":[
+				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+					{"el":"div","class":"modal-content","children":[
+						{"el":"div","class":"modal-body row g-0","children":[
+							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\/n/g,'<br>')},
+							{"el":"div","class":"button-section row g-1 col-6 mx-auto","children":[
+								{"el":"button","class":"btn btn-fico", 'data-bs-dismiss':'modal',"textContent": "확인"}
+		]}]}]}]}]}))
+	}
+	document.querySelector('#alertModal .text-section').innerHTML = msg.replace(/\/n/g,'<br>');
+	bootstrap?.Modal?.getOrCreateInstance(document.getElementById('alertModal')).show();
+}
