@@ -34,7 +34,7 @@ function postForm(url, command, callback, errCallback) {
 ------------------------------------------------------------------------------*/
 function subscribeWorkbook(workbookId, callback) {
 	$.post('/workbook/subscription/' + workbookId, callback)
-	.fail(() => alert('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'));
+	.fail(() => alertModal('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'));
 }
 
 /*------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ function addWorkbook(command) {
 	postForm('/workbook/mybook/add', command, workbookId => {
 		alert('등록이 완료되었습니다.');
 		location.assign('/workbook/mybook/edit/' + ntoa(workbookId));
-	}, () => alert('등록에 실패했습니다. 잠시 후 다시 시도해 주세요.'));
+	}, () => alertModal('등록에 실패했습니다. 잠시 후 다시 시도해 주세요.'));
 }
 
 /*------------------------------------------------------------------------------
@@ -55,13 +55,13 @@ function addWorkbook(command) {
  */
 function editWorkbookPlainInfo(url, json, callback) {
 	postJSON(url, json, callback, (xhr) => {
-		alert(url.match(/\/edit\/type/)?`워크북 공개를 위한 최소 문장수는 50개이며 ${50-xhr.responseJSON.count}개가 부족합니다.`:'수정에 실패했습니다.')	
+		alertModal(url.match(/\/edit\/type/)?`워크북 공개를 위한 최소 문장수는 50개이며 ${50 - xhr.responseJSON}개가 부족합니다.`:'수정에 실패했습니다.')	
 	});
 }
 /** 워크북의 멀티파트 타입 정보 수정
  */
 function editWorkbookMultiInfo(url, form, callback) {
-	postForm(url, form, callback, () => alert('수정에 실패했습니다.'));
+	postForm(url, form, callback, () => alertModal('수정에 실패했습니다.'));
 }
 /** 지문 제목 수정
  */
@@ -71,13 +71,13 @@ function editPassageTitle(command, callback, failback) {
 /** 지문 삭제
  */
 function deletePassage(command, callback) {
-	postJSON('/workbook/mybook/del/passage', command, callback, () => alert('지문삭제에 실패했습니다.'));
+	postJSON('/workbook/mybook/del/passage', command, callback, () => alertModal('지문삭제에 실패했습니다.'));
 }
 
 /** 지문의 샘플정보 변경
  */
 function editPassageSample(command, callback) {
-	postJSON('/workbook/mybook/edit/passage/sample', command, callback, () => alert('샘플정보 변경에 실패했습니다.'));
+	postJSON('/workbook/mybook/edit/passage/sample', command, callback, () => alertModal('샘플정보 변경에 실패했습니다.'));
 }
 /*------------------------------------------------------------------------------
 							edit_passage.html
@@ -91,7 +91,7 @@ function editPassageSentece(editPassageCommand, callback, errCallback) {
  */
 function delPassageSentence(command, callback) {
 	$.post('/workbook/mybook/del/sentence?passageId='+command.passageId+'&sentenceId='+command.sentenceId, callback)
-	.fail(() => alert('문장 삭제에 실패했습니다.'));
+	.fail(() => alertModal('문장 삭제에 실패했습니다.'));
 	//postJSON('/workbook/mybook/del/sentence', command, callback, () => alert('문장 삭제에 실패했습니다.'));
 }
 /*------------------------------------------------------------------------------
@@ -101,45 +101,45 @@ function delPassageSentence(command, callback) {
  * 문장 해석 추가/수정
  */
 function editSentenceTrans(korCommand, callback) {
-	postJSON('/workbook/sentence/kor/edit', korCommand, callback, () => alert('해석 등록/수정이 실패했습니다.'));
+	postJSON('/workbook/sentence/kor/edit', korCommand, callback, () => alertModal('해석 등록/수정이 실패했습니다.'));
 }
 /**
  * 문장 해석 삭제
  */
 function delSentenceTrans(korTid, callback) {
-	postJSON('/workbook/sentence/kor/del', korTid, callback, () => alert('삭제 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/sentence/kor/del', korTid, callback, () => alertModal('삭제 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 }
 
 /**
  * 지문 노트 추가
  */
 function addPassageNote(noteCommand, callback) {
-	postJSON('/workbook/passage/note/add', noteCommand, callback, () => alert('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/passage/note/add', noteCommand, callback, () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 }
 /**
  * 문장 노트 추가
  */
 function addSentenceNote(noteCommand, callback) {
-	postJSON('/workbook/sentence/note/add', noteCommand, callback, () => alert('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/sentence/note/add', noteCommand, callback, () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 }
 /**
  * 지문/문장 노트 수정
  */
 function editNote(part, noteCommand, callback) {
-	postJSON('/workbook/' + part + '/note/edit', noteCommand, callback, () => alert('수정할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/' + part + '/note/edit', noteCommand, callback, () => alertModal('수정할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 }
 /**
  * 지문/문장 노트 삭제
  */
 function delNote(part, noteId, callback) {
-	postJSON('/workbook/'+ part +'/note/del', noteId, () => { alert('삭제되었습니다.'); callback();}, () => alert('삭제 실패했습니다.'));
+	postJSON('/workbook/'+ part +'/note/del', noteId, () => { alertModal('삭제되었습니다.'); callback();}, () => alertModal('삭제 실패했습니다.'));
 }
 
 /* 문장 구문분석 추가 및 편집 */
 function editSvoc(svocCommand, callback) {
-	postJSON('/workbook/sentence/svoc/edit', svocCommand, callback, () => alert('구문분석 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/sentence/svoc/edit', svocCommand, callback, () => alertModal('구문분석 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 }
 /* 문장 구문분석 삭제 */
 function delSvoc(svocId, callback) {
-	postJSON('/workbook/sentence/svoc/del', svocId, callback, () => alert('삭제 실패했습니다.'));
+	postJSON('/workbook/sentence/svoc/del', svocId, callback, () => alertModal('삭제 실패했습니다.'));
 }
