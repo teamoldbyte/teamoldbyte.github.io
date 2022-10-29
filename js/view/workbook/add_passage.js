@@ -231,7 +231,62 @@ function pageinit(isHelloBook) {
 	
 	// [지문 입력 완료]------------------------------------------------------------
 	$('#inputComplete').click(async function() {
-		$('#beforeSubmitModal').modal('show');
+		tts.stop(() => togglePlayStatus(true));
+		const textarea = document.getElementById('newPassageText');
+		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());
+		if(!isHelloBook && sentences.length == 1) {
+			if($('#askMoreSentenceModal').length == 0) {
+				document.body.appendChild(createElement(
+					{ "el":"div","id":"askMoreSentenceModal","class":"warning-modal modal fade","children":[
+						{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+							{"el":"div","class":"modal-content","children":[
+								{"el":"div","class":"modal-header text-center bg-fc-purple mx-auto w-100","children":[
+									{"el":"span", className: 'text-white d-block w-100',"children":[
+										"여러 문장을 등록하여 ",
+										{"el":"b","class":"text-fc-yellow","textContent":"지문을 관리"},
+										"해 보세요."
+									]}
+								]},
+								{"el":"div","class":"modal-body row g-0","children":[
+									{"el":"div","class":"logo-section col-6 col-md-3 m-auto pe-md-2 text-center","children":[
+										{"el":"img","class":"logo","alt":"logo","src":"https://static.findsvoc.com/images/logo/main_logo_character_anim.svg"}
+									]},
+									{"el":"div","class":"text-section my-auto pt-2 pt-md-0 ps-md-2 col-md-9","children":[
+										{el: 'p', className: 'mb-2', children: [
+											"워크북은 사용자에게 학습 응집성을 제공하기 위해 문장을 ",
+											{"el":"b","class":"text-fc-red","textContent":"지문단위로 관리"},
+											"합니다."
+										]},
+										{el: 'p', className: 'mb-2', children: [
+											"학습목적이나 주제에 맞는 문장들을 미리 준비하여 ",
+											{"el":"b","class":"text-fc-red","textContent":"한번에 등록"},
+											"하는 것을 추천드립니다."
+										]},
+										{el: 'p', className: 'mb-2', children: [
+											"워크북을 자신의 ",
+											{"el":"b","class":"text-fc-red","textContent":"학습 자산"},
+											"으로 만들어 보세요."
+										]},
+										{el: 'p', className: 'mb-4', children: [
+											{"el":"span","class":"app-name-text","textContent":"fico"},
+											"가 그 가치를 성장시켜 드리겠습니다."
+										]},
+										{"el": "span", className: 'text-sm text-bluegray-400', textContent: '관리가 불필요한 한 두문장 등록은 헬로북에서도 가능합니다.'}
+									]}
+								]},
+								{ el: 'div', className: 'modal-footer py-0', children: [
+									{ el: 'div', className: 'text-center w-100', children: [
+										{ el: 'button', type: 'button', className: 'btn btn-fico me-0 w-50', 'data-bs-dismiss': 'modal', textContent: '예(문장 추가 입력)'},
+										{ el: 'button', type: 'button', id: 'goOnSearch', className: 'btn btn-outline-fico w-50', 'data-bs-dismiss': 'modal', textContent: '아니오(그대로 분석)', onclick: () => $('#beforeSubmitModal').modal('show')}
+									]}
+								]}
+							]}
+						]}
+					]}
+				));
+			}
+			$('#askMoreSentenceModal').modal('show');
+		}else $('#beforeSubmitModal').modal('show');
 	});
 	// [(공통)단위 문장 수정]
 	$(document).on('input', '.divided-sentence :text', function() {
@@ -278,51 +333,58 @@ function pageinit(isHelloBook) {
 			$('.before-msg').hide();
 			$('#afterInput').removeClass('d-none opacity-50 pe-none');
 		}else {
-			const total = sentences.join(' ');
-			let eng = sentences[0];
-			textarea.value = total;
 			
-			// 직접 검색 키워드 넘겨질 경우
-			if(paramKeyword != null) {
-				eng = paramKeyword;
-			}
-			else {
-				let checkingPos = 0;
-				// 입력된 문장들 각각을 검사.
-				for(let i = 0, len = sentences.length; i < len; i++) {
-					const tempSentence = sentences[i];
-					if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
-						alert((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
-						textarea.focus();
-						textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
-						return;					
-					}else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
-						alert((i + 1) + '번째 문장의 끝이 구두점(. ? !)이나 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
-						textarea.focus();
-						textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
-						return;
+			
+			executeSearch();
+			
+			function executeSearch() {
+				const total = sentences.join(' ');
+				let eng = sentences[0];
+				textarea.value = total;
+				
+				// 직접 검색 키워드 넘겨질 경우
+				if(paramKeyword != null) {
+					eng = paramKeyword;
+				}
+				else {
+					let checkingPos = 0;
+					// 입력된 문장들 각각을 검사.
+					for(let i = 0, len = sentences.length; i < len; i++) {
+						const tempSentence = sentences[i];
+						if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
+							alert((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
+							textarea.focus();
+							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
+							return;					
+						}else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+							alert((i + 1) + '번째 문장의 끝이 구두점(. ? !)이나 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
+							textarea.focus();
+							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
+							return;
+						}
+						// 가장 긴 문장을 검색문자열로 사용(검색 정확도를 높이기 위함)
+						eng = (tempSentence.length > eng.length) ? tempSentence : eng;
+						checkingPos += tempSentence.length + (i<len-1?1:0);
 					}
-					// 가장 긴 문장을 검색문자열로 사용(검색 정확도를 높이기 위함)
-					eng = (tempSentence.length > eng.length) ? tempSentence : eng;
-					checkingPos += tempSentence.length + (i<len-1?1:0);
+					// 유효한 제시어를 무시한 경우 3단계로 이동
+					if(searchingSentenceDone) {
+						$('#text').val(textarea.value);
+						$('.search-result-section .list-group-item').removeClass('active');
+						$('.step-2').addClass('opacity-50 pe-none');
+						$('.step-3').removeClass('opacity-50 pe-none');
+						$('.step-1 .collapse,.step-3 .collapse').collapse('toggle');
+						$('#editPassage, .edit-passage').hide();
+						$('.final-pssage').show();	
+						return;		
+					}
 				}
-				// 유효한 제시어를 무시한 경우 3단계로 이동
-				if(searchingSentenceDone) {
-					$('#text').val(textarea.value);
-					$('.search-result-section .list-group-item').removeClass('active');
-					$('.step-2').addClass('opacity-50 pe-none');
-					$('.step-3').removeClass('opacity-50 pe-none');
-					$('.step-1 .collapse,.step-3 .collapse').collapse('toggle');
-					$('#editPassage, .edit-passage').hide();
-					$('.final-pssage').show();	
-					return;		
-				}
+				$('.search-sentence').text(eng);
+				// 지문 검색(ajax)--------------------------------------------
+				$.getJSON('/workbook/passage/search', {eng}, displayDtoList)
+				.fail(() => alert('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+				//----------------------------------------------------------
+				
 			}
-			$('.search-sentence').text(eng);
-			// 지문 검색(ajax)--------------------------------------------
-			$.getJSON('/workbook/passage/search', {eng}, displayDtoList)
-			.fail(() => alert('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
-			//----------------------------------------------------------
 			
 			function displayDtoList(searchResult){
 				//$('#inputComplete').prop('disabled', true);
@@ -472,7 +534,7 @@ function pageinit(isHelloBook) {
 	// [지문 등록 버튼 클릭 ]
 	$('#addBtn').on('click', function() {
 		const $form = $('#passageForm');
-		/*[# th:if=${helloBook}]*/
+		
 		if(isHelloBook) {
 			const $inputs = $('#dividedResult :text');
 			const sentences = [];
