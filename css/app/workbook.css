@@ -726,11 +726,15 @@
 	background-color: #fff;
 	/*border-radius: 5px;*/
     border-radius: 0 5px 5px 5px;
-	width: calc(33% - 3px);
+	width: calc(33% - 5px);
 	height: auto;
 	padding: 10px 15px;
 	margin-bottom: 40px;
 	cursor: pointer;
+}
+/* 워크북 오버뷰 - 북 소개 영역 */
+.workbook-overview-section .workbook-info-section .description{
+	white-space: pre-line;
 }
 /* 워크북 작성자 */
 .workbook-overview-section .personacon img{
@@ -772,6 +776,13 @@
 	
 	.workbook-overview-section .description-section{
 		margin-top: 1rem;
+	}
+}	
+@media (max-width: 767px) {
+	.workbook-index-section .catch-phrase-section .alias-section{
+		position: static;
+		text-align: right;
+		padding-right: 0;
 	}
 }	
 @media (max-width: 1199.5px) {
@@ -1156,6 +1167,9 @@
 @media (hover: hover) {
    .passage:hover .edit-menu-block {
       display: inline-block!important;
+		position: absolute;
+		right: 5px;
+		bottom: 5px;
    }
 
 /* hover가 안되는 경우(태블릿,모바일의 경우) */}
