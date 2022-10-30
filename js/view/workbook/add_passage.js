@@ -6,7 +6,7 @@ function pageinit(isHelloBook) {
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
 	const tts = new FicoTTS();
-	
+	const MAX_SENTENCE_LENGTH = 500;
 	// 재생 버튼 클릭시 재생/정지
 	$('#ttsPlay').click(function() {
 		if(this.dataset.active == 'on') {
@@ -351,7 +351,12 @@ function pageinit(isHelloBook) {
 					// 입력된 문장들 각각을 검사.
 					for(let i = 0, len = sentences.length; i < len; i++) {
 						const tempSentence = sentences[i];
-						if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
+						if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+							alert(`${(i + 1)}번째 문장의 길이가 너무 길면 AI가 더욱 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
+							textarea.focus();
+							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
+							return;					
+						}else if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
 							alert((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
