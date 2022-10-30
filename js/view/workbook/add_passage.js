@@ -352,7 +352,7 @@ function pageinit(isHelloBook) {
 					for(let i = 0, len = sentences.length; i < len; i++) {
 						const tempSentence = sentences[i];
 						if(tempSentence.length > MAX_SENTENCE_LENGTH) {
-							alert(`${(i + 1)}번째 문장의 길이가 너무 길면 AI가 더욱 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
+							alert(`${(i + 1)}번째 문장의 길이가 너무 길어 AI가 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 							return;					
