@@ -179,9 +179,9 @@
     font-size: 16px;
 	line-height: 1.5;
     width: 100%;
-	height: 6rem;
+	height: 13rem;
 	border: 10px solid #585174;
-	border-radius: 10px;
+	border-radius: 3px;
 	background-color: var(--white);
 	padding: 5px 40px 5px 10px;
     resize: none;
@@ -390,13 +390,111 @@
 	right: 10px;
 	display: inline-block;
 }
-@media (max-width: 767px) {
+
+
+/* TTS 옵션 버튼 영역 */
+.tts-option-section{
+	position:relative;
+}
+.tts-option-section .tts-btn-section{
+	position: absolute;
+	z-index: 1;
+}
+.tts-option-section .demo-guide-section{
+	position: absolute;
+	z-index: 1;
+	right: 10px;
+}
+/* 멤버십 안내 메세지 영역 */
+.membership-info-section{
+	background-color: #d8d9e9;
+	border-radius: 0.25rem;
+	margin-bottom: 0;
+	height: 320px;
+	position: relative;
+}
+
+.index-section .membership-text-section{
+	position:relative;
+	padding: 1rem 0 1rem 5rem;
+	margin-top: auto;
+}
+.index-section .membership-info-section .app-name-text{
+	display: block;
+	position: absolute;
+	opacity: 0.25;
+	font-size: 7rem;
+	top: -120px;
+	left: 5rem;
+}
+.index-section .membership-info-section .membership-title-text{
+	position: absolute;
+	font-size: 1.25rem;
+	color: #a91461;
+	font-weight: bold;
+	z-index: 100;
+	min-width: 200px;
+	top: -20px;
+}
+.index-section .membership-info-section lottie-player{
+	margin:auto; 
+	width: 40%; 
+	height: auto;
+}
+
+.index-section .shape-section .shape-1-position{
+	transform: translate(-90%, 10%);
+}
+.index-section .shape-section .shape-2-position{
+	transform: rotate(90deg) translate(-5%, 130%);
+}
+.index-section .shape-section .shape-3-position{
+	transform: rotate(90deg) translate(10%, -300%);
+}
+
+
+@media (max-width: 991px) {
 	.index-section .donation-btn{
 		position: fixed;
 		bottom: 2vh;
 	}
+	
+	/* 멤버십 안내 메세지 영역 */
+	.membership-info-section{
+		margin-bottom: 1rem;
+		height: auto;
+	}
+	.index-section .membership-text-section{
+		position:relative;
+		padding: calc(180px + 5rem) 1rem 0 1rem;
+		margin-top: auto;
+	}
+	.index-section .membership-info-section .app-name-text{
+		top: 6rem;
+		left: 1rem;
+	}
+	.index-section .membership-info-section .membership-title-text{
+		top: calc(180px + 2rem);
+	}
+	.index-section .shape-section .shape{
+		 height: 350px;
+	}
+	/* 물방울 모양 */
+	.index-section .shape-section .shape-1-position{
+		transform: translate(80%, -40%);
+	}
+	.index-section .shape-section .shape-2-position{
+		transform: translate(40%, -55%);
+	}
+	.index-section .shape-section .shape-3-position{
+		transform: rotate(90deg) translate(10%, -300%);
+	}
 }
-
+@media (max-width: 576px) {
+	.index-section .membership-info-section lottie-player{
+		width: 75%; 
+	}
+}
 @media (max-width: 767px) {
 	/* 로고와 문장 입력칸이 있는 영역 */
 	.logo-input-section{	
