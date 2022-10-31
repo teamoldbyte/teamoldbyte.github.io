@@ -26,6 +26,7 @@
 	.semantics-result {
 		font-family: 'Frutiger', sans-serif;
 		font-size: 1.125rem;
+		word-break: keep-all;
 	}
 }
 /* @media (max-width: 1199.5px) {
