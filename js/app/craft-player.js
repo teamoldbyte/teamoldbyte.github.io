@@ -113,7 +113,11 @@
 	let selectHistory = []; // 현재 문제에서 선택한 선택지들 모음(1,2,5유형용)
 	
 	$(document)
-	
+	.on('click', '.js-view-rnum', function() {
+		if($(this).css('opacity') == '0') {
+			$(this).css('opacity', 1).text(currentBattle.rnum);
+		}else $(this).css('opacity',0)
+	})
 	// 배틀 저장(ajax)
 	.on('click', '#save-btn', function() {
 		WebAudioJS.play(CLICK_SOUND)
@@ -230,7 +234,7 @@
 						sel.parentElement.appendChild(rightAnswer);
 						anime({
 							targets: rightAnswer,
-							top: '-=20',
+							top: '-=30',
 							opacity: 1,
 							delay: 600
 						})
@@ -249,7 +253,7 @@
 			case '6':
 				const rightOptions = Array.from(examples, ([ [], text ]) => {
 					return text.split(/\s+/);
-				}).reduce((acc, curr) => acc.concat(curr), []);
+				}).reduce((acc, curr) => (acc).concat(curr), []);
 				view.querySelectorAll('.example-btn-section input').forEach((input, i) => {
 					if(input.value.trim().toLowerCase() == rightOptions[i].toLowerCase()) {
 						input.className = 'right';
@@ -266,13 +270,13 @@
 				let tempOption = '';
 				options7 = options7.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
-						const newAcc = acc.concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
+						const newAcc = (acc||[]).concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
 						tempOption = '';
 						return newAcc;
 					}else {
 						tempOption += tempOption.length > 0 ? ` ${curr}` : curr;
 						if(i == arr.length - 1) {
-							return acc.concat([ tempOption ]);
+							return (acc||[]).concat([ tempOption ]);
 						}
 					}
 				},[]);			
@@ -444,6 +448,7 @@
 	})
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function(e) {
+		tts.stop();
 		if(_contentType == 'step' && _todayBattleSolveCount.count >= _todaySolveLimit) {
 			solveLimitExceed();
 			e.preventDefault();
@@ -451,7 +456,6 @@
 			return;
 		}
 		
-		tts.stop();
 		currentView.querySelector('.tts-block').remove();
 		WebAudioJS.play(NEXT_SOUND);
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
@@ -911,13 +915,13 @@
 				let tempOption = '';
 				options7 = options7.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
-						const newAcc = acc.concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
+						const newAcc = (acc||[]).concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
 						tempOption = '';
 						return newAcc;
 					}else {
 						tempOption += tempOption.length > 0 ? ` ${curr}` : curr;
 						if(i == arr.length - 1) {
-							return acc.concat([ tempOption ]);
+							return (acc||[]).concat([ tempOption ]);
 						}
 					}
 					// 오답을 선택지에 추가하여 랜덤섞기
@@ -1167,7 +1171,78 @@
 	/** 배틀북 내의 문제 모두 소진 --> 다시 플레이 요구
 	 */
 	function solveAllsOfBook() {
-		if(!document.getElementById('lastBattleModal')) {
+		if(_contentType == 'step') {
+			if(currRank.rankTitle == '대장') {
+				if(!document.getElementById('newRankModal')) {
+					document.body.prepend(createElement(newRankModal));
+				}
+				$('#newRankModal .modal-body .new-obj').remove();
+				
+				const newRank = createElement({
+					el: 'div', className: 'new-obj', children: [
+						{ el: 'p', className: 'fs-3', textContent: '단계별 배틀을 정복하셨습니다.'},
+						{ el: 'p', className: 'fs-6', textContent: '다른 배틀북도 정복하는 건 어떨까요?'}
+					],
+					style: { position: 'absolute', left: '50%', top: 'calc(50% + 4vmin)', 
+						zIndex: 1071, transformOrigin: 'center', opacity: 0, transform: 'translate(-50%,-50%) translateZ(0)'
+					}
+				});
+				$('#newRankModal .modal-body').append(newRank);
+				$('#newRankModal button').text('시작화면으로').click(function() {
+					location.replace('/craft/main');
+				});
+				$('#newRankModal').modal('show');
+				anime({
+					targets: '#newRankModal .circle-dark object',
+					scale: [0,1],
+					duration: 1200
+				})
+				anime({
+					targets: '#newRankModal .circle-dark-dashed',
+					rotateZ: 360,
+					duration: 8000,
+					loop: true,
+					easing: 'linear'
+				})
+	
+				showFireworks({
+					target: $('#newRankModal .modal-body')[0],
+					particles: 20, 
+					distance: 100,
+					interval: 200, 
+					size: 15
+				});
+				anime({
+					targets: newRank,
+					duration: 1000,
+					scale: [0,1],
+					opacity: [0,1]
+				})
+			}else {
+				if($('#lowVictoryModal').length == 0) {
+					document.querySelector('.craft-layout-content-section').appendChild(createElement({
+						"el":"div","id":"lowVictoryModal","class":"modal fade","data-bs-backdrop":"static","data-bs-keyboard":"false","tabIndex":-1,"children":[
+							{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+								{"el":"div","class":"modal-content","children":[
+									{"el":"div","class":"modal-body row g-0","children":[
+										{"el":"div","class":"text-section my-3 text-center text-dark",
+										"innerHTML":"We are sorry to inform you that You perished in battle."},
+										{el: 'lottie-player', src: 'https://assets1.lottiefiles.com/packages/lf20_k8p8cymw.json', background: 'transparent', autoplay: true, speed: '1', loop: true},
+										{"el":"div","class":"button-section row g-1","children":[
+											{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"},
+										]}
+									]}
+								]}
+							]}
+						]
+					}))
+				}
+				$('#lowVictoryModal').modal('show');
+			}
+		}
+		
+		
+		else if(!document.getElementById('lastBattleModal')) {
 			document.querySelector('.craft-layout-content-section').appendChild(createElement({
 				"el":"div","id":"lastBattleModal","class":"modal fade","data-bs-backdrop":"static","data-bs-keyboard":"false","tabIndex":-1,"children":[
 					{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
