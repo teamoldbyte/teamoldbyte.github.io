@@ -1015,7 +1015,6 @@
 	}*/
 	.demo-textarea{
 		overflow-y: auto;
-		height: 102px;
 	}
 	.demo-textarea::placeholder{
 		padding-top: 25px;
