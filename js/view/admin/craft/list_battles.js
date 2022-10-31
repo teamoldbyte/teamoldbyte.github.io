@@ -232,9 +232,9 @@ function pageinit(battlePage) {
 				] },
 				{ el: 'div', className: 'battleComment col-12 row mt-3', children: [
 					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해설' },
-					{ el: 'textarea', className: 'form-control col battle-comment' }
+					{ el: 'textarea', className: 'form-control col battle-comment', rows: '5' }
 				]},
-				{ el: 'div', className: 'battleEditBtns row mt-3 position-relative', children: [
+				{ el: 'div', className: 'battleEditBtns mt-3 position-relative text-center', children: [
 					{ el: 'button', type: 'button', id: 'deleteBattle', className: 'btn btn-outline-fico col-auto', children: [
 						{ el: 'i', className: 'fas fa-trash-alt me-1'}, '삭제'
 					]},
@@ -242,8 +242,8 @@ function pageinit(battlePage) {
 						{ el: 'i', className: 'far fa-file-alt'},
 						{ el: 'i', className: 'fas fa-pen fa-xs', style: 'left: -8px; top: 5px; position: relative;'}, '수정'
 					]},
-					{ el: 'button', type: 'button', id: 'viewPrevBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-left fs-3 ms-auto', 'data-bs-title': '이전 배틀', 'data-bs-toggle': 'tooltip'},
-					{ el: 'button', type: 'button', id: 'viewNextBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-right fs-3 me-auto', 'data-bs-title': '다음 배틀', 'data-bs-toggle': 'tooltip'}
+					{ el: 'button', type: 'button', id: 'viewNextBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-right fs-3 float-end', 'data-bs-title': '다음 배틀', 'data-bs-toggle': 'tooltip'},
+					{ el: 'button', type: 'button', id: 'viewPrevBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-left fs-3 float-end', 'data-bs-title': '이전 배틀', 'data-bs-toggle': 'tooltip'}
 				]}
 			]},
 			{ "el": "div", "class": "explain-detail-section tab-pane fade", "role": "tabpanel", "aria-labelledby": "nav-explain-tab", "children": [
