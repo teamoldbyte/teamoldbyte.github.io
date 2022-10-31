@@ -460,6 +460,10 @@ u {
 	.battle-book-list .my-book-type .book:last-child{
 		margin-bottom: 0;
 	}
+	
+	.battle-book-list .button-section .disabled .icon{
+		opacity: 0.65;
+	}
 }
 /**********************************************************
  *				play.html  
@@ -474,6 +478,12 @@ u {
 #battle-4 .original-text{
 	color: var(--bs-yellow);
 	font-weight: bold;
+	background: #252A44;
+	backdrop-filter: blur( 15px );
+	-webkit-backdrop-filter: blur( 15px );
+	border-radius: 10px;
+	border: 1px solid rgba(255,255,255,.05);
+	padding: 0 0.5rem;
 }
 /* 선택한 답변 표시 */
 .selected {
