@@ -92,6 +92,23 @@
 	padding: 0.25rem 0.5rem;
 }*/
 
+/* 가입 모달 창 */
+#done-info-modal .modal-header{
+	border-bottom: 2px solid rgba(255,255,255,0.25);
+}
+#done-info-modal .modal-content{
+	color: #fff;
+	background: #4e578396;
+	backdrop-filter: blur( 7px );
+	-webkit-backdrop-filter: blur( 7px );
+	border: 1px solid rgba(255,255,255,.05);
+}
+#done-info-modal .input-form-section .help-text-section span{
+	color: #dadada
+}
+#done-info-modal .payment-phase .qr-images-section .text-danger{
+	font-weight: bold;
+}
 @media (max-width: 1200px) {
 	.membership-list{
 		position: static;
