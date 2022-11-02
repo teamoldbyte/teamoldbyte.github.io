@@ -11,7 +11,7 @@ function pageinit(membershipCommand) {
 		el: 'div', id: 'done-info-modal', className: 'modal fade done-info-modal', tabIndex: '-1',
 		'data-bs-backdrop': 'static', 'data-bs-keyboard': 'false', 'aria-labelledby': 'donationModalLabel', ariaHidden: 'true', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
-				{ el: 'div', className: 'modal-content bg-yellow-150 shadow', children: [
+				{ el: 'div', className: 'modal-content shadow', children: [
 					{ el: 'div', className: 'modal-header', children: [
 						{ el: 'h5', id: 'donationModalLabel', className: 'modal-title text-lmd fw-bold w-100 text-center', textContent: '후원자 정보' },
 						{ el: 'button', type: 'button', id: 'closeDonation', className: 'btn-close position-absolute top-3 end-3' }
@@ -217,7 +217,7 @@ function pageinit(membershipCommand) {
 											.concat(Array.from(new Array(88), (v,k) => {
 												const year = 1920 + k;
 												return { el: 'option', value: year, textContent: year, selected: membershipCommand.birthYear == year}
-											}))}
+											}).reverse())}
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 												{ el: 'span', id: 'birthHelpInline', className: 'form-text ms-2', textContent: '학습 컨텐츠 추천을 위해 출생연도를 입력해 주세요.'}
