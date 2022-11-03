@@ -443,6 +443,7 @@ function pageinit(membershipCommand) {
 			
 			data["orderItemList"] = orderItemList;
 			postJSON('/membership',data, msg => {
+				Cookies.remove('FMID');
 				alert(msg + '\n\'확인\'을 누르면 ' + (loggedin?'메인':'로그인') +' 화면으로 이동합니다.');
 				location.assign(loggedin?'/':'/auth/login');
 				//$('#done-info-modal').modal('hide');
