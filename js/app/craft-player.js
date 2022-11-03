@@ -277,7 +277,7 @@
 						tempOption += tempOption.length > 0 ? ` ${curr}` : curr;
 						if(i == arr.length - 1) {
 							return (acc||[]).concat([ tempOption ]);
-						}
+						}else return acc;
 					}
 				},[]);			
 				if(view.querySelectorAll('.arranged-example-section .btn').length != options7.length){
@@ -922,7 +922,7 @@
 						tempOption += tempOption.length > 0 ? ` ${curr}` : curr;
 						if(i == arr.length - 1) {
 							return (acc||[]).concat([ tempOption ]);
-						}
+						}else return acc;
 					}
 					// 오답을 선택지에 추가하여 랜덤섞기
 				}, []).concat(examples).sort(() => Math.random() - 0.5);
