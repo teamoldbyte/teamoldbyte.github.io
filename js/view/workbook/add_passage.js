@@ -335,9 +335,6 @@ function pageinit(isHelloBook) {
 		}else {
 			
 			
-			executeSearch();
-			
-			function executeSearch() {
 				const total = sentences.join(' ');
 				let eng = sentences[0];
 				textarea.value = total;
@@ -389,7 +386,6 @@ function pageinit(isHelloBook) {
 				.fail(() => alert('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 				//----------------------------------------------------------
 				
-			}
 			
 			function displayDtoList(searchResult){
 				//$('#inputComplete').prop('disabled', true);
