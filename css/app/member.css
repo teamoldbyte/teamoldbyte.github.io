@@ -8,11 +8,13 @@
 	max-width: 350px;
 	height: auto;
 }
+
 .signin-section .input-section{
 	padding: 50px;
 }
+/* 로그인 페이지 - 타이틀 */
 .signin-section .input-section .title-section .title{
-	font-family: 'Otomanopee One', sans-serif;
+	font-family: 'Rubik', sans-serif;
 	letter-spacing: 0;
 }
 .signin-section .input-section input[type="email"]{
@@ -30,6 +32,7 @@
 	background-color: #585174;
 	border-color: #4e476a;
 	color: #fff;
+	font-family: 'Rubik', sans-serif;
 }
 .signin-section .input-section .btn-signin:hover{
 	background-color: #6c6588;
@@ -195,6 +198,10 @@
 	border-radius: 5px;
 	color: #fff;
 	background-color: #5169e6;
+}
+.btn-signup:hover{
+	color: #fff;
+	background-color: var(--fc-pueple);
 }
 /**********************************************************
  *					user_personacon.html
