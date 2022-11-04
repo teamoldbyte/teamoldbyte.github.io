@@ -820,6 +820,9 @@
 		margin-bottom: 30px;
 		font-family: 'Frutiger';
 	}
+	.workbook-index-section .workbook-overview-section .list-passage-section .passage{
+		margin-bottom: 10px;
+	}
 }
 
 .workbook-index-section .tab-section .nav-tabs{
@@ -1001,7 +1004,7 @@
 		height: 12rem;
 	}
 	.workbook-section .flickity-prev-next-button.previous {
-		left: -1.5rem;
+		left: -.5rem;
 	}
 	.workbook-section .flickity-prev-next-button.next {
 		right: -1rem;
@@ -1150,7 +1153,7 @@
 
 @media (max-width: 720px) {
    .list-library-section .book-section {
-	    padding: 1.5rem;
+	    padding: 1.5rem 0.5rem;
 	}
 	
 	.list-library-section .subs-num{
