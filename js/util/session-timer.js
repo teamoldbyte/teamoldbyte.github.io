@@ -4,10 +4,9 @@
  * @author LGM
  */
 (() => {
-const maxAlive = 1800 * 1000, // 세션 최대 유지 시간; 밀리초 단위
-	ten_min = 600 * 1000, fiv_min = 300 * 1000, // 10분(사용자 활동 감지 시점), 5분(경고 시점)
+const MIN_10 = 600 * 1000, MIN_5 = 300 * 1000, // 10분(사용자 활동 감지 시점), 5분(경고 시점)
 	userAct = 'keypress.session click.session scroll.session';
-let lastAccessdTime, timeleft = maxAlive, sessionTimer, detectingUserActs = false, focusOutAlerted = false;
+let maxAlive = 1800 * 1000, lastAccessdTime, timeleft = maxAlive, sessionTimer, detectingUserActs = false, focusOutAlerted = false;
 $.getJSON('/session/valid', valid => {if(valid) {
   lastAccessdTime = new Date().getTime();
   // 세션 만료 알림 모달 등록
@@ -45,7 +44,7 @@ $.getJSON('/session/valid', valid => {if(valid) {
 	if(timeleft <= 0) 
 	  sessionExpiredConfirm();
 	// 마지막 사용자 활성 시간부터 25분 경과
-	else if(timeleft <= fiv_min) {
+	else if(timeleft <= MIN_5) {
 	  clearInterval(sessionTimer);
 	  updateSession();
 	  // 초단위의 타이머 새로 설정
@@ -58,9 +57,10 @@ $.getJSON('/session/valid', valid => {if(valid) {
 	const ajaxurl = settings.url;
 	if(ajaxurl.startsWith('/') || ajaxurl.startsWith('https://www.findsvoc.com') || ajaxurl.startsWith('https://findsvoc.com'))
 	  // 세션갱신 호출은 세션의 유효/무효를 반환. 무효일 경우 즉시 타이머 종료
-	  if(ajaxurl == '/session/valid') 
-		lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0)
-	  else if(lastAccessdTime + maxAlive > new Date().getTime()) {
+	  if(ajaxurl == '/session/valid') {
+		lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0);
+		if(!xhr.responseJSON) sessionExpiredConfirm();
+	  }else if(lastAccessdTime + maxAlive > new Date().getTime()) {
 		lastAccessdTime = new Date().getTime()
 	  } else sessionExpiredConfirm()
   });
@@ -84,7 +84,7 @@ function checkSessionValid() {
   timeleft = lastAccessdTime + maxAlive - new Date().getTime();
   if(timeleft > 0) {
 	// 세션 만료까지 10분 넘게 남았다면 브라우저 비활성화 경고 대기, 사용자 입력 감지 해제
-	if(timeleft > ten_min) {
+	if(timeleft > MIN_10) {
 	  focusOutAlerted = false;
 	  if(detectingUserActs) {
 	    detectingUserActs = false;
@@ -97,7 +97,7 @@ function checkSessionValid() {
 	  $(document).on(userAct, updateSession);
 	}
 	// 사용자 입력 감지 중이고, 세션 만료 5분전 세션 연장 모달 표시
-	else if(timeleft <= fiv_min) {
+	else if(timeleft <= MIN_5) {
 	  // 세션 유효 시간을 초단위로 표시
 	  $('#sessionTimeLeft').text(Math.floor(timeleft / 60000) + '분 '
 							+ Math.floor(timeleft % 60000 / 1000) + '초');
@@ -125,6 +125,11 @@ function checkSessionValid() {
   }else sessionExpiredConfirm();
 }
 
+// 세션 유지시간 설정
+function setMaxAlive(num) {
+	maxAlive = num * 1000;
+}
+
 // 세션 자동갱신. 세션이 10분 넘게 남게 되므로 동작 인식 해제.
 function updateSession() {
   $.getJSON('/session/valid');
@@ -135,7 +140,10 @@ function updateSession() {
 function sessionExpiredConfirm() {
   clearInterval(sessionTimer);
   $('#sessionAlert')?.modal('hide');
-  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.'))
+  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.')) {
 	location.assign('/auth/login');
+  }
 }
+
+Object.assign(window, {setMaxAlive, sessionExpiredConfirm, updateSession, checkSessionValid})
 })();
