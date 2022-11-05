@@ -59,7 +59,8 @@ $.getJSON('/session/valid', valid => {if(valid) {
 	if(ajaxurl.startsWith('/') || ajaxurl.startsWith('https://www.findsvoc.com') || ajaxurl.startsWith('https://findsvoc.com'))
 	  // 세션갱신 호출은 세션의 유효/무효를 반환. 무효일 경우 즉시 타이머 종료
 	  if(ajaxurl == '/session/valid') 
-		lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0)
+		lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0);
+		if(!xhr.responseJSON) sessionExpiredConfirm();
 	  else if(lastAccessdTime + maxAlive > new Date().getTime()) {
 		lastAccessdTime = new Date().getTime()
 	  } else sessionExpiredConfirm()
@@ -125,6 +126,11 @@ function checkSessionValid() {
   }else sessionExpiredConfirm();
 }
 
+// 세션 유지시간 설정
+function setMaxAlive(num) {
+	maxAlive = num;
+}
+
 // 세션 자동갱신. 세션이 10분 넘게 남게 되므로 동작 인식 해제.
 function updateSession() {
   $.getJSON('/session/valid');
@@ -135,7 +141,10 @@ function updateSession() {
 function sessionExpiredConfirm() {
   clearInterval(sessionTimer);
   $('#sessionAlert')?.modal('hide');
-  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.'))
+  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.')) {
 	location.assign('/auth/login');
+  }
 }
+
+Object.assign(window, {setMaxAlive, sessionExpiredConfirm, updateSession, checkSessionValid})
 })();
