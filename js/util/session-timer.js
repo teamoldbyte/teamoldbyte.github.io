@@ -59,7 +59,6 @@ $.getJSON('/session/valid', valid => {if(valid) {
 	  // 세션갱신 호출은 세션의 유효/무효를 반환. 무효일 경우 즉시 타이머 종료
 	  if(ajaxurl == '/session/valid') 
 		lastAccessdTime = (new Date().getTime()) * (xhr.responseJSON ? 1 : 0);
-		if(!xhr.responseJSON) sessionExpiredConfirm();
 	  else if(lastAccessdTime + maxAlive > new Date().getTime()) {
 		lastAccessdTime = new Date().getTime()
 	  } else sessionExpiredConfirm()
