@@ -898,11 +898,13 @@
 			case '7' :
 				/** 해석 배열하기
 					example = [오답1, 오답2]
+					정답: (부분해석의 경우) ask / (전체해석의 경우) kor
 				 */
-				let options7 = currentBattle.kor.split(/\s+/);
+				let options7 = currentBattle[answers.length > 0 ? 'ask' : 'kor'].split(/\s+/);
 				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
+				
+				// 부분해석 범위가 있는 경우, sentence의 해당 범위를 밑줄 처리
 				if(answers.length > 0) {
-					options7 = currentBattle.ask.split(/\s+/);
 					const answerRange = new Range();
 					answerRange.selectNode(sentence.firstChild)
 					answerRange.setStart(sentence.firstChild, answers[0][0]);
