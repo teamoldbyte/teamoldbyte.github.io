@@ -510,6 +510,9 @@ function pageinit(memberId, memberAlias, memberImage){
 					$partBlock.find('.meaning').text(sense.meaning);
 				}
 			}
+			// 데스크탑에서는 단어리스트 미리 표시
+			if(window.visualViewport.width > 576)
+				$section.find('.nav-link[data-type="word-list"]').tab('show');			
 		}
 	}
 	
