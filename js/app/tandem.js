@@ -125,7 +125,7 @@
 		"\u10A5": "\"prep.o.\"",
 		"\u10A6": "\"i.o.\"",
 		"\u10A7": "\"d.o.\"",
-		"\u10A8": "\"s.s.\"",
+		"\u10A8": "\"(의)s\"",
 		"\u10A9": "\"mod\"",
 
 
@@ -1331,7 +1331,7 @@
 		return result;
 	}
 
-	window['tandem'] = { showSemanticAnalysis, checkGCDepth, checkPOSDepth, 
+	window['tandem'] = { showSemanticAnalysis, checkGCDepth, checkPOSDepth, svocText2Arr,
 						cleanSvocDOMs, correctMarkLine, createBasicDOMs, 
 						drawConnections, splitInners, getSvocBytes, 
 						trimTextContent, wrapWithBracket };
