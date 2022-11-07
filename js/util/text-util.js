@@ -26,11 +26,11 @@ U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 0070	p	q	r	s	t	u	v	w	x	y	z	{	|	}	~
 0080						nel
 00A0	nbsp
-2010									‘	’	‚	‛	“	”
+2010	‐	‑	‒	–	—	―			‘	’	‚	‛	“	”
 2020									ls	ps
 */
-const invalidEnglishRegex = /[^\u0021-\u007E\s\u2018-\u201A\u201C-\u201D]/gi;
-const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D]";
+const invalidEnglishRegex = /[^\u0021-\u007E\s\u2010-2015\u2018-\u201A\u201C-\u201D]/gi;
+const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(window,str) {
 	/**
@@ -135,7 +135,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 		match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
 		// 정규식에 걸리지 않을 때까지 재검사
-		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-z]{2,}|\d+|I'[a-z]+))|\d\.[A-z]+) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-z]{2,}|\d+|I'[a-z]+))|\d\.[A-z]+) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
 			for(i = 1; i < 9; i++) {
 				if(match[i] != null) {
 					switch(i) {
@@ -152,24 +152,18 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 							arr.push({highlight: [match.index, match.index + 1]});
 							input = input.replace(match[0], '\'');
 							break;
-						case 4: // 둘 이상의 공백을 하나의 ASCII 공백으로
-							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
-							arr.push({highlight: [match.index, match.index + 1]});
-							input = input.replace(match[0], ' ');
-							break;
-						case 5: // 구두점 앞의 하나 이상의 공백은 생략
+						case 4: // 구두점 앞의 하나 이상의 공백은 생략
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({highlight: [match.index, match.index + 2]});
 							input = input.replace(match[0], match[i]);
 							break;
-						case 6: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
+						case 5: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
 							if(inputCursor >= match.index + 1) inputCursor += 1;
 							arr.push({highlight: [match.index + 2, match.index + 3]});
-							console.log('case 6')
 							input = input.replace(match[0], `${match[i].substring(0,2)} ${match[i].substring(2)}`)
 							break;
-						case 7: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
-						case 8: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
+						case 6: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
+						case 7: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
 							arr.push({highlight: [match.index, match.index + match[i].length]});
 							input = input.replace(match[0], `'${match[i]}`);
