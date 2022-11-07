@@ -135,7 +135,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 		match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
 		// 정규식에 걸리지 않을 때까지 재검사
-		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|((?:\w[,!?:;]\w+)|(?:(?:\w[,!?:;]\w+)|(?:[A-z]\.(?:[A-z]{2,}|\d+|I'[a-z]+))|\d\.[A-z]+) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|(\s{2,})|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-z]{2,}|\d+|I'[a-z]+))|\d\.[A-z]+) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
 			for(i = 1; i < 9; i++) {
 				if(match[i] != null) {
 					switch(i) {
@@ -165,6 +165,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2018-\\u201A\\u201C-\\u201D
 						case 6: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
 							if(inputCursor >= match.index + 1) inputCursor += 1;
 							arr.push({highlight: [match.index + 2, match.index + 3]});
+							console.log('case 6')
 							input = input.replace(match[0], `${match[i].substring(0,2)} ${match[i].substring(2)}`)
 							break;
 						case 7: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
