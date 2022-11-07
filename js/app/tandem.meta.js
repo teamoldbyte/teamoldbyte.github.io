@@ -14,10 +14,10 @@
 
 	const INDIRECT_OBJ = 'i.o.';
 	const DIRECT_OBJ = 'd.o.';
-	const ACTUAL_SUBJ = 'r.s.';
-	const ACTUAL_OBJ = 'r.o.';
+	const ACTUAL_SUBJ = '(진)s';
+	const ACTUAL_OBJ = '(진)o';
 	const PREP_OBJ = 'prep.o.';
-	const SENSE_SUBJ = 's.s.';
+	const SENSE_SUBJ = '(의)s';
 	const extraRolecomments = [ INDIRECT_OBJ, DIRECT_OBJ, ACTUAL_OBJ, ACTUAL_SUBJ, PREP_OBJ, SENSE_SUBJ ];
 
 	function gramMetaStrFromDOM(div) {
