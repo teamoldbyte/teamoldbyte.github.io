@@ -281,6 +281,7 @@
 			// 진주어나 진목적어가 있다변 태그 추가
 			if([ACTUAL_OBJ, ACTUAL_SUBJ].includes(semantic.rc)) {
 				metaSet.push({ depth, name: `${pos}_ACTUAL_${semantic.rc == ACTUAL_OBJ ? 'OBJ' : 'SUBJ'}` });
+				metaSet.push({ depth: depth + 1, name: `ACTUAL_${semantic.rc == ACTUAL_OBJ ? 'OBJ':'SUBJ'}`})
 			}
 			// 다음으로 품사와 성분을 인식(다항 태그보다는 후순위므로 depth 1증가)
 			if (!hasKey(metaSet, 'name', pos))
@@ -345,7 +346,9 @@
 			if(child.ptcphr) {
 				metaSet.push({ depth: depth + 1, name: 'PTCPHR'});
 			}
-			
+			// 진주어나 진목적어가 있으면 태그 추가
+			if([ACTUAL_OBJ,ACTUAL_SUBJ].includes(child.rc))
+				metaSet.push({ depth: depth + 1, name: `ACTUAL_${child.rc == ACTUAL_OBJ ? 'OBJ':'SUBJ'}`})
 			// '의미상 주어'가 있으면 태그 추가
 			if(child.rc == SENSE_SUBJ) 
 				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'});
@@ -450,6 +453,8 @@
 		"PP_OC", // 17510, "과거분사(목적격 보어)"
 		"PP_COMP", // 17520, "과거분사(보어)"
 		"SENSE_SUBJ", // 18000, "의미상 주어"
+		"ACTUAL_SUBJ",	// 18100, "진주어"
+		"ACTUAL_OBJ",	// 18200, "진목적어"
 		"MODI", // 1800, "수식"
 		"MODI_POST_AP", // 1820, "현재분사(후치수식)"
 		"MODI_PRE_AP", // 1825, "현재분사(전치수식)"
