@@ -193,8 +193,8 @@
 		if(fileInput.value != null) {
 			new Compressor(fileInput.files[0], {
 				success(result) {
-					command.delete('imageFile');
-					command.append('imageFile', result, result.name);
+					command.delete('coverImage');
+					command.append('coverImage', result, result.name);
 					// 배틀북 등록(ajax)--
 					addBattleBook();
 					//-------------------
