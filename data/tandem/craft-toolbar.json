@@ -24,6 +24,270 @@
 				"children": [
 					{
 						"el": "div",
+						"className": "battle-book-section p-3 bg-white row mx-0 mb-3 rounded-5 collapse show",
+						"children": [
+							{
+								"el": "label",
+								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold",
+								"textContent": "배틀북 선택"
+							},
+							{
+								"el": "label",
+								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold opacity-50",
+								"textContent": "북 타입"
+							},
+							{
+								"el": "select",
+								"className": "select-book-type form-select d-inline-block w-auto col-auto",
+								"children": [
+									{ "el": "option", "value": "", "disabled": true, "selected": true, "textContent": "배틀북을 선택하세요" },
+									{ "el": "option", "value": "step", "textContent": "단계" },
+									{ "el": "option", "value": "grammar", "textContent": "문법" },
+									{ "el": "option", "value": "theme", "textContent": "테마" },
+									{ "el": "option", "value": "new", "textContent": "새로운 배틀북 생성" }
+								]
+							},
+							{
+								"el": "label",
+								"className": "col-auto lh-1 my-auto text-fc-purple fw-bold opacity-50",
+								"textContent": "배틀북"
+							},
+							{
+								"el": "select",
+								"className": "select-book form-select d-inline-block w-auto col"
+							}
+						]
+					},
+					{
+						"el": "form",
+						"className": "add-book-section position-relative p-3 bg-white row mx-0 mb-3 rounded-5 collapse border",
+						"children": [
+							{
+								"el": "label",
+								"className": "col-md-1 lh-1 ps-0 my-auto text-fc-purple fw-bold",
+								"textContent": "배틀북 생성"
+							},
+							{
+								"el": "button",
+								"type": "button",
+								"className": "js-cancel-add-book position-absolute btn p-3 col-auto top-0 end-0 fas fa-times"
+							},
+							{
+								"el": "div",
+								"className": "col-md-11 row",
+								"children": [
+									{
+										"el": "div",
+										"className": "col-md-4",
+										"children": [
+											{
+												"el": "div",
+												"className": "row",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "타이틀"
+													},
+													{
+														"el": "input",
+														"type": "text",
+														"name": "title",
+														"required": true,
+														"className": "input-book-title form-control col-auto d-inline-block w-auto"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "북타입"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookTypeT",
+														"name": "bookType",
+														"className": "input-book-type btn-check",
+														"checked": true,
+														"value": "T"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookTypeT",
+														"textContent": "테마"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookTypeG",
+														"name": "bookType",
+														"className": "input-book-type btn-check",
+														"value": "G"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookTypeG",
+														"textContent": "문법"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "공개타입"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOpenTypeT",
+														"name": "openType",
+														"className": "input-open-type btn-check",
+														"value": "P"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOpenTypeP",
+														"textContent": "전체"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOpenTypeT",
+														"name": "openType",
+														"className": "input-open-type btn-check",
+														"value": "T"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOpenTypeT",
+														"textContent": "그룹"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOpenTypeR",
+														"name": "openType",
+														"className": "input-open-type btn-check",
+														"checked": true,
+														"value": "R"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOpenTypeR",
+														"textContent": "개인"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "가격"
+													},
+													{
+														"el": "input",
+														"type": "number",
+														"name": "price",
+														"value": "0",
+														"min": "0",
+														"max": "1000000",
+														"className": "input-book-price form-control col-auto d-inline-block w-auto"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "col-md-2",
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "lh-1 my-auto text-fc-purple fw-bold", 
+												"textContent": "북커버"
+											},
+											{
+												"el": "div",
+												"className": "js-edit-battlebook-cover position-relative w-100",
+												"role": "button",
+												"style": "height:calc(100% - 24px)",
+												"children": [
+													{
+														"el": "img",
+														"className": "battlebook-cover-preview personacon-profile profile-default w-100 h-100"
+													},
+													{
+														"el": "input",
+														"type": "file",
+														"name": "imageFile",
+														"className": "input-book-cover d-none"
+													},
+													{
+														"el": "div",
+														"className": "position-absolute top-50 start-50 translate-middle fa-3x opacity-50 fas fa-plus-circle"
+													},
+													{
+														"el": "button",
+														"type": "button",
+														"className": "js-cancel-battlebook-cover btn btn-secondary fas fa-times position-absolute top-0 end-0",
+														"style": "display: none;"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "col-md-6",
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "lh-1 my-auto text-fc-purple fw-bold", 
+												"textContent": "설명"
+											},
+											{
+												"el": "textarea",
+												"type": "text",
+												"name": "description",
+												"className": "input-book-desc form-control col"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "mt-3",
+										"children": [
+											{
+												"el": "button",
+												"type": "button",
+												"className": "js-add-battlebook btn btn-fico",
+												"textContent": "배틀북 등록"
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"el": "div",
 						"className": "battle-type-section p-3 bg-white row mx-0 mb-3 rounded-5",
 						"data-radio": "btnradioBattletype",
 						"children": [
@@ -228,14 +492,14 @@
 		"className": "battles-counter-section p-3 bg-white row mx-0 mb-3 rounded-5",
 		"children": [
 			{
-				"el": "div", "className": "col-md-auto row",
+				"el": "div", "className": "col-md row",
 				"children": [
 					{ "el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "전체" },
 					{ "el": "span", "className": "counter-total col-auto", "textContent": "-"}
 				]
 			},
 			{
-				"el": "div", "className": "col-md-7 row",
+				"el": "div", "className": "col-md-6 row",
 				"children": [
 					{
 						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "배틀타입"
@@ -443,8 +707,9 @@
 			},
 			{
 				"ask": "#1",
-				"tag": "원형부정사"
+				"tag": "원형부정사"	
 			}
+			
 		],
 		[
 			{
@@ -715,7 +980,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "해석구간 선택",
-				"innerHTML": "해석구간",
+				"innerHTML": "해석구간(미선택시 전체)",
 				"value": "option"
 			}
 		]		
