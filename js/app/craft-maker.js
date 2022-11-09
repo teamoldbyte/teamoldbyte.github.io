@@ -14,8 +14,8 @@
 	
 	let staticCraftPanel, craftToolbarGroup = {}, 
 		battleAsks = [], battleTypeInfos = [], battleBtns = [], 
-		// 문법 카테고리 목록(캐싱)
-		categories = [], workbook_battleSource,
+		// 캐싱 속성들
+		categories = [], battleBooksMap = { step : [{ bbid: 10000001, title: '단계별 배틀'}] }, workbook_battleSource,
 		// 체크박스 그룹화를 위한 시퀀스값
 		chkbxSeq = 0;
 	let _memberId;
@@ -94,6 +94,150 @@
 			if($.fn.bounce != undefined)
 				$(section).bounce();
 		}).fail(() => alert('배틀 갯수 조회에 실패했습니다.'));
+	})
+	// 배틀북 북 타입 선택시 해당 배틀북 목록을 불러와 표시한다.
+	.on('change', '.select-book-type', function() {
+		const bookType = this.value;
+		const $battleSection = $(this).closest('.add-battle-section');
+		const $bookSelect = $battleSection.find('.select-book');
+		// 새 배틀북 생성
+		if(this.value == 'new') {
+			$.cachedScript('https://cdn.jsdelivr.net/npm/compressorjs/dist/compressor.min.js', {
+				success : () => Compressor.setDefaults({quality: 0.8, width: 210, height: 315, maxWidth: 210, maxHeight: 315, resize: 'cover'})
+			});
+			$battleSection.find('.battle-book-section,.add-book-section').collapse('toggle');
+			$bookSelect.empty();
+			this.value = '';
+			if(!$(this).data('bookPanelOpened')) {
+				const timeConstant = new Date().getTime();
+				$battleSection.find('input[type="radio"]').each(function() {
+					this.name += timeConstant;
+					this.id += timeConstant;
+				});
+				$battleSection.find('label[for]').each(function() {
+					this.htmlFor += timeConstant;
+				})
+				$(this).data('bookPanelOpened', true);
+			}
+		}else {
+			if(battleBooksMap[bookType]) {
+				setBookList();
+			}else {
+				$.getJSON(`/craft/battlebook/${this.value}/list`, bookList => {
+					battleBooksMap[bookType] = bookList;
+					setBookList();
+				})
+			}
+		}
+		function setBookList() {
+			$bookSelect[0].replaceChildren(createElement(Array.from(battleBooksMap[bookType], book => {
+				return { el: 'option', value: book.bbid, textContent: book.title + (book.description?` - ${book.description}`:'') }
+			})))
+		}
+	})
+	.on('click', '.js-edit-battlebook-cover', function(e) {
+		$(this).find('.input-book-cover').trigger('click');
+	})
+	.on('click', '.input-book-cover', function(e) {
+		e.stopPropagation();
+	})
+	// [커버 이미지 변경]-----------------------------------------------------------
+	.on('change', '.input-book-cover', function(e) {
+		const $preview = $(this).closest('.add-book-section').find('.battlebook-cover-preview');
+		let file = e.target.files[0];
+		if (file == null) return false;
+		const reader = new FileReader();
+		reader.onload = function() {
+			$preview.css('background-image', `url(${this.result})`)
+					.css('opacity', '1');
+			URL.revokeObjectURL(reader.result);
+			$preview.siblings('.js-cancel-battlebook-cover').show();
+		}
+		new Compressor(file, {
+			success(result) {
+				reader.readAsDataURL(result);
+			},
+			error(err) {
+				reader.readAsDataURL(file);
+			}
+		});
+	})
+	// [커버 이미지 리셋]
+	.on('click', '.js-cancel-battlebook-cover', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const $preview = $(this).closest('.add-book-section').find('.battlebook-cover-preview');
+		$preview.css('background-image', '')
+				.siblings('.input-book-cover').val(null)[0].checkValidity();
+		$(this).hide();
+	})	
+	.on('click', '.js-cancel-add-book', function() {
+		$(this).closest('.add-battle-section').find('.battle-book-section,.add-book-section').collapse('toggle');
+	})
+	.on('click', '.js-add-battlebook', function() {
+		const $addSection = $(this).closest('.add-book-section');
+		const fileInput = $addSection.find('.input-book-cover')[0];
+		const bookType = {T:'theme',G:'grammar'}[$addSection.find('.input-book-type:checked').val().toUpperCase()];
+		let command = new FormData($addSection[0]);
+		
+		if(!$addSection[0].checkValidity()) return;
+		const deleteList = [];
+		command.forEach((v, k) => {
+			if(k.match(/Type\d+/)) {
+				command.append(k.replace(/\d+/,''), v);
+				deleteList.push(k);
+			}
+		});
+		deleteList.forEach(k => command.delete(k));
+		
+		if(fileInput.value != null) {
+			new Compressor(fileInput.files[0], {
+				success(result) {
+					command.delete('imageFile');
+					command.append('imageFile', result, result.name);
+					// 배틀북 등록(ajax)--
+					addBattleBook();
+					//-------------------
+				},
+				error(err) {
+					// 배틀북 등록(ajax)--
+					addBattleBook();
+					//-------------------
+				}
+			})
+			// 배틀북 등록(ajax)--
+		}else addBattleBook();
+		
+		function addBattleBook() {
+			$.ajax({
+				type: 'POST',
+				url: '/craft/battlebook/add',
+				data: command,
+				processData: false, contentType: false,
+				success: function(book) {
+					(alertModal||alert)('배틀북을 등록했습니다.');
+					// 등록한 배틀북을 배틀북 선택 목록에 추가
+					if(battleBooksMap[bookType])
+						battleBooksMap[bookType].push(book);
+					// 배틀북 생성 패널이 새로 만들어지도록.
+					$addSection.closest('.add-battle-section').find(`.select-book-type`)
+						.val(bookType).trigger('change');
+					$addSection.add($addSection.prev()).collapse('toggle');
+				},
+				error: function() {
+					(alertModal||alert)('배틀북 등록에 실패했습니다.');
+				}
+			})
+		}
+		
+		function resetAddSection() {
+			$addSection[0].reset();
+			$addSection.find('.input-book-type[value="T"]').prop('checked', true);
+			$addSection.find('.input-open-type[value="R"]').prop('checked', true);
+			$addSection.find('.input-book-price').val(0);
+			$addSection.find('.battlebook-cover-preview').css('background-image','');
+			
+		}
 	})
 	// 배틀타입 선택시 에디터 종류를 변경한다.
 	.on('change', '.battle-type-section input[type=radio]', function() {
@@ -187,6 +331,13 @@
 	// 배틀 등록 버튼 클릭시 배틀입력 정보를 커맨드로 취합하여 전송
 	.on('click', '.js-add-battle', function() {
 		const addSection = this.closest('.add-battle-section');
+		
+		const battleBookId = parseInt(addSection.querySelector('.select-book').value);
+		if(Number.isNaN(battleBookId)) {
+			alertModal('❗배틀북을 선택해 주세요.');
+			return;
+		}
+		
 		const battlePanel = addSection.closest('.battle-section-panel');
 		const battleContext = addSection.querySelector('.battle-context');
 		const categoryId = parseInt(addSection.querySelector('.battle-category-section select').value);
@@ -199,7 +350,7 @@
 		const source = addSection.querySelector('.source').value.trim();
 		const engLength = battleContext.textContent.trim().length;
 		const command = {
-			categoryId, battleType, ask, askTag, comment, source, diffLevel, engLength,
+			battleBookId, categoryId, battleType, ask, askTag, comment, source, diffLevel, engLength,
 			sentenceId: $(battlePanel).data('sentenceId'),
 			memberId: _memberId,
 			example: '', answer: '',
@@ -406,6 +557,7 @@
 			});
 			return;
 		}
+		
 		// 카테고리 화면에서 최초 1회 불러오기
 		const categorySection = staticCraftPanel.querySelector('.battle-category-section select');
 		if(categories.length == 0) {
@@ -424,6 +576,11 @@
 		
 		// 공용 패널 복사본으로 패널 새로 생성
 		let panelInstance = staticCraftPanel.cloneNode(true);
+		
+		// 배틀북 선택 초기화
+		panelInstance.querySelector('.battle-book-section .select-book-type option').selected = true;
+		Array.from(panelInstance.querySelector('.battle-book-section .select-book').children).forEach(opt => opt.remove());		
+		
 		// 전달받은 인자값들을 패널 요소에 접근하여 얻을 수 있도록 설정
 		$(panelInstance).data('semantics', semanticsDiv)
 						.data('sentenceId', sentenceId)
