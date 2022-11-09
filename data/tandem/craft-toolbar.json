@@ -236,7 +236,7 @@
 													{
 														"el": "input",
 														"type": "file",
-														"name": "imageFile",
+														"name": "coverImage",
 														"className": "input-book-cover d-none"
 													},
 													{
