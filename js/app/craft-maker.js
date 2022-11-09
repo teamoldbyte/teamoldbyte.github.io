@@ -189,6 +189,7 @@
 			}
 		});
 		deleteList.forEach(k => command.delete(k));
+		command.append('ownerId', _memberId);
 		
 		if(fileInput.value != null) {
 			new Compressor(fileInput.files[0], {
