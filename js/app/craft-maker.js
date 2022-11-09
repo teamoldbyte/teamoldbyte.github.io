@@ -223,6 +223,7 @@
 					$addSection.closest('.add-battle-section').find(`.select-book-type`)
 						.val(bookType).trigger('change');
 					$addSection.add($addSection.prev()).collapse('toggle');
+					resetAddSection();
 				},
 				error: function() {
 					(alertModal||alert)('배틀북 등록에 실패했습니다.');
