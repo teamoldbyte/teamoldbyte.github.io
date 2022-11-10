@@ -5,38 +5,7 @@ function pageinit(isHelloBook) {
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
-	const tts = new FicoTTS();
 	const MAX_SENTENCE_LENGTH = 500;
-	// 재생 버튼 클릭시 재생/정지
-	$('#ttsPlay').click(function() {
-		if(this.dataset.active == 'on') {
-			const text = $('#newPassageText').val();
-			if(text.length > 0) {
-				togglePlayStatus(false);
-				tts.speak(text, () => togglePlayStatus(true));
-			}
-			else {togglePlayable(false); return;}
-		}else {
-			togglePlayStatus(true);
-			tts.stop();
-		}
-	});
-	const ttsPlayBtn = document.getElementById('ttsPlay');
-	function togglePlayable(enabled) {
-		if(enabled) {
-			ttsPlayBtn.classList.remove('pe-none','opacity-50');
-		}else{
-			ttsPlayBtn.classList.add('pe-none','opacity-50');
-		}
-	}
-	function togglePlayStatus(on) {
-		ttsPlayBtn.dataset.active = on?'on':'off';
-		ttsPlayBtn.textContent = on?'play_circle':'stop_circle';
-	}
-	$('#ttsSetting').click(()=> {
-		tts.stop(() => togglePlayStatus(true));
-		tts.openSettings();
-	})
 	
 	// [각 단계별 이동]
 	$('[class^=step-] .title-section').click(function() {
@@ -93,12 +62,6 @@ function pageinit(isHelloBook) {
 			if(isHelloBook) {
 				if(ui.item != null) {
 					this.value = ui.item.value;
-					togglePlayable(true);
-					togglePlayStatus(true);
-					if(tts.autoEnabled()) {
-						togglePlayStatus(false);
-						tts.speak(this.value, () => togglePlayStatus(true));
-					}else $(ttsPlayBtn).bounce();
 					const textLen = ui.item.value.length;
 					$('.demo-counter').text(textLen + '/' + maxChars); // 글자수 표시
 					$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
@@ -128,14 +91,11 @@ function pageinit(isHelloBook) {
 	// [신규 지문 입력 시 비활성화된 등록 버튼 활성화]
 	let maxChars = isHelloBook ? 300 : 1000; // default 1000, 피코 추가소모로 500 늘릴 수 있음.
 	let textTooltip;
-	let ttsTimer;
 	$(document).on('input', '#newPassageText', function(e, manual) {
 		const validateResult = replaceAndHighlights();
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
 		$('.demo-counter').text(textLen + '/' + maxChars);
 		$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
-		togglePlayStatus(true);
-		tts.stop();
 		$('.invalid-input-warning').toggle(validateResult[0]);
 		$('.corrected-input-info').toggle(validateResult[1]);
 		anime({
@@ -155,14 +115,6 @@ function pageinit(isHelloBook) {
 			$('#inputComplete').attr("disabled", (textLen == 0));
 			textTooltip?.hide();
 			textTooltip?.disable();
-			clearTimeout(ttsTimer);
-			togglePlayable(textLen > 0);
-			ttsTimer = setTimeout(() => {
-				if(tts.autoEnabled()) {
-					togglePlayStatus(false);
-					tts.speak(text,() => togglePlayStatus(true))
-				}else if(textLen > 0) $('#ttsPlay').bounce();
-			}, 600);
 			$(this).trigger('keydown');
 		} else {
 			togglePlayable(false);
@@ -231,7 +183,6 @@ function pageinit(isHelloBook) {
 	
 	// [지문 입력 완료]------------------------------------------------------------
 	$('#inputComplete').click(async function() {
-		tts.stop(() => togglePlayStatus(true));
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());
 		if(!isHelloBook && sentences.length == 1) {
@@ -349,7 +300,7 @@ function pageinit(isHelloBook) {
 					for(let i = 0, len = sentences.length; i < len; i++) {
 						const tempSentence = sentences[i];
 						if(tempSentence.length > MAX_SENTENCE_LENGTH) {
-							alert(`${(i + 1)}번째 문장의 길이가 너무 길어 AI가 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
+							alert(`${(i + 1)}번째 문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 							return;					
