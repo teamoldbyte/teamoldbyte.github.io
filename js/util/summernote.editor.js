@@ -19,7 +19,7 @@
 				['para', ['ul', 'ol', 'paragraph']],
 				['table', ['table']],
 				['insert', ['link', 'picture', 'video']],
-				['view', ['help']] ],
+				['view', ['help','codeview']] ],
 			styleTags: [ 'p', { title: '제목', tag: 'h4', value: 'h4' } ],
 			fontNames: ['RIDIBatang', 'HCRDotum'],
 			fontSizes: ['10', '12', '14', '16', '18', '24', '36'],
