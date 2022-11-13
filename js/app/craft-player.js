@@ -1397,8 +1397,8 @@
 		explainSection.querySelector('.words-section')
 		.replaceChildren(answerInfo.wordList.length > 0 ? createElement(Array.from(answerInfo.wordList, word => {
 			return 	{ "el": "span", "class": 'one-word-unit-section', "children": [
-				{ "el": "span", "class": "title", textContent: word.title }].concat(Array.from(word.senseList, sense => {
-					return { "el": "span", "class": "one-part-unit-section", "children": [{ 
+				{ "el": "span", "class": "title", textContent: word.title }].concat(Array.from(word.senseList, (sense,i) => {
+					return { "el": "span", "class": `one-part-unit-section${i>0? ' ms-2':''}`, "children": [{ 
 						"el": "span", "class": "part", textContent: sense.partType },
 						{ "el": "span", "class": "meaning", textContent: sense.meaning }
 					]};
