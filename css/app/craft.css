@@ -751,7 +751,7 @@ u {
 #battle-2 .unselected.modificand::before {
 	color: #ffb266;
 	position: absolute;
-	top: -.825rem;
+	top: -.625rem;
 	left: auto!important;
 	/*right: .5rem;*/
 	font-size: .75rem;
@@ -765,7 +765,7 @@ u {
 #battle-2 .unselected.modifier::before {
 	color: #ffb266;
 	position: absolute;
-	top: -.825rem;
+	top: -.625rem;
 	left: auto!important;
 	/*right: .5rem;*/
 	font-size: .75rem;
