@@ -520,6 +520,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		const $workbookSection = $section.find('.workbook-overview-section');
 		$section.data('workbookId', workbookInfo.workbookId);
 		$workbookSection.find('.wb-id').text(workbookInfo.workbookId);
+		$workbookSection.find('.image-section img').on('click', () => location.assign(`/workbook/passage/${ntoa(workbookInfo.workbookId)}/${ntoa(workbookInfo.passageId)}`))
 		if(workbookInfo.imagePath)
 			$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
 		$workbookSection.find('.text-section .wb-title').text(workbookInfo.title);
