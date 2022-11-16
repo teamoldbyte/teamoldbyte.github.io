@@ -32,6 +32,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 		lazy: true,
 		on: {
 			click: function(s,e) {
+				if(!s.clickedSlide) return;
 				const $overviewSection = $('.workbook-overview-section');
 				const bookDiv = s.clickedSlide||e.path.find(d=>d.matches('.book-unit'));
 				const workBookId = bookDiv.dataset.workBookId,
@@ -149,7 +150,6 @@ function pageinit(recentOpenWorkBooks, memberId){
 		for(let i = 0,len = list.content?.length; i < len; i++) {
 			const book = list.content[i];
 			const $dom = $('#hiddenDivs .book-unit').clone();
-			if(isMobile) $dom.addClass('swiper-slide')
 			$dom.attr('href', `${location.origin}/workbook/intro/${ntoa(book.workBookId)}`);
 			const $cover = $dom.attr('data-work-book-id', book.workBookId)
 						.attr('data-writeralias', book.alias)
