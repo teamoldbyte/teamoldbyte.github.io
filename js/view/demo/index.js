@@ -19,8 +19,7 @@ function pageinit(){
 	}
 	
 	// [예문 자동 교체]
-	const $examples = $('.input-example-section .example-unit'),
-		exampleCount = $examples.length;
+	const $examples = $('.input-example-section .example-unit');
 	let exampleNum = Math.floor(Math.random() * 5.99);
 	function changeExample() {
 	   let $example = $examples.eq(exampleNum);
@@ -74,8 +73,8 @@ function pageinit(){
 	});
 	
 	// [입력폼 글자수 카운트]
-	let textTooltip, pasteTooltip; // 입력 힌트
-	$('#text').on('input', function(overPasted) {
+	let textTooltip; // 입력 힌트
+	$('#text').on('input', function() {
 		const validateResult = replaceAndHighlights();
 		
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
@@ -87,7 +86,6 @@ function pageinit(){
 		$('.invalid-input-warning').toggle(validateResult[0]); // 비 영문자 안내
 		$('.corrected-input-info').toggle(validateResult[1]); // 교정 안내
 		$('.input-form-section .search-btn').toggleClass('disabled', invalid); // 실행 버튼 활성/비활성화
-		togglePlayable(!invalid);
 		anime({
 			targets: '.hwt-backdrop mark.corrected',
 			keyframes: [
@@ -95,7 +93,7 @@ function pageinit(){
 				{opacity: 1, easing: 'linear'},
 				{opacity: 0, easing: 'linear'},
 				{opacity: 1, easing: 'linear'},
-				{opacity: 0, easing: 'linear', duration: 1000, easing: 'cubicBezier(.7, .0, 1.0, 0.3)'},
+				{opacity: 0, duration: 1000, easing: 'cubicBezier(.7, .0, 1.0, 0.3)'},
 				{display: 'none', easing: 'steps(1)'}
 			],
 		})
@@ -103,7 +101,7 @@ function pageinit(){
 			(textTooltip || (textTooltip = new bootstrap.Tooltip(this, {
 				title: `영어 문장을 ${maxChars}자 이내로 입력하세요.`,
 				customClass: 'demo-text-invalid',
-				offset: ({placement,refer,popper}) => {
+				offset: ({placement}) => {
 					if(placement == 'top') {return [100,0];}
 					else {return [0,0];}
 				}}))).enable();
@@ -151,7 +149,7 @@ function pageinit(){
 	
 	// [분석 실행시 로딩 이미지]
 	$('.addForm').on('submit', function() {
-		$('lottie-player:visible').each((i,el) => {
+		$('lottie-player:visible').each((_i,el) => {
 			el.stop();
 		});
 		$('#loadingModal').modal('show');
