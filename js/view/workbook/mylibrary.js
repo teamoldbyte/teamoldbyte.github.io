@@ -2,7 +2,6 @@
  * @author LGM
  */
 function pageinit() {
-	const isMobile = window.visualViewport.width < 768;
 	new Swiper('.swiper', {
 		slidesPerView: 'auto',
 		watchSlidesProgress: true,
@@ -27,7 +26,7 @@ function pageinit() {
 			},
 			click: function(s) {
 				if(!s.clickedSlide) return;
-				const $section = $(this).closest('.workbook-block');
+				const $section = $(s.clickedSlide).closest('.workbook-block');
 				const workbookId56 = ntoa(s.clickedSlide.dataset.workBookId);
 				
 				// 내가 작성한 워크북 여부에 따라 다른 새 페이지를 띄움-----------------------
@@ -57,7 +56,7 @@ function pageinit() {
 							if(bookPage.last) s.isLast = true;
 						}
 					})
-					.fail( jqxhr => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+					.fail( () => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 				}
 			}
 		}
