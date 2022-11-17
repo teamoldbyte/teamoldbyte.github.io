@@ -117,7 +117,6 @@ function pageinit(isHelloBook) {
 			textTooltip?.disable();
 			$(this).trigger('keydown');
 		} else {
-			togglePlayable(false);
 			(textTooltip || (textTooltip = new bootstrap.Tooltip(this, {
 				title: `영어 문장을 ${maxChars}자 이내로 입력하세요.`,
 				trigger: 'manual', customClass: 'text-invalid',
