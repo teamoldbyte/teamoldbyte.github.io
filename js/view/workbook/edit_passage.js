@@ -2,7 +2,7 @@
 @author LGM
  */
 function pageinit(sentenceList) {
-	const passageId = Number(sessionStorage.getItem('editingPassageId')),
+	const passageId = Number(sessionStorage.getItem('editingPassageId')||sessionStorage.getItem('passageId')),
 		workbookId = Number(sessionStorage.getItem('workbookId'));
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
