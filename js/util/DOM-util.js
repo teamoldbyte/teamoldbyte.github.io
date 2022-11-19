@@ -35,14 +35,15 @@ function createElement(json) {
 		}else if(key == 'style') { 
 			// 스타일 속성들. (한 번 더 들어가야 함)
 			if(typeof json[key] == 'string') {
-				element[key] = json[key];
+				element.style.cssText = json[key];
 			}else if(typeof json[key] == 'object') {
-				const styleProperties = json[key],
+				Object.assign(element.style, json[key]);
+				/*const styleProperties = json[key],
 					styleKeys = Object.keys(styleProperties);
 				for(let j = 0, slen = styleKeys.length; j < slen; j++) {
 					const property = styleKeys[j];
 					element[key][property] = styleProperties[property];
-				}
+				}*/
 			}else console.error('style에 ' + typeof json[key] + '은/는 맞지 않습니다.');
 		}else if(key != 'el') { // 나머지 속성들 적용
 			if(typeof element[key] == 'undefined') {
@@ -94,8 +95,9 @@ function parseHTML(html) {
 
 // alert를 대신하여 BootStrap Modal을 생성해서 표시
 function alertModal(msg) {
-	if(!document.getElementById('alertModal')) {
-		document.body.appendChild(createElement({
+	let modal = document.getElementById('alertModal');
+	if(!modal) {
+		modal = createElement({
 			"el":"div","id":"alertModal","class":"modal fade","data-bs-backdrop":"static","tabIndex":0,"children":[
 				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 					{"el":"div","class":"modal-content","children":[
@@ -103,8 +105,52 @@ function alertModal(msg) {
 							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\/n/g,'<br>')},
 							{"el":"div","class":"button-section row g-1 col-6 mx-auto","children":[
 								{"el":"button","class":"btn btn-fico", 'data-bs-dismiss':'modal',"textContent": "확인"}
-		]}]}]}]}]}))
+		]}]}]}]}]});
+		document.body.appendChild(modal);
+		modal.addEventListener('keypress', function(event) {
+			if((event.keyCode ? event.keyCode : event.which) == '13') {
+				bootstrap?.Modal?.getInstance(modal).hide();
+			}
+		})		
+	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\/n/g,'<br>');
+	bootstrap?.Modal?.getOrCreateInstance(modal).show();
+}
+// window.confirm을 대신하여 Bootstrap Modal을 생성해서 표시
+function confirmModal(msg, callback) {
+	let modal = document.getElementById('confirmModal');
+	if(!modal) {
+		modal = createElement({
+			"el":"div","id":"confirmModal","data-bs-backdrop":"static", 'data-bs-return': '0',
+			"class":"modal fade","tabIndex":0,"children":[
+				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+					{"el":"div","class":"modal-content","children":[
+						{"el":"div","class":"modal-body row g-0","children":[
+							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\/n/g,'<br>')},
+							{"el":"div","class":"button-section row gx-2 col-md-6 col-8 mx-auto","children":[
+								{ "el": "div", className: 'col text-center', children: [
+									{"el":"button","class":"btn btn-fico w-100","textContent": "확인", onclick: () => {
+										modal.dataset.bsReturn = 1;
+										bootstrap?.Modal?.getInstance(modal).hide();
+									}}
+								]},
+								{ "el": "div", className: 'col text-center', children: [
+									{"el":"button","class":"btn btn-outline-fico w-100", "textContent": "취소", 'data-bs-dismiss':'modal'}
+								]}
+		]}]}]}]}]});
+		document.body.appendChild(modal);
+		modal.addEventListener('keypress', function(event) {
+			if((event.keyCode ? event.keyCode : event.which) == '13') {
+				modal.dataset.bsReturn = 1;
+				bootstrap?.Modal?.getInstance(modal).hide();
+			}
+		})
+		modal.addEventListener('hide.bs.modal', function() {
+			if(!callback) return;
+			callback.call(this, Boolean(parseInt(this.dataset.bsReturn)));
+		})
+	}else {
+		modal.dataset.bsReturn = 0;
+		modal.querySelector('.text-section').innerHTML = msg.replace(/\/n/g,'<br>');
 	}
-	document.querySelector('#alertModal .text-section').innerHTML = msg.replace(/\/n/g,'<br>');
-	bootstrap?.Modal?.getOrCreateInstance(document.getElementById('alertModal')).show();
+	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
