@@ -744,7 +744,8 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				}
 				$svocBlock.find('.writer-section').prepend($personacon);
 				
-				if(window['tandem'] != undefined && tandem['meta'] != undefined
+				if(memberId != null && memberId > 0
+				&& window['tandem'] != undefined && tandem['meta'] != undefined
 				&& j + 1 == svocListLen && sentence.metaStatus != null && sentence.metaStatus == 'N') {
 					// gramMeta 저장(ajax)---------------------------------------
 					tandem.meta.saveGramMetaFromDOM(sentence.sentenceId, div, false, 'workbook');
