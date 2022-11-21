@@ -439,7 +439,7 @@
 
 /* 모바일 스타일 */
 @media (max-width:767px) {
-	.sem.inner:not(.outer *) {border: none;}
+	.sem.inner {border: none;}
 	.sem.inner[data-rc]::before {top:1rem;}
 	.sem.outer[data-rc]::before {top:2.25rem;}
 	.sem.outer .sem.inner[data-rc]::before {top:1rem;}
