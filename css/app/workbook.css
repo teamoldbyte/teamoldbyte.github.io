@@ -1177,7 +1177,9 @@
 /* collapse를 위한 고정높이 */
 .list-library-section .list-inline {
 	/* min-height: 10rem; */
-	height: calc(30rem + 40px);
+	
+	
+	/* height: calc(30rem + 40px); */
 }
 /* 공개 공유 워크북의 구독자 수 표시 */
 /*.list-library-section .subs-num{
@@ -1215,12 +1217,13 @@
 @media (max-width: 768px) {
 	.list-library-section .list-inline {
 		/* min-height: 10rem; */
-		height: calc(20rem + 40px);
+		/* height: calc(20rem + 40px); */
 	}
 
    .list-library-section .book-section {
 	    padding: 1.5rem 0.5rem;
-		height: 23rem;
+		/* height: 23rem; */
+		height: auto;
 		width: calc(100vw - 2rem);
 	}
 	
