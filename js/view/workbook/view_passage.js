@@ -1,32 +1,47 @@
 /** /workbook/view_passage.html
  @author LGM
  */
-function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, passageId, sentenceList) {
-	const tts = new FicoTTS({autoplay: false, initSuccessCallback: () => {
+ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, passageId, sentenceList) {
+	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+	const isMobile = window.visualViewport.width < 576;
+	const tts = new FicoTTS({initSuccessCallback: () => {
 		// 자동재생 조작 금지
-		document.querySelector('#ttsSettings .form-switch').remove();
+		//document.querySelector('#ttsSettings .form-switch').remove();
 	}});
+	
+	const svocMenuSectionJson = {
+		el: 'div', className: 'svoc-menu-section d-block d-md-none', children: [
+			{ el: 'button', type: 'button', className: 'col-auto js-add-svoc btn add-btn login-required p-0 ms-1 ms-lg-2 mb-auto',
+			'data-toggle': 'tooltip', title: '구문분석 추가 등록', children: [
+				{ el: 'span', className: 'material-icons fs-5', textContent: 'add_circle' }
+			]},
+			{ el: 'button', type: 'button', className: 'col-auto js-open-dashboard btn add-btn login-required p-0 ms-1 ms-lg-2 mb-auto',
+			'data-bs-toggle': 'collapse', title: '문장 평가', children: [
+				{ el: 'span', className: 'material-icons fs-5', textContent: 'assignment_turned_in' }
+			]}
+		]
+	};
 	
 	const svocSectionJson = {
 		el: 'div', className: 'svoc-section row position-relative', children: [
 			{ el: 'div', className: 'svoc-block col my-auto' },
 			{ el: 'div', className: 'svoc-mdf-btns btn-group px-2', children: [
 					{ el: 'button', 'data-seq': '', 
-						className: 'js-edit-svoc login-required btn text-bluegray-300 p-0 pe-1',
+						className: 'js-edit-svoc login-required btn p-0 pe-1',
 						'data-toggle': 'tooltip', title: '분석 수정', children: [
-							{ el: 'span', className: 'fas fa-marker'}
+							{ el: 'span', className: 'material-icons fs-5', textContent: 'edit_document'}
 						]
 					},
 					{ el: 'button', 'data-seq': '', 
-						className: 'js-del-svoc login-required btn text-bluegray-300 p-0 ps-1',
+						className: 'js-del-svoc login-required btn p-0 ps-1',
 						'data-toggle': 'tooltip', title: '분석 삭제', children: [
-							{ el: 'span', className: 'fas fa-trash-alt'}
+							{ el: 'span', className: 'material-icons fs-5', textContent: 'delete'}
 						]
 					}
 				]
 			},
-			{ el: 'div', className: 'writer-section col-12 col-md-1 mt-2 mt-xl-0 btn', 'data-bs-toggle': 'collapse' , children: [
-				{ el: 'div', className: 'personacon-alias alias text-truncate' }
+			{ el: 'div', className: 'writer-section col-4 col-md-1 mt-2 mt-xl-0 btn', 'data-bs-toggle': 'collapse' , children: [
+				{ el: 'div', className: 'personacon-alias alias' }
 			]}
 		]
 	};
@@ -75,27 +90,24 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 					]}
 				]}
 			]},
-			{ el: 'div', className: 'col-12 personacon-section text-end mt-1 text-secondary fst-italic', children: [
-				'written by ',
+			{ el: 'div', className: 'col-12 personacon-section text-end mt-0 mt-md-1 text-secondary', children: [
 				{ el: 'div', className: 'personacon-alias alias d-inline fst-normal' }
 			]},
-			{ el: 'div', className: 'col-auto ms-auto row mh-2rem', children: [
-				{ el: 'div', className: 'col-auto ms-auto me-1 note-mdf-btns btn-group', children: [
+			{ el: 'div', className: 'text-end', children: [
+				{ el: 'div', className: 'note-mdf-btns btn-group', children: [
 					{ el: 'button', type: 'button', 
-						className: 'js-edit-note-open login-required btn border-color-bluegray border-2 border-end-0 rounded-start py-0 pe-0 text-bluegray-300',
+						className: 'js-edit-note-open login-required btn',
 						'data-toggle': 'tooltip', title: '노트 수정', children: [
-							{ el: 'span', className: 'far fa-file-alt' },
-							{ el: 'span', className: 'fas fa-pen fa-xs', style: {
-								left: '-8px', top: '5px', position: 'relative'
-							}}
+							{ el: 'span', class: 'material-icons fs-5', textContent: 'edit_document'}
 						]
 					},
 					{ el: 'button', type: 'button', 
-						className: 'js-delete-note login-required btn border-color-bluegray border-2 rounded-end py-0 fas fa-trash-alt text-bluegray-300',
-						'data-toggle': 'tooltip', title: '노트 삭제'
+						className: 'js-delete-note login-required btn', 'data-toggle': 'tooltip', title: '노트 삭제', children: [
+							{ el: 'span', class: 'material-icons fs-5', textContent: 'delete'}
+						]
 					}
 				]},
-				{ el: 'div', className: 'updatedate col-auto ms-auto p-0 mt-1 text-secondary text-xs' }
+                { el: 'div', className: 'updatedate col-auto ms-auto p-0 mt-0 mt-md-1 mb-1 mb-md-0 text-secondary text-xs' }
 			]}
 		]
 	};
@@ -103,7 +115,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		el: 'div', className: 'trans-mdf-btns', children: [
 			{ el: 'button', type: 'button', className: 'js-edit-trans-open login-required btn btn-sm py-0 pe-0 pt-0',
 				'data-toggle': 'tooltip', title: '해석 수정', children: [
-					{ el: 'span', className: 'material-icons fs-5', textContent: 'edit' }
+					{ el: 'span', className: 'material-icons fs-5', textContent: 'edit_document' }
 				]
 			},
 			{ el: 'button', type: 'button', className: 'js-del-trans login-required btn btn-sm py-0',
@@ -376,7 +388,8 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
  */	
 	
 	
-	
+	// 현재 페이지에서만 로고에 글래스 효과 추가 
+	$('.workbook-menu-section').find('.logo-link-section').addClass('glass-effect');
 	
 	
 	// 모바일이 아니거나 화면회전 기능을 지원하지 않으면 화면회전 버튼 삭제
@@ -384,55 +397,30 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		$('.js-rotate-btn').remove();
 	}
 	const passageIdList = JSON.parse(sessionStorage.getItem('passageIdList'));
-	const workbookCoverImg = sessionStorage.getItem('workbookCover');
-	 
-	const $workbookCover = $('.workbook-cover-section .workbook-cover .book-image');
 	
 	// [워크북 편집, 지문 편집, 지문 추가 화면으로의 이동 버튼 설정]-------------------------
 	if(document.referrer.length > 0){
 		try {
 			const referrerPath = new URL(document.referrer).pathname;
 			
-			$('#editPassageBtn').click(() => {
-				sessionStorage.setItem('workbookId', workbookId);
-				sessionStorage.setItem('editingPassageId', passageId);
-				location.assign('/workbook/mybook/edit/passage/' + ntoa(passageId));
-			});
-			
 			if(referrerPath.includes('/workbook/passage/add')
 			|| referrerPath.includes('/workbook/passage/new')) {
-				// 지문 추가에서 왔을 경우 모든 수정 관련 버튼 표시
-				$('#addPassageBtn, #editPassageBtn, #editWorkbookBtn').show();
 				// passageId 추가
 				if(!passageIdList.includes(passageId)) {
 					passageIdList.push(passageId);
 					sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));
 				}
+				// 지문 추가에서 왔을 경우 모든 수정 관련 버튼 표시
+				if(passageIdList.length < 30) $('#addPassageBtn').show();
 			}else if(referrerPath.includes('/workbook/mybook/edit')) {
 				// 워크북 수정, 지문 수정에서 왔을 경우 '지문추가'버튼 빼고 표시
 				$('#addPassageBtn').remove();
-				$('#editPassageBtn, #editWorkbookBtn').show();
-			}else {
-				// 헬로북 지문추가 및 일반 경로를 통해서 왔을 경우 수정 관련 버튼 모두 숨김
-				$('#addPassageBtn, #editPassageBtn, #editWorkbookBtn').remove();
 			}
 		} catch (error) {
 			$('#addPassageBtn, #editPassageBtn, #editWorkbookBtn').remove();
 		}
-	}else {
-		$('#addPassageBtn, #editPassageBtn, #editWorkbookBtn').remove();
 	}
-	// 워크북 커버 이미지가 있을 경우 표시, 없으면(혹은 확장자명 없을 경우) 기본 이미지 표시
-	if(!document.querySelector('.book-title')) {
-		if(workbookCoverImg != null && /.+\.[A-Za-z]+$/.test(workbookCoverImg)) {
-			$workbookCover.css('background', 'url(' +
-				((workbookCoverImg.indexOf('https://') > -1)
-				? workbookCoverImg : ('/resource/workbook/cover/' + workbookCoverImg)) 
-				+ ') center/cover no-repeat');
-		}else{
-			$workbookCover.css('background', 'var(--fc-logo-head) center/cover no-repeat #121E34');
-		}
-	}
+	
 
 /* ------------------------------- 지문 관련 ---------------------------------- */
 	
@@ -481,10 +469,10 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		}
 		// (ajax) 지문 타이틀 수정-----------
 		editPassageTitle(command, () => {
-			alert('지문 제목이 수정되었습니다.');
+			alertModal('지문 제목이 수정되었습니다.');
 			$(titleSection).find('.edit-block').collapse('hide');
 			$(titleSection).find('.display-block').collapse('show').find('.passage-title-text').text(passageTitle||'제목 없음');
-		}, () => alert('지문 제목 수정 중 오류가 발생했습니다.'));
+		}, () => alertModal('지문 제목 수정 중 오류가 발생했습니다.'));
 		//-----------------------------------------------
 	}).on('click', '.js-cancel-ptitle', function() {
 		const titleSection = this.closest('.passage-title-block');
@@ -505,16 +493,15 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		}
 	});
 	// [지문의 노트 목록 가져오기(1회)]-----------------------------------------------------
-	$('#passageNotes').one('show.bs.collapse', function(){
+	$('#passageNotes,#passageNotes_mobile').one('show.bs.collapse', function(){
 		const $noteSection = $(this);
 		
 		if($noteSection.is('.loading')) return;
 		
 		$noteSection.addClass('loading');
 		// 지문노트 새로 가져오기(ajax)---------------------------------------
-		$.getJSON('/workbook/passage/note/list/'+ workbookId 
-				+ '/' + passageId + '/' + memberId, notes => listNotes(notes))
-		.fail(jqxhr => alert('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		$.getJSON(`/workbook/passage/note/list/${workbookId}/${passageId}/${memberId}`, notes => listNotes(notes))
+		.fail(jqxhr => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//---------------------------------------------------------------
 		
 		
@@ -535,7 +522,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	});
 	
 	// [지문의 노트 추가]
-	$('#js-add-passage-note-btn').click(function() {
+	$('.js-add-passage-note-btn').click(function() {
 		const $addSection = $(this).closest('.add-section');
 		const $textInput = $addSection.find('.text-input');
 		const content = $textInput.val().trim();
@@ -548,10 +535,10 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		
 		function appendNote(note) {
 			note['memberInfo'] = {memberId, alias: memberAlias};
-			const $noteList = $addSection.closest('.note-section').find('.note-list').show();
 						   //------------------
 			const $block = createNoteDOM(note);
 						   //------------------
+			const $noteList = $addSection.closest('.note-section').find('.note-list').show();
 			$block.prependTo($noteList);
 			$textInput.val('');
 			$addSection.toggle(300, function() {
@@ -570,7 +557,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		
 		// 지문의 질문 가져오기(ajax)---------------------------------------------
 		$.getJSON(['/qnastack/question/workbook/passage', workbookId, passageId].join('/'),
-		listQuestions).fail(jqxhr => alert('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		listQuestions).fail(jqxhr => alertModal('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//------------------------------------------------------------------
 		
 		function listQuestions(questions){
@@ -625,12 +612,20 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	});
 	
 /* ------------------------------- 문장 관련 ---------------------------------- */	
+
+	if(isMobile) {
+		$('.one-sentence-unit-section').addClass('swiper-slide')
+		.parent().addClass('swiper-wrapper')
+		.parent().addClass('swiper');
+	}
 	// 문장별 요소(해석,분석,단어,핑거) 표시--------------------------------------------
 	let $results = $('.result-section');
 	let $copySection = $('.one-sentence-unit-section').clone();
-	let $transCopyBlock = $copySection.find('.ai-translation-block');
-	let $wordCopySection = $copySection.find('.one-word-unit-section');
-	let $partCopySection = $copySection.find('.one-part-unit-section');
+	let $transCopyBlock = $copySection.find('.ai-translation-block:eq(0)');
+	let $wordCopySection = $copySection.find('.one-word-unit-section:eq(0)');
+	let $partCopySection = $copySection.find('.one-part-unit-section:eq(0)');
+
+
 	const sentenceListLen = sentenceList.length;
 	for(let i = 0; i < sentenceListLen; i++){
 		const sentence = sentenceList[i];
@@ -648,19 +643,15 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// 문장 Id 설정
 		$sectionClone.data('sentenceId', sentence.sentenceId).attr('id','sentence' + (i+1))
 					.data('metaEvaluated', ['S','F'].includes(sentence.metaStatus))
-		// 접기/펼치기 설정
-		const originSentence = $sectionClone.find('.origin-sentence-section').get(0);
 		
-		$sectionClone.on('click', '.origin-sentence-section', function(e) {
-			// TTS 버튼을 제외하고 원문블럭 클릭 시 Collapse 동작
-			if(e.target.matches('.js-tts-play,.js-tts-setting')) {
-				return;
-			}else {
+		if(!isMobile) {
+			// 접기/펼치기 설정
+			$sectionClone.find('.removable-section').addClass('collapse');
+			$sectionClone.on('click', '.origin-sentence-section', function(e) {
+				if(e.target.closest('[class*="js-tts"]')) return;
 				$sectionClone.children('.collapse').collapse('toggle')
-			}
-		})
-		//originSentence.dataset.bsTarget = '#sentence' + (i+1) + '>.collapse';
-		//originSentence.dataset.bsToggle = 'collapse';
+			});
+		}
 		
 		// 탭 설정
 		$sectionClone.find('[role="tab"]').each(function() {
@@ -684,7 +675,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		               $target.find('.ailoading').remove();
 		               $target.find('.afterload').fadeIn(300);
 	            }, 1000);
-			}).on('shown.bs.tab', function(e) {
+			}).on('shown.bs.tab', function() {
 				$target.collapse('show');
 			}).on('hidden.bs.tab', function() {
 				$target.removeClass('show');
@@ -702,9 +693,10 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			[
 				{ el: 'span', className: 'numbering-text print-removed', textContent: (i + 1) },
 				{ el: 'span', className: 'sentence-text', textContent: sentence.text },
+				isMobile ? '' :
 				{ el: 'div', className: 'd-inline-block', children: [
 					{ el: 'button', type: 'button', className: 'btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play', 
-						'data-bs-toggle': 'tooltip', title: '재생/중지', 'data-active': 'on', textContent: 'play_circle'
+						'data-bs-toggle': 'tooltip', title: '재생/중지', 'data-playing': 'off', textContent: 'play_circle'
 					},
 					{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-fc-purple m-0 p-0 ps-2 material-icons-outlined fs-3 border-0 shadow-none bg-transparent js-tts-setting',
 					'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune' }
@@ -717,6 +709,11 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// 구문분석 접기 버튼 추가. 2개 이상의 분석이 있으면 접기
 		$sectionClone.find('.js-collapse-svoc').toggle((svocListLen > 1));
 
+		if(isMobile) {
+			$sectionClone.find('.result-semantic-section').append(createElement(svocMenuSectionJson))
+						.find('.js-open-dashboard').attr('data-bs-target', `#sentence${i+1} .dashboard-section`);
+		}
+		
 		for(let j = 0; j < svocListLen; j++) {
 			
 			let svocTag = svocList[j];
@@ -727,8 +724,9 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				$(div).data('svocId', svocTag.svocId)
 						.data('memberId', svocTag.memberId);
 				$svocBlock.find('.writer-section')
-						.attr('data-bs-target', `#sentence${i+1} .dashboard-section`)
 						.find('.personacon-alias').text(svocTag.writerAlias);
+				if(!isMobile) $svocBlock.find('.writer-section')
+					.attr('data-bs-target', `#sentence${i+1} .dashboard-section`)
 				
 				let $mdfBtns = $svocBlock.find('.svoc-mdf-btns');
 				$mdfBtns.find('[data-seq]').attr('data-seq', div.dataset.seq);
@@ -750,7 +748,12 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 					// gramMeta 저장(ajax)---------------------------------------
 					tandem.meta.saveGramMetaFromDOM(sentence.sentenceId, div, false, 'workbook');
 					// ---------------------------------------------------------
-				}	
+				}
+				if(j > 0) $(div).closest('.svoc-section').addClass('collapse');
+				if(j + 1 == svocListLen && i + 1 == sentenceListLen) {
+					//if(isMobile) $results.flickity('select', 0);
+					$('#loadingModal').modal('hide')
+				}
 			});
 		}
 		
@@ -772,23 +775,30 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				$aiTransSection.append($transBlock);
 				$transBlock.data('korTid', korTrans.korId);
 				if(korTrans.alias != 'Translator') {
-					$transBlock.find('.translator').text(`by ${korTrans.alias}`);
+					$transBlock.find('.translator').text(` ${korTrans.alias}`);
 				}
 				$transBlock.find('.translation-text').text(korTrans.kor);
 				if(memberId == korTrans.memberId) {
 					$transBlock.append(createElement(transModifyBtnsJson));
 				}
 			}
-			$aiTransSection.find('.ai-translation-block').first().collapse('show');
+			if(isMobile) {
+				$aiTransSection.closest('.translation-section').find('.open-kor-btn').addClass('active');
+				$aiTransSection.find('.ai-translation-block').collapse('show');
+			}else $aiTransSection.find('.ai-translation-block').first().collapse('show');
 		}
 		// 5. 단어 표시 
 		const wordList = sentence.wordList;
 		if(wordList != null && wordList.length > 0) {
 			const wordListLen = wordList.length,
-				$wordSection = $sectionClone.find('.word-section').empty();
+				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section':'.tab-section'} .word-section`).empty();
 			
-			var msg = '<div class="title-section position-relative"><span class="sub-title">문장에서 등장하는 단어를 fico가 대신 검색하여 제공해 드립니다.</span></div>';
-			$wordSection.parent().prepend(msg);
+			$wordSection.parent().prepend(createElement(
+			isMobile ? { el: 'div', className: 'title-section position-relative mt-2 mb-1 d-none d-md-block', children: [
+				{ el: 'span', className: 'title-text', textContent: '단어 목록' } 
+			]} : { el: 'div', className: 'title-section position-relative', children: [
+				{ el: 'span', className: 'sub-title', textContent: '문장에서 등장하는 단어를 fico가 대신 검색하여 제공해 드립니다.'}
+			]}));
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
@@ -796,7 +806,22 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				
 				// 단어의 품사별 뜻 표시
 				$wordSection.append($wordBlock);
-				$wordBlock.find('.title').text(word.title);
+				$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
+						e.stopPropagation();
+						const on = this.dataset.playing == 'on';
+						if(on) {
+							stopAllTTS();
+						}else {
+							stopAllTTS(this);
+							this.dataset.playing = 'on';
+							anime({ targets: this, opacity: [0,1,0,1], easing: 'linear', loop: true})
+							tts.speakRepeat(word.title, 2, 500, () => {
+								anime.remove(this);
+								this.style.opacity = 1;
+								this.dataset.playing = 'off';
+							});
+						}
+				});
 				const senseList = word.senseList;
 				if(senseList == null) continue;
 				var senseListLen = senseList.length;
@@ -810,42 +835,203 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 				}
 			}
 			// 데스크탑에서는 단어리스트 미리 표시
-			if(window.innerWidth > 576)
+			if(!isMobile)
 				$sectionClone.find('.nav-link[data-type="word-list"]').tab('show');
 		}
 		
 		// 6. 유사 문장 표시 
-		const fingerList = sentence.fingerList;
-		if(fingerList != null && fingerList.length > 0) {
-			let $fingerSection = $sectionClone.find('.related-list').empty();
-			const fingerListLen = fingerList.length;
-			   
-			$fingerSection.append(createElement({
-				el: 'div', className: 'title-section position-relative', children: [
-					{ el: 'span', className: 'sub-title', textContent: '현재 문장과 유사한 구조를 가지거나 보충 학습할 수 있는 예문들을 추천합니다.' }
-				]
-			}));
-			
-			for(let j = 0; j < fingerListLen; j++) {
-				const finger = fingerList[j], $fingerBlock = $(createElement(fingerSectionJson));
-				$fingerSection.append($fingerBlock);
-				$fingerBlock.data('sentenceId', finger.sentenceId)
-							.find('.sentence-text').text(finger.eng);
+		if(!isMobile) {
+			const fingerList = sentence.fingerList;
+			if(fingerList != null && fingerList.length > 0) {
+				let $fingerSection = $sectionClone.find('.related-list').empty();
+				const fingerListLen = fingerList.length;
+				   
+				$fingerSection.append(createElement({
+					el: 'div', className: 'title-section position-relative', children: [
+						{ el: 'span', className: 'sub-title', textContent: '현재 문장과 유사한 구조를 가지거나 보충 학습할 수 있는 예문들을 추천합니다.' }
+					]
+				}));
+				
+				for(let j = 0; j < fingerListLen; j++) {
+					const finger = fingerList[j], $fingerBlock = $(createElement(fingerSectionJson));
+					$fingerSection.append($fingerBlock);
+					$fingerBlock.data('sentenceId', finger.sentenceId)
+								.find('.sentence-text').text(finger.eng);
+				}
 			}
 		}
 		
 	}
-	
+	// 모바일용 인터페이스 정의
+	if(isMobile) {
+		const swipeHappened = localStorage.getItem('fico-swipe-happened');
+		if(!swipeHappened) {
+			$('#loadingModal').on('hidden.bs.modal', function() {
+				setTimeout(() => {
+					$('.swipe-intro').show();
+					setTimeout(() => $('.swipe-intro').remove(), 2000);
+				}, 1000);
+			})
+		}
+		let scrollDirectionPrev = 0;
+		let lastScrollTop = $('.view-passage-section')[0].scrollTop;
+		const $topMenu = $('.workbook-menu-section');
+		$('.view-passage-section').css('overflow','auto').css('height','100vh').on('scroll', function() {
+
+			
+			const scrollDirectionNow = this.scrollTop > lastScrollTop ? 1 : -1;
+			lastScrollTop = this.scrollTop;
+			
+			if(scrollDirectionPrev == scrollDirectionNow) return;
+			if($('#js-mobile-menu .passage-sentence-nav').is('.show')) return;
+			scrollDirectionPrev = scrollDirectionNow;
+
+			// 스크롤 내릴 땐 모바일 하단 메뉴 숨기고, 올릴 땐 보이기.
+			anime({
+				targets: '#js-mobile-menu',
+				easing: 'linear',
+				duration: 200,
+				translateY: scrollDirectionNow > 0 ?'100%' : 0
+			})
+		});
+		
+		var swiper = new Swiper('.swiper', {
+			autoHeight: true,
+			speed: 250,
+			navigation: {
+				prevEl: '.js-prev-sentence',
+				nextEl: '.js-next-sentence'
+			},
+			pagination: {
+				el: '.swiper-pagination',
+				clickable: true
+			},
+			spaceBetween: 30,
+			on : {
+				afterInit: function(s) {
+					const headerIntersectionObserber = new IntersectionObserver((entries,ob) => {
+						anime({targets: $topMenu.get(0), duration: 150, easing: 'linear', 
+							translateY: entries[0].intersectionRatio > 0 ? 0 : '-7rem'});
+					}, { rootMargin: `-${7*rem}px 0px ${0*rem}px 0px`});
+					headerIntersectionObserber.observe($('.workbook-cover-section').get(0));
+					
+					const slideResizeObserver = new ResizeObserver((entries) => {
+						if(entries.find(entry => entry.target == s.slides[s.activeIndex])) {
+							s.update();
+						}
+					});
+					s.slides.forEach(slide => slideResizeObserver.observe(slide));
+					
+					const $firstNote = $(this.slides[0]).find('.collapse-section .note-section');
+					$firstNote.collapse('show');
+					collapseNote($firstNote);
+					$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active');
+					if(tts.autoEnabled()) {
+						if($('#loadingModal').is('.show')) {
+							$('#loadingModal').on('hidden.bs.modal', playFirst);
+						}else playFirst();
+						function playFirst() {
+							setTimeout(() => {
+								$('.js-tts-play-sentence').trigger('click');
+							}, 500);
+						}
+					}
+				},
+				slideChange: function() {
+					$(this.slides[this.activeIndex]).find('.note-section').collapse('show');
+					$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active')
+					.siblings('.sentence').removeClass('active');
+					
+					stopAllTTS();
+				},
+				slideChangeTransitionEnd: function(s) {
+					scrollTo(0, $results[0].offsetTop);
+					
+					if(!swipeHappened) localStorage.setItem('fico-swipe-happened', true);
+					
+					setTimeout(() => {
+						if(tts.autoEnabled()) {
+							$('.js-tts-play-sentence').trigger('click');
+						}
+					}, 500);
+				}
+			}
+		})
+		
+		$(document)
+		.on('click', '#js-mobile-menu .sentence-link', function() {
+			$('#js-mobile-menu .mobile-menu-section,#js-mobile-menu .passage-sentence-nav').collapse('toggle')
+			swiper.slideTo($(this).index())
+		})
+		.on('show.bs.collapse hide.bs.collapse', '#js-mobile-menu .passage-sentence-nav', function(e) {
+			if(e.target != this) return;
+			$('#js-mobile-menu .js-toggle-menu').animate(e.type == 'show' ? {rotate: '180deg'} : {rotate: '0deg'});
+			$('#js-mobile-menu').css('transform', 'translateY(0)');
+			// 현재 슬라이드에 해당하는 문장에 포커스 이동.
+			if(e.type == 'show') $('.passage-sentence-nav .sentence.active')[0].scrollIntoView();
+		})
+		.on('show.bs.collapse', '.collapse-section .note-section', function() { collapseNote($(this))})
+		// 단어목록을 누르면 한 줄 공간 남기고 축소
+		.on('click', '.word-list-section', function() {
+			const $wordSection = $(this).find('.word-section');
+			if(this.matches('.shrink')) {
+				$wordSection.animate({ height: `${$wordSection.data('orgHeight')}px` });
+				this.classList.remove('shrink');
+			}else {
+				this.classList.add('shrink');
+				if(!$wordSection.data('orgHeight')) $wordSection.data('orgHeight', $wordSection.height());
+				$wordSection.animate({ height: '1.5rem' }, 300);
+			}
+		})
+		// 노트를 누르면 한 줄 공간 남기고 축소
+		.on('click', '.note-list .note-text', function() {
+			if(this.matches('.shrink')) {
+				$(this).animate({ height: `${$(this).data('orgHeight')}px` });
+				this.classList.remove('shrink');
+			}else {
+				this.classList.add('shrink');
+				if(!$(this).data('orgHeight')) $(this).data('orgHeight', $(this).height());
+				$(this).animate({ height: '1.5rem' }, 300);
+			}
+		});
+		
+		function collapseNote($noteSection) {
+			const $sentenceSection = $noteSection.closest('.one-sentence-unit-section'); 
+			const sentenceId = $sentenceSection.data('sentenceId');
+			
+			
+			if($noteSection.is('.loading,.loaded')) return;
+			$noteSection.addClass('loading')
+					.find('.empty-list').show();
+			// 문장의 노트 새로 가져오기(ajax)-------------------------------------
+			$.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentenceId}/${memberId}`, notes => listNotes(notes))
+			.fail( () => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+			//---------------------------------------------------------------
+			
+			function listNotes(notes){
+				// 노트가 있으면 목록 표시
+				if(notes.length > 0 ) {
+					$noteSection.find('.empty-list').hide();
+				}
+				const $noteList = $noteSection.find('.note-list').empty();
+				for(let i = 0, notesLen = notes.length; i < notesLen; i++) {
+					const note = notes[i];
+								   //------------------
+					const $block = createNoteDOM(note);
+								   //------------------
+					$block.appendTo($noteList);
+				}
+				$noteSection.toggleClass('loading loaded');
+			}
+		}
+		//$($results.data('flickity').selectedElement).trigger('select.flickity')//.find('.note-section').collapse('show');
+	}
 	// [모든 문장 렌더링 완료 - 로딩 이미지 제거]----------------------------------------
 	$('#loadingModal').on('hidden.bs.modal', function() {
 		//$('.result-section').animate({opacity: 1});
 		$('.full-text').show()
-		// 각 문장 구문분석 두 개째부터 접기.
-		$('.result-semantic-section .svoc-section:not(:first-child)').addClass('collapse');
-		// 모든 문장 블럭들 접기.			
-		$('.one-sentence-unit-section .removable-section').addClass('collapse');
 	});
-	setTimeout(() => $('#loadingModal').modal('hide'), 2000);
+//	setTimeout(() => $('#loadingModal').modal('hide'), 2000);
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
 	$(document).on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
 		if(e.target != e.currentTarget) return;
@@ -856,41 +1042,63 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		if(e.type == 'show') {
 			$unitSection[0].scrollIntoView();
 		}
+		
 	})
-	.on('click', '.js-tts-play', function(e) {
-		const on = this.dataset.active == 'on';
-		document.querySelectorAll('.js-tts-play').forEach(playBtn => {
-			playBtn.dataset.active = 'on';
-			playBtn.textContent = 'play_circle';
-		})		
-		this.dataset.active = on?'off':'on';
-		this.textContent = on?'stop_circle':'play_circle';
+	.on('click', '.js-tts-play, .js-tts-play-sentence', function(e) {
+		e.stopPropagation();
+		const on = this.dataset.playing == 'on';
 		if(on) {
-			tts.speakRepeat(this.closest('.origin-sentence').querySelector('.sentence-text').textContent, 2, 500, () => {
-				this.dataset.active = 'on';
+			stopAllTTS();
+		}else {
+			stopAllTTS(this);
+			let text;
+			// 모바일일 경우 현재 슬라이드의 문장. 데스크탑일 경우 재생버튼이 속한 문장.
+			if(isMobile) {
+				text = swiper.slides[swiper.activeIndex].querySelector('.sentence-text').textContent;
+			}else {
+				text = this.closest('.origin-sentence').querySelector('.sentence-text').textContent;
+			}
+			this.dataset.playing = 'on';
+			this.textContent = 'stop_circle';
+			tts.speakRepeat(text, 2, 500, () => {
+				this.dataset.playing = 'off';
 				this.textContent = 'play_circle';
 			});
-		}else {
-			tts.stop();
+			
 		}
 	})
 	.on('click', '.js-tts-setting', function(e) {
-		tts.stop();
-		document.querySelectorAll('.js-tts-play').forEach(playBtn => {
-			playBtn.dataset.active = 'on';
-			playBtn.textContent = 'play_circle';
-		})
+		e.stopPropagation();
+		stopAllTTS();
 		tts.openSettings();
-	})
-	.on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
+	});
+	
+	function stopAllTTS(except) {
+		tts.stop();
+		document.querySelectorAll('[class*="js-tts-play"][data-playing="on"],.title[data-playing="on"]').forEach(playBtn => {
+			if(except == playBtn) return;
+			if(playBtn.matches('.title')) {
+				anime.remove(playBtn);
+				playBtn.style.opacity = 1;
+			}else {
+				playBtn.textContent = 'play_circle';
+			}
+			playBtn.dataset.playing = 'off';
+		})
+	}
+	$(document).on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
 		// 문장/구문분석이 펼쳐지면 구문분석 스타일 새로고침
 		if(e.target.matches('.removable-section') && e.target == e.currentTarget) {
 			$(e.target).find('.semantics-result').filter(':visible').each(function() {
 				tandem.correctMarkLine(this);
 			});
-			if(!$(this).closest('.one-sentence-unit-section').data('metaEvaluated'))
-			$(e.target).find('.dashboard-section').collapse('show');
+			if(!$(this).closest('.one-sentence-unit-section').data('metaEvaluated')) {
+				$(e.target).find('.dashboard-section').collapse('show');
+			}
 		}
+	})
+	.on('shown.bs.collapse', '.svoc-section', function() {
+		tandem.correctMarkLine(this.querySelector('.semantics-result'));
 	})
 	// 평가 대시보드 펼치기
 	$(document).on('show.bs.collapse', '.dashboard-section', function() {
@@ -902,12 +1110,17 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			
 			$(this).html(tandem?.tip?.showRandomTip(sentence.match(/['"]/)?5:undefined)).fadeIn();
 		});
-	}).on('hidden.bs.collapse', '.dashboard-section', function() {
+	})
+	// 모바일에서 분석평가 대시보드가 열리면 스크롤 이동
+	.on('shown.bs.collapse', '.dashboard-section', function() {
+		if(isMobile) scrollTo(scrollX, $(this).offset().top - visualViewport.height / 2 + this.offsetHeight / 2)
+	})
+	.on('hidden.bs.collapse', '.dashboard-section', function() {
 		$(this).prev('.result-semantic-section').removeClass('border-bottom-0');
 	})
 	
 	// [문장의 번역 영역 펼치고 접기]------------------------------------------------------- 
-	$(document).on('click', '.open-kor-btn,.ai-translation-block .translation-text', function() {
+	$(document).on('click', isMobile?'.ai-translation-block':'.open-kor-btn,.ai-translation-block .translation-text', function() {
 		const $transSection = $(this).closest(".translation-section");
 		const $elements = $transSection.find(".ai-translation-block:not(:first)");
 		const $foldBtn = $transSection.find('.open-kor-btn');
@@ -917,10 +1130,9 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	})
 	
 	// [분석 결과 접기/펼치기]-------------------------------------------------------
-	$('.js-collapse-svoc').click(function(){
+	$(document).on('click', isMobile?'div:not(.edit-svoc)>.semantics-result':'.js-collapse-svoc', function(){
 		$(this).closest('.one-sentence-unit-section')
 				.find('.result-semantic-section .collapse').collapse('toggle');
-		$(this).toggleClass('expanded');
 	})
 	
 	// [분석 결과 평가]------------------------------------------------------------
@@ -1015,8 +1227,11 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 						.prepend($personacon);
 			const text = $sentenceSection.find('.origin-sentence .sentence-text').text();
 			const svocBytes = await tandem.getSvocBytes($sentenceSection.find('.semantics-result').get(0));
-			
-			$sentenceSection.find('.result-semantic-section').prepend($newSection);
+			if(isMobile) {
+				$sentenceSection.find('.svoc-menu-section').after($newSection);
+			}else {
+				$sentenceSection.find('.result-semantic-section').prepend($newSection);
+			}
 			$semantics = $(await tandem.showSemanticAnalysis(text, svocBytes, $newSection.find('.svoc-block')));
 			$semantics.data('memberId', memberId);
 			$newSection.find('.svoc-mdf-btns').hide().find('[data-seq]')
@@ -1091,8 +1306,8 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 					$sentenceSection.find('.js-collapse-svoc').hide();
 				}
 				// 접기/펼치기 대상 변경
-				$sentenceSection.find('.svoc-section:first-child').removeClass('collapse show');
-				$sentenceSection.find('.svoc-section:not(:first-child)').addClass('collapse');
+				$sentenceSection.find('.svoc-section').first().removeClass('collapse show');
+				$sentenceSection.find('.svoc-section').slice(1).addClass('collapse');
 			});
 		}
 	});
@@ -1156,7 +1371,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			}else{
 				const $newTrans = $transCopyBlock.clone();
 				$newTrans.data('korTid', tid).find('.translation-text').text(kor);
-				$newTrans.find('.translator').text('by ' + memberAlias);
+				$newTrans.find('.translator').text(' ' + memberAlias);
 				$newTrans.append(createElement(transModifyBtnsJson));
 				
 				$transSection.find('.ai-translation-section').prepend($newTrans);
@@ -1188,7 +1403,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		}
 		
 		function successDel() {
-			alert('삭제되었습니다.');
+			alertModal('삭제되었습니다.');
 			if($transBlock.closest('.translation-section').find('.open-kor-btn').is('.active')) {
 				$transBlock.nextAll('.ai-translation-block')?.collapse('show');
 			}else $transBlock.next('.ai-translation-block')?.collapse('show');
@@ -1208,7 +1423,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			// 핑거 추가정보 가져오기(ajax)--------------------------------
 			await $.getJSON('/workbook/sentence/finger/' + sentenceId, 
 					(sentence) => viewFingerDetails(sentence))
-			.fail(jqxhr => alert('해석·분석 가져오기에 실패했습니다.\n다시 접속해 주세요.'))
+			.fail(() => alertModal('해석·분석 가져오기에 실패했습니다.\n다시 접속해 주세요.'))
 			//--------------------------------------------------------
 		}else {
 			$fingerBlock.toggleClass('bg-gray-700').find('.fold-icon')
@@ -1242,7 +1457,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// 문장의 노트 새로 가져오기(ajax)-------------------------------------
 		await $.getJSON('/workbook/sentence/note/list/'+ workbookId 
 				+ '/' + sentenceId + '/' + memberId, notes => listNotes(notes))
-		.fail( jqxhr => alert('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		.fail( () => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//---------------------------------------------------------------
 		
 		function listNotes(notes){
@@ -1304,7 +1519,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// 문장의 질문목록 새로 가져오기(ajax)----------------------------------
 		$.getJSON(['/qnastack/question/workbook/sentence',workbookId,sentenceId].join('/'), 
 					questions => listQuestions(questions))
-		.fail( jqxhr => alert('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		.fail( jqxhr => alertModal('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//---------------------------------------------------------------
 		
 		function listQuestions(questions){
@@ -1364,10 +1579,14 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	
 	// [지문/문장의 노트 수정 폼 열기]-------------------------------------------------
 	.on('click', '.js-edit-note-open', async function() {
+		
 		const $noteSection = $(this).closest('.note-block')
 		const $textSection = $noteSection.find('.text-section');
 		$noteSection.find('.note-mdf-btns').hide();
 		const $content = $textSection.find('.note-text').hide();
+		if(this.closest('.collapse-section')) {
+			$noteSection.find('.note').toggleClass('overflow-hidden mb-4');
+		}
 		const $noteEditor = $textSection.find('.note-editor').show();
 		const $summernote = $noteEditor.find('.text-input').val($content.html());
 		$textSection.find('.open-input').trigger('input');
@@ -1380,7 +1599,9 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	.on('click', '.js-edit-note-cancel', function() {
 		const $textSection = $(this).closest('.text-section');
 		const $noteSection = $(this).closest('.note-block');
-		
+		if(this.closest('.collapse-section')) {
+			$(this).closest('.note').toggleClass('overflow-hidden mb-4');
+		}
 		$textSection.find('.note-editor, .note-text')
 					.add($noteSection.find('.note-mdf-btns')).toggle();
 	})
@@ -1409,6 +1630,9 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		// --------------------------------------------
 		
 		function successEditNote(note) {
+			if($noteSection.closest('.collapse-section').length > 0) {
+				$noteSection.find('.note').toggleClass('overflow-hidden mb-4');
+			}
 			$textSection.find('.note-editor').hide();
 			$textSection.find('.open-input').prop('checked', note.publicOpen);
 			$textSection.find('.note-text').html(note.content).show();
@@ -1552,7 +1776,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		const content = $editSection.find('.text-input').val();
 		
 		if(content.length == 0){
-			alert('내용을 입력해 주세요.');
+			alertModal('내용을 입력해 주세요.');
 			return false;
 		}else {
 			const questionCommand = {
@@ -1595,7 +1819,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			//-------------------------------------------
 			
 			function successDel(question) {
-				alert('삭제되었습니다.');
+				alertModal('삭제되었습니다.');
 				if(typeof question != 'object' || question == null) {
 					$qnaUnit.slideUp(function() {
 						$(this).closest('.qna-block').remove();
@@ -1636,7 +1860,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		$.getJSON(['/qnastack/answers',qType,questionId,targetId].join('/'), 
 					{from: 'w'}, listAnswers)
 		.fail(jqXHR => {
-			alert('질문의 상세내용을 가져오지 못했습니다. 다시 접속해 주세요.');
+			alertModal('질문의 상세내용을 가져오지 못했습니다. 다시 접속해 주세요.');
 			$contentBlock.removeClass('loading');
 		});
 		//-------------------------------------------------------------------
@@ -1692,7 +1916,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		const content = $input.summernote('code').trim();
 		
 		if(content.length == 0) {
-			alert('내용을 입력해 주세요.');
+			alertModal('내용을 입력해 주세요.');
 			return false;
 		}
 		const command = {questionId: Number($qnaSection.data('questionId')),
@@ -1743,7 +1967,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		const content = $editSection.find('.text-input').val().trim();
 		
 		if(content.length == 0) {
-			alert('내용을 입력해 주세요.');
+			alertModal('내용을 입력해 주세요.');
 			return false;
 		}
 		const command = {questionId: Number($qnaUnit.data('questionId')),
@@ -1754,7 +1978,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		//-------------------------------
 		
 		function successEdit(answer) {
-			alert('수정되었습니다.');
+			alertModal('수정되었습니다.');
 			$editSection.find('.text-input').val('').summernote('destroy');
 			$editSection.add($contentSection).slideToggle();
 			$answer.find('.answer-text').html(answer.content);
@@ -1771,7 +1995,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 			//------------------------------
 			
 			function successDel() {
-				alert('삭제되었습니다.');
+				alertModal('삭제되었습니다.');
 				$answer.slideUp(function() {
 					$(this).remove();
 				});
@@ -1831,7 +2055,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 		//--------------------------------------
 		
 		function successEvalute() {
-			alert('평가가 완료되었습니다.');
+			alertModal('평가가 완료되었습니다.');
 			$surveySection.slideUp();
 			
 			// 질문상태 변경
@@ -1912,7 +2136,7 @@ function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, pa
 	// 노트 정보를 DOM으로 생성
 	function createNoteDOM(note) {
 		const block = createElement(noteSectionJson);
-		
+		if(isMobile) block.querySelector('.note').classList.add('overflow-hidden');
 		block.dataset.noteId = note.noteId;
 		// 내용
 		block.querySelector('.note-text').innerHTML = note.content;
