@@ -90,14 +90,15 @@
  *					폰트 
  **********************************************************/
 html{
-	font-family: 'RIDIBatang_ENG', 'HCRDotum';
+	font-family: 'Frutiger', 'HCRDotum';
 	font-size: 14px;
 	/*word-break: break-all;*/
 	word-break: keep-all;
+	font-variant-numeric: lining-nums;
 }
 body{
 	/*font-family: 'Open Sans', 'NanumBarunGothic';*/
-	font-family: 'RIDIBatang_ENG', 'HCRDotum';
+	font-family: 'Frutiger', 'HCRDotum';
 	/*background-color: var(--bg);*/
 	background-color: #f9d37a;
 }
@@ -367,6 +368,9 @@ a:hover {
 
 .text-green-600{
 	color: rgb(5, 150, 105) !important;
+}
+.text-green-700{
+	color: #019c9e !important;
 }
 
 .text-red-600{
@@ -694,6 +698,9 @@ u {
    background-color: currentColor;
    mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M7 10l5 5 5-5H7z'/%3e%3c/svg%3e") center/cover no-repeat;
    -webkit-mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M7 10l5 5 5-5H7z'/%3e%3c/svg%3e") center/cover no-repeat;
+
+	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M4 8l8 8 8-8H14z'/%3e%3c/svg%3e") center/cover no-repeat;
+	-webkit-mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath d='M4 8l8 8 8-8H14z'/%3e%3c/svg%3e") center/cover no-repeat;
 }
 /* 접기 아이콘(펼침) */
 .fold-icon.expanded::before,
@@ -794,13 +801,13 @@ u {
 .beta-badge{
 	font-size: 0.5rem;
 }
-@media (min-width: 768px) {
+@media (min-width: 767px) {
 	.workbook-menu-section .menu-icon-section ul li:hover a .beta-badge{
 		transform: translateY(-35px);
 		transition: 0.5s;
 	}
 }
-@media (max-width: 767px) {
+@media (max-width: 768px) {
 	.workbook-menu-section .menu-icon-section .beta-badge{
 		position: absolute;
 		top: 50%;

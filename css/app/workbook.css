@@ -67,13 +67,40 @@
         font-size: 1rem;
     }
 }
+@media (max-width: 576px)  {
+    .title-section .title-text{
+        font-size: 1.1rem;
+		font-family: 'Nanum Gothic';
+    }
+
+	.title-section .sub-title{
+        display: none;
+    }
+}
 
 .block-section{
 	padding-top: 8rem!important;
 }
-@media (max-width: 767px) {
-    .block-section{
+@media (max-width: 576px) {
+    .view-passage-section .block-section{
 		padding-top: 6rem!important;
+		background: rgba(255,255,255,.1);
+		/* backdrop-filter: blur( 8px );
+		-webkit-backdrop-filter: blur( 8px ); */
+		border-radius: 10px;
+		border: 1px solid rgba(255,255,255,.05);
+	}
+
+	/**/
+	.workbook-menu-section .logo-link-section.glass-effect{
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+		background: rgba(255,255,255,.1);
+		backdrop-filter: blur( 15px );
+		-webkit-backdrop-filter: blur( 15px );
+		border-radius: 0 10px 10px 0;
+		border: 1px solid rgba(255,255,255,.05);
+		margin-left: 0 !important;
 	}
 }
 
@@ -250,7 +277,7 @@
 .workbook-menu-section .menu-icon-section ul .nav-item.active form .icon{
 	color: #5c68b6!important;
 }
-@media (max-width: 767px) {
+@media (max-width: 575px) {
 	.workbook-menu-section .menu-icon-section ul .nav-item.active a .text,
 	.workbook-menu-section .menu-icon-section ul .nav-item.active form .text{
 		color: #5c68b6!important;
@@ -465,12 +492,12 @@
 		z-index: 1000;
 	}
 }
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .workbook-menu-section{
 		top: 2rem;
-		right: 0rem;
+		right: 3.5rem;
+		width: calc(100% - 7rem);
 		padding: 0;
-		width: 100%;
 	}
 	
 	.workbook-menu-section .dropdown-menu{
@@ -567,6 +594,15 @@
 	}
 }
 
+@media (max-width: 576px) {
+    .workbook-menu-section{
+		top: 2rem;
+		right: 0rem;
+		padding: 0;
+		width: 100%;
+	}
+}
+
 /*------------------------------------------------------------------------------
                                  index.html
  -----------------------------------------------------------------------------*/
@@ -579,6 +615,11 @@
 .title-section {
 	margin-bottom: 1rem;
 }
+@media (max-width: 576px)  {
+	.title-section {
+		margin-bottom: 0.5rem;
+	}
+}
 /* 워크북 목록 영역 */
 .workbook-section .list-inline .book-unit {
 	display: inline-block;
@@ -588,12 +629,23 @@
 	width: 10rem;
 	margin: 0 20px;
 }
+.list-library-section .workbook-section .list-inline .book-unit:nth-child(2n-1){
+	margin-bottom: 40px;
+}
 .workbook-section .bookshelf-section .list-inline .book-unit{
-	height: auto;	
+	height: 15rem;	
+}
+@media (max-width: 767px) {
+    .workbook-section .bookshelf-section .list-inline .book-unit{
+		height: 10rem;	
+	}
+	.workbook-section .bookshelf-section .list-inline .book-unit:nth-child(2n-1){
+		margin-bottom: 20px;
+	}
 }
 .workbook-index-section .book-section {
 	white-space: nowrap;
-	overflow-x: scroll;
+	/* overflow-x: scroll; */
 	height: auto;
 	width: calc(100vw - 100px - 7rem);
 	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
@@ -664,9 +716,9 @@
 		margin: 0;
 	}
 	/*.workbook-section .list-inline .book-unit:first-child {*/
-	.workbook-section .list-inline>*:first-child{
+	/* .workbook-section .list-inline>*:first-child{
 		margin-left: 1rem;
-	}
+	} */
 }
 /* 현재 총 등록된 워크북 수 표시 영역 */
 .workbook-index-section .book-count-section .animation-section{
@@ -704,7 +756,7 @@
 .workbook-index-section .title-section .sub-title{
 	font-size: 12px;
 }
-.workbook-index-section .fw-bold{
+.workbook-index-section .workbook-title-section .book-title{
 	color:  #424242;
 }
 
@@ -884,6 +936,14 @@
 	margin-bottom: 0;
 	list-style: none;
 	line-height: 0;
+}
+.workbook-index-section .workbook-section .list-inline {
+	height: 42rem;
+}
+@media (max-width: 767px) {
+	.workbook-index-section .workbook-section .list-inline {
+		height: 36rem;
+	}
 }
 .workbook-section .list-inline > li {
 	display: inline-block;
@@ -1106,7 +1166,7 @@
  -----------------------------------------------------------------------------*/
 .list-library-section .book-section {
     height: auto;
-	width: 100%;
+	width: calc(100vw - 100px - 7rem);
     padding: 40px;
     border-radius: 5px;
     font-family: 'HCRDotum';
@@ -1116,7 +1176,8 @@
 
 /* collapse를 위한 고정높이 */
 .list-library-section .list-inline {
-	min-height: 10rem;
+	/* min-height: 10rem; */
+	height: calc(30rem + 40px);
 }
 /* 공개 공유 워크북의 구독자 수 표시 */
 /*.list-library-section .subs-num{
@@ -1151,9 +1212,16 @@
 }
 
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
+	.list-library-section .list-inline {
+		/* min-height: 10rem; */
+		height: calc(20rem + 40px);
+	}
+
    .list-library-section .book-section {
 	    padding: 1.5rem 0.5rem;
+		height: 23rem;
+		width: calc(100vw - 2rem);
 	}
 	
 	.list-library-section .subs-num{
@@ -1233,6 +1301,7 @@
 	margin: 2rem 0 1rem auto;
 	text-align: end;
 	width: fit-content;
+	width: -moz-fit-content;
 	height: fit-content;
 	box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 1px inset;
 	border-radius: 10px;
@@ -1343,6 +1412,8 @@
 .view-passage-section .book-cover-section{
 	width: 5rem; 
 	height: 7rem;
+	text-align: right;
+	margin-left: auto;
 }
 .view-passage-section .book-cover.default{
 	background: top/10rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg),#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg);
@@ -1468,7 +1539,14 @@
 @media (max-width: 576px) {
 	.view-passage-section .title-section{
 		margin-bottom: 0;
+		padding: 0.25rem 0.5rem;
 	} 
+	.view-passage-section .title-section .tts-setting-section{
+		position: absolute;
+		right: 0.5rem;
+		top: 50%;
+		transform: translateY(-50%);
+	}
 }
 .view-passage-section .title-section .title{
 	font-family: 'NanumBarunGothic', sans-serif;
@@ -1698,8 +1776,8 @@
 	color: #41a099;
 }
 .view-passage-section .text-section{
-	font-family: 'HCRDotum';
-	font-size: 14px;
+	/* font-family: 'HCRDotum';
+	font-size: 14px; */
 	margin-top: auto;
 	margin-bottom: auto;
 	position: relative;
@@ -1836,6 +1914,7 @@
 	right: 0.5rem;
 	margin: auto;
 	width: fit-content;
+	width: -moz-fit-content;
 	text-align: end;
 	/*box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 1px inset;*/
 	border-radius: 10px;
@@ -1892,6 +1971,28 @@
 .dashboard-section .evaluation-section{
 	border-right: 1px solid #dee2e6;
 }
+
+/* 해석 영역 */
+
+/* 노트 영역 */
+.view-passage-section .note-section .note-mdf-btns{
+	width: calc(50px + 1rem);
+	/* margin-right: 0.5rem; */
+	border-color: #b4c0d8;
+	color: #5d6a85;
+	padding:0 0 0 auto;
+	border-width: 2px;
+}
+.view-passage-section .note-section .note-mdf-btns button:first-child{
+	border-bottom-left-radius: .25rem;
+	border-top-left-radius: .25rem;
+	border-right: 0;
+}
+.view-passage-section .note-section .note-mdf-btns button:last-child{
+	border-top-right-radius: .25rem;
+	border-bottom-right-radius: .25rem;
+}
+
 @media (max-width: 767px) {
 	.view-passage-section .result-section .one-sentence-unit-section .semantic-menu{
 		margin-right: 0;
@@ -1903,11 +2004,11 @@
 		border-radius: 0;
 		border:none;
 	}
-
+/* 
 	.view-passage-section .result-section .svoc-section{
 		padding: 0;
 	}
-	
+	 */
 	.view-passage-section .result-section .svoc-block{
 		padding: 0.25rem 0.5rem;
 	}
@@ -1937,17 +2038,60 @@
 	border: 2px solid #b4c0d8;
 	border-radius: 5px;
 }
-@media (max-width: 991px) {
+
+/* */
+.view-passage-section .svoc-menu-section button,
+.view-passage-section .svoc-mdf-btns button,
+.view-passage-section .translation-section .trans-mdf-btns button{
+	/* color: #019c9e; */
+	color: rgb(243, 195, 83);
+}
+
+.view-passage-section .svoc-mdf-btns button span{
+	vertical-align: text-bottom;
+}
+.view-passage-section .translation-section .trans-mdf-btns button{
+	width: 50%;
+}
+
+/* 노트 영역 - 노트 버튼 영역 */
+.view-passage-section .note-section .note-mdf-btns,
+.passage-sentence-nav .note-section .note-mdf-btns{
+	display: flex;
+	margin-left: auto;
+	border: 2px solid #b4c0d8;
+	border-radius: 5px;
+}
+.view-passage-section .note-section .note-mdf-btns button,
+.passage-sentence-nav .note-section .note-mdf-btns button{
+	text-align: center;
+	color: #019c9e;
+}
+.view-passage-section .note-section .note-mdf-btns button span,
+.passage-sentence-nav .note-section .note-mdf-btns button span{
+	vertical-align: text-bottom;
+}
+@media (max-width: 576px) {
+	.view-passage-section .book-cover-section{
+		text-align: center;
+		margin: auto;
+	}
+
 	/* 구문분석 결과영역 */
+	.view-passage-section .result-section{
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
 	.view-passage-section .result-section .one-sentence-unit-section{
 		box-shadow: none;
 		margin-bottom: 0.5rem;
-		border-bottom: 1px solid #dee2e6;
+		border-bottom: none;
 		padding: 0.25rem 0.5rem;
-		background-color: #fff;
+		background-color: transparent;
 	}
 	.view-passage-section .result-section .one-sentence-unit-section:first-child{
-		border-top: 1px solid #dee2e6;
+		border-top: none;
 	}
 	.view-passage-section .result-section .one-sentence-unit-section.active{
 		background-color: #f6f6f6;
@@ -1957,31 +2101,347 @@
 		min-height: 4rem;
 	}
 	
+	
+
 	.view-passage-section .result-section .one-sentence-unit-section .removable-section{
 		margin: 0;
 	}
-
+	/* 스와이퍼 */
+	.swiper-pagination-bullet-active{
+		background: #019c9e !important;
+	}
 	/* 인덱스 핑거 블럭 */
 	.finger-section .sentence-text-block{
 		flex-wrap: wrap;
 	}
+
+
+	/* 해석 영역 */
+	.view-passage-section .ai-translation-section{
+		max-width: 100%;
+	}
+	.view-passage-section .translation-section .ai-translation-block{
+		border-top: 1px solid #e7dbdd;
+		padding: 0.5rem 0;
+	}
 	
-	/* 분석 결과의 작성자 */
-	/*.view-passage-section .result-semantic-section .writer-section{
+	.view-passage-section .translation-section .ai-translation-block:first-child{
+		border-top: none;
+		padding-top: 0;
+	}
+	.view-passage-section .translation-section .ai-translation-block:last-child{
+		padding-bottom: 0;
+	}
+	.view-passage-section .translation-section .translation-text{
+		display: inline;
+		border-top: none;
+		padding: 3px 0;
+		color: #002060 !important;
+		font-size: 0.9rem !important;
+		font-family: 'Nanum Gothic';
+	}
+	.view-passage-section .translation-section .translator{
+		font-size: 0.7rem;
+	}
+	.view-passage-section .translation-section .trans-mdf-btns{
+		position: absolute;
+		top: -1.25rem;
+		right: 25px!important;
+	}
+
+	/* 구문 분석 */
+	.view-passage-section .svoc-menu-section{
+		position: absolute;
+		z-index: 10;
+		top: 0.25rem;
+		right: 0.25rem;
+	}
+	.view-passage-section .svoc-section{
+		padding: 2.5rem 0.5rem;
+	}
+	.view-passage-section .svoc-section:nth-child(2){
+		padding-top: 0;
+	}
+
+	.view-passage-section .svoc-section .svoc-block{
+		border-top: 1.5px solid #ececec;
+	}
+	.view-passage-section .svoc-section:nth-child(2) .svoc-block{
+		border-top: none;
+	}
+
+	/* 구문 분석 -  작성자 */
+	.view-passage-section .result-semantic-section .writer-section{
 		position: absolute;
 		right: 0;
-		bottom: 0;
-	} */
-}
-@media (max-width: 767px) {
-	/* 분석결과 수정 */
+		bottom: -30px;
+	} 
+	/* 분석 결과의 작성자 - 퍼스널콘 이미지 */
+	.view-passage-section .result-semantic-section .writer-section .member-personacon{
+		margin: 0;
+		margin-left: auto;
+	}
+	/* 분석 결과의 작성자 - 퍼스널콘 별명 텍스트 */
+	.view-passage-section .result-semantic-section .writer-section .personacon-alias{
+		text-align: right;
+	}
 	.view-passage-section .result-semantic-section .svoc-mdf-btns{
-		bottom: 1rem;
-		top:auto;
+		position: absolute;
+		top: 1.25rem;
+		bottom: auto;
 		right: 0.5rem;
+		background-color: transparent;
+		border: none;
+		height: fit-content;
 		height: -webkit-fit-content;
 	}
+	.view-passage-section .result-semantic-section .svoc-section:nth-child(2) .svoc-mdf-btns{
+		top: -1.25rem;
+		right: 55px;
+	}
+	
+	
+
+	/* 구문분석 평가 영역 */
+	.dashboard-section{
+		border: none;
+		border-top: 1px solid #f6f6f6;
+		border-radius: 10px;
+	}
+	.view-passage-section .semantic-menu .fold-icon{
+		position: static;
+	}
+	.view-passage-section .title-section .title-text{
+		color: #fff;
+		font-family: 'LINESeedKR-Bd';
+	}
+	.view-passage-section .sub-title{
+		color: #f7f7f7;
+		font-family: 'Nanum Gothic';
+	}
+
+	/* 북커버 */
+	.view-passage-section .book-cover,
+	.view-passage-section .book-cover img{
+		border-radius: 10px;
+	}
+	.view-passage-section .book-cover .book-title{
+		border-radius: 0 0 10px 10px;
+	}
+
+	/* 타이틀 수정 */
+	.view-passage-section #passage-title-input .js-edit-ptitle{
+		color: #019c9e;
+	}
+
+	.view-passage-section{
+		position: relative;
+		background-image: url(https://static.findsvoc.com/images/app/workbook/background/mobile_bg.png);
+
+		background-repeat: repeat;
+		background-position: initial;
+		background-size: auto;
+		/* background-position-y: -30px; */
+		/* background-color: #121e34; */
+		/* min-height: 100vh; */
+		/* transition: background-image 1s,background-color 1s;
+		background-color: rgba(255,255,255,0.4);
+		backdrop-filter: blur( 35px );
+		-webkit-backdrop-filter: blur( 35px ); */
+	}
+	.view-passage-section .block-section{
+		padding-top: 6rem!important;
+		/* background: rgba(255,255,255,0.2); */
+		/* background-color: rgba(255,255,255,0.525); */
+		/* background: rgb(185 180 244 / 60%); 
+		backdrop-filter: blur( 25px );
+		-webkit-backdrop-filter: blur( 25px ); */
+		/* backdrop-filter: blur( 60px );
+		-webkit-backdrop-filter: blur( 60px ); */
+		border-radius: 10px;
+		/* border: 1px solid rgba(255,255,255,.05); */
+	}
+	.origin-sentence-section .origin-sentence,
+	.translation-section,
+	.view-passage-section .result-section .result-semantic-section,
+	.result-section .word-list-section,
+	.view-passage-section .note-section{
+		background-color: #fff;
+		padding: 1.5rem 0.5rem !important;
+		border-radius: 10px;
+		/* border: 1px solid rgba(255,255,255,.05); */
+		border: none;
+		/* backdrop-filter: blur( 25px );
+		-webkit-backdrop-filter: blur( 25px ); */
+		/* background: rgba(255,255,255,0.9);  */
+		background: #fff;
+	}
+	
+	.translation-section,
+	.view-passage-section .result-section .result-semantic-section,
+	.result-section .word-list-section,
+	.view-passage-section .note-section{
+		margin-top: 1rem;
+	}
+	.view-passage-section .note-section{
+		margin-bottom: 5rem;
+	}
+	.view-passage-section .result-section .result-semantic-section{
+		width: 100%;
+		left: 0;
+	}
+	.result-section .word-section,
+	.view-passage-section .note-section{
+		box-shadow: none;
+		padding: 0;
+	}
+
+	.translation-section .add-btn,
+	.note-section .add-btn{
+		position: absolute;
+		top: 0.25rem;
+		left: auto!important;
+		right: 0.25rem !important;
+		bottom: auto !important;
+		/* color: #019c9e; */
+		color: rgb(243, 195, 83);
+	}
+	
+	/* 노트 영역 - 노트 한 블럭 */
+	.view-passage-section .note-section{
+		padding-top: 2rem !important;
+	}
+	.view-passage-section .note-section .note-block{
+		position:relative;
+		padding-top: 1.5rem;
+		padding-bottom: 0;
+		margin-bottom: 1.5rem;
+	}
+	/* 노트 영역 - 노트 버튼 영역 */
+	.view-passage-section .note-section .note-mdf-btns,
+	.passage-sentence-nav .note-section .note-mdf-btns{
+		position: absolute;
+		right: 0;
+		top: 0.25rem;
+		width: auto;
+		border: none;
+	}
+	.view-passage-section .note-section .note-mdf-btns button,
+	.passage-sentence-nav .note-section .note-mdf-btns button{
+		padding:0;
+		color: rgb(243, 195, 83);
+	}
+	.view-passage-section .note-section .note-mdf-btns button:first-child,
+	.passage-sentence-nav .note-section .note-mdf-btns button:first-child{
+		margin-right: 0.5rem;
+	}
+
+
+	/* 노트 영역 - 노트 본문 영역 */
+	.view-passage-section .note-section .note-text p{
+		margin-bottom: 0;
+	}
+
+	/* 노트 영역 - 노트 에디터 영역 */
+	.collapse-section .note-edit-btns{
+		position: absolute;
+		bottom: -25px;
+		right: 0;
+	}
+
 }
+
+/*------------------------------------------------------------------------------
+                              view_passage.html - 모바일(한 문장씩 조회) 
+ -----------------------------------------------------------------------------*/
+/* 모바일 하단 메뉴*/
+#js-mobile-menu{
+	border-radius: 10px 10px 0 0;
+	width: 100%; 
+	z-index: 10; 
+	padding: 0 0.5rem;
+	position: fixed;
+	bottom: 0;
+	background-color: #f6f6f6;
+	max-height: 85vh;
+	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+/* 모바일 하단 메뉴 - 지문 보기 버튼 */
+#js-mobile-menu .js-toggle-menu{
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	background: #4e578396;
+	top: -25px;
+	backdrop-filter: blur( 4px );
+	-webkit-backdrop-filter: blur( 4px );
+	transform-origin: left;
+	border: 1px solid rgba(255,255,255,.05);
+}
+/* 모바일 하단 메뉴 - 메뉴 아이콘 */
+#js-mobile-menu .mobile-menu-section .menu-icon{
+	
+	vertical-align: text-bottom;
+	padding: 0.25rem 0.5rem 0rem 0.5rem;
+	color: var(--fc-purple);
+
+}
+/* 모바일 하단 메뉴 - 메뉴 텍스트 */
+#js-mobile-menu .mobile-menu-section .menu-text{
+	font-family: 'LINESeedKR-Bd';
+}
+
+/* 문장 네비 영역 */
+.passage-sentence-nav{
+	overflow-y: scroll; 
+	max-height: 85vh;
+	-ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.passage-sentence-nav::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
+/* 문장 네비 영역 - 지문 노트 목록 */
+.passage-sentence-nav .note-section .one-block{
+	border-radius: 10px;
+	padding: 10px;
+	/* margin-bottom: 5px; */
+	min-height: 80px;
+	box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 4px 0px inset;
+
+	position:relative;
+	padding-top: 1.5rem;
+	padding-bottom: 0;
+	margin-bottom: 1.5rem;
+}
+/* 문장 네비 영역 - 문장 목록 */
+.passage-sentence-nav .sentence-list{
+	font-family: Avenir; 
+	color: #fff;
+	max-height: 80vh; 
+	width:100%;
+}
+.passage-sentence-nav .sentence-list .numbering-text{
+	background-color: #5c68b6;
+	border-radius: 5px;
+	color: #fff;
+	display: inline-block;
+	min-width: 20px;
+	text-align: center;
+}
+.passage-sentence-nav .sentence-list .sentence-link{
+	color:#002060;
+}
+.passage-sentence-nav .sentence.active .numbering-text{
+	background-color: #b01a2c;
+}
+.passage-sentence-nav .sentence.active .sentence-link{
+	color: #600300;
+}
+
 /*------------------------------------------------------------------------------
                               add_passage.html
  -----------------------------------------------------------------------------*/

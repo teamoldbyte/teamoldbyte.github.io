@@ -118,7 +118,7 @@
         padding: 0.5rem;
     }
 }
-@media (max-width: 767px){
+@media (max-width: 576px){
     .tandem-layout-content-section {
         min-height: 100vh;
         padding: 0px;
@@ -406,7 +406,7 @@
 	right: 10px;
 }
 /* 멤버십 안내 메세지 영역 */
-.membership-info-section{
+.index-section .membership-info-section{
 	background-color: #d8d9e9;
 	border-radius: 0.25rem;
 	margin-bottom: 0;
@@ -460,7 +460,7 @@
 	}
 	
 	/* 멤버십 안내 메세지 영역 */
-	.membership-info-section{
+	.index-section .membership-info-section{
 		margin-bottom: 1rem;
 		height: auto;
 	}
@@ -999,7 +999,7 @@
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border: none;
 }
-@media (max-width: 767px) {
+@media (max-width: 576px) {
 	
     .block-section {
 		/*padding-top: 6rem;
@@ -1516,9 +1516,7 @@
 		padding-bottom: 0;
     }*/
 
-    .title-section .title-text{
-        font-size: 35px;
-    }
+    
     .category-section .category-input-section button{
         width: 50px;
     }
@@ -1705,7 +1703,7 @@
     color: #666;
 	padding-left: 18px;
 	line-height: 1.25;
-	font-family: 'HCRDotum';
+	font-family: 'Nanum Gothic';
 	position: relative;
 	width: auto;
 }
@@ -1728,18 +1726,24 @@
 	word-break: keep-all;
 }
 .translation-section .translator{
-    font-size: 0.9rem;
+	font-size: 0.7rem;
 }
 @media (max-width: 767px) {
-	.translation-section .translation-text{
-		border-top: 1px solid #e7dbdd;
-		padding: 3px 0;
-	}
+	
 	.translation-section .ai-translation-section .ai-translation-block:first-child .translation-text{
 		padding-top:0;
 		border-top: none;
 	}
 	
+}
+
+@media (max-width: 576px) {
+	.translation-section .translation-text{
+		border-top: 1px solid #e7dbdd;
+		padding: 3px 0;
+		color: #002060;
+		font-size: 0.8rem;
+	}
 }
 .translation-section .trans-editor textarea{
 	font-size: 13px;
@@ -1769,12 +1773,13 @@
 	}
 	.translation-section .add-btn{
 		position: absolute;
-		top: 0.25rem;
+		bottom: 0;
 		right: 0;
 	}
     .translation-section .ai-translation-section {
         margin-top: 0.5rem;
 		padding-left: 5px;
+		max-width: 100%;
     }
 	/* 번역 텍스트 */
 	.translation-section .ai-translation-section .ai-translation-block{
