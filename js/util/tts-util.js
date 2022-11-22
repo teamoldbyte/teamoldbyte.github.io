@@ -29,32 +29,59 @@
 		// Mobile browsers including mobile chrome are not supported.
 		// Android Webview
 		"en-au-x-afh-network":"Narelle", //호주 여자
+		"en-au-x-afh-local":"Narelle", //호주 여자
 		"en-au-x-aua-network":"Abigail", //호주 여자
+		"en-au-x-aua-local":"Abigail", //호주 여자
 		"en-au-x-aub-network":"Braith", //호주 남자
+		"en-au-x-aub-local":"Braith", //호주 남자
 		"en-au-x-auc-network":"Kayla", //호주 여자
+		"en-au-x-auc-local":"Kayla", //호주 여자
 		"en-au-x-aud-network":"Lachlan", //호주 남자
+		"en-au-x-aud-local":"Lachlan", //호주 남자
 		"en-gb-x-fis-network":"Keira", //영국 여자
+		"en-gb-x-fis-local":"Keira", //영국 여자
 		"en-gb-x-gba-network":"Grace", //영국 여자
+		"en-gb-x-gba-local":"Grace", //영국 여자
 		"en-gb-x-gbb-network":"Taylor", //영국 남자
+		"en-gb-x-gbb-local":"Taylor", //영국 남자
 		"en-gb-x-gbc-network":"Lauren", //영국 여자
+		"en-gb-x-gbc-local":"Lauren", //영국 여자
 		"en-gb-x-gbd-network":"Nicholas", //영국 남자
+		"en-gb-x-gbd-local":"Nicholas", //영국 남자
 		"en-gb-x-gbg-network":"Libby", //영국 여자
+		"en-gb-x-gbg-local":"Libby", //영국 여자
 		"en-gb-x-rjs-network":"Peter", //영국 남자
+		"en-gb-x-rjs-local":"Peter", //영국 남자
 		"en-in-x-ahp-network":"Sayyar", //인도 여자
+		"en-in-x-ahp-local":"Sayyar", //인도 여자
 		"en-in-x-cxx-network":"Bahiya", //인도 여자
+		"en-in-x-cxx-local":"Bahiya", //인도 여자
 		"en-in-x-ena-network":"Farah", //인도 여자
+		"en-in-x-ena-local":"Farah", //인도 여자
 		"en-in-x-enc-network":"Atika", //인도 여자
+		"en-in-x-enc-local":"Atika", //인도 여자
 		"en-in-x-end-network":"Husam", //인도 남자
+		"en-in-x-end-local":"Husam", //인도 남자
 		"en-in-x-ene-network":"Salah", //인도 남자
+		"en-in-x-ene-local":"Salah", //인도 남자
 		"en-ng-x-tfn-network":"Jenete", //나이지리아 여자
+		"en-ng-x-tfn-local":"Jenete", //나이지리아 여자
 		"en-us-x-iob-network":"Josephine", //미국 여자
+		"en-us-x-iob-local":"Josephine", //미국 여자
 		"en-us-x-iog-network":"Gloria", //미국 여자
+		"en-us-x-iog-local":"Gloria", //미국 여자
 		"en-us-x-iol-network":"Joe", //미국 남자
+		"en-us-x-iol-local":"Joe", //미국 남자
 		"en-us-x-iom-network":"Paul", //미국 남자
+		"en-us-x-iom-local":"Paul", //미국 남자
 		"en-us-x-sfg-network":"Mary", //미국 여자
+		"en-us-x-sfg-local":"Mary", //미국 여자
 		"en-us-x-tpc-network":"Michelle", //미국 여자
+		"en-us-x-tpc-local":"Michelle", //미국 여자
 		"en-us-x-tpd-network":"James", //미국 남자
+		"en-us-x-tpd-local":"James", //미국 남자
 		"en-us-x-tpf-network":"Cathy", //미국 여자
+		"en-us-x-tpf-local":"Cathy", //미국 여자
 	  
 		// MacOS + iOS
 		"Alex":"Alex", //미국 남자
