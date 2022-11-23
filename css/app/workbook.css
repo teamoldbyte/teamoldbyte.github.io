@@ -2026,8 +2026,9 @@
 .view-passage-section .svoc-menu-section button,
 .view-passage-section .svoc-mdf-btns button,
 .view-passage-section .translation-section .trans-mdf-btns button,
-.view-passage-section .translation-section .fold-icon{
-	color: #5c68b6;
+.view-passage-section .translation-section .fold-icon,
+.translation-section .add-btn{
+	color: #019c9e;
 }
 
 .view-passage-section .svoc-mdf-btns button span{
@@ -2035,11 +2036,6 @@
 }
 .view-passage-section .translation-section .trans-mdf-btns button{
 	width: 50%;
-}
-
-/* 해석 영역 - */
-.translation-section .add-btn{
-	color: rgb(243, 195, 83);
 }
 
 
@@ -2052,9 +2048,12 @@
 	display: inline-block;
 	/* margin-right: 0.5rem; */
 	border-color: #b4c0d8;
-	color: #5d6a85;
+	color: #019c9e;
 	padding:0 0 0 auto;
 	border-width: 2px;
+	margin-left: auto;
+	border: 2px solid #b4c0d8;
+	border-radius: 5px;
 }
 .view-passage-section .note-section .note-mdf-btns button:first-child{
 	border-bottom-left-radius: .25rem;
@@ -2066,13 +2065,6 @@
 	border-bottom-right-radius: .25rem;
 }
 
-.view-passage-section .note-section .note-mdf-btns,
-.passage-sentence-nav .note-section .note-mdf-btns{
-	display: flex;
-	margin-left: auto;
-	border: 2px solid #b4c0d8;
-	border-radius: 5px;
-}
 .view-passage-section .note-section .note-mdf-btns button,
 .passage-sentence-nav .note-section .note-mdf-btns button{
 	text-align: center;
