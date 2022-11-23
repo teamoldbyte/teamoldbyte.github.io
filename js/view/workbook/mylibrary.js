@@ -1,7 +1,20 @@
 /** workbook/mylibrary.html
  * @author LGM
  */
-function pageinit() {
+function pageinit(myWorkBookList) {
+	
+	if(myWorkBookList.empty) {
+		$('.book-section[data-list-type="study"]').css('height', 'auto')
+			.removeClass('swiper').get(0).replaceChildren(createElement({
+				el: 'span', className: 'default-message', children: [
+					'다른 사람이 만든 워크북을 보고 싶다면?',
+					{ el: 'br'},
+					'워크북 구독을 하면 여기서 볼 수 있습니다.'
+				]
+			}));
+	}else {
+		appendList(myWorkBookList, $('.book-section[data-list-type="study"] .list-inline'));
+	}
 	new Swiper('.swiper', {
 		slidesPerView: 'auto',
 		watchSlidesProgress: true,
