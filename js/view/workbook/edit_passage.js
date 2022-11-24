@@ -264,12 +264,7 @@ function pageinit(sentenceList) {
 		};
 
 		// 기존 문장과 동일한 지 검사
-		if (origin.toLowerCase().replace(/\s/g, '')
-			== edited.toLowerCase().replace(/\s/g, '')) {
-			command['sameTextSeq'] = true;
-		} else {
-			command['sameTextSeq'] = false;
-		}
+		command['sameTextSeq'] = (origin.toLowerCase() == edited.toLowerCase());
 
 		$('#loadingModal').modal('show');
 		// 지문 문장 수정(ajax)-------------------------------
