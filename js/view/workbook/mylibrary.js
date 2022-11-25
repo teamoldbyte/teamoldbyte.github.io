@@ -34,11 +34,11 @@ function pageinit(myWorkBookList) {
 			loadPrevNext: true
 		},
 		on : {
-			afterInit: function(s) {
-				s.pageNum = (s.slides.length > 0) ? 2 : 1;
-				if(s.el.dataset.listType == 'study' && myWorkBookList.last) {
-					s.isLast = true
-				}
+			beforeInit: function(s) {
+				if(s.el.dataset.listType == 'study') {
+					s.isLast =  myWorkBookList.last;
+					if(!myWorkBookList.last) s.pageNum = 2;
+				}else s.pageNum = 1;
 			},
 			click: function(s) {
 				if(!s.clickedSlide) return;
@@ -54,7 +54,7 @@ function pageinit(myWorkBookList) {
 				else {
 					const type = s.el.dataset.listType;				
 					s.isLoading = true;
-					$.getJSON(`/workbook/library/${type}/list`, {pageNum:s.pageNum++||1},  function(bookPage) {
+					$.getJSON(`/workbook/library/${type}/list`, {pageNum:s.pageNum++},  function(bookPage) {
 						delete s.isLoading;
 						if(bookPage.first && bookPage.empty) {
 							s.el.classList.add('h-auto');
