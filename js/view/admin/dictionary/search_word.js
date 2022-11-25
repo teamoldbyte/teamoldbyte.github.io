@@ -4,9 +4,10 @@
 function pageinit() {
 	$('#searchWordForm').on('submit', function(e) {
 		e.preventDefault();
+		const searchOption = $('#searchOption').val();
 		const title = $('#keywordDiv input').val().trim();
 		if(title.length == 0) return;
-		$.getJSON(`/adminxyz/word/search/${title}`, function(word) {
+		$.getJSON(`/adminxyz/word/search/${searchOption}/${title}`, function(word) {
 			$('#searchResult').collapse('show').data('wordId',word.wid);
 			$('#searchResult .title').text(word.title);
 			$('#searchResult .level').text(word.level);
