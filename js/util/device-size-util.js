@@ -46,22 +46,24 @@
 	
 	// ※ 갤럭시 폴드, 폰 가로모드의 경우 데스크탑과 동일한 화면을 이용하므로 제외
 	function isPhone() {
-		return window.matchMedia('(max-width: 575.98px)').matches;
+		return _matchMedia('(max-width: 575.98px)');
 	}
 	
 	function isWidePhone() {
-		return window.matchMedia('(min-width: 576px) and (max-width: 767.98px)').matches;
+		return _matchMedia('(min-width: 576px) and (max-width: 767.98px)');
 	}
 	
 	function isTablet() {
-		return window.matchMedia('(min-width: 768px) and (max-width: 991.98px)').matches;
+		return _matchMedia('(min-width: 768px) and (max-width: 991.98px)');
 	}
 	
 	function isDesktop() {
-		return window.matchMedia('(min-width: 992px)').matches;
+		return _matchMedia('(min-width: 992px)');
 	}
 	
-	function 
+	function _matchMedia(query) {
+		return window.matchMedia(query).matches;
+	}
 	
 	window['devSize'] = { isPhone, isWidePhone, isTablet, isDesktop };
 })();
