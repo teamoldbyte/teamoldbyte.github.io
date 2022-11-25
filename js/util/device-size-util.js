@@ -1,6 +1,6 @@
 /** BootStrap v5.0 기준으로, 화면 사이즈를 통해 기기 판별
 @author LGM
-@usage devSize.isPhone(), devSize.isTablet(), devSize.isDesktop()
+@usage devSize.isPhone(), devSize.isTablet(), devSize.isDesktop
 
 참고표: https://getbootstrap.com/docs/5.0/layout/breakpoints/
 
@@ -44,18 +44,24 @@
  */
 (function() {
 	
-	
+	// ※ 갤럭시 폴드, 폰 가로모드의 경우 데스크탑과 동일한 화면을 이용하므로 제외
 	function isPhone() {
-		return window.matchMedia('('+'m'+'a'+'x'+'-'+'w'+'i'+'d'+'t'+'h'+':'+' '+'7'+'6'+'7'+'.'+'9'+'8'+'p'+'x'+')')['m'+'a'+'t'+'c'+'h'+'e'+'s'];
+		return window.matchMedia('(max-width: 575.98px)').matches;
+	}
+	
+	function isWidePhone() {
+		return window.matchMedia('(min-width: 576px) and (max-width: 767.98px)').matches;
 	}
 	
 	function isTablet() {
-		return window.matchMedia('('+'m'+'i'+'n'+'-'+'w'+'i'+'d'+'t'+'h'+':'+' '+'7'+'6'+'8'+'p'+'x'+')'+' '+'a'+'n'+'d'+' '+'('+'m'+'a'+'x'+'-'+'w'+'i'+'d'+'t'+'h'+':'+' '+'9'+'9'+'1'+'.'+'9'+'8'+'p'+'x'+')')['m'+'a'+'t'+'c'+'h'+'e'+'s'];
+		return window.matchMedia('(min-width: 768px) and (max-width: 991.98px)').matches;
 	}
 	
 	function isDesktop() {
-		return window.matchMedia('('+'m'+'i'+'n'+'-'+'w'+'i'+'d'+'t'+'h'+':'+' '+'9'+'9'+'2'+'p'+'x'+')')['m'+'a'+'t'+'c'+'h'+'e'+'s'];
+		return window.matchMedia('(min-width: 992px)').matches;
 	}
 	
-	window['devSize'] = { isPhone, isTablet, isDesktop };
+	function 
+	
+	window['devSize'] = { isPhone, isWidePhone, isTablet, isDesktop };
 })();
