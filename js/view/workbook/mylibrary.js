@@ -36,6 +36,9 @@ function pageinit(myWorkBookList) {
 		on : {
 			afterInit: function(s) {
 				s.pageNum = (s.slides.length > 0) ? 2 : 1;
+				if(s.el.dataset.listType == 'study' && myWorkBookList.last) {
+					s.isLast = true
+				}
 			},
 			click: function(s) {
 				if(!s.clickedSlide) return;
