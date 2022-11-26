@@ -1,7 +1,7 @@
 /** /membership/add_membership.html
 @author LGM
  */
-function pageinit(membershipCommand) {
+function pageinit(membershipCommand, membershipItemList) {
 	const loggedin = membershipCommand.mid != 0;
 	
 	let nextTimer; 
@@ -301,7 +301,91 @@ function pageinit(membershipCommand) {
 			]}
 		]
 	}
-
+	
+	if(devSize.isPhone()) {
+		const memberShipGallery = $('.gallery').get(0),
+			slideWidth = memberShipGallery.offsetWidth * 0.85,
+			slidesOffset = memberShipGallery.offsetWidth * 0.075;
+		memberShipGallery.appendChild(createElement(Array.from(membershipItemList, item => {
+			const forDesktop = item.itemType.includes('DDM');
+			return { el: 'div', className: 'membership-info-parent gallery-cell swiper-slide', children: [
+				{ el: 'input', type: 'hidden', className: 'iid', value: item.iid },
+				// 뱃지 영역
+				!forDesktop ? { el: 'div', className: 'badge-section position-absolute', children: [
+					{ el: 'span', className: 'badge bg-white text-fc-red rounded-5', textContent: '모바일' }
+				]} : '',
+				// 멤버십 이미지
+				{ el: 'div', className: 'membership-image position-relative mx-auto my-3 text-center', children: [
+					{ el: 'img', alt: 'membership', src: `https://static.findsvoc.com/images/app/membership/mobile/${item.itemType}.png` }
+				]},
+				// 멤버십 정보 블럭
+				{ el: 'div', className: 'membership-info', role: 'button', 'data-bs-toggle': 'modal', 'data-bs-target': '#done-info-modal', children: [
+					{ el: 'input', type: 'hidden', className: 'name', value: item.name },
+					{ el: 'div', children: forDesktop ? [
+						{ el: 'span', className: 'membership-name-text', textContent: '+ 데스크톱/태블릿 지원' },
+						{ el: 'i', className: 'fas fa-question-circle text-fc-purple', role: 'button', 'data-bs-toggle': 'modal', 'data-bs-target': '#guide-modal' }
+					] : [
+						{ el: 'span', className: 'membership-name-text', textContent: '모바일 지원' }
+					]},
+					{ el: 'div', className: 'membership-price-text', children: [
+						{ el: 'span', className: 'price', textContent: parseInt(item.price).toLocaleString() }, '원',
+						{ el: 'span', textContent: `/${item.itemType.endsWith('M-12')?'년':'월'}` }
+					]},
+					{ el: 'div', className: 'buy-icon-section', children: [
+						{ el: 'i', className: 'icon fas fa-arrow-right'}
+					]}
+				]}
+			]}
+		})));
+		new Swiper('.swiper',{
+			loop: true,
+			pagination: {
+				el: '.swiper-pagination'
+			},
+			width: slideWidth,
+			slidesOffsetBefore: slidesOffset,
+			centeredSlides: true,
+			spaceBetween: 10,
+			navigation: {
+			    nextEl: '.swiper-button-next',
+			    prevEl: '.swiper-button-prev',
+ 			},
+		});
+	}else {
+		$('.membership-list').get(0).appendChild(createElement(Array.from(membershipItemList, item => {
+			const forDesktop = item.itemType.includes('DDM');
+			return {
+				el: 'div', className: 'membership-info-parent col-6', 'data-bs-toggle': !forDesktop ? 'tooltip' : '',
+				title: !forDesktop ? '모바일 기기에서 구매할 수 있습니다.' : '', 'data-bs-trigger': 'hover focus click', children: [
+					{ el: 'input', type: 'hidden', className: 'iid', value: item.iid },
+					{ el: 'div', className: 'membership-block rounded-3 p-3', children: [
+						// 멤버십 정보(이름, 가격)
+						{ el: 'div', className: 'row g-0 membership-info h-100 text-center', children: [
+							{ el: 'div', className: 'col-lg-6 membership-image position-relative my-auto', children: [
+								{ el: 'img', alt: 'membership', src: `https://static.findsvoc.com/images/app/membership/${item.itemType}.png`}
+							]},
+							{ el: 'input', type: 'hidden', className: 'name', value: item.name },
+							{ el: 'div', className: `col-lg-6 my-auto${!forDesktop?' opacity-50 pe-none':''}`, children: [
+								forDesktop ? { el: 'div', children: [
+									{ el: 'span', className: 'text-fc-red fw-bold', textContent: '+ 데스크톱/태블릿 지원' },
+									{ el: 'i', className: 'fas fa-question-circle text-fc-purple', role: 'button', 'data-bs-toggle': 'modal', 'data-bs-target': '#guide-modal' }
+								]} : { el: 'div', children: [
+									{ el: 'span', className: 'text-fc-red fw-bold', textContent: '모바일 지원'}
+								]},
+								{ el: 'span', className: 'price', textContent: parseInt(item.price).toLocaleString()}, '원',
+								{ el: 'span', textContent: `/${item.itemType.endsWith('M-12')?'년':'월'}` },
+								// 가입 버튼
+								{ el: 'div', className: 'sr-showup text-center d-block mt-1', children: [
+									{ el: 'button', type: 'button', className: 'btn btn-fico', 'data-bs-toggle': 'modal', 'data-bs-target': '#done-info-modal', textContent: '후원하기' }
+								]}
+							]}
+						]}
+					]}
+				]
+			}
+		})));
+	}
+	
 	$(document).on('show.bs.modal', '#done-info-modal', function(e) {
 		const button = e.relatedTarget;
 		const memberShipInfoDiv = button.closest('.membership-info-parent');
@@ -466,4 +550,4 @@ function postJSON(url, jsonCommand, callback, failMsg) {
 			$('#done-info-moal').modal('hide');
 		}
 	});
-}	
+}
