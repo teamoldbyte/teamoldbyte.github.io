@@ -8,7 +8,7 @@ function pageinit() {
 		const title = $('#keywordDiv input').val().trim();
 		if(title.length == 0) return;
 		
-		$.getJSON(`/adminxyz/word/search/${searchOption}/${title}`, function(wordList) {
+		$.getJSON(`/adminxyz/word/search/${searchOption}/${encodeURIComponent(title)}`, function(wordList) {
 			// 일반 단어 검색 결과
 			const normalWord = wordList.find(word=>word.title == title);
 			
@@ -230,7 +230,7 @@ function pageinit() {
 		return Array.from(senseList, sense => createOnePartSection(isPhrasalVerb, sense)).concat([
 			{ el: 'label', className: 'add-new-sense-label mb-3', textContent: '뜻 추가'},
 			{ el: 'div', className: 'add-new-sense-section', children: [
-				{ el: 'div', className: 'row g-3', children: [
+				{ el: 'div', className: 'row g-3 mb-2', children: [
 					{ el: 'div', className: 'col-2', children: [
 						{ el: 'select', className: 'form-select', children: [
 							{ el: 'option', value: 'n.', textContent: '명사'},
@@ -263,7 +263,7 @@ function pageinit() {
 					]}
 				]},
 				isPhrasalVerb ? [
-					{ el: 'div', className: 'row g-3', children: [
+					{ el: 'div', className: 'row g-3 mb-2', children: [
 						{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
 							{ el: 'span', className: 'badge rounded-pill bg-fc-purple', textContent: 'A' }
 						]},
@@ -274,7 +274,7 @@ function pageinit() {
 							}}
 						]}
 					]}, 
-					{ el: 'div', className: 'row g-3', children: [
+					{ el: 'div', className: 'row g-3 mb-2', children: [
 						{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
 							{ el: 'span', className: 'badge rounded-pill bg-danger', textContent: '가' }
 						]},
@@ -293,8 +293,8 @@ function pageinit() {
 	@param isPhrasalVerb 심플: false, 쇼업: true
 	 */	
 	function createOnePartSection(isPhrasalVerb, sense) {
-		return { el: 'div', className: 'one-part-unit-section g-3 mb-3', 'data-sid':sense.sid||sense.ssid||sense.showUpId, children: [
-			{ el: 'div', className: 'row', children: [
+		return { el: 'div', className: 'one-part-unit-section g-3 mb-2', 'data-sid':sense.sid||sense.ssid||sense.showUpId, children: [
+			{ el: 'div', className: 'row mb-2', children: [
 				{ el: 'div', className: 'col-2 text-end pe-5 lh-lg',  children: [ 
 					{ el: 'span', className: 'part fs-5 lh-1', textContent: sense.partType }
 				]},
