@@ -31,7 +31,6 @@ function pageinit() {
 				return { el: 'div', className: 'showup-word' + (i>0?' mt-3 border-top':''), 'data-word-id': word.wid, children: [
 					{ el: 'div', className: 'title-section row mt-1 g-3', children: [
 						{ el: 'div', className: 'my-auto', children: [
-							{ el: 'label', textContent: '타이틀' },
 							{ el: 'h5', className: 'word-title title fs-5 d-inline me-2', textContent: word.title }
 						]}
 					]}
