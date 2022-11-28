@@ -89,7 +89,7 @@ function pageinit() {
 	$('#register').on('click', function() {
 		const searchTitle = $('#searchTitle').val().trim();
 		const saveTitle = $('#saveTitle').val().trim();
-		$.getJSON(`/adminxyz/unword/add/${searchTitle}/${saveTitle}`, function() {
+		$.getJSON('/adminxyz/unword/add', { searchTitle, saveTitle}, function() {
 			alertModal(`단어 ${title}(이)가 등록되었습니다.`);
 			$('#alertModal').on('hide.bs.modal', () => location.reload());
 		}).fail((xhr, status) => {
