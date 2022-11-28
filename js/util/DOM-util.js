@@ -102,7 +102,7 @@ function alertModal(msg) {
 				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 					{"el":"div","class":"modal-content","children":[
 						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\\n/g,'<br>')},
+							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')},
 							{"el":"div","class":"button-section row g-1 col-6 mx-auto","children":[
 								{"el":"button","class":"btn btn-fico", 'data-bs-dismiss':'modal',"textContent": "확인"}
 		]}]}]}]}]});
@@ -112,7 +112,7 @@ function alertModal(msg) {
 				bootstrap?.Modal?.getInstance(modal).hide();
 			}
 		})		
-	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\\n/g,'<br>');
+	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
 // window.confirm을 대신하여 Bootstrap Modal을 생성해서 표시. '확인'을 누르면 callback 실행
@@ -125,7 +125,7 @@ function confirmModal(msg, callback) {
 				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 					{"el":"div","class":"modal-content","children":[
 						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\\n/g,'<br>')},
+							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')},
 							{"el":"div","class":"button-section row gx-2 col-md-6 col-8 mx-auto","children":[
 								{ "el": "div", className: 'col text-center', children: [
 									{"el":"button","class":"btn btn-fico w-100","textContent": "확인", onclick: () => {
@@ -144,12 +144,14 @@ function confirmModal(msg, callback) {
 				bootstrap?.Modal?.getInstance(modal).hide();
 			}
 		})
-		modal.addEventListener('hide.bs.modal', function(event) {
-			if(Boolean(parseInt(event.target.dataset.bsReturn))) callback.call(this,true);
-		})
+		modal.addEventListener('hide.bs.modal', (e) => onHide(e));
 	}else {
 		modal.dataset.bsReturn = 0;
-		modal.querySelector('.text-section').innerHTML = msg.replace(/\\n/g,'<br>');
+		modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
 	}
+	function onHide(event) {
+		if(Boolean(parseInt(event.target.dataset.bsReturn))) callback();
+	}
+	
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
