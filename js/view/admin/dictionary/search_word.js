@@ -90,11 +90,11 @@ function pageinit() {
 		const searchTitle = $('#searchTitle').val().trim();
 		const saveTitle = $('#saveTitle').val().trim();
 		$.getJSON('/adminxyz/unword/add', { searchTitle, saveTitle}, function() {
-			alertModal(`단어 ${title}(이)가 등록되었습니다.`);
+			alertModal(`단어 ${searchTitle}(이)가 등록되었습니다.`);
 			$('#alertModal').on('hide.bs.modal', () => location.reload());
 		}).fail((xhr, status) => {
 			if(status == 'parsererror') {
-				alertModal(`단어 ${title}(이)가 등록되었습니다.`);
+				alertModal(`단어 ${searchTitle}(이)가 등록되었습니다.`);
 				$('#alertModal').on('hide.bs.modal', () => location.reload());
 			}else alertModal('에러가 발생했습니다.\n'+xhr.responseJSON.exception);
 		});
