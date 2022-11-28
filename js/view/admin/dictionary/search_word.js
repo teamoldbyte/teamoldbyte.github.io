@@ -137,6 +137,7 @@ function pageinit() {
 		const isPhrasalVerb = $senseSection.closest('.showup-sense-list-section').length > 0;
 		
 		if(isPhrasalVerb) {
+			command['wordId'] = $senseSection.closest('.showup-word').data('wordId')
 			command['showUpId'] = sid;
 			command['eng'] = $exampleEng.html().trim();
 			command['kor'] = $exampleKor.val().trim();
@@ -177,8 +178,8 @@ function pageinit() {
 		const $input = $addSection.find('input');
 		if($input.val().trim() == 0) return;
 		const isPhrasalVerb = $(this).closest('.showup-word').length > 0;
-		const command = {wordId: parseInt($(this).closest('.showup-word,#searchResult').data('wordId')), 
-						partType: $partSelect.val(), meaning: $input.val().trim()}
+		const command = { wordId: parseInt($(this).closest('.showup-word,#searchResult').data('wordId')), 
+						partType: $partSelect.val(), meaning: $input.val().trim() };
 		if(isPhrasalVerb) {
 			command['eng'] = $addSection.find('.input-example-eng').html().trim();
 			command['kor'] = $addSection.find('.input-example-kor').val().trim();
@@ -206,8 +207,8 @@ function pageinit() {
 	// 뜻 삭제
 	.on('click', '.js-del-meaning', function() {
 		const $partSection = $(this).closest('.one-part-unit-section');
-		const ssid = parseInt($partSection.data('sid'));
-		const command = { showUpId: ssid};
+		const command = { wordId: $partSection.closest('.showup-word').data('wordId'), 
+						showUpId: $partSection.data('sid') };
 		$.ajax({
 			url: '/adminxyz/dictionary/showupsense/del',
 			type: 'POST',
