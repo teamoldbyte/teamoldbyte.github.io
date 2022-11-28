@@ -137,8 +137,9 @@ function pageinit() {
 		const isPhrasalVerb = $senseSection.closest('.showup-sense-list-section').length > 0;
 		
 		if(isPhrasalVerb) {
-			command['wordId'] = $senseSection.closest('.showup-word').data('wordId')
+			command['wordId'] = $senseSection.closest('.showup-word').data('wordId');
 			command['showUpId'] = sid;
+			command['partType'] = $senseSection.find('.part').text();
 			command['eng'] = $exampleEng.html().trim();
 			command['kor'] = $exampleKor.val().trim();
 		}else {
