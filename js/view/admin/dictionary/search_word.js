@@ -7,6 +7,7 @@ function pageinit() {
 		const searchOption = $('#searchOption').val();
 		const title = $('#keywordDiv input').val().trim();
 		if(title.length == 0) return;
+		
 		$.getJSON(`/adminxyz/word/search/${searchOption}/${title}`, function(wordList) {
 			// 일반 단어 검색 결과
 			const normalWord = wordList.find(word=>word.title == title);
@@ -28,7 +29,7 @@ function pageinit() {
 			const phrVerbs = wordList.filter(word => word.showUpSenseList?.length > 0);
 			$('.showup-sense-list-section').children(':not(.title)').remove();
 			$('.showup-sense-list-section').get(0).appendChild(createElement(Array.from(phrVerbs, (word, i) => {
-				return { el: 'div', className: 'showup-word' + (i>0?' mt-3 border-top':''), 'data-word-id': word.wid, children: [
+				return { el: 'div', className: 'showup-word' + (i>0?' mt-4 pt-2 border-top border-2':''), 'data-word-id': word.wid, children: [
 					{ el: 'div', className: 'title-section row mt-1 g-3', children: [
 						{ el: 'div', className: 'my-auto', children: [
 							{ el: 'h5', className: 'word-title title fs-5 d-inline me-2', textContent: word.title }
@@ -39,7 +40,7 @@ function pageinit() {
 		}).fail((xhr, status) => {
 			if(status == 'parsererror') {
 				$('#searchResult').collapse('show');
-				$('#searchResult .title').text(title);
+				$('#searchResult .saveTitle').text(title);
 				$('#searchTitle, #saveTitle').val(title);
 				$('#searchResult .empty-list').show();
 				$('#searchResult .one-word-unit-section').hide();
@@ -103,15 +104,16 @@ function pageinit() {
 		const sel = getSelection();
 		const input = e.target.closest('.eng');
 		const range = sel.getRangeAt(0);
-		if(sel.isCollapsed && !e.target.matches('strong')) return;
+		if(sel.isCollapsed && !sel.focusNode.parentElement.closest('strong')) return;
 		else if(!sel.isCollapsed) {
 			e.preventDefault();
 			const strong = createElement({ el: 'strong', textContent: range.toString()});
 			range.deleteContents();
 			range.insertNode(strong);
-		}else if(e.target.matches('strong')){
+		}else if(sel.focusNode.parentElement.closest('strong')){
+			const strong = sel.focusNode.parentElement.closest('strong');
 			e.preventDefault();
-			e.target.replaceWith(e.target.textContent);
+			strong.replaceWith(strong.textContent);
 			sel.removeAllRanges();
 		}
 		// 강조 표시 변경 후 노드 정리
@@ -286,42 +288,48 @@ function pageinit() {
 	@param isPhrasalVerb 심플: false, 쇼업: true
 	 */	
 	function createOnePartSection(isPhrasalVerb, sense) {
-		return { el: 'div', className: 'one-part-unit-section row g-3 mb-3', 'data-sid':sense.sid||sense.ssid||sense.showUpId, children: [
-			{ el: 'div', className: 'col-2 text-end pe-5 lh-lg',  children: [ 
-				{ el: 'span', className: 'part fs-5 lh-1', textContent: sense.partType }
-			]},
-			{ el: 'div', className: 'col-8 text-center',  children: [ 
-				{ el: 'input', type: 'text', className: 'input-meaning meaning form-control', value: sense.meaning, 
-				'data-org': sense.meaning, maxLength: isPhrasalVerb?65:100, 
-				placeholder: `${isPhrasalVerb?65:100}자 이내의 뜻 입력`, oninput: function() {
-					$(this).closest('.one-part-unit-section').find('.js-edit-meaning,.js-edit-cancel').show();
-				}},
-			]},
-			{ el: 'div', className: 'col-2',  children: [ 
-				{ el: 'button', type: 'button', className: 'js-edit-meaning btn btn-fico fas fa-check', style: 'display:none;' },
-				{ el: 'button', type: 'button', className: 'js-edit-cancel btn btn-outline-fico fas fa-times', style: 'display:none;' },
-				isPhrasalVerb ? { el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash '} : ''
-			]},
-			isPhrasalVerb ? { el: 'div', className: 'col-12 row gx-0', children: [
-				{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
-					{ el: 'span', className: 'badge rounded-pill bg-fc-purple', textContent: 'A' }
+		return { el: 'div', className: 'one-part-unit-section g-3 mb-3', 'data-sid':sense.sid||sense.ssid||sense.showUpId, children: [
+			{ el: 'div', className: 'row', children: [
+				{ el: 'div', className: 'col-2 text-end pe-5 lh-lg',  children: [ 
+					{ el: 'span', className: 'part fs-5 lh-1', textContent: sense.partType }
 				]},
-				{ el: 'div', className: 'col-8 text-center gx-3', children: [
-					{ el: 'div', className: 'input-example-eng eng form-control text-sm text-start', contentEditable: 'plaintext-only', innerHTML: sense.eng||'',
-					'data-org': sense.eng||'', placeholder: '500자 이내의 예문 입력', oninput: function() {
+				{ el: 'div', className: 'col-8 text-center',  children: [ 
+					{ el: 'input', type: 'text', className: 'input-meaning meaning form-control', value: sense.meaning, 
+					'data-org': sense.meaning, maxLength: isPhrasalVerb?65:100, 
+					placeholder: `${isPhrasalVerb?65:100}자 이내의 뜻 입력`, oninput: function() {
 						$(this).closest('.one-part-unit-section').find('.js-edit-meaning,.js-edit-cancel').show();
-					}}
-				]}, 
-				{ el: 'div', className: 'col-2'},
-				{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
-					{ el: 'span', className: 'badge rounded-pill bg-danger', textContent: '가' }
+					}},
 				]},
-				{ el: 'div', className: 'col-8 text-center gx-3', children: [
-					{ el: 'input', type: 'text', className: 'input-example-kor kor form-control text-sm', value: sense.kor||'', 
-					'data-org': sense.kor||'', placeholder: '500자 이내의 해석 입력', oninput: function() {
-						$(this).closest('.one-part-unit-section').find('.js-edit-meaning,.js-edit-cancel').show();
-					} }
-				]}, 
+				{ el: 'div', className: 'col-2',  children: [ 
+					{ el: 'button', type: 'button', className: 'js-edit-meaning btn btn-fico fas fa-check', style: 'display:none;' },
+					{ el: 'button', type: 'button', className: 'js-edit-cancel btn btn-outline-fico fas fa-times', style: 'display:none;' },
+					isPhrasalVerb ? { el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash '} : ''
+				]}
+			]},
+			isPhrasalVerb ? { el: 'div', children: [
+				{ el: 'div', className: 'row gx-4', children: [
+					{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
+						{ el: 'span', className: 'badge rounded-pill bg-fc-purple', textContent: 'A' }
+					]},
+					{ el: 'div', className: 'col-8 text-center', children: [
+						{ el: 'div', className: 'input-example-eng eng form-control text-sm text-start', contentEditable: 'plaintext-only', innerHTML: sense.eng||'',
+						'data-org': sense.eng||'', placeholder: '500자 이내의 예문 입력', oninput: function() {
+							$(this).closest('.one-part-unit-section').find('.js-edit-meaning,.js-edit-cancel').show();
+						}}
+					]}, 
+					{ el: 'div', className: 'col-2'}
+				]},
+				{ el: 'div', className: 'row gx-4', children: [
+					{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
+						{ el: 'span', className: 'badge rounded-pill bg-danger', textContent: '가' }
+					]},
+					{ el: 'div', className: 'col-8 text-center', children: [
+						{ el: 'input', type: 'text', className: 'input-example-kor kor form-control text-sm', value: sense.kor||'', 
+						'data-org': sense.kor||'', placeholder: '500자 이내의 해석 입력', oninput: function() {
+							$(this).closest('.one-part-unit-section').find('.js-edit-meaning,.js-edit-cancel').show();
+						} }
+					]}
+				]}
 			]} : ''
 		]}
 	}
