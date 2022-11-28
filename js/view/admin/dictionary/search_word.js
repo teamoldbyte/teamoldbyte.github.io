@@ -229,58 +229,63 @@ function pageinit() {
 	function createSenseListAndForm(isPhrasalVerb, senseList) {
 		return Array.from(senseList, sense => createOnePartSection(isPhrasalVerb, sense)).concat([
 			{ el: 'label', className: 'add-new-sense-label mb-3', textContent: '뜻 추가'},
-			{ el: 'div', className: 'add-new-sense-section row g-3', children: [
-				{ el: 'div', className: 'col-2', children: [
-					{ el: 'select', className: 'form-select', children: [
-						{ el: 'option', value: 'n.', textContent: '명사'},
-						{ el: 'option', value: 'ad.', textContent: '부사'},
-						{ el: 'option', value: 'v.', textContent: '동사'},
-						{ el: 'option', value: 'vt.', textContent: '타동사'},
-						{ el: 'option', value: 'vi.', textContent: '자동사'},
-						{ el: 'option', value: 'prep.', textContent: '전치사'},
-						{ el: 'option', value: 'conj.', textContent: '접속사'},
-						{ el: 'option', value: 'a.', textContent: '형용사'},
-						{ el: 'option', value: 'abbr.', textContent: '약어'},
-						{ el: 'option', value: 'pron.', textContent: '대명사'},
-						{ el: 'option', value: 'aux.', textContent: '조동사'},
-						{ el: 'option', value: 'num.', textContent: '수사'},
-						{ el: 'option', value: 'ordi.', textContent: '서수'},
-						{ el: 'option', value: 'int.', textContent: '감탄사'},
-						{ el: 'option', value: 'det.', textContent: '한정사'},
-						{ el: 'option', value: 'phrasal-v.', textContent: '구동사', selected: isPhrasalVerb}
+			{ el: 'div', className: 'add-new-sense-section', children: [
+				{ el: 'div', className: 'row g-3', children: [
+					{ el: 'div', className: 'col-2', children: [
+						{ el: 'select', className: 'form-select', children: [
+							{ el: 'option', value: 'n.', textContent: '명사'},
+							{ el: 'option', value: 'ad.', textContent: '부사'},
+							{ el: 'option', value: 'v.', textContent: '동사'},
+							{ el: 'option', value: 'vt.', textContent: '타동사'},
+							{ el: 'option', value: 'vi.', textContent: '자동사'},
+							{ el: 'option', value: 'prep.', textContent: '전치사'},
+							{ el: 'option', value: 'conj.', textContent: '접속사'},
+							{ el: 'option', value: 'a.', textContent: '형용사'},
+							{ el: 'option', value: 'abbr.', textContent: '약어'},
+							{ el: 'option', value: 'pron.', textContent: '대명사'},
+							{ el: 'option', value: 'aux.', textContent: '조동사'},
+							{ el: 'option', value: 'num.', textContent: '수사'},
+							{ el: 'option', value: 'ordi.', textContent: '서수'},
+							{ el: 'option', value: 'int.', textContent: '감탄사'},
+							{ el: 'option', value: 'det.', textContent: '한정사'},
+							{ el: 'option', value: 'phrasal-v.', textContent: '구동사', selected: isPhrasalVerb}
+						]},
 					]},
-				]},
-				{ el: 'div', className: 'col-8', children: [
-					{ el: 'input', type: 'text', className: 'input-meaning form-text form-control mt-0', 
-					placeholder: `${isPhrasalVerb?65:100}자 이내의 뜻 입력`, maxLength: isPhrasalVerb?65:100, onclick: function() {
-						$(this).closest('.add-new-sense-section').find('.js-add-meaning,.js-add-cancel').show();
-					}},
-				]},
-				{ el: 'div', className: 'col-2', children: [
-					{ el: 'button', type: 'button', className: 'js-add-meaning btn btn-fico fas fa-check', style: 'display:none;' },
-					{ el: 'button', type: 'button', className: 'js-add-cancel btn btn-outline-fico fas fa-times', style: 'display: none;' }
-				]},
-				isPhrasalVerb ? { el: 'div', className: 'col-12 row gx-0', children: [
-					{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
-						{ el: 'span', className: 'badge rounded-pill bg-fc-purple', textContent: 'A' }
-					]},
-					{ el: 'div', className: 'col-8 text-center gx-3', children: [
-						{ el: 'div', className: 'input-example-eng eng form-control text-sm text-start', contentEditable: 'plaintext-only', innerHTML: '',
-						'data-org': '', placeholder: '500자 이내의 예문 입력', oninput: function() {
+					{ el: 'div', className: 'col-8', children: [
+						{ el: 'input', type: 'text', className: 'input-meaning form-text form-control mt-0', 
+						placeholder: `${isPhrasalVerb?65:100}자 이내의 뜻 입력`, maxLength: isPhrasalVerb?65:100, onclick: function() {
 							$(this).closest('.add-new-sense-section').find('.js-add-meaning,.js-add-cancel').show();
-						}}
-					]}, 
-					{ el: 'div', className: 'col-2'},
-					{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
-						{ el: 'span', className: 'badge rounded-pill bg-danger', textContent: '가' }
+						}},
 					]},
-					{ el: 'div', className: 'col-8 text-center gx-3', children: [
-						{ el: 'input', type: 'text', className: 'input-example-kor kor form-control text-sm', value: '', 
-						'data-org': '', placeholder: '500자 이내의 해석 입력', oninput: function() {
-							$(this).closest('.add-new-sense-section').find('.js-add-meaning,.js-add-cancel').show();
-						} }
+					{ el: 'div', className: 'col-2', children: [
+						{ el: 'button', type: 'button', className: 'js-add-meaning btn btn-fico fas fa-check', style: 'display:none;' },
+						{ el: 'button', type: 'button', className: 'js-add-cancel btn btn-outline-fico fas fa-times', style: 'display: none;' }
+					]}
+				]},
+				isPhrasalVerb ? [
+					{ el: 'div', className: 'row g-3', children: [
+						{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
+							{ el: 'span', className: 'badge rounded-pill bg-fc-purple', textContent: 'A' }
+						]},
+						{ el: 'div', className: 'col-8 text-center gx-3', children: [
+							{ el: 'div', className: 'input-example-eng eng form-control text-sm text-start', contentEditable: 'plaintext-only', innerHTML: '',
+							'data-org': '', placeholder: '500자 이내의 예문 입력', oninput: function() {
+								$(this).closest('.add-new-sense-section').find('.js-add-meaning,.js-add-cancel').show();
+							}}
+						]}
 					]}, 
-				]} : ''				
+					{ el: 'div', className: 'row g-3', children: [
+						{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
+							{ el: 'span', className: 'badge rounded-pill bg-danger', textContent: '가' }
+						]},
+						{ el: 'div', className: 'col-8 text-center gx-3', children: [
+							{ el: 'input', type: 'text', className: 'input-example-kor kor form-control text-sm', value: '', 
+							'data-org': '', placeholder: '500자 이내의 해석 입력', oninput: function() {
+								$(this).closest('.add-new-sense-section').find('.js-add-meaning,.js-add-cancel').show();
+							} }
+						]}
+					]}
+				] : ''				
 			]}
 		])
 	}	
@@ -306,8 +311,8 @@ function pageinit() {
 					isPhrasalVerb ? { el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash '} : ''
 				]}
 			]},
-			isPhrasalVerb ? { el: 'div', children: [
-				{ el: 'div', className: 'row gx-4', children: [
+			isPhrasalVerb ? [
+				{ el: 'div', className: 'row', children: [
 					{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
 						{ el: 'span', className: 'badge rounded-pill bg-fc-purple', textContent: 'A' }
 					]},
@@ -319,7 +324,7 @@ function pageinit() {
 					]}, 
 					{ el: 'div', className: 'col-2'}
 				]},
-				{ el: 'div', className: 'row gx-4', children: [
+				{ el: 'div', className: 'row', children: [
 					{ el: 'div', className: 'col-2 text-end pe-2 lh-lg', children: [
 						{ el: 'span', className: 'badge rounded-pill bg-danger', textContent: '가' }
 					]},
@@ -330,7 +335,7 @@ function pageinit() {
 						} }
 					]}
 				]}
-			]} : ''
+			] : ''
 		]}
 	}
 }
