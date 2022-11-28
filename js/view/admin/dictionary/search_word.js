@@ -8,7 +8,7 @@ function pageinit() {
 		const title = $('#keywordDiv input').val().trim();
 		if(title.length == 0) return;
 		
-		$.getJSON(`/adminxyz/word/search/${searchOption}/${encodeURIComponent(title)}`, function(wordList) {
+		$.getJSON(`/adminxyz/word/search/${searchOption}`, {value: title}, function(wordList) {
 			// 일반 단어 검색 결과
 			const normalWord = wordList.find(word=>word.title == title);
 			
