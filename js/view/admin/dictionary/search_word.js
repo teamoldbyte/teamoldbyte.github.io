@@ -9,7 +9,7 @@ function pageinit() {
 		if(title.length == 0) return;
 		$.getJSON(`/adminxyz/word/search/${searchOption}/${title}`, function(wordList) {
 			// 일반 단어 검색 결과
-			const normalWord = wordList.find(word=>word.title == title && !(word.showUpSenseList?.length > 0));
+			const normalWord = wordList.find(word=>word.title == title && (word.senseList?.length > 0));
 			
 			$('#searchResult').collapse('show');
 			$('#searchResult').find('.saveTitle,.one-word-unit-section .word-title').text(title);
