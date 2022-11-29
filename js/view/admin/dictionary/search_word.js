@@ -8,6 +8,7 @@ function pageinit() {
 		const title = $('#keywordDiv input').val().trim();
 		if(title.length == 0) return;
 		
+		$('.showup-sense-list-section').empty();
 		$.getJSON(`/adminxyz/word/search/${searchOption}`, {value: title}, function(wordList) {
 			// 일반 단어 검색 결과
 			const normalWord = wordList.find(word=>word.title == title);
@@ -27,16 +28,20 @@ function pageinit() {
 			
 			// 구동사 검색 결과
 			const phrVerbs = wordList.filter(word => word.showUpSenseList?.length > 0);
-			$('.showup-sense-list-section').children(':not(.title)').remove();
-			$('.showup-sense-list-section').get(0).appendChild(createElement(Array.from(phrVerbs, (word, i) => {
-				return { el: 'div', className: 'showup-word' + (i>0?' mt-4 pt-2 border-top border-2':''), 'data-word-id': word.wid, children: [
-					{ el: 'div', className: 'title-section row mt-1 g-3', children: [
-						{ el: 'div', className: 'my-auto', children: [
-							{ el: 'h5', className: 'word-title title fs-5 d-inline me-2', textContent: word.title }
+			if(phrVerbs.length > 0) {
+				$('.showup-sense-list-section').get(0).appendChild(createElement(Array.from(phrVerbs, (word, i) => {
+					return { el: 'div', className: 'showup-word' + (i>0?' mt-4 pt-2 border-top border-2':''), 
+					'data-word-id': word.wid, children: [
+						{ el: 'div', className: 'title-section row mt-1 g-3', children: [
+							{ el: 'div', className: 'my-auto', children: [
+								{ el: 'h5', className: 'word-title title fs-5 d-inline me-2', textContent: word.title }
+							]}
 						]}
-					]}
-				].concat(createSenseListAndForm(true, word.showUpSenseList))}
-			})));
+					].concat(createSenseListAndForm(true, word.showUpSenseList))}
+				})));
+			}else {
+				$('.showup-sense-list-section').html('검색 결과가 없습니다.')
+			}
 		}).fail((xhr, status) => {
 			if(status == 'parsererror') {
 				$('#searchResult').collapse('show');
