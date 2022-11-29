@@ -311,9 +311,9 @@ function pageinit() {
 					}},
 				]},
 				{ el: 'div', className: 'col-2',  children: [ 
-					{ el: 'button', type: 'button', className: 'js-edit-meaning btn btn-fico fas fa-check', style: 'display:none;' },
-					{ el: 'button', type: 'button', className: 'js-edit-cancel btn btn-outline-fico fas fa-times', style: 'display:none;' },
-					isPhrasalVerb ? { el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash '} : ''
+					{ el: 'button', type: 'button', className: 'js-edit-meaning btn btn-fico fas fa-check w-25', style: 'display:none;' },
+					{ el: 'button', type: 'button', className: 'js-edit-cancel btn btn-outline-fico fas fa-times w-25', style: 'display:none;' },
+					isPhrasalVerb ? { el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash w-25'} : ''
 				]}
 			]},
 			isPhrasalVerb ? [
