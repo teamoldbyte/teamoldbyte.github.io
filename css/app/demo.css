@@ -1836,6 +1836,17 @@
 	padding-right: 3px;
 	padding-left: 15px;
 }
+.word-section .title:hover{
+	cursor: pointer;
+}
+.word-section .title:hover::after{
+	font-family: "Font Awesome 5 Free";
+	content: "\f028";
+	font-style: normal;
+	font-size: 1rem;
+	margin-left: 0.25rem;
+	color: #019c9e;
+}
 @media (max-width: 576px) {
 	.word-section .title{
 	    font-weight: 700;
