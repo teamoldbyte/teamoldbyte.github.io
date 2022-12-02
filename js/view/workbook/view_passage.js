@@ -797,7 +797,7 @@
 			isMobile ? { el: 'div', className: 'title-section position-relative mt-2 mb-1 d-none d-md-block', children: [
 				{ el: 'span', className: 'title-text', textContent: '단어 목록' } 
 			]} : { el: 'div', className: 'title-section position-relative', children: [
-				{ el: 'span', className: 'sub-title', textContent: '문장에서 등장하는 단어를 fico가 대신 검색하여 제공해 드립니다.'}
+				{ el: 'span', className: 'sub-title', textContent: '문장에서 등장하는 단어를 fico가 대신 검색하여 제공해 드립니다. 단어를 눌러서 발음을 들어보세요.'}
 			]}));
 			
 			for(let j = 0; j < wordListLen; j++) {
