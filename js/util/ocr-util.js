@@ -19,6 +19,23 @@ class FicoOCR {
 	};
 	
 	constructor() {(async () => {
+		// 로딩 모달
+		if($('#ocrModal').length == 0) {
+			this.#$loadingModal = $(createElement(
+				{"el":"div","id":"ocrModal","class":"modal fade","data-bs-backdrop":"static","tabindex":"-1","children":[
+					{"el":"div","class":"modal-dialog modal-dialog-centered d-flex justify-content-center","children":[
+						{"el":"span","class":"btn btn-light","children":[
+							{"el":"span","class":"spinner-border text-yellow-400","role":"status"},{"el":"br"},
+							{"el":"span","style":"vertical-align: super;","children":[
+								"분석 대상이 아닌 한글, 특수문자 등은",{"el":"br"},
+								{"el":"mark","style":"background-color:#f9d37a;","textContent":"⨂"},"기호로 바뀝니다."
+							]}
+						]}
+					]}
+				]}
+			));
+			$(document.body).append(this.#$loadingModal);
+		}
 		// 파일의 EXIF 정보 추출 라이브러리
 		if(typeof EXIF == 'undefined') {
 			await this.#cachedScript('https://cdn.jsdelivr.net/npm/exif-js');
@@ -54,23 +71,6 @@ class FicoOCR {
 			'/* 선택 제외될 단어 스타일 */' +
 			'#ocrResultModal .will-removed {border: solid 2px #f00!important;}' +
 			'</style>'));
-		// 로딩 모달
-		if($('#ocrModal').length == 0) {
-			this.#$loadingModal = $(createElement(
-				{"el":"div","id":"ocrModal","class":"modal fade","data-bs-backdrop":"static","tabindex":"-1","children":[
-					{"el":"div","class":"modal-dialog modal-dialog-centered d-flex justify-content-center","children":[
-						{"el":"span","class":"btn btn-light","children":[
-							{"el":"span","class":"spinner-border text-yellow-400","role":"status"},{"el":"br"},
-							{"el":"span","style":"vertical-align: super;","children":[
-								"분석 대상이 아닌 한글, 특수문자 등은",{"el":"br"},
-								{"el":"mark","style":"background-color:#f9d37a;","textContent":"⨂"},"기호로 바뀝니다."
-							]}
-						]}
-					]}
-				]}
-			));
-			$(document.body).append(this.#$loadingModal);
-		}
 		// 결과 모달
 		if($('#ocrResultModal').length == 0) {
 			this.#$resultModal = $(createElement(
