@@ -1,11 +1,49 @@
 /** /workbook/add_passage.html
 @author LGM
  */
-function pageinit(isHelloBook) {
+function pageinit(isHelloBook, memberId) {
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
-	const MAX_SENTENCE_LENGTH = 500;
+	const MAX_SENTENCE_LENGTH = 500,
+		MAX_SENTENCE_LENGTH_PER_DAY = 5000, 
+		STR_MSLPD = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
+	
+	const THIS_DATE = new Date().format('yyyy-MM-dd');
+	/**
+	myFicoUsage = date : today's date, length: total sentences length of today, confirmed: whether alert modal popped ever.
+	 */
+	let myFicoUsages = localStorage.getItem('MFUSG');
+	
+	if(myFicoUsages && myFicoUsages.user == ntoa(memberId)) {
+		myFicoUsages = JSON.parse(atob(localStorage.getItem('MFUSG')));
+		// 기존 사용량 날짜가 다르다면 오늘자로 사용량 초기화
+		if(myFicoUsages.date != THIS_DATE) {
+			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: true });
+		}
+		_verifyLimit();
+	}else {
+		myFicoUsages = { user: ntoa(memberId) };
+		$.getJSON('/workbook/passage/usage', function(length) {
+			Object.assign(myFicoUsages, { date: THIS_DATE, length, confirmed: false });
+			
+		}).fail(() => {
+			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: false });
+		}).always(_verifyLimit);
+	}
+	
+	function _verifyLimit() {
+		if(myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+			$('#inputComplete, .ocr-btn').prop('disabled', true);
+			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${STR_MSLPD}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
+			if(!myFicoUsages.confirmed) {
+				alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
+				myFicoUsages.confirmed = true;
+			}
+		}
+		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
+	}
+	
 	
 	// [각 단계별 이동]
 	$('[class^=step-] .title-section').click(function() {
@@ -148,7 +186,7 @@ function pageinit(isHelloBook) {
 		$('#ocrFile').on('input', function() {
 			const file = this.files[0];
 			if(file == null || file.size == 0) {
-				alert('선택된 사진이 없습니다.\n앨범에서 사진을 선택해 주세요.');
+				alertModal('선택된 사진이 없습니다.\n앨범에서 사진을 선택해 주세요.');
 				return false;
 			}
 			// OCR 실행
@@ -159,7 +197,7 @@ function pageinit(isHelloBook) {
 				textarea.setSelectionRange(0,0);
 				textarea.focus();
 				$(textarea).trigger('input');	
-			}, () => alert('이미지 인식에 실패했습니다. 입력창에 문장 수동 입력을 해주세요.'));
+			}, () => alertModal('이미지 인식에 실패했습니다. 입력창에 문장 수동 입력을 해주세요.'));
 			
 			// 파일 초기화
 			this.value = '';
@@ -175,7 +213,7 @@ function pageinit(isHelloBook) {
 		// 지문 최대 갯수 도달. 워크북 추가로 이동
 		const passageIdList = JSON.parse(sessionStorage.getItem('passageIdList'));
 		if(passageIdList?.length >= 30) {
-			alert('워크북의 지문 수가 최대 30개에 도달했습니다.\n새 워크북 등록 화면으로 이동합니다.');
+			alertModal('워크북의 지문 수가 최대 30개에 도달했습니다.\n새 워크북 등록 화면으로 이동합니다.');
 			location.assign('/workbook/mybook/add');
 		}
 	}
@@ -299,17 +337,17 @@ function pageinit(isHelloBook) {
 					for(let i = 0, len = sentences.length; i < len; i++) {
 						const tempSentence = sentences[i];
 						if(tempSentence.length > MAX_SENTENCE_LENGTH) {
-							alert(`${(i + 1)}번째 문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
+							alertModal(`${(i + 1)}번째 문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 							return;					
 						}else if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
-							alert((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
+							alertModal((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 							return;					
 						}else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
-							alert((i + 1) + '번째 문장의 끝이 구두점(. ? !)이나 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
+							alertModal((i + 1) + '번째 문장의 끝이 구두점(. ? !)이나 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 							return;
@@ -333,7 +371,7 @@ function pageinit(isHelloBook) {
 				$('.search-sentence').text(eng);
 				// 지문 검색(ajax)--------------------------------------------
 				$.getJSON('/workbook/passage/search', {eng}, displayDtoList)
-				.fail(() => alert('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+				.fail(() => alertModal('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
 				//----------------------------------------------------------
 				
 			
@@ -446,7 +484,7 @@ function pageinit(isHelloBook) {
 				const passageId = $selected.data('passageId');
 				// 지문 편집용 문장 호출(ajax)
 				$.getJSON('/workbook/passage/sentences/edit/' + passageId, displaySentences)
-				.fail(() => alert('지문을 편집할 수 없습니다.'));
+				.fail(() => alertModal('지문을 편집할 수 없습니다.'));
 			} else if($selected.data('sentenceId')){
 				const sentenceId = $selected.data('sentenceId');
 				
@@ -475,9 +513,11 @@ function pageinit(isHelloBook) {
 		taghistory = localStorage.getItem('PassageTagHistory');
 		if(taghistory != null) {
 			taghistory = JSON.parse(decodeURI(taghistory));
-			for(let i = 0, len = taghistory.length; i < len; i++){
-				$('#taghistory').append('<option>' + taghistory[i]+ '</option>');
-			}
+			$('#taghistory').get(0).appendChild(
+				createElement(Array.from(taghistory, tag => {
+					return { el: 'option', textContent: tag 
+				}})
+			));
 		}else taghistory = [];		
 	}
 
@@ -486,11 +526,14 @@ function pageinit(isHelloBook) {
 	$('#addBtn').on('click', function() {
 		const $form = $('#passageForm');
 		
+		let sentencesLength = 0;
 		if(isHelloBook) {
 			const $inputs = $('#dividedResult :text');
 			const sentences = [];
 			$inputs.each(function() {
-				sentences.push(this.value.trim().sentenceNormalize());
+				const normalizedText = this.value.trim().sentenceNormalize();
+				sentences.push(normalizedText);
+				sentencesLength += normalizedText.length;
 			});
 			createHidden($form, 'text', sentences.join('\n'));
 		}else {
@@ -518,9 +561,11 @@ function pageinit(isHelloBook) {
 						$form[0].action = '/workbook/passage/new';
 						$sentences.each(function(i, el) {
 							if($(el).is($differs)) {
-								createHidden($form, 'existingSentenceList['+i+'].eng', $(el).find(':text').val().trim().sentenceNormalize());
+								const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
+								sentencesLength += normalizedText.length;
+								createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
 							} else {
-								createHidden($form, 'existingSentenceList['+i+'].sentenceId', $(el).data('sentenceId'));
+								createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
 							}
 						});
 						dirty = true;
@@ -547,6 +592,11 @@ function pageinit(isHelloBook) {
 				}
 				createHidden($form, 'dirty', dirty);
 				
+			}else {
+				const sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
+				sentences.forEach(sentence => {
+					sentencesLength += sentence.length;
+				})
 			}
 			// 신규 태그는 localStorage에 저장
 			const newTag = $('#tag').val().trim();
@@ -555,6 +605,12 @@ function pageinit(isHelloBook) {
 				localStorage.setItem('PassageTagHistory', encodeURI(JSON.stringify(taghistory)));
 			}			
 		}
+		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY 
+		&& (myFicoUsages.length + sentencesLength >= MAX_SENTENCE_LENGTH_PER_DAY)) {
+			myFicoUsages.confirmed = false;
+		}
+		myFicoUsages.length += sentencesLength;
+		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
 		$form.submit();
 	});
 	$('#passageForm').on('submit', () => $('#loadingModal').modal('show'));
