@@ -1,80 +1,104 @@
 /** /workbook/edit_passage.html
 @author LGM
  */
-function pageinit(sentenceList) {
+function pageinit(sentenceList, memberId) {
 	const passageId = Number(sessionStorage.getItem('editingPassageId')||sessionStorage.getItem('passageId')),
 		workbookId = Number(sessionStorage.getItem('workbookId'));
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
-	
+
 	const oneSentenceJSON = {
 		"el": "div", "class": "one-sentence-unit-section p-2 p-lg-4 mb-2 border-0",
-		"data-ordernum": "0", "data-sid": "0", "data-psid": "0", "children": [
-			{
-				"el": "div", "class": "origin-sentence-section my-auto", "children": [
-					{	// 문장 메뉴(데스크탑)
-						"el": "div", "class": "d-none d-md-block edit-btn-section", "children": [
-							{
-								"el": "span", "role": "button", "class": "js-move-sentence btn edit-btn ui-sortable-handle", "data-toggle": "tooltip", "title": "위치 이동", "children": [
-									{ "el": "span", "class": "fas fa-arrows-alt" }
-								]
-							},
-							{
-								"el": "button", "type": "button", "class": "js-del-sentence btn edit-btn", "data-toggle": "tooltip", "title": "문장 삭제", "children": [
-									{ "el": "span", "class": "fas fa-trash-alt" }
-								]
-							},
-							{
-								"el": "button", "type": "button", "class": "edit-icon-section btn edit-btn", "data-toggle": "collapse", "children": [
-									{ "el": "span", "class": "edit-icon fas fa-pen" }
-								]
-							}
-						]
-					},
-					{	// 문장 메뉴(모바일)
-						"el": "div", "class": "d-block d-md-none float-end border rounded-3 px-1", "children": [
-							{
-								"el": "span", "role": "button", "class": "js-move-sentence d-block btn p-1 ui-sortable-handle", "data-toggle": "tooltip", "title": "위치 이동", "children": [
-									{ "el": "span", "class": "fas fa-arrows-alt" }
-								]
-							},
-							{
-								"el": "button", "type": "button", "class": "js-del-sentence d-block btn p-1 mx-auto", "data-toggle": "tooltip", "title": "문장 삭제", "children": [
-									{ "el": "span", "class": "fas fa-trash-alt" }
-								]
-							},
-							{
-								"el": "button", "type": "button", "class": "edit-icon-section d-block btn p-1", "data-toggle": "collapse", "children": [
-									{ "el": "span", "class": "edit-icon fas fa-pen" }
-								]
-							}
-						]
-					},
-					{	// 원문 표시
-						"el": "div", "class": "origin-sentence", "role": "button", "data-toggle": "collapse", "children": [
-							{ "el": "span", "class": "numbering-text", "textContent": "3" },
-							{ "el": "span", "class": "sentence-text", "textContent": "" }
-						]
-					},
-					{	// 문장 수정 영역
-						"el": "div", "class": "edit-section collapse mt-2", "children": [
-							{ "el": "textarea", "class": "form-control mb-2", "textContent": "" },
-							{ "el": "button", "type": "button", "class": "btn btn-outline-fico", "data-toggle": "collapse", "textContent": "취소" },
-							{ "el": "button", "type": "button", "class": "js-edit btn btn-fico", "disabled": true, "textContent": "수정" },
-							{ "el": "span", "class": "invalid-text text-danger", "style": "display: none;", "textContent": "영문이 아니거나 글자수가 너무 많습니다." }
-						]
-					}
-				]
-			}
-		]
-	};
+		"data-ordernum": "0", "data-sid": "0", "children": [
+			{ "el": "div", "class": "origin-sentence-section my-auto", "children": [
+				// 문장 메뉴(데스크탑)
+				{ "el": "div", "class": "d-none d-md-block edit-btn-section", "children": [
+					{ "el": "span", "role": "button", "class": "js-move-sentence btn edit-btn ui-sortable-handle", "data-toggle": "tooltip", "title": "위치 이동", "children": [
+						{ "el": "span", "class": "fas fa-arrows-alt" }
+					]},
+					{ "el": "button", "type": "button", "class": "js-del-sentence btn edit-btn", "data-toggle": "tooltip", "title": "문장 삭제", "children": [
+						{ "el": "span", "class": "fas fa-trash-alt" }
+					]},
+					{ "el": "button", "type": "button", "class": "edit-icon-section btn edit-btn", "data-toggle": "collapse", "children": [
+						{ "el": "span", "class": "edit-icon fas fa-pen" }
+					]}
+				]},
+				// 문장 메뉴(모바일)
+				{ "el": "div", "class": "d-block d-md-none float-end border rounded-3 px-1", "children": [
+					{ "el": "span", "role": "button", "class": "js-move-sentence d-block btn p-1 ui-sortable-handle", "data-toggle": "tooltip", "title": "위치 이동", "children": [
+						{ "el": "span", "class": "fas fa-arrows-alt" }
+					]},
+					{ "el": "button", "type": "button", "class": "js-del-sentence d-block btn p-1 mx-auto", "data-toggle": "tooltip", "title": "문장 삭제", "children": [
+						{ "el": "span", "class": "fas fa-trash-alt" }
+					]},
+					{ "el": "button", "type": "button", "class": "edit-icon-section d-block btn p-1", "data-toggle": "collapse", "children": [
+						{ "el": "span", "class": "edit-icon fas fa-pen" }
+					]}
+				]},
+				// 원문 표시
+				{ "el": "div", "class": "origin-sentence", "role": "button", "data-toggle": "collapse", "children": [
+					{ "el": "span", "class": "numbering-text", "textContent": "3" },
+					{ "el": "span", "class": "sentence-text", "textContent": "" }
+				]},
+				// 문장 수정 영역
+				{ "el": "div", "class": "edit-section collapse mt-2", "children": [
+					{ "el": "textarea", "class": "form-control mb-2", "textContent": "" },
+					{ "el": "button", "type": "button", "class": "btn btn-outline-fico", "data-toggle": "collapse", "textContent": "취소" },
+					{ "el": "button", "type": "button", "class": "js-edit btn btn-fico", "disabled": true, "textContent": "수정" },
+					{ "el": "span", "class": "invalid-text text-danger", "style": "display: none;", "textContent": "영문이 아니거나 글자수가 너무 많습니다." }
+				]}
+			]}
+		]};
 
+// --------------------------- 사용량 측정 Start --------------------------------
+
+	const MAX_SENTENCE_LENGTH_PER_DAY = 5000, 
+		STR_MSLPD = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
+	
+	const THIS_DATE = new Date().format('yyyy-MM-dd');
+	/**
+	myFicoUsage = date : today's date, length: total sentences length of today, confirmed: whether alert modal popped ever.
+	 */
+	let myFicoUsages = localStorage.getItem('MFUSG');
+	
+	if(myFicoUsages && myFicoUsages.user == ntoa(memberId)) {
+		myFicoUsages = JSON.parse(atob(localStorage.getItem('MFUSG')));
+		// 기존 사용량 날짜가 다르다면 오늘자로 사용량 초기화
+		if(myFicoUsages.date != THIS_DATE) {
+			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: true });
+		}
+		_verifyLimit();
+	}else {
+		myFicoUsages = { user: ntoa(memberId) };
+		$.getJSON('/workbook/passage/usage', function(length) {
+			Object.assign(myFicoUsages, { date: THIS_DATE, length, confirmed: false });
+			
+		}).fail(() => {
+			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: false });
+		}).always(_verifyLimit);
+	}
+	
+	function _verifyLimit() {
+		if(myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
+			$('.origin-sentence').removeAttr('data-toggle');
+			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
+			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
+			delete oneSentenceJSON.children[0].children[2]["data-toggle"];
+			if(!myFicoUsages.confirmed) {
+				alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>하여\n문장을 <span class="text-red-700">추가 및 수정</span>할 수 없습니다.\n문장을 <span class="text-blue-600">순서 이동 및 삭제</span>할 수 있습니다.`);
+				myFicoUsages.confirmed = true;
+			}
+		}
+		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
+	}	
+
+// ----------------------사용량 측정 End ------------------------------------
 	
 	sentenceList.sort((a, b) => a.orderNum - b.orderNum).forEach((sentence, i) => {
 		const sentenceBlock = createElement(oneSentenceJSON);
 		sentenceBlock.dataset.ordernum = sentence.orderNum;
 		sentenceBlock.dataset.sid = sentence.sentenceId;
-		sentenceBlock.dataset.psid = sentence.passageSentenceId;
 		sentenceBlock.querySelector('.numbering-text').textContent = i + 1;
 		sentenceBlock.querySelector('.sentence-text').textContent = sentence.eng;
 		sentenceBlock.querySelector('.edit-section textarea').textContent = sentence.eng;
@@ -120,7 +144,7 @@ function pageinit(sentenceList) {
 						const nextOrder = Number($next[0].dataset.ordernum),
 							newOrder = Math.round(nextOrder / 2);
 						if (newOrder == nextOrder) {
-							alert('더이상 이동할 수 없습니다.');
+							alertModal('더이상 이동할 수 없습니다.');
 							$(LIST_SENTENCE_SELECTOR).sortable('cancel');
 							return;
 						}
@@ -132,7 +156,7 @@ function pageinit(sentenceList) {
 							nextOrder = Number($next[0].dataset.ordernum),
 							newOrder = Math.round((prevOrder + nextOrder) / 2);
 						if ([prevOrder, nextOrder].indexOf(newOrder) > -1) {
-							alert('더이상 이동할 수 없습니다.');
+							alertModal('더이상 이동할 수 없습니다.');
 							$(LIST_SENTENCE_SELECTOR).sortable('cancel');
 							return;
 						}
@@ -198,7 +222,17 @@ function pageinit(sentenceList) {
 	$('.js-add').click(function() {
 		const text = $('.add-section textarea').val().parseToSentences().join(' ').capitalize1st(),
 			orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
-
+		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
+		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+			myFicoUsages.confirmed = false;
+			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
+			$('.origin-sentence').removeAttr('data-toggle');
+			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
+			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
+			delete oneSentenceJSON.children[0].children[2]["data-toggle"];			
+		}
+		myFicoUsages.length += text.length;
+		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
 		// 전송 내용 생성.
 		const command = { sentenceId: 0, passageId: passageId, eng: text, orderNum };
 
@@ -228,13 +262,13 @@ function pageinit(sentenceList) {
 				}
 				arrangeSentences();
 				calcParaLengthToggleAddBtn();
-				alert(alertMsg);
+				alertModal(alertMsg);
 				focusEffectSentence(anims);
 			}
 		}
 
 		function failAdd() {
-			alert('등록에 실패했습니다.');
+			alertModal('등록에 실패했습니다.');
 			$('#loadingModal').modal('hide');
 		}
 	});
@@ -262,6 +296,18 @@ function pageinit(sentenceList) {
 			passageId: passageId, eng: edited, sameText: false,
 			orderNum: Number($sentenceSection[0].dataset.ordernum)
 		};
+		
+		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
+		&& myFicoUsages.length + edited.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+			myFicoUsages.confirmed = false;
+			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
+			$('.origin-sentence').removeAttr('data-toggle');
+			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
+			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
+			delete oneSentenceJSON.children[0].children[2]["data-toggle"];			
+		}
+		myFicoUsages.length += edited.length;
+		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));		
 
 		// 기존 문장과 동일한 지 검사
 		command['sameTextSeq'] = (origin.toLowerCase() == edited.toLowerCase());
@@ -293,13 +339,13 @@ function pageinit(sentenceList) {
 						$(ONE_SENTENCE_SELECTOR).slideDown();
 						arrangeSentences();
 						calcParaLengthToggleAddBtn();
-						alert(alertMsg);
+						alertModal(alertMsg);
 						focusEffectSentence(anims);
 					});
 				});
 				$sentenceSection.find('.edit-section').collapse('hide');
 			} else if (sentences.length == 1) {
-				alert('수정되었습니다.');
+				alertModal('수정되었습니다.');
 				$sentenceSection.find('.sentence-text').text(sentences[0].eng);
 				$sentenceSection[0].dataset.sid = sentences[0].sentenceId;
 				$sentenceSection.find('.edit-section textarea').val(sentences[0].eng);
@@ -309,7 +355,7 @@ function pageinit(sentenceList) {
 		}
 
 		function failEdit() {
-			alert('수정에 실패했습니다.');
+			alertModal('수정에 실패했습니다.');
 			$('#loadingModal').modal('hide');
 		}
 	})
@@ -324,7 +370,7 @@ function pageinit(sentenceList) {
 			//--------------------------------------
 
 			function successDel() {
-				alert('문장이 삭제되었습니다.');
+				alertModal('문장이 삭제되었습니다.');
 				$sentenceSection.slideUp(function() {
 					$(this).remove();
 					arrangeSentences();
