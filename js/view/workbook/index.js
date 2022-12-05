@@ -34,27 +34,31 @@ function pageinit(recentOpenWorkBooks, memberId){
 				const $overviewSection = $('.workbook-overview-section');
 				const bookDiv = s.clickedSlide||e.path.find(d=>d.matches('.book-unit'));
 				const workBookId = bookDiv.dataset.workBookId,
-						workBookId56 = ntoa(workBookId),
-						writerAlias = bookDiv.dataset.writeralias,
-						writerPicture = bookDiv.dataset.writerpic;
+						workBookId56 = ntoa(workBookId);
 				$('.book-section .book-unit').not(bookDiv).removeClass('active');
 				$(bookDiv).toggleClass('active');
 				if($(bookDiv).is('.active')) {
-					// 개요 정보 가져오기(ajax)------------------------------
-					$.getJSON('/workbook/overview/' + ntoa(bookDiv.dataset.workBookId), 
-								(overview) => showOverview(overview))
-					.fail( () => alertModal('워크북정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
-					// --------------------------------------------------
+					if(!$(bookDiv).data('overview')) {
+						// 개요 정보 가져오기(ajax)------------------------------
+						$.getJSON(`/workbook/overview/${ntoa(bookDiv.dataset.workBookId)}`, (overview) => {
+							$(bookDiv).data('overview', overview);
+							showOverview(overview);
+						})
+						.fail( () => alertModal('워크북정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+						// --------------------------------------------------
+					}else {
+						showOverview($(bookDiv).data('overview'));
+					}
 				}else {
 					$('.workbook-overview-section').collapse('hide');
 				}
 				
 				// 개요 정보 표시
-				function showOverview({ title, description, price, sub, copy, imagePath, passageDtoList, regDate}) {
-					$overviewSection.find('.writer-cover .alias').text(writerAlias);
+				function showOverview({ title, description, price, sub, copy, imagePath, alias, aliasImage, passageDtoList, regDate}) {
+					$overviewSection.find('.writer-cover .alias').text(alias);
 					$overviewSection.find('.writer-cover .personacon img')
-									.css('background-image', writerPicture?.length > 0 
-									? ('url(/resource/profile/images/' + writerPicture + ')')
+									.css('background-image', aliasImage?.length > 0 
+									? (`url(/resource/profile/images/${aliasImage})`)
 									: 'var(--fc-logo-head)');
 					
 					$('#subscribeWorkbook').data('workBookId', workBookId);
@@ -106,7 +110,6 @@ function pageinit(recentOpenWorkBooks, memberId){
 							sessionStorage.setItem('workbookCover', imagePath);
 							sessionStorage.setItem('passageIdList', JSON.stringify(pids));
 							$('#loadingModal').modal('show');
-							//const nw = window.open('/workbook/passage/' + workbookId56 + '/' + ntoa(passage.passageId), '_blank');
 							location.assign(`/workbook/passage/${workBookId56}/${ntoa(passage.passageId)}`);
 						}}
 					})));
@@ -144,10 +147,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 			const book = list.content[i];
 			const $dom = $('#hiddenDivs .book-unit').clone();
 			$dom.attr('href', `${location.origin}/workbook/intro/${ntoa(book.workBookId)}`);
-			const $cover = $dom.attr('data-work-book-id', book.workBookId)
-						.attr('data-writeralias', book.alias)
-						.attr('data-writerpic', book.image)
-						.find('.book.cover');
+			const $cover = $dom.attr('data-work-book-id', book.workBookId).find('.book.cover');
 			if(book.imagePath?.length > 0) {
 				$cover.find('.default').hide();
 				$cover.find('.book-title').hide();
