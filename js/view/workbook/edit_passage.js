@@ -2,6 +2,7 @@
 @author LGM
  */
 function pageinit(sentenceList, memberId) {
+	$('#loadingModal').modal('hide');
 	const passageId = Number(sessionStorage.getItem('editingPassageId')||sessionStorage.getItem('passageId')),
 		workbookId = Number(sessionStorage.getItem('workbookId'));
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
