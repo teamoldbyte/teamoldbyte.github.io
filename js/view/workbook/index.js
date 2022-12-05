@@ -2,7 +2,7 @@
  * @author LGM
  */
 function pageinit(recentOpenWorkBooks, memberId){
-	$('#loadingModal').modal('hide');
+	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	const isMobile = window.visualViewport.width < 768;
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, horizontalOrder: true, transitionDuration: '0.8s'
@@ -11,6 +11,8 @@ function pageinit(recentOpenWorkBooks, memberId){
 	// [워크북 목록 가로 넘기기]-----------------------------------------------------
 	// 화면 가로길이에 따른 lazyLoad 갯수 조정(일부 잘린 항목도 보이도록)
 	let rowNum = isMobile ? 3 : 2;
+	//let bookAreaWidth = isMobile ? (7 * rem + 16) : (10 * rem + 40);
+	//let slideThreshold = Math.floor(document.querySelector('.book-section .list-inline').getClientRects()[0].width / bookAreaWidth);
 	
 	appendList(recentOpenWorkBooks)
 	
@@ -43,7 +45,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 					// 개요 정보 가져오기(ajax)------------------------------
 					$.getJSON('/workbook/overview/' + ntoa(bookDiv.dataset.workBookId), 
 								(overview) => showOverview(overview))
-					.fail( () => alertModal('워크북정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+					.fail( jqxhr => alert('워크북정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 					// --------------------------------------------------
 				}else {
 					$('.workbook-overview-section').collapse('hide');
@@ -76,13 +78,13 @@ function pageinit(recentOpenWorkBooks, memberId){
 					
 					$overviewSection.find('.reg-date').text(new Date(overview.regDate).toLocaleDateString());
 		
-					$overviewSection.find('.book-cover').toggleClass('default', overview.imagePath == null || overview.iamgePath.length == 0)
+					$overviewSection.find('.book-cover').toggleClass('default', !(overview.imagePath?.length > 0))
 									.find('img').attr('alt', overview.title);
 					$overviewSection.find('.book-cover img')
 						.css('background-image', (overview.imagePath?.length > 0) 
 							? `url(/resource/workbook/cover/${overview.imagePath})`:'');
 					$overviewSection.find('.book-title')
-						.text(overview.title).toggle(overview.imagePath == null || overview.iamgePath.length == 0);
+						.text(overview.title).toggle(!(overview.imagePath?.length > 0));
 					
 					$overviewSection.find('.background-image')
 									.css('background-image', 'url(https://static.findsvoc.com/images/app/workbook/background/bg-'
@@ -136,7 +138,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 						delete s.isLoading;
 						if(bookPage.last) s.isLast = true;
 					})
-					.fail( () => alertModal('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+					.fail( jqxhr => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 				}
 			}
 		}
@@ -199,15 +201,15 @@ function pageinit(recentOpenWorkBooks, memberId){
 		function subscribeCallback(msg) {
 			switch(msg){
 			case 'success':
-				$btn.addClass('bg-secondary').prop('disabled', true).text('구독중');
+				$('#subscribeWorkbook').addClass('bg-secondary').prop('disabled', true).text('구독중');
 				if(confirm('나의 서재에 "구독 워크북"이 추가되었습니다.\n'
 					+'나의 서재로 이동하시겠습니까?')) location.assign('/workbook/mylibrary');
 				break;
 			case 'duplicated':
-				alertModal('이미 구독한 워크북입니다.');
+				alert('이미 구독한 워크북입니다.');
 				break;
 			case 'insufficient':
-				alertModal('잔여 fico 코인이 부족합니다.');
+				alert('잔여 fico 코인이 부족합니다.');
 				break;
 			}		
 		}
