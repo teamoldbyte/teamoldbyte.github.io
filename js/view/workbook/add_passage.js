@@ -2,6 +2,7 @@
 @author LGM
  */
 function pageinit(isHelloBook, memberId) {
+	$('#loadingModal').modal('hide');
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
