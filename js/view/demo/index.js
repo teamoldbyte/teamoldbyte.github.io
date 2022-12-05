@@ -3,19 +3,25 @@
  */
 function pageinit(){
 	
-	// [분석 횟수를 확인 후 분석 실행 가능여부 판단]
-	const reqCount = parseInt(Cookies.get('BRLT') || 0);
-	const fullCount = 300;
-	const maxChars = fullCount - reqCount;
+	$('#loadingModal').modal('hide');
 	
-	if( maxChars <= 0) {
+	// [분석 횟수를 확인 후 분석 실행 가능여부 판단]
+	const todayCharLength = parseInt(Cookies.get('BRLT') || 0);
+	const MAX_CHARS_TODAY = 300;
+	const availableCharLength = MAX_CHARS_TODAY - todayCharLength;
+
+	const todayReqCount = todayCharLength > 0 ? parseInt(Cookies.get('SRC') || 0) : 0;
+	const MAX_REQ_TODAY = 5;
+	const availableReqCount = MAX_REQ_TODAY - todayReqCount;
+	
+	if( availableCharLength <= 0 || availableReqCount <= 0) {
 		$('#text').prop('placeholder', '금일 사용량을 모두 소진했습니다. 내일 다시 찾아와 주세요.')
 				  .prop('disabled', true)
 				  .addClass('disabled-textarea');
 				  
 	}else {
-		$('.demo-counter').text(`0/${maxChars}`)
-		$('#text').attr('maxlength', maxChars).prop('placeholder', `하루에 300자까지 분석할 수 있습니다. (금일 사용량 ${reqCount}/${fullCount}자)`);
+		$('.demo-counter').text(`0/${availableCharLength}`)
+		$('#text').attr('maxlength', availableCharLength).prop('placeholder', `하루 최대 300자, 5회까지 분석할 수 있습니다. (금일 사용량 ${todayCharLength}/${MAX_CHARS_TODAY}자, ${todayReqCount}회)`);
 	}
 	
 	// [예문 자동 교체]
@@ -34,13 +40,13 @@ function pageinit(){
 	   });
 	}
 	changeExample();
-	if(maxChars <= 0) return; // 이하 함수 정의 무시
+	if(availableCharLength <= 0 || availableReqCount <= 0) return; // 이하 함수 정의 무시
 /*∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨∨*/
 	
 	//[분석 아이콘 클릭 - 실행]
 	$('.input-form-section .search-btn').click(function(){
 		const $textarea = $('#text');
-		if(parseInt(Cookies.get('BRLT') || 0) >= fullCount) {
+		if(parseInt(Cookies.get('BRLT') || 0) >= MAX_CHARS_TODAY) {
 			this.classList.add('disabled');
 			$textarea.val(null)
 					 .prop('placeholder', '금일 사용량을 모두 소진했습니다. 내일 다시 찾아와 주세요.')
@@ -79,7 +85,7 @@ function pageinit(){
 		
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
 		
-		$('.demo-counter').text(`${textLen}/${maxChars}`); // 글자수 표시
+		$('.demo-counter').text(`${textLen}/${availableCharLength}`); // 글자수 표시
 		$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
 		
 		const invalid = validateResult[0] || textLen == 0;
@@ -99,7 +105,7 @@ function pageinit(){
 		})
 		if(invalid) {
 			(textTooltip || (textTooltip = new bootstrap.Tooltip(this, {
-				title: `영어 문장을 ${maxChars}자 이내로 입력하세요.`,
+				title: `영어 문장을 ${availableCharLength}자 이내로 입력하세요.`,
 				customClass: 'demo-text-invalid',
 				offset: ({placement}) => {
 					if(placement == 'top') {return [100,0];}
@@ -118,7 +124,7 @@ function pageinit(){
 	    const pastedLength = (clipboardData.getData('Text') || '').length;
 	    
 	    /* 최종길이(입력된 문장 총 길이 - 블록지정된 문자열 길이 + 붙여넣으려는 문자열 길이)가 최대길이를 넘는지 검사 */
-	    if(this.value.length - getSelection().toString().length + pastedLength > maxChars) {
+	    if(this.value.length - getSelection().toString().length + pastedLength > availableCharLength) {
 			$('#warnLength').modal('show');
 	    }
 	});
@@ -137,7 +143,7 @@ function pageinit(){
 		return [ result.input.includes('×'), result.arr.length > 0 ];
 	}
 	$('.addForm').on('reset', function() {
-		$('.demo-counter').text(`0/${maxChars}`);
+		$('.demo-counter').text(`0/${availableCharLength}`);
 		if(textTooltip != null) {
 			textTooltip.hide(); // 입력 힌트 숨김
 			textTooltip.disable();
