@@ -74,7 +74,22 @@ function pageinit(sentenceList){
 				
 				// 단어의 품사별 뜻 표시
 				$wordSection.append($wordBlock);
-				$wordBlock.find('.title').text(word.title);
+				$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
+						e.stopPropagation();
+						const on = this.dataset.playing == 'on';
+						if(on) {
+							stopAllTTS();
+						}else {
+							stopAllTTS(this);
+							this.dataset.playing = 'on';
+							anime({ targets: this, opacity: [0,1,0,1], easing: 'linear', loop: true})
+							tts.speakRepeat(word.title, 2, 500, () => {
+								anime.remove(this);
+								this.style.opacity = 1;
+								this.dataset.playing = 'off';
+							});
+						}
+				});
 				const senseList = word.senseList;
 				if(senseList == null) continue;
 				var senseListLen = senseList.length;
@@ -120,33 +135,41 @@ function pageinit(sentenceList){
 	})
 	// TTS 재생
 	.on('click', '.js-tts-play, .js-tts-play-sentence', function(e) {
-		const on = this.dataset.active == 'on';
-		document.querySelectorAll('.js-tts-play').forEach(playBtn => {
-			playBtn.dataset.active = 'on';
-			playBtn.textContent = 'play_circle';
-		})		
-		this.dataset.active = on?'off':'on';
-		this.textContent = on?'stop_circle':'play_circle';
+		e.stopPropagation();
+		const on = this.dataset.playing == 'on';
 		if(on) {
-			tts.speakRepeat(
-			// 모바일일 경우 현재 슬라이드의 문장. 데스크탑일 경우 재생버튼이 속한 문장.
-			this.closest('.origin-sentence').querySelector('.sentence-text').textContent,
-		 	2, 500, () => {
-				this.dataset.active = 'on';
+			stopAllTTS();
+		}else {
+			stopAllTTS(this);
+			const text = this.closest('.origin-sentence').querySelector('.sentence-text').textContent;
+
+			this.dataset.playing = 'on';
+			this.textContent = 'stop_circle';
+			tts.speakRepeat(text, 2, 500, () => {
+				this.dataset.playing = 'off';
 				this.textContent = 'play_circle';
 			});
-		}else {
-			tts.stop();
+			
 		}
 	})
 	.on('click', '.js-tts-setting', function(e) {
-		tts.stop();
-		document.querySelectorAll('.js-tts-play').forEach(playBtn => {
-			playBtn.dataset.active = 'on';
-			playBtn.textContent = 'play_circle';
-		})
+		e.stopPropagation();
+		stopAllTTS();
 		tts.openSettings();
 	})
+	function stopAllTTS(except) {
+		tts.stop();
+		document.querySelectorAll('[class*="js-tts-play"][data-playing="on"],.title[data-playing="on"]').forEach(playBtn => {
+			if(except == playBtn) return;
+			if(playBtn.matches('.title')) {
+				anime.remove(playBtn);
+				playBtn.style.opacity = 1;
+			}else {
+				playBtn.textContent = 'play_circle';
+			}
+			playBtn.dataset.playing = 'off';
+		})
+	}	
 	
 	// [피코의 문장출처 표시]
 	const now = new Date(),
