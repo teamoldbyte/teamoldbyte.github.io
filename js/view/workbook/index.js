@@ -2,7 +2,7 @@
  * @author LGM
  */
 function pageinit(recentOpenWorkBooks, memberId){
-	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+	$('#loadingModal').modal('hide');
 	const isMobile = window.visualViewport.width < 768;
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, horizontalOrder: true, transitionDuration: '0.8s'
@@ -11,8 +11,6 @@ function pageinit(recentOpenWorkBooks, memberId){
 	// [워크북 목록 가로 넘기기]-----------------------------------------------------
 	// 화면 가로길이에 따른 lazyLoad 갯수 조정(일부 잘린 항목도 보이도록)
 	let rowNum = isMobile ? 3 : 2;
-	//let bookAreaWidth = isMobile ? (7 * rem + 16) : (10 * rem + 40);
-	//let slideThreshold = Math.floor(document.querySelector('.book-section .list-inline').getClientRects()[0].width / bookAreaWidth);
 	
 	appendList(recentOpenWorkBooks)
 	
@@ -45,14 +43,14 @@ function pageinit(recentOpenWorkBooks, memberId){
 					// 개요 정보 가져오기(ajax)------------------------------
 					$.getJSON('/workbook/overview/' + ntoa(bookDiv.dataset.workBookId), 
 								(overview) => showOverview(overview))
-					.fail( jqxhr => alert('워크북정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+					.fail( () => alertModal('워크북정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 					// --------------------------------------------------
 				}else {
 					$('.workbook-overview-section').collapse('hide');
 				}
 				
 				// 개요 정보 표시
-				function showOverview(overview) {
+				function showOverview({ title, description, price, sub, copy, imagePath, passageDtoList, regDate}) {
 					$overviewSection.find('.writer-cover .alias').text(writerAlias);
 					$overviewSection.find('.writer-cover .personacon img')
 									.css('background-image', writerPicture?.length > 0 
@@ -61,63 +59,58 @@ function pageinit(recentOpenWorkBooks, memberId){
 					
 					$('#subscribeWorkbook').data('workBookId', workBookId);
 					
-					$overviewSection.find('.title').text(overview.title);
+					$overviewSection.find('.title').text(title);
 					
-					$overviewSection.find('.description').text(overview.description);
+					$overviewSection.find('.description').text(description);
 		
-					$overviewSection.find('.price').text(overview.price > 0
-										? (overview.price.toLocaleString() + ' fico')
+					$overviewSection.find('.price').text(price > 0
+										? (price.toLocaleString() + ' fico')
 										: '무료');
 					
 					$overviewSection.find('#subscribeWorkbook')
-									.toggleClass('bg-secondary', overview.sub)
-									.prop('disabled', overview.sub)
-									.text(overview.sub ? '구독중' : '구독');
+									.toggleClass('bg-secondary', sub)
+									.prop('disabled', sub)
+									.text(sub ? '구독중' : '구독');
 					
 					//$overviewSection.find('.subs-num').text(overview.numOfSubscriber);
 					
-					$overviewSection.find('.reg-date').text(new Date(overview.regDate).toLocaleDateString());
+					$overviewSection.find('.reg-date').text(new Date(regDate).toLocaleDateString());
 		
-					$overviewSection.find('.book-cover').toggleClass('default', !(overview.imagePath?.length > 0))
-									.find('img').attr('alt', overview.title);
+					$overviewSection.find('.book-cover').toggleClass('default', imagePath == null || imagePath.length == 0)
+									.find('img').attr('alt', title);
 					$overviewSection.find('.book-cover img')
-						.css('background-image', (overview.imagePath?.length > 0) 
-							? `url(/resource/workbook/cover/${overview.imagePath})`:'');
+						.css('background-image', (imagePath?.length > 0) 
+							? `url(/resource/workbook/cover/${imagePath})`:'');
 					$overviewSection.find('.book-title')
-						.text(overview.title).toggle(!(overview.imagePath?.length > 0));
+						.text(title).toggle(imagePath == null || imagePath.length == 0);
 					
 					$overviewSection.find('.background-image')
 									.css('background-image', 'url(https://static.findsvoc.com/images/app/workbook/background/bg-'
 												+ (1 + Math.floor(Math.random() * 4)) + '.jpg)');
-					$overviewSection.find('.catch-phrase-section .message').html(overview.copy.message);
-					$overviewSection.find('.catch-phrase-section .alias').text(overview.copy.alias);
+					$overviewSection.find('.catch-phrase-section .message').html(copy.message);
+					$overviewSection.find('.catch-phrase-section .alias').text(copy.alias);
 					
 					const $passageSection = $overviewSection.find('.list-passage-section');
 					$passageSection.empty();
 					if($passageSection.data('masonry') != undefined) {
 						$passageSection.masonry('destroy');
 					}
-					const passages = overview.passageDtoList;
+					const passages = passageDtoList;
 					// 지문간 이동 내비게이션 데이터
 					const pids = passages.map(dto => {return dto.passageId});
 					// 샘플지문 목록을 표시
-					for(let i = 0, passagesLen = passages.length; i < passagesLen; i++) {
-						const passage = passages[i], sentences = passage.sentenceList,
-							  div = $(`<a class="passage sample" href="${location.origin}/workbook/passage/${workBookId56}/${ntoa(passage.passageId)}"></a>`)[0];
-						div.onclick = (e) => {
+					$passageSection.get(0).appendChild(createElement(Array.from(passages, passage => {
+						return { el: 'a', className: 'passage sample', href: `${location.origin}/workbook/passage/${workBookId56}/${ntoa(passage.passageId)}`,
+						textContent: Array.from(passage.sentenceList, sentence => sentence.eng).join(' '), onclick: function(e) {
 							e.preventDefault();
-							sessionStorage.setItem('workbookCover', overview.imagePath);
+							sessionStorage.setItem('workbookCover', imagePath);
 							sessionStorage.setItem('passageIdList', JSON.stringify(pids));
 							$('#loadingModal').modal('show');
 							//const nw = window.open('/workbook/passage/' + workbookId56 + '/' + ntoa(passage.passageId), '_blank');
 							location.assign(`/workbook/passage/${workBookId56}/${ntoa(passage.passageId)}`);
-						}
-						div.innerText = '';
-						for(let j = 0, sentencesLen = sentences.length; j < sentencesLen; j++) {
-							div.innerText += sentences[j].eng;
-						}
-						$passageSection.append(div);
-					}
+						}}
+					})));
+					
 					
 					if($overviewSection.is('.collapse.show')) {
 						$overviewSection[0].scrollIntoView();
@@ -138,7 +131,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 						delete s.isLoading;
 						if(bookPage.last) s.isLast = true;
 					})
-					.fail( jqxhr => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+					.fail( () => alertModal('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 				}
 			}
 		}
@@ -201,15 +194,15 @@ function pageinit(recentOpenWorkBooks, memberId){
 		function subscribeCallback(msg) {
 			switch(msg){
 			case 'success':
-				$('#subscribeWorkbook').addClass('bg-secondary').prop('disabled', true).text('구독중');
+				$btn.addClass('bg-secondary').prop('disabled', true).text('구독중');
 				if(confirm('나의 서재에 "구독 워크북"이 추가되었습니다.\n'
 					+'나의 서재로 이동하시겠습니까?')) location.assign('/workbook/mylibrary');
 				break;
 			case 'duplicated':
-				alert('이미 구독한 워크북입니다.');
+				alertModal('이미 구독한 워크북입니다.');
 				break;
 			case 'insufficient':
-				alert('잔여 fico 코인이 부족합니다.');
+				alertModal('잔여 fico 코인이 부족합니다.');
 				break;
 			}		
 		}
