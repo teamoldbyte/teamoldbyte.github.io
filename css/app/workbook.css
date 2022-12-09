@@ -1297,6 +1297,9 @@
 	padding: 2px 5px;
 	margin-left: 3px;
 	display: inline-block;
+	position: absolute;
+	right: 10px;
+	bottom: 0.75rem;
 }
 .edit-workbook-section .add-btn-section{
 	margin: 2rem 0 1rem auto;
@@ -1934,7 +1937,7 @@
 }
 .view-passage-section .one-sentence-unit-section .semantic-menu button{
 	width: 50px;
-	color: #5c68b6;
+	color: #019c9e;
 }
 .view-passage-section .result-section{
 	margin: 1rem 0 2rem 0;
@@ -2027,7 +2030,8 @@
 .view-passage-section .svoc-mdf-btns button,
 .view-passage-section .translation-section .trans-mdf-btns button,
 .view-passage-section .translation-section .fold-icon,
-.translation-section .add-btn{
+.view-passage-section .translation-section .add-btn,
+.view-passage-section .note-section .note-mdf-btns button{
 	color: #019c9e;
 }
 
@@ -2065,11 +2069,6 @@
 	border-bottom-right-radius: .25rem;
 }
 
-.view-passage-section .note-section .note-mdf-btns button,
-.passage-sentence-nav .note-section .note-mdf-btns button{
-	text-align: center;
-	color: #5c68b6;
-}
 .view-passage-section .note-section .note-mdf-btns button span,
 .passage-sentence-nav .note-section .note-mdf-btns button span{
 	vertical-align: text-bottom;
