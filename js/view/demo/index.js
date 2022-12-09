@@ -1,20 +1,21 @@
 /** /demo/index.html
  * @author LGM
  */
-function pageinit(){
+function pageinit(fullUsed){
 	
-	$('#loadingModal').modal('hide');
+	$('#loadingModal').modal('hide').hide();
 	
 	// [분석 횟수를 확인 후 분석 실행 가능여부 판단]
-	const todayCharLength = parseInt(Cookies.get('BRLT') || 0);
 	const MAX_CHARS_TODAY = 300;
-	const availableCharLength = MAX_CHARS_TODAY - todayCharLength;
+	const MAX_REQ_TODAY = 5;
+	const todayCharLength = fullUsed ? MAX_CHARS_TODAY : parseInt(Cookies.get('BRLT') || 0);
+	const availableCharLength = Math.max(0, MAX_CHARS_TODAY - todayCharLength);
 
 	const todayReqCount = todayCharLength > 0 ? parseInt(Cookies.get('SRC') || 0) : 0;
-	const MAX_REQ_TODAY = 5;
-	const availableReqCount = MAX_REQ_TODAY - todayReqCount;
+	const availableReqCount = Math.max(0, MAX_REQ_TODAY - todayReqCount);
 	
 	if( availableCharLength <= 0 || availableReqCount <= 0) {
+		$('.demo-counter').css('color', '#9abeb2').text(availableCharLength <= 0 ? '300자 소진' : '5회 소진')
 		$('#text').prop('placeholder', '금일 사용량을 모두 소진했습니다. 내일 다시 찾아와 주세요.')
 				  .prop('disabled', true)
 				  .addClass('disabled-textarea');
