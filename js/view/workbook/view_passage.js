@@ -1003,7 +1003,7 @@
 			const sentenceId = $sentenceSection.data('sentenceId');
 			
 			
-			if($noteSection.is('.loading,.loaded')) return;
+			if($noteSection.is('.loading,.loaded') || !sentenceId) return;
 			$noteSection.addClass('loading')
 					.find('.empty-list').show();
 			// 문장의 노트 새로 가져오기(ajax)-------------------------------------
