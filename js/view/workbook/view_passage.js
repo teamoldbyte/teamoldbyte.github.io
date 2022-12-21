@@ -501,7 +501,7 @@
 		$noteSection.addClass('loading');
 		// 지문노트 새로 가져오기(ajax)---------------------------------------
 		$.getJSON(`/workbook/passage/note/list/${workbookId}/${passageId}/${memberId}`, notes => listNotes(notes))
-		.fail(jqxhr => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		.fail(() => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//---------------------------------------------------------------
 		
 		
@@ -557,7 +557,7 @@
 		
 		// 지문의 질문 가져오기(ajax)---------------------------------------------
 		$.getJSON(['/qnastack/question/workbook/passage', workbookId, passageId].join('/'),
-		listQuestions).fail(jqxhr => alertModal('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+		listQuestions).fail(() => alertModal('질문 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 		//------------------------------------------------------------------
 		
 		function listQuestions(questions){
@@ -627,11 +627,13 @@
 
 
 	const sentenceListLen = sentenceList.length;
+	if(sentenceListLen == 0) {
+		$('#loadingModal').modal('hide');
+	}
 	for(let i = 0; i < sentenceListLen; i++){
 		const sentence = sentenceList[i];
-		/*
-		$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
-		*/
+	//	$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
+		
 		
 		let $sectionClone;
 		if(i > 0) {
@@ -751,7 +753,6 @@
 				}
 				if(j > 0) $(div).closest('.svoc-section').addClass('collapse');
 				if(j + 1 == svocListLen && i + 1 == sentenceListLen) {
-					//if(isMobile) $results.flickity('select', 0);
 					$('#loadingModal').modal('hide')
 				}
 			});
@@ -824,7 +825,7 @@
 				});
 				const senseList = word.senseList;
 				if(senseList == null) continue;
-				var senseListLen = senseList.length;
+				let senseListLen = senseList.length;
 				
 				for(let k = 0; k < senseListLen; k++) {
 					const sense = senseList[k], $partBlock = $partCopySection.clone();
@@ -895,7 +896,7 @@
 			})
 		});
 		
-		var swiper = new Swiper('.swiper', {
+		let swiper = new Swiper('.swiper', {
 			autoHeight: true,
 			speed: 250,
 			navigation: {
@@ -909,7 +910,7 @@
 			spaceBetween: 30,
 			on : {
 				afterInit: function(s) {
-					const headerIntersectionObserber = new IntersectionObserver((entries,ob) => {
+					const headerIntersectionObserber = new IntersectionObserver((entries) => {
 						anime({targets: $topMenu.get(0), duration: 150, easing: 'linear', 
 							translateY: entries[0].intersectionRatio > 0 ? 0 : '-7rem'});
 					}, { rootMargin: `-${7*rem}px 0px ${0*rem}px 0px`});
@@ -1031,7 +1032,6 @@
 	}
 	// [모든 문장 렌더링 완료 - 로딩 이미지 제거]----------------------------------------
 	$('#loadingModal').on('hidden.bs.modal', function() {
-		//$('.result-section').animate({opacity: 1});
 		$('.full-text').show()
 	});
 //	setTimeout(() => $('#loadingModal').modal('hide'), 2000);
@@ -1145,8 +1145,8 @@
 							'F': {icon: '🤯', status: 'F', tooltip: '분석이 틀렸대요.'} };
 	
 	// 분석 평가 모달을 띄운 버튼에 따라 모달 속 내용 설정(문장정보, metaStatus)
-	$('#check-modal').on('show.bs.modal', function() {
-		const modalBtn = event.target.closest('button');
+	$('#check-modal').on('show.bs.modal', function(e) {
+		const modalBtn = e.target.closest('button');
 		const submitBtn = this.querySelector('.status-submit');
 		const metaStatus = modalBtn.dataset.metaStatus;
 		submitBtn.dataset.metaStatus = metaStatus;
@@ -1214,7 +1214,7 @@
 		let $semantics = null;
 		if(forNew) {
 			// 분석 추가일 경우 최상위 분석을 복사한 폼을 생성
-			var $newSection = $(createElement(svocSectionJson)).addClass('new-svoc-form');
+			let $newSection = $(createElement(svocSectionJson)).addClass('new-svoc-form');
 			
 			$newSection.find('.personacon-alias').text(memberAlias);
 			const $personacon = $('#hiddenDivs .member-personacon').clone(true);
@@ -1395,9 +1395,9 @@
 		}else $transEditor.closest('.translation-section').children('.add-btn').show(300);
 	})
 	// [나의 해석 삭제]------------------------------------------------------------
-	.on('click', '.js-del-trans', function(){
-		event.stopPropagation();
-		event.stopImmediatePropagation();
+	.on('click', '.js-del-trans', function(e){
+		e.stopPropagation();
+		e.stopImmediatePropagation();
 		const $transBlock = $(this).closest('.ai-translation-block');
 		if(confirm('삭제하겠습니까?')){
 			// 문장 해석 삭제(ajax)----------------------------------------------
@@ -2120,7 +2120,7 @@
 	})
 	*/
 	// 크래프트 출제 패널 동작
-	.on('show.bs.tab', '[role=tab][data-type=craft]', function(e) {
+	.on('show.bs.tab', '[role=tab][data-type=craft]', function() {
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		$sentenceSection.find('.dashboard-section').collapse('hide');
 		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
