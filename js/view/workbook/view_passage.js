@@ -1145,8 +1145,8 @@
 							'F': {icon: '🤯', status: 'F', tooltip: '분석이 틀렸대요.'} };
 	
 	// 분석 평가 모달을 띄운 버튼에 따라 모달 속 내용 설정(문장정보, metaStatus)
-	$('#check-modal').on('show.bs.modal', function() {
-		const modalBtn = event.target.closest('button');
+	$('#check-modal').on('show.bs.modal', function(e) {
+		const modalBtn = e.relatedTarget;
 		const submitBtn = this.querySelector('.status-submit');
 		const metaStatus = modalBtn.dataset.metaStatus;
 		submitBtn.dataset.metaStatus = metaStatus;
@@ -1395,9 +1395,9 @@
 		}else $transEditor.closest('.translation-section').children('.add-btn').show(300);
 	})
 	// [나의 해석 삭제]------------------------------------------------------------
-	.on('click', '.js-del-trans', function(){
-		event.stopPropagation();
-		event.stopImmediatePropagation();
+	.on('click', '.js-del-trans', function(e){
+		e.stopPropagation();
+		e.stopImmediatePropagation();
 		const $transBlock = $(this).closest('.ai-translation-block');
 		if(confirm('삭제하겠습니까?')){
 			// 문장 해석 삭제(ajax)----------------------------------------------
