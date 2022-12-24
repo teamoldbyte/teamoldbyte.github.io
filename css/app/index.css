@@ -41,8 +41,7 @@ body{
 .sentence-burger{
 	color: #DD191D;
 }
-.thanx-text, 
-.catchphrase{
+.thanx-text{
 	font-family: 'Corbel';
    /* font-weight: 600; */
    font-size: 1.5rem;
@@ -56,8 +55,9 @@ body{
 	margin: 25px 0;
 	word-spacing: 5px;
 }
+/* 
 .catchphrase{
-	/*height: 2.2rem;*/
+	height: 2.2rem;
 	height: 48px;
 	font-size: 1.125rem;
 	text-align: right;
@@ -65,7 +65,7 @@ body{
 	margin-bottom: 5px;
 }
 .catchphrase .eng{
-/*	height: 1.5rem;*/	
+	height: 1.5rem;
 	display: block;
 }
 .catchphrase .upper-text{
@@ -78,6 +78,28 @@ body{
 	padding: 0 3px;
     right: -7px;
     top: -2px;
+} 
+*/
+.catch-phrase-section{
+	/* margin-top: 20vh; */
+	/* margin-bottom: 3rem; */
+	padding: 5rem;
+	font-size: 1.75rem;
+	font-family: 'Dubai', sans-serif;
+}
+.catchphrase .upper-text{
+	font-size: 0.75rem;
+	display: inline-block;
+	line-height: 1rem;
+	border: 1px solid var(--fc-purple);
+	border-radius: 50%;
+	padding: 0 3px;
+	right: -1.5em;
+	top: 0.25em;
+}
+.catch-phrase-section .subtext{
+	font-size: 1.1rem; 
+	line-height: 50%;
 }
 .title-section .sub-title {
 	 font-family: 'Chosunilbo_myungjo';
@@ -105,24 +127,31 @@ body{
 	.sub-title .eng{
 		font-size: 1.35rem;
 	}
-	.thanx-text, 
-	.catchphrase{
+	.thanx-text{
 	   color: #0a214a;
 	}
 	.thanx-text{
 	   margin: 0 0 5px 0;
 	}
-	.catchphrase{
+	/* .catchphrase{
 	    margin: 1rem 0;
 		font-size: 0.75rem;
 	}
 	.catchphrase .upper-text{
 		border: 0.5px solid #0a214a;
+	} */
+	.catch-phrase-section{
+		padding-left: 0;
+		padding-right: 0;
+	}
+	.catch-phrase-section .subtext{
+		line-height: 100%;
 	}
 }
 .service-type-section{
-	/*margin-bottom: 9rem;*/
-	padding: 0 calc(50px + 1.5rem);
+	/* margin-bottom: 5rem; */
+	padding: calc(50px + 1.5rem);
+	padding-top: 0;
 	background-color: #262841;
 	border-radius: 5px;
 }
