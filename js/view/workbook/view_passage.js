@@ -1701,6 +1701,30 @@
 			}
 		});
 	})
+	// [피코쌤 노트 신청]-----------------------------------------------------------
+	.on('click', '.fa-lightbulb'/*테스트*/, function() {
+		const $unitSection = $(this).closest('.one-sentence-unit-section');
+		const eng = $unitSection.find('.origin-sentence .sentence-text').text().trim();
+		const sentenceId = $unitSection.data('sentenceId');
+		confirmModal('fico쌤 노트를 신청하시겠습니까?', function() {
+			$.ajax({
+				url: '/workbook/ssamnote/request',
+				type: 'POST',
+				data: {
+					workbookId, passageId, sentenceId, eng
+				},
+				success: function(msg) {
+					if(msg) {
+						alertModal(msg);
+					}else {
+						alertModal('정상적으로 신청 완료되었습니다.\n신청하신 노트는 09:00~18:00 사이 처리됩니다.\n(당일 처리되지 못 한 노트는 다음 영업일에 처리됩니다.)');
+					}
+				}, error: function() {
+					alertModal('신청이 정상적으로 처리되지 못 했습니다.')
+				}
+			})
+		})
+	})
 	/*
 	// [지문/문장 질문 추가 폼 열기]--------------------------------------------------
 	.on('click', '.qna-section .add-icon', async function() {
