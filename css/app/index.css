@@ -95,7 +95,7 @@ body{
 	border-radius: 50%;
 	padding: 0 3px;
 	right: -1.5em;
-	top: 0.25em;
+	bottom: 2.25em;
 }
 .catch-phrase-section .subtext{
 	font-size: 1.1rem; 
@@ -143,6 +143,9 @@ body{
 	.catch-phrase-section{
 		padding-left: 0;
 		padding-right: 0;
+	}
+	.catchphrase .upper-text{
+		bottom: 1.75em;
 	}
 	.catch-phrase-section .subtext{
 		line-height: 100%;
