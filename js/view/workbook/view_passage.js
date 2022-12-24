@@ -896,7 +896,7 @@
 			})
 		});
 		
-		let swiper = new Swiper('.swiper', {
+		var swiper = new Swiper('.swiper', {
 			autoHeight: true,
 			speed: 250,
 			navigation: {
@@ -1134,8 +1134,9 @@
 	
 	// [분석 결과 접기/펼치기]-------------------------------------------------------
 	$(document).on('click', isMobile?'div:not(.edit-svoc)>.semantics-result':'.js-collapse-svoc', function(){
-		$(this).closest('.one-sentence-unit-section')
-				.find('.result-semantic-section .collapse').collapse('toggle');
+		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
+		$sentenceSection.find('.result-semantic-section .collapse').collapse('toggle');
+		$sentenceSection.find('.js-collapse-svoc').toggleClass('expanded');
 	})
 	
 	// [분석 결과 평가]------------------------------------------------------------
