@@ -94,6 +94,14 @@
     font-style: normal;
 }
 
+/* 슬로건 영문 폰트 */
+@font-face {
+	font-family: 'Dubai';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Dubai'), url('https://cdn.jsdelivr.net/npm/@ahmedhamdan/dubai-font@1.0.0/fonts/DubaiW23-Medium.woff') format('woff');
+}
+
 .nanumbarungothic * {
  font-family: 'NanumBarunGothic', sans-serif;
 }
