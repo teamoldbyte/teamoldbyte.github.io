@@ -580,8 +580,10 @@
 		let panelInstance = staticCraftPanel.cloneNode(true);
 		
 		// 배틀북 선택 초기화
-		panelInstance.querySelector('.battle-book-section .select-book-type option').selected = true;
-		Array.from(panelInstance.querySelector('.battle-book-section .select-book').children).forEach(opt => opt.remove());		
+		$(panelInstance).find('.battle-book-section .select-book-type').val('step');
+		$(panelInstance).find('.battle-book-section .select-book').get(0).replaceChildren(createElement({
+			el: 'option', textContent: '단계별 배틀', value: 10000001
+		}))
 		
 		// 전달받은 인자값들을 패널 요소에 접근하여 얻을 수 있도록 설정
 		$(panelInstance).data('semantics', semanticsDiv)
