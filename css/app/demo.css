@@ -1840,6 +1840,7 @@
 	cursor: pointer;
 }
 .word-section .title:hover::after{
+	display: inline-block;
 	font-family: "Font Awesome 5 Free";
 	content: "\f028";
 	font-style: normal;
