@@ -705,7 +705,7 @@ function pageinit(memberId, memberAlias, memberImage){
 			const workbookId = parseInt($semantics.closest('.one-sentence-unit-section').data('workbookId'));
 			const passageId = parseInt($semantics.closest('.one-sentence-unit-section').find('.p-id').text())
 			const sentenceId = parseInt($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
-			const ownerId = parseInt($semantics.closest('.one-sentence-unit-section').find('.writer-section').data('memberId'));
+			const ownerId = parseInt($semantics.closest('.one-sentence-unit-section').find('.workbook-overview-section .writer-section').data('memberId'));
 			const svocId = parseInt($semantics.data('svocId') || 0);
 			const svocCommand = {workbookId, passageId, ownerId, sentenceId, memberId, encSvocText: svocText};
 			
