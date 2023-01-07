@@ -528,6 +528,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		$workbookSection.find('.description').text(workbookInfo.description);
 		$workbookSection.find('.text-section .p-title').text(workbookInfo.passageTitle);
 		$workbookSection.find('.text-section .p-id').text(workbookInfo.passageId);
+		$workbookSection.find('.writer-section').data('memberId', workbookInfo.memberId);
 		$workbookSection.find('.writer-section .personacon-alias').text(workbookInfo.alias);
 		$workbookSection.find('.age').text((new Date().getFullYear() + 1 - new Date(workbookInfo.birthYear).getFullYear()));
 		if(workbookInfo.aliasImage)
@@ -701,11 +702,14 @@ function pageinit(memberId, memberAlias, memberImage){
 		}, 500);
 		// 편집 저장 실행
 		function saveFunc(svocText) {
-			const sentenceId = Number($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
-			const svocId = Number($semantics.data('svocId') || 0);
-			const svocCommand = {sentenceId, memberId, encSvocText: svocText};
+			const workbookId = parseInt($semantics.closest('.one-sentence-unit-section').data('workbookId'));
+			const passageId = parseInt($semantics.closest('.one-sentence-unit-section').find('.p-id').text())
+			const sentenceId = parseInt($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
+			const ownerId = parseInt($semantics.closest('.one-sentence-unit-section').find('.writer-section').data('memberId'));
+			const svocId = parseInt($semantics.data('svocId') || 0);
+			const svocCommand = {workbookId, passageId, ownerId, sentenceId, memberId, encSvocText: svocText};
 			
-			if(memberId == Number($semantics.data('memberId')) && svocId > 0) {
+			if(memberId == parseInt($semantics.data('memberId')) && svocId > 0) {
 				svocCommand.svocId = svocId;
 			}
 			// 편집 저장(ajax)-------------------
