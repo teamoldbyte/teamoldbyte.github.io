@@ -950,7 +950,7 @@
 					if(!swipeHappened) localStorage.setItem('fico-swipe-happened', true);
 					
 					setTimeout(() => {
-						$(s).find('.semantics-result:visible').each(function() {
+						$(s.slides[s.activeIndex]).find('.semantics-result:visible').each(function() {
 							tandem.correctMarkLine(this);
 						})
 						if(tts.autoEnabled()) {
