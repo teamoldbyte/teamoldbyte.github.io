@@ -1108,7 +1108,7 @@
 				};
 			} else {
 				// 모바일일 경우 현재 슬라이드의 문장. 데스크탑일 경우 재생버튼이 속한 문장.
-				let textBlock = isMobile ? textBlock = swiper.slides[swiper.activeIndex].querySelector('.sentence-text')
+				let textBlock = isMobile ? swiper.slides[swiper.activeIndex].querySelector('.sentence-text')
 					: playBtn.closest('.origin-sentence').querySelector('.sentence-text');
 				textBlock.classList.add('tts-playing', 'blink-2');
 				tts.speakRepeat(textBlock.textContent, 2, 500, () => {
