@@ -33,7 +33,7 @@
 			e.preventDefault();
 			// Firefox fix
 			setTimeout(function() {
-				$input.summernote('pasteHTML', bufferText.replaceAll(/\n/g, '<br/>'));
+				$input.summernote('pasteHTML', bufferText.replaceAll(/\r?\n/g, '<br/>'));
 			}, 10);
 		}		
 	}
