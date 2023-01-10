@@ -18,10 +18,21 @@
 	$.extend($.summernote.plugins, {
         'brenter': function () {
             this.events = {
-                // Bind on ENTER
-                'summernote.enter': function (_we, e) {
-			      e.preventDefault();  
-			      $(this).summernote('pasteHTML', '<br>&#8203;');
+				// Bind on ENTER
+				'summernote.enter': function (_we, e) {
+					// default enter is <p></p>. so prevent it.
+					e.preventDefault();  
+					// First, insert <br>.
+					const br = document.createElement('BR')
+					$(this).summernote('insertNode', br);
+					// Second, remove all other ranges.
+					const sel = getSelection();
+					sel.removeAllRanges();
+					// Third, create a range of <br>, move cursor end of it.
+					const brRange = new Range();
+					brRange.setStartAfter(br);
+					sel.addRange(brRange);
+					sel.collapseToEnd();
                 }
             };
         }
