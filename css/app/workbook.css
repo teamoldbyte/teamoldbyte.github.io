@@ -13,6 +13,9 @@
 .workbook-type.type-R{
 	background-color: rgb(220, 53, 69);
 }
+.workbook-type.type-C{
+	background-color: #198754;
+}
 
 /* 디폴트 북커버의 배경색 */
 .bookcover-bg-0{
@@ -1297,9 +1300,6 @@
 	padding: 2px 5px;
 	margin-left: 3px;
 	display: inline-block;
-	position: absolute;
-	right: 10px;
-	bottom: 0.75rem;
 }
 .edit-workbook-section .add-btn-section{
 	margin: 2rem 0 1rem auto;
@@ -1667,8 +1667,10 @@
 	padding: 10px;
 	margin-bottom: 5px;
 	min-height: 80px;
-	box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 4px 0px inset;
-	
+	/* box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 4px 0px inset; */
+	/* box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 4px 0px inset, rgba(0, 0, 0, 0.06) -1px -1px 4px 0px inset; */
+	box-shadow: rgb(216 216 216 / 38%) 2px 2px 6px 0px inset, rgb(216 216 216 / 38%) 1px -2px 6px -1px inset;
+	background-color: #fff;
 }
 .view-passage-section .empty-list .one-block{
 	cursor: auto;
@@ -1946,9 +1948,10 @@
 	/*background-color: #f6f6f6;*/
     background-color: var(--white);
     box-shadow: none;
-    padding: 0 0.5rem;
+    padding: 0 0.5rem 0.5rem 0.5rem;
     position: relative;
-    border: solid 2px #5c68b645;
+    border: solid 2px #5c68b645; 
+	/* box-shadow: rgb(216 216 216 / 38%) 2px 2px 6px 0px inset, rgb(216 216 216 / 38%) 1px -2px 6px -1px inset; */
 	border-radius: 10px;
 }
 .view-passage-section .result-semantic-section.border-bottom-0{
@@ -2078,8 +2081,8 @@
 	.view-passage-section .svoc-menu-section button,
 	.view-passage-section .svoc-mdf-btns button,
 	.view-passage-section .translation-section .trans-mdf-btns button{
-		/* color: #019c9e; */
-		color: rgb(243, 195, 83);
+		color: #019c9e;
+		/* color: rgb(243, 195, 83); */
 	}
 
 	.view-passage-section .book-cover-section{
