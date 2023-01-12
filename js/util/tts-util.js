@@ -223,6 +223,7 @@
 		// Web SpeechSynthesis API 사용 가능한 브라우저일 경우 흐름
 		else if('speechSynthesis' in window) {
 			let loopNum = 1, loopInterval = 200, loopTimer, endCallback;
+			let seamlessInterval; // Chrome Destop 버전은 15초가 되면 강제로 재생을 멈춘다. 브라우저가 멈추기 전에 임의로 멈추고 곧바로 재생함으로써 끊임없게 들리게 한다.
 			this.init = () => {
 				appendModal();
 				utterance = new SpeechSynthesisUtterance();
@@ -233,6 +234,8 @@
 							speechSynthesis.speak(utterance)
 						,loopInterval);
 					}else {
+						clearInterval(seamlessInterval);
+						seamlessInterval = null;
 						clearTimeout(loopTimer);
 						if(endCallback != null) endCallback();
 						endCallback = null;
@@ -252,7 +255,12 @@
 				utterance.text = text;
 				endCallback = callback;
 				
+				clearInterval(seamlessInterval);
 				speechSynthesis.speak(utterance);
+				seamlessInterval = setInterval(() => {
+					speechSynthesis.pause();
+					speechSynthesis.resume();
+				}, 14000);
 			}
 			this.speakRepeat = (text, loop, interval, callback = () => {}) => {
 				clearTimeout(loopTimer);
@@ -262,19 +270,28 @@
 				loopInterval = interval;
 				endCallback = callback;
 				
+				clearInterval(seamlessInterval);
 				speechSynthesis.speak(utterance);
+				seamlessInterval = setInterval(() => {
+					speechSynthesis.pause();
+					speechSynthesis.resume()
+				}, 14000);				
 			}
 			this.speakSample = (idx, rate, pitch) => {
 				utterance.text = SAMPLE_TEXT;
 				utterance.voice = reOrderedVoices[idx];
 				utterance.rate = rate;
 				utterance.pitch = pitch;
+				clearInterval(seamlessInterval);
+				seamlessInterval = null;
 				if(speechSynthesis.speaking) speechSynthesis.cancel();
 				speechSynthesis.speak(utterance);
 			}
 			this.stop = (callback = (() => {})) => {
 				loopNum = 1;
 				clearTimeout(loopTimer);
+				clearInterval(seamlessInterval);
+				seamlessInterval = null;
 				speechSynthesis.cancel();
 				callback();
 			}
