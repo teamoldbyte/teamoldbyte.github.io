@@ -1,7 +1,7 @@
 /** /workbook/view_passage.html
  @author LGM
  */
- function pageinit(memberId, memberAlias, memberImage, workbookId, priorityId, passageId, sentenceList) {
+ function pageinit(memberId, memberAlias, memberImage, workbookId, ownerId, priorityId, passageId, sentenceList) {
 	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	const isMobile = window.visualViewport.width < 576;
 	const tts = new FicoTTS({initSuccessCallback: () => {
@@ -656,7 +656,7 @@
 		}
 		
 		// 탭 설정
-		$sectionClone.find('[role="tab"]').each(function() {
+		/*$sectionClone.find('.sentence-ext-section').each(function() {
 			const tabType = this.dataset.type;
 			this.dataset.bsTarget = '#sentence' + (i+1) + ' .' + tabType + '-section';
 			const tabTrigger = new bootstrap.Tab(this);
@@ -688,7 +688,12 @@
 				$target.removeClass('active');
 				$tabBtn.removeClass('active').attr('aria-selected', false).blur();
 			})
-		});
+		});*/
+		// 단어/노트/배틀 접고 펼치기
+		
+		$sectionClone.find('.collapse-btn').each(function() {
+			this.dataset.bsTarget = `#sentence${i+1} ${this.dataset.collapseSelector}`;
+		})
 		
 		// 1. 원문 표시--------------------------------------------------------
 		$sectionClone.find('.origin-sentence').append(createElement(
@@ -697,11 +702,9 @@
 				{ el: 'span', className: 'sentence-text', textContent: sentence.text },
 				isMobile ? '' :
 				{ el: 'div', className: 'd-inline-block', children: [
-					{ el: 'button', type: 'button', className: 'btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play', 
+					{ el: 'button', type: 'button', className: 'btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play-sentence', 
 						'data-bs-toggle': 'tooltip', title: '재생/중지', 'data-playing': 'off', textContent: 'play_circle'
-					},
-					{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-fc-purple m-0 p-0 ps-2 material-icons-outlined fs-3 border-0 shadow-none bg-transparent js-tts-setting',
-					'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune' }
+					}
 				]}
 			]
 		))
@@ -768,38 +771,41 @@
 		const korList = sentence.korList;
 		if(korList != null && korList.length > 0) {
 			const korListLen = korList.length,
+				// PC면 .sentence-ext-section 안의 블럭을, 모바일이면 그 밖의 블럭을 선택
 				$aiTransSection = $sectionClone.find('.ai-translation-section')
-											   .show().empty();
+					.filter((_i,s)=> isMobile ^ (s.closest('.sentence-ext-section') != null)).show().empty();
+			
+			// PC에서 해석 블럭은 접고 펼치기 기능 없음
+			if(!isMobile)
+				$transCopyBlock.removeClass('collapse');
+				
 			for(let j = 0; j < korListLen; j++) {
 				const $transBlock = $transCopyBlock.clone();
 				const korTrans = korList[j];
 				$aiTransSection.append($transBlock);
 				$transBlock.data('korTid', korTrans.korId);
+				
 				if(korTrans.alias != 'Translator') {
-					$transBlock.find('.translator').text(` ${korTrans.alias}`);
+					$transBlock.addClass('user-trans').find('.translator').text(` ${korTrans.alias}`);
+				}else {
+					$transBlock.addClass('ai-trans');
 				}
 				$transBlock.find('.translation-text').text(korTrans.kor);
 				if(memberId == korTrans.memberId) {
 					$transBlock.append(createElement(transModifyBtnsJson));
 				}
 			}
+			// 모바일에서 각각의 해석 블럭에 접고 펼치기가 적용돼있는데, 기본으로 펼쳐두고 접힐 때는 맨 위에 하나 남기도록
 			if(isMobile) {
 				$aiTransSection.closest('.translation-section').find('.open-kor-btn').addClass('active');
 				$aiTransSection.find('.ai-translation-block').collapse('show');
-			}else $aiTransSection.find('.ai-translation-block').first().collapse('show');
+			}
 		}
 		// 5. 단어 표시 
 		const wordList = sentence.wordList;
 		if(wordList != null && wordList.length > 0) {
 			const wordListLen = wordList.length,
-				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section':'.tab-section'} .word-section`).empty();
-			
-			$wordSection.parent().prepend(createElement(
-			isMobile ? { el: 'div', className: 'title-section position-relative mt-2 mb-1 d-none d-md-block', children: [
-				{ el: 'span', className: 'title-text', textContent: '단어 목록' } 
-			]} : { el: 'div', className: 'title-section position-relative', children: [
-				{ el: 'span', className: 'sub-title', textContent: '문장에서 등장하는 단어를 fico가 대신 검색하여 제공해 드립니다. 단어를 눌러서 발음을 들어보세요.'}
-			]}));
+				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section':'.sentence-ext-section'} .word-section .one-block`).empty();
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
@@ -815,10 +821,9 @@
 						}else {
 							stopAllTTS(this);
 							this.dataset.playing = 'on';
-							anime({ targets: this, opacity: [0,1,0,1], easing: 'linear', loop: true})
+							this.classList.add('tts-playing','blink-2');
 							tts.speakRepeat(word.title, 2, 500, () => {
-								anime.remove(this);
-								this.style.opacity = 1;
+								this.classList.remove('tts-playing', 'blink-2');
 								this.dataset.playing = 'off';
 							});
 						}
@@ -847,11 +852,11 @@
 				let $fingerSection = $sectionClone.find('.related-list').empty();
 				const fingerListLen = fingerList.length;
 				   
-				$fingerSection.append(createElement({
+				/*$fingerSection.append(createElement({
 					el: 'div', className: 'title-section position-relative', children: [
 						{ el: 'span', className: 'sub-title', textContent: '현재 문장과 유사한 구조를 가지거나 보충 학습할 수 있는 예문들을 추천합니다.' }
 					]
-				}));
+				}));*/
 				
 				for(let j = 0; j < fingerListLen; j++) {
 					const finger = fingerList[j], $fingerBlock = $(createElement(fingerSectionJson));
@@ -923,7 +928,9 @@
 					});
 					s.slides.forEach(slide => slideResizeObserver.observe(slide));
 					
-					const $firstNote = $(this.slides[0]).find('.collapse-section .note-section');
+					let initialSlide = s.slides[0];
+					
+					const $firstNote = $(initialSlide).find('.collapse-section .note-section');
 					$firstNote.collapse('show');
 					collapseNote($firstNote);
 					$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active');
@@ -951,7 +958,7 @@
 					if(!swipeHappened) localStorage.setItem('fico-swipe-happened', true);
 					
 					setTimeout(() => {
-						$(s).find('.semantics-result:visible').each(function() {
+						$(s.slides[s.activeIndex]).find('.semantics-result:visible').each(function() {
 							tandem.correctMarkLine(this);
 						})
 						if(tts.autoEnabled()) {
@@ -1032,42 +1039,92 @@
 	}
 	// [모든 문장 렌더링 완료 - 로딩 이미지 제거]----------------------------------------
 	$('#loadingModal').on('hidden.bs.modal', function() {
-		$('.full-text').show()
+		$('.full-text').show(() => {
+		
+			// 검색어(문장)이 있을 경우 해당 문장으로 이동
+			const querySen = new URLSearchParams(location.search).get('senQuery')
+			if(querySen) {
+				if(isMobile) {
+					const initialSlide = Array.from(swiper.slides).find(slide => {
+						return querySen == slide.querySelector('.sentence-text').textContent;
+					});
+					console.log('slide move')
+					swiper.slideTo(swiper.slides.indexOf(initialSlide));
+				}else {
+					$(Array.from(document.querySelectorAll('.origin-sentence-section')).find(s => {
+						return querySen == s.querySelector('.sentence-text').textContent;
+					})).trigger('click');
+				}
+			}
+		});
 	});
 //	setTimeout(() => $('#loadingModal').modal('hide'), 2000);
+	$(document)
+	// [전체 문장 접고 펼치기]-------------------------------------------------------
+	.on('click', '#toggle-all-btn', function(e) {
+		const showOrHide = $(this).find('.fold-icon').is('.expanded')?'hide':'show'
+		// 스크롤 방지해놓고 전체 문장 접고 펼치기
+		$('.one-sentence-unit-section>.collapse').trigger('prv.scroll').collapse(showOrHide);
+		$(this).find('.fold-icon').toggleClass('expanded');
+	})
+	// [각 문장들 스크롤 방지]
+	.on('prv.scroll', '.one-sentence-unit-section>.collapse', function() {
+		this.dataset.scroll = 'false';
+	})
 	// [한 문장단위 접고 펼치기]------------------------------------------------------
-	$(document).on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
+	.on('show.bs.collapse hide.bs.collapse','.one-sentence-unit-section>.collapse', function(e) {
 		if(e.target != e.currentTarget) return;
 		const $unitSection = $(this).closest('.one-sentence-unit-section');
 		$unitSection.toggleClass('active', e.type == 'show')
 		.find('.origin-sentence-section')
 		.attr('aria-expanded', e.type == 'show');
-		if(e.type == 'show') {
+		if(e.type == 'show' && e.target.dataset.scroll != 'false') {
 			$unitSection[0].scrollIntoView();
 		}
-		
+		e.target.dataset.scroll = 'true';
 	})
-	.on('click', '.js-tts-play, .js-tts-play-sentence', function(e) {
+	.on('click', '.js-tts-play-all, .js-tts-play-sentence', function(e) {
 		e.stopPropagation();
-		const on = this.dataset.playing == 'on';
+		const playBtn = this;
+		const on = playBtn.dataset.playing == 'on';
 		if(on) {
 			stopAllTTS();
 		}else {
-			stopAllTTS(this);
-			let text;
-			// 모바일일 경우 현재 슬라이드의 문장. 데스크탑일 경우 재생버튼이 속한 문장.
-			if(isMobile) {
-				text = swiper.slides[swiper.activeIndex].querySelector('.sentence-text').textContent;
-			}else {
-				text = this.closest('.origin-sentence').querySelector('.sentence-text').textContent;
-			}
-			this.dataset.playing = 'on';
-			this.textContent = 'stop_circle';
-			tts.speakRepeat(text, 2, 500, () => {
-				this.dataset.playing = 'off';
-				this.textContent = 'play_circle';
-			});
+			stopAllTTS(playBtn);
 			
+			playBtn.dataset.playing = 'on';
+			playBtn.textContent = 'stop_circle';
+			if(playBtn.matches('.js-tts-play-all')) {
+				const links = $('.full-text .sentence-link').get();
+				let currLink;
+				playAll();
+				function playAll() {
+					
+					if(currLink) currLink.classList.remove('tts-playing', 'blink-2');
+					if(playBtn.dataset.playing == 'off') return;
+					if(links.length > 0) {
+					// tts-util에서 한 번 플레이 후 callback을 null로 초기화 하기 때문에, 그 직후 다시 실행하기 위함. 
+						setTimeout(() => {
+							currLink = links.shift();
+							currLink.classList.add('tts-playing', 'blink-2');
+							tts.speak(currLink.textContent, playAll);
+						}, 0)
+					}else {
+						playBtn.dataset.playing = 'off';
+						playBtn.textContent = 'play_circle';					
+					}
+				};
+			} else {
+				// 모바일일 경우 현재 슬라이드의 문장. 데스크탑일 경우 재생버튼이 속한 문장.
+				let textBlock = isMobile ? swiper.slides[swiper.activeIndex].querySelector('.sentence-text')
+					: playBtn.closest('.origin-sentence').querySelector('.sentence-text');
+				textBlock.classList.add('tts-playing');
+				tts.speakRepeat(textBlock.textContent, 2, 500, () => {
+					textBlock.classList.remove('tts-playing');
+					playBtn.dataset.playing = 'off';
+					playBtn.textContent = 'play_circle';
+				});
+			}
 		}
 	})
 	.on('click', '.js-tts-setting', function(e) {
@@ -1078,13 +1135,13 @@
 	
 	function stopAllTTS(except) {
 		tts.stop();
-		document.querySelectorAll('[class*="js-tts-play"][data-playing="on"],.title[data-playing="on"]').forEach(playBtn => {
+		
+		document.querySelectorAll('[class*="js-tts-play"][data-playing="on"],.tts-playing').forEach(playBtn => {
 			if(except == playBtn) return;
-			if(playBtn.matches('.title')) {
-				anime.remove(playBtn);
-				playBtn.style.opacity = 1;
-			}else {
+			if(playBtn.matches('[class*="js-tts-play"]')) {
 				playBtn.textContent = 'play_circle';
+			}else if(playBtn.matches('.tts-playing')) {
+				playBtn.classList.remove('tts-playing', 'blink-2');
 			}
 			playBtn.dataset.playing = 'off';
 		})
@@ -1092,12 +1149,45 @@
 	$(document).on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
 		// 문장/구문분석이 펼쳐지면 구문분석 스타일 새로고침
 		if(e.target.matches('.removable-section') && e.target == e.currentTarget) {
+			const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
+			const sentenceId = $sentenceSection.data('sentenceId');
+
 			$(e.target).find('.semantics-result').filter(':visible').each(function() {
 				tandem.correctMarkLine(this);
 			});
-			if(!$(this).closest('.one-sentence-unit-section').data('metaEvaluated')) {
+			if(!$sentenceSection.data('metaEvaluated')) {
 				$(e.target).find('.dashboard-section').collapse('show');
 			}
+			
+			// 노트 최초 1회 조회
+			const $noteSection = $sentenceSection.find('.sentence-ext-section .note-section')
+			if(!$noteSection.is('.loading,.loaded')) {
+				$noteSection.addClass('loading');
+				$noteSection.find('.empty-list').show();
+				// 문장의 노트 새로 가져오기(ajax)-------------------------------------
+				$.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentenceId}/${memberId}`, 
+					notes => listNotes(notes)
+				)
+				.fail( () => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+				//---------------------------------------------------------------
+				
+			}
+			
+			function listNotes(notes){
+				// 노트가 있으면 목록 표시
+				if(notes.length > 0 ) {
+					$noteSection.find('.empty-list').hide();
+				}
+				const $noteList = $noteSection.find('.note-list').empty();
+				for(let i = 0, notesLen = notes.length; i < notesLen; i++) {
+					const note = notes[i];
+								   //------------------
+					const $block = createNoteDOM(note);
+								   //------------------
+					$block.appendTo($noteList);
+				}
+				$noteSection.toggleClass('loading loaded');
+			}			
 		}
 	})
 	.on('shown.bs.collapse', '.svoc-section', function() {
@@ -1123,14 +1213,14 @@
 	})
 	
 	// [문장의 번역 영역 펼치고 접기]------------------------------------------------------- 
-	$(document).on('click', isMobile?'.ai-translation-block':'.open-kor-btn,.ai-translation-block .translation-text', function() {
+	/*$(document).on('click', isMobile?'.ai-translation-block':'.open-kor-btn,.ai-translation-block .translation-text', function() {
 		const $transSection = $(this).closest(".translation-section");
 		const $elements = $transSection.find(".ai-translation-block:not(:first)");
 		const $foldBtn = $transSection.find('.open-kor-btn');
 		$elements.collapse($foldBtn.is('.active') ? 'hide' : 'show');
 		$foldBtn.find('.fold-icon').toggleClass('expanded',!$foldBtn.is('.active')); 
 		$foldBtn.toggleClass('active');
-	})
+	})*/
 	
 	// [분석 결과 접기/펼치기]-------------------------------------------------------
 	$(document).on('click', isMobile?'div:not(.edit-svoc)>.semantics-result':'.js-collapse-svoc', function(){
@@ -1256,7 +1346,7 @@
 		function saveFunc(svocText) {
 			const sentenceId = Number($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
 			const svocId = Number($semantics.data('svocId') || 0);
-			const svocCommand = {sentenceId, memberId, encSvocText: svocText};
+			const svocCommand = {sentenceId, workbookId, passageId, ownerId, memberId, encSvocText: svocText};
 			
 			if(memberId == Number($semantics.data('memberId')) && svocId > 0) {
 				svocCommand.svocId = svocId;
@@ -1341,7 +1431,7 @@
 		if(this.matches('.add-btn')){
 			$(this).hide();
 			$transEditor.data('mode','add').find('.text-input').val(null);
-			$(this).closest('.translation-section').find('.ai-translation-section').prepend($transEditor);
+			$(this).closest(isMobile ? '.translation-section' : '.kor-list-section').find('.ai-translation-section').prepend($transEditor);
 		}
 		// 수정일 경우
 		else {
@@ -1356,8 +1446,9 @@
 		const _this = this, $transBlock = $transEditor.next('.ai-translation-block');
 		const sentenceId = Number($(this).closest('.one-sentence-unit-section').data('sentenceId')), 
 			kor = $transEditor.find('.text-input').val().trim();
-		const $transSection = $(_this).closest('.translation-section');
+		const $transSection = $(_this).closest(isMobile ? '.translation-section' : '.kor-list-section');
 		let jsonCommand = {sentenceId, memberId, kor};
+		// 해석 수정이면 korTid 필요
 		if($transEditor.data('mode') == 'edit'
 		&& $transBlock.data('korTid') != null) {
 			jsonCommand.korTid = Number($transBlock.data('korTid'));
@@ -1369,19 +1460,23 @@
 
 		function successEditTrans(tid){
 			$transEditor.hide(300, () => $transEditor.appendTo('#hiddenDivs'));
+			// 해석 수정이면 해석 내용만 수정해서 표시
 			if($transEditor.data('mode') == 'edit'){
 				$transBlock.find('.translation-text').text(kor).show(300);
 				$transBlock.find('.trans-mdf-btns').show(300);
-			}else{
+			}
+			// 해석 추가면 새로운 해석 블럭을 생성하여 추가 표시
+			else{
 				const $newTrans = $transCopyBlock.clone();
 				$newTrans.data('korTid', tid).find('.translation-text').text(kor);
+				$newTrans.addClass('user-trans');
 				$newTrans.find('.translator').text(' ' + memberAlias);
 				$newTrans.append(createElement(transModifyBtnsJson));
 				
 				$transSection.find('.ai-translation-section').prepend($newTrans);
-				$transSection.children('.add-btn').show(300);
+				$transSection.find('.add-btn').show(300);
 				$newTrans.addClass('show');
-				if(!$transSection.find('.open-kor-btn').is('.active')) {
+				if(isMobile && !$transSection.find('.open-kor-btn').is('.active')) {
 					$newTrans.siblings('.ai-translation-block').removeClass('show');
 				}
 			}
@@ -1393,7 +1488,7 @@
 			// 수정 대상 해석 텍스트 복구
 			const $transBlock = $transEditor.next('.ai-translation-block');
 			$transBlock.find('.trans-mdf-btns, .translation-text').show(300);
-		}else $transEditor.closest('.translation-section').children('.add-btn').show(300);
+		}else $transEditor.closest(isMobile ? '.translation-section' : '.kor-list-section').find('.add-btn').show(300);
 	})
 	// [나의 해석 삭제]------------------------------------------------------------
 	.on('click', '.js-del-trans', function(e){
@@ -1448,38 +1543,9 @@
 		}
 	})
 	// [문장의 노트 목록 가져오기(1회)]------------------------------------------------
-	.on('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=note]', async function(){
-		const $nav = $(this);
-		const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
-		const sentenceId = $sentenceSection.data('sentenceId');
-		const $noteSection = $(this.dataset.bsTarget);
-		
-		
-		if($(this).is('.loading,.loaded')) return;
-		$(this).addClass('loading');
-		$noteSection.find('.empty-list').show();
-		// 문장의 노트 새로 가져오기(ajax)-------------------------------------
-		await $.getJSON('/workbook/sentence/note/list/'+ workbookId 
-				+ '/' + sentenceId + '/' + memberId, notes => listNotes(notes))
-		.fail( () => alertModal('노트 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
-		//---------------------------------------------------------------
-		
-		function listNotes(notes){
-			// 노트가 있으면 목록 표시
-			if(notes.length > 0 ) {
-				$noteSection.find('.empty-list').hide();
-			}
-			const $noteList = $noteSection.find('.note-list').empty();
-			for(let i = 0, notesLen = notes.length; i < notesLen; i++) {
-				const note = notes[i];
-							   //------------------
-				const $block = createNoteDOM(note);
-							   //------------------
-				$block.appendTo($noteList);
-			}
-			$nav.toggleClass('loading loaded');
-		}
-	})
+	/*.on('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=note]', async function(){
+
+	})*/
 	// [문장의 노트 추가]-----------------------------------------------------------
 	.on('click', '.js-add-sentence-note-btn', function() {
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
@@ -1702,7 +1768,7 @@
 		});
 	})
 	// [피코쌤 노트 신청]-----------------------------------------------------------
-	.on('click', '.fa-lightbulb'/*테스트*/, function() {
+	.on('click', '.js-request-note', function() {
 		const $unitSection = $(this).closest('.one-sentence-unit-section');
 		const eng = $unitSection.find('.origin-sentence .sentence-text').text().trim();
 		const sentenceId = $unitSection.data('sentenceId');
@@ -2145,14 +2211,14 @@
 	})
 	*/
 	// 크래프트 출제 패널 동작
-	.on('show.bs.tab', '[role=tab][data-type=craft]', function() {
+	.on('show.bs.collapse', '.craft-section', function() {
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		$sentenceSection.find('.dashboard-section').collapse('hide');
 		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
 			return {id: $(transBlock).data('korTid'), text: transBlock.querySelector('.translation-text').textContent}
 		})
-		if(document.querySelector(this.dataset.bsTarget).querySelector('.battle-section-panel') == null) {
-			craft.openBattleMakerPanel(document.querySelector(this.dataset.bsTarget),
+		if(this.querySelector('.battle-section-panel') == null) {
+			craft.openBattleMakerPanel(this,
 				memberId,
 				$sentenceSection.data('sentenceId'), 
 				$sentenceSection.find('.semantics-result')[0],
