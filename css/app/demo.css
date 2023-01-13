@@ -418,30 +418,48 @@
 	position:relative;
 	padding: 1rem 0 1rem 5rem;
 	margin-top: auto;
+	/* height: 320px; */
+	height: auto;
+}
+.index-section .membership-image-section{
+	height: 320px;
+	position:relative;
 }
 .index-section .membership-info-section .app-name-text{
 	display: block;
 	position: absolute;
 	opacity: 0.25;
 	font-size: 7rem;
-	top: -120px;
+	/* top: -120px; */
+	bottom: 6rem;
 	left: 5rem;
 }
 .index-section .membership-info-section .membership-title-text{
-	position: absolute;
+	/* position: absolute; */
 	font-size: 1.25rem;
 	color: #a91461;
 	font-weight: bold;
 	z-index: 100;
 	min-width: 200px;
-	top: -20px;
+	/* top: -20px; */
 }
 .index-section .membership-info-section lottie-player{
-	margin:auto; 
-	width: 40%; 
+	margin: auto;
+	width: 15vw;
 	height: auto;
+	max-height: 30vh;
+	bottom: 1.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	position: absolute;
 }
-
+@media (min-width: 1940px) {
+	.index-section .membership-info-section lottie-player{
+		width: 10vw;
+		height: auto;
+		max-height: 30vh;
+	}
+}
 .index-section .shape-section .shape-1-position{
 	transform: translate(-90%, 10%);
 }
@@ -464,13 +482,18 @@
 		margin-bottom: 1rem;
 		height: auto;
 	}
+	.index-section .membership-info-section lottie-player{
+		width: 30vw;
+		max-height: 320px;
+	}
 	.index-section .membership-text-section{
 		position:relative;
 		padding: calc(180px + 5rem) 1rem 0 1rem;
 		margin-top: auto;
 	}
 	.index-section .membership-info-section .app-name-text{
-		top: 6rem;
+		/* top: 6rem; */
+		bottom: 5rem;
 		left: 1rem;
 	}
 	.index-section .membership-info-section .membership-title-text{
@@ -492,11 +515,16 @@
 }
 @media (max-width: 576px) {
 	.index-section .membership-info-section lottie-player{
-		width: 75%; 
+		width: 50%; 
+	}
+	.index-section .membership-image-section{
+		max-height: 320px;
+		position: relative;
+		height: 40vh;
 	}
 }
 @media (max-width: 767px) {
-	/* 로고와 문장 입력칸이 있는 영역 */
+	/* 로고와 문장 입력칸이 있는 영역 */ 
 	.logo-input-section{	
 		height: 100%;
 	}
