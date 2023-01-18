@@ -313,18 +313,32 @@
 	 */
 	function createBasicDOMs(text, svocList, div) {
 		// [태그 정렬]---------------------------------------------------------
-		// 1차:시작 offset이 빠른 순. 2차:끝 offset이 느린 순으로 정렬
+		// 1차: 시작 offset이 빠른 순. 2차: 끝 offset이 느린 순으로 정렬
 		//(동일한 위치에 마킹이 있을 경우 길이가 긴 것이 바깥쪽, 즉 먼저 나와야 한다.)
 		svocList = svocList || [];
-		svocList.sort(function(a, b) {
-			return a.start - b.start || b.end - a.end;
-		});
-		svocList = svocList.filter(function(tag) {
-			return !!(tag.markType) && tag.markType.length > 0;
-		})
+		svocList.sort((a, b) => a.start - b.start || b.end - a.end);
+		// 마크타입이 없는 태그들은 걸러낸다
+		svocList = svocList.filter((tag) => !!(tag.markType));
+		
 		let i = 0;
 		while (svocList[i + 1] != null) {
 			let tag = svocList[i], second = svocList[i + 1], third = svocList[i + 2];
+			// 이전 태그들 중에 범위가 일부 겹치는 태그가 있으면
+			const unclosedTag = svocList.find((priorTag,j) => j < i && priorTag.end > tag.start && priorTag.end < tag.end);
+			if(unclosedTag) {
+				// 1. unclosedTag 안에 아무 성분이 없고 tag에 의해 수식받는 요소뿐이면, unclosedTag를 tag 바로 앞에서 잘라냄.
+				if(!svocList.find((priorTag,j) => j < i 
+					&& (unclosedTag.start < priorTag.start && priorTag.end <= unclosedTag.end 
+						|| unclosedTag.start == priorTag.start && priorTag.end < unclosedTag.end) 
+					&& roleTypes.includes(priorTag.markType)) 
+				&& ['ADJPHR','ACLS'].includes(tag.markType)) {
+					unclosedTag.end = tag.start - 1;
+				}
+				// 2. 그 외엔 unclosedTag 범위를 확장시켜 tag를 포함하도록 함.
+				else {
+					unclosedTag.end = tag.end;
+				}
+			}
 			// 시작과 끝이 겹치는 태그가 3개일 경우 3번째는 일단 삭제.
 			if (third != null && tag.start == third.start && tag.end == third.end) {
 				svocList.splice(i + 2, 1);
@@ -525,7 +539,7 @@
 	}
 
 	/**
-	 * 성분 태그(동사 제외)가 자식으로 성분 태그(동사 포함)를 지니면 .outer, 지니지 앖으면 .inner 지정.
+	 * 성분 태그(동사 제외)가 자식으로 성분 태그(동사 포함)를 지니면 .outer, 지니지 않으면 .inner 지정.
 	 * 성분 태그의 rcomment를 depth에 따라 더 밑으로 위치시키기 위함.
 	 * 
 	 * 성분: s v o c oc m
