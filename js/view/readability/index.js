@@ -46,13 +46,13 @@
 		for(let i = 0, len = sentences.length; i < len; i++) {
 			const tempSentence = sentences[i];
 			if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
-				alertModal((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence, 
+				alertModal(`${i + 1}번째 문장을 다시 확인해 주세요.\n문장의 시작은 영문대문자나 숫자 혹은 따옴표(" ')여야 합니다.\n문장 내용은 아래와 같습니다.\n\n${tempSentence}`, 
 					() => textarea.focus());
 				textarea.focus();
 				textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 				return;					
 			}else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
-				alertModal((i + 1) + '번째 문장의 끝이 구두점(. ? !)이나 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence,
+				alertModal(`${i + 1}번째 문장을 다시 확인해 주세요.\n문장의 끝은 구두점(. ? !)이나 따옴표(" ')여야 합니다.\n문장 내용은 아래와 같습니다.\n\n${tempSentence}`,
 					() => textarea.focus());
 				textarea.focus();
 				textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
@@ -60,7 +60,8 @@
 			}
 			checkingPos += tempSentence.length + (i<len-1?1:0);
 		}
-		confirmModal('입력하신 문장이 다음과 같습니다.\n문장 수가 맞지 않다면 \'취소\'를 누르고 구두점을 추가해 주세요.\n\n'.concat(Array.from(sentences, (sentence, i) => `[${i+1}] ${sentence}`).join('\n')),
+		confirmModal('입력하신 문장이 다음과 같습니다.\n문장 수가 맞지 않다면 \'취소\'를 누르고 구두점을 추가해 주세요.\n\n'
+			.concat(Array.from(sentences, (sentence, i) => `[${i+1}] ${sentence}`).join('\n')),
 			() => $('#textForm').submit());
 		
 	})
