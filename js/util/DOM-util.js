@@ -94,7 +94,7 @@ function parseHTML(html) {
 }
 
 // alert를 대신하여 BootStrap Modal을 생성해서 표시
-function alertModal(msg) {
+function alertModal(msg, callback) {
 	let modal = document.getElementById('alertModal');
 	if(!modal) {
 		modal = createElement({
@@ -108,11 +108,16 @@ function alertModal(msg) {
 		]}]}]}]}]});
 		document.body.appendChild(modal);
 		modal.addEventListener('keypress', function(event) {
-			if((event.keyCode ? event.keyCode : event.which) == '13') {
+			if(event.code == 'Enter') {
 				bootstrap?.Modal?.getInstance(modal).hide();
 			}
-		})		
+		});		
 	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
+	modal.removeEventListener('hidden.bs.modal', onHidden);
+	modal.addEventListener('hidden.bs.modal', onHidden);
+	function onHidden() {
+		if(callback) callback();
+	}
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
 // window.confirm을 대신하여 Bootstrap Modal을 생성해서 표시. '확인'을 누르면 callback 실행
@@ -139,7 +144,7 @@ function confirmModal(msg, callback) {
 		]}]}]}]}]});
 		document.body.appendChild(modal);
 		modal.addEventListener('keypress', function(event) {
-			if((event.keyCode ? event.keyCode : event.which) == '13') {
+			if(event.code == 'Enter') {
 				modal.dataset.bsReturn = 1;
 				bootstrap?.Modal?.getInstance(modal).hide();
 			}
