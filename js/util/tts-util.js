@@ -371,7 +371,7 @@
 				}
 			}
 			const initVoices = () => {
-				voices = speechSynthesis.getVoices().filter(v => /^en[-_]/.test(v.lang) && v.name != 'Google UK English Female');
+				voices = speechSynthesis.getVoices().filter(v => /^en-/.test(v.lang) && v.name != 'Google UK English Female');
 				reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 				utterance.voice = reOrderedVoices[_options.voiceIndex];
 				this.initialized = true;
