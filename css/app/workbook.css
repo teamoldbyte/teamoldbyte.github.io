@@ -443,6 +443,11 @@
 		transition: 0.5s;
 		transform: translateX(calc(50px * 8 + 9px));
 	}
+	.workbook-menu-section .menu-icon-section ul li:nth-child(10):hover ~ .indicator{
+		display: block;
+		transition: 0.5s;
+		transform: translateX(calc(50px * 9 + 9px));
+	}
 }
 @media (max-width: 992px) {
 	.workbook-menu-section .menu-icon-section ul li:hover a .icon,
