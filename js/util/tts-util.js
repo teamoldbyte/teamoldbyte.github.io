@@ -307,7 +307,7 @@
 				if(voices == null || voices.length == 0) {
 					if(waitVoices == null) {
 						voiceTryCount = 0; 
-						voices = speechSynthesis.getVoices().filter(v => /^en-/.test(v.lang) && v.name != 'Google UK English Female');
+						voices = speechSynthesis.getVoices().filter(v => /^en[-_]/.test(v.lang) && v.name != 'Google UK English Female');
 						reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 						waitVoices = setInterval(this.openSettings, 250);
 					}else if(voiceTryCount < 20) {
