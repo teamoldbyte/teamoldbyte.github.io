@@ -420,7 +420,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 							"1. 나의 워크북 공개하기",{ "el": "br" },
 							"2. 잘못된 구문 분석 수정하기",{ "el": "br" },
 							"3. 배틀 북에서 정답 맞히기",{ "el": "br" },
-							"다양한 콘텐츠에서 에그를 수집할 수 있도록 지속적으로 제공하겠습니다.",{ "el": "br" },
+							{ "el": "span", "class": "text-smd", "textContent": "다양한 콘텐츠에서 에그를 수집할 수 있도록 지속적으로 제공하겠습니다." },{ "el": "br" },
 							{ "el": "br" },
 
 							{ "el": "h5", "textContent": "에그를 모아서 무엇을 할 수 있나요?" },
