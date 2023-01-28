@@ -393,7 +393,6 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			{ "el": "div", "class": "modal-dialog modal-dialog-centered", "children": [
 				{ "el": "div", "class": "modal-content", "children": [
 					{ "el": "div", "class": "modal-header", "children": [
-						{ "el": "h5", "textContent": "에그는 무엇인가요?" },
 						{ "el": "button",
 							"type": "button",
 							"class": "btn-close",
@@ -403,29 +402,34 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					]},
 					{ "el": "div", "class": "modal-body", "children": [
 						{ "el": "p", "children": [
+							{ "el": "h5", "textContent": "에그는 무엇인가요?" },
+
 							"에그는 ",
+							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
+							"에서 사용되는 포인트입니다.",{ "el": "br" },
 							{ "el": "b", "textContent": "총 9개" },
-							"로 구성되며 에그마다 다른 확률로 무작위로 배포됩니다.",
-							{ "el": "br" },
-							"각 에그 부화에 필요한 숫자를 모두 채우면 조그만 ",
-							{ "el": "b", "textContent": "학습 보상" },
-							"을 드립니다.",
-							{ "el": "br" },
-							{ "el": "span", "class": "text-warning fw-bold", "textContent": "골드 에그"
-							},
-							"는 ",
+							"로 구성되며 에그마다 다른 확률로 무작위로 배포됩니다.",{ "el": "br" },
+							"골드 에그는 ",
 							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
-							" 머니로 사용되며 ",
-							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
-							" 쌤에게만 지급됩니다.",
+							" 코인으로서 ",
+							{ "el": "b", "textContent": "골드 콘텐츠 결제" },
+							"에 사용할 수 있습니다.",{ "el": "br" },
 							{ "el": "br" },
+
+							{ "el": "h5", "textContent": "에그를 모을 수 있는 방법?" },
+							"1. 나의 워크북 공개하기",{ "el": "br" },
+							"2. 잘못된 구문 분석 수정하기",{ "el": "br" },
+							"3. 배틀 북에서 정답 맞히기",{ "el": "br" },
+							"다양한 콘텐츠에서 에그를 수집할 수 있도록 지속적으로 제공하겠습니다.",{ "el": "br" },
 							{ "el": "br" },
-							{ "el": "span", "class": "text-lmd fw-bold", "textContent": "에그를 모을 수 있는 방법" },
-							{ "el": "br" },
-							"1. 구문 분석된 문장을 평가하기",
-							{ "el": "br" },
-							"2. 틀린 구문 분석을 수정하기",
-							{ "el": "br" }
+
+							{ "el": "h5", "textContent": "에그를 모아서 무엇을 할 수 있나요?" },
+							"무작위로 수집한 플레인 에그를 ",
+							{ "el": "b", "textContent": "골드 에그로 변경" },
+							"할 수 있습니다.",{ "el": "br" },
+							"골드 에그를 모아 ",
+							{ "el": "b", "textContent": "골드 콘텐츠 결제" },
+							"에 사용하세요.",{ "el": "br" },
 						]}
 					]}
 				]}
