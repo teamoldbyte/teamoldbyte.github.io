@@ -805,7 +805,7 @@
 		const wordList = sentence.wordList;
 		if(wordList != null && wordList.length > 0) {
 			const wordListLen = wordList.length,
-				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section':'.sentence-ext-section'} .word-section .one-block`).empty();
+				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
