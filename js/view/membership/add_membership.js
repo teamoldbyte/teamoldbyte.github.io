@@ -306,9 +306,9 @@ function pageinit(membershipCommand, membershipItemList) {
 		const memberShipGallery = $('.gallery').get(0),
 			slideWidth = memberShipGallery.offsetWidth * 0.85,
 			slidesOffset = memberShipGallery.offsetWidth * 0.075;
-		// itemType이 'D'로 시작하는 것만 당분간 표시
-		memberShipGallery.appendChild(createElement(Array.from(membershipItemList.filter(item => item.itemType.startsWith('D')), item => {
-			const forDesktop = item.itemType.includes('DDM');
+		// alias이 'D'로 시작하는 것만 당분간 표시
+		memberShipGallery.appendChild(createElement(Array.from(membershipItemList.filter(item => item.alias.startsWith('D')), item => {
+			const forDesktop = item.alias.includes('DDM');
 			return { el: 'div', className: 'membership-info-parent gallery-cell swiper-slide', children: [
 				{ el: 'input', type: 'hidden', className: 'iid', value: item.iid },
 				// 뱃지 영역
@@ -317,7 +317,7 @@ function pageinit(membershipCommand, membershipItemList) {
 				]} : '',
 				// 멤버십 이미지
 				{ el: 'div', className: 'membership-image position-relative mx-auto my-3 text-center', children: [
-					{ el: 'img', alt: 'membership', src: `https://static.findsvoc.com/images/app/membership/mobile/${item.itemType}.png` }
+					{ el: 'img', alt: 'membership', src: `https://static.findsvoc.com/images/app/membership/mobile/${item.alias}.png` }
 				]},
 				// 멤버십 정보 블럭
 				{ el: 'div', className: 'membership-info', role: 'button', 'data-bs-toggle': 'modal', 'data-bs-target': '#done-info-modal', children: [
@@ -330,7 +330,7 @@ function pageinit(membershipCommand, membershipItemList) {
 					]},
 					{ el: 'div', className: 'membership-price-text', children: [
 						{ el: 'span', className: 'price', textContent: parseInt(item.price).toLocaleString() }, '원',
-						{ el: 'span', textContent: `/${item.itemType.endsWith('M-12')?'년':'월'}` }
+						{ el: 'span', textContent: `/${item.alias.endsWith('M-12')?'년':'월'}` }
 					]},
 					{ el: 'div', className: 'buy-icon-section', children: [
 						{ el: 'i', className: 'icon fas fa-arrow-right'}
@@ -353,9 +353,9 @@ function pageinit(membershipCommand, membershipItemList) {
  			},
 		});
 	}else {
-		// itemType이 D로 시작하는 것만 당분간 표시
-		$('.membership-list').get(0).appendChild(createElement(Array.from(membershipItemList.filter(item => item.itemType.startsWith('D')), item => {
-			const forDesktop = item.itemType.includes('DDM');
+		// alias이 D로 시작하는 것만 당분간 표시
+		$('.membership-list').get(0).appendChild(createElement(Array.from(membershipItemList.filter(item => item.alias.startsWith('D')), item => {
+			const forDesktop = item.alias.includes('DDM');
 			return {
 				el: 'div', className: 'membership-info-parent col-6', 'data-bs-toggle': !forDesktop ? 'tooltip' : '',
 				title: !forDesktop ? '모바일 기기에서 구매할 수 있습니다.' : '', 'data-bs-trigger': 'hover focus click', children: [
@@ -364,7 +364,7 @@ function pageinit(membershipCommand, membershipItemList) {
 						// 멤버십 정보(이름, 가격)
 						{ el: 'div', className: 'row g-0 membership-info h-100 text-center', children: [
 							{ el: 'div', className: 'col-lg-6 membership-image position-relative my-auto', children: [
-								{ el: 'img', alt: 'membership', src: `https://static.findsvoc.com/images/app/membership/${item.itemType}.png`}
+								{ el: 'img', alt: 'membership', src: `https://static.findsvoc.com/images/app/membership/${item.alias}.png`}
 							]},
 							{ el: 'input', type: 'hidden', className: 'name', value: item.name },
 							{ el: 'div', className: `col-lg-6 my-auto${!forDesktop?' opacity-50 pe-none':''}`, children: [
@@ -375,7 +375,7 @@ function pageinit(membershipCommand, membershipItemList) {
 									{ el: 'span', className: 'text-fc-red fw-bold', textContent: '모바일 지원'}
 								]},
 								{ el: 'span', className: 'price', textContent: parseInt(item.price).toLocaleString()}, '원',
-								{ el: 'span', textContent: `/${item.itemType.endsWith('M-12')?'년':'월'}` },
+								{ el: 'span', textContent: `/${item.alias.endsWith('M-12')?'년':'월'}` },
 								// 가입 버튼
 								{ el: 'div', className: 'sr-showup text-center d-block mt-1', children: [
 									{ el: 'button', type: 'button', className: 'btn btn-fico', 'data-bs-toggle': 'modal', 'data-bs-target': '#done-info-modal', textContent: '후원하기' }
