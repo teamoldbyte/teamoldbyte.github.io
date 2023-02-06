@@ -398,6 +398,9 @@ a:hover {
 .text-blue-700{
 	color: #30386e !important;
 }
+.text-blue-800{
+	color: #302b63 !important;
+}
 
 .text-bluegray-300{
 	color: #5d6a85 !important;
@@ -405,6 +408,7 @@ a:hover {
 .text-bluegray-400{
 	color: #5c68b6 !important;
 }
+
 
 .text-fico{
 	color: #585174!important;
