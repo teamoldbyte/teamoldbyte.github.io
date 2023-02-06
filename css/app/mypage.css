@@ -29,12 +29,19 @@
 }
 .mypage-section .sub-menu a{
 	/*color: rgb(153, 153, 153);*/
-	color: #5c5c5c;
+	/* color: #5c5c5c; */
+	/* color: #302b63; */
+	color: var(--fc-purple);
 }
+.mypage-section .sub-menu a .fas{
+	display: inline-block;
+	width: 18px;
+}
+
 .mypage-section .sub-menu p.active{
 	color: #000;
 }
-@media (max-width: 992px) {
+@media (max-width: 991.99px) {
 	/* 서브 메뉴 영역 */
 	.sub-menu-section{
 		border-right: none;
@@ -56,7 +63,7 @@
 		margin: 0.75rem 0.25rem;
 		padding: 0.5rem 0;
 		text-align: center;
-		width: 47.5%;
+		width: 33.33%;
 		font-weight: 400;
 		border-radius: 1rem;
 	}
@@ -80,7 +87,9 @@
 	padding: 1rem 0;
 	height: 13.5rem;
 	position: relative;
-	background-color: #f9f9f9;
+	/* background-color: #f9f9f9; */
+	/* background-image: linear-gradient(to right, #0f0c29, #302b63, #24243e); */
+	background: linear-gradient(to right, #0f0c29, #302b63, #0f0c29);
 }
 .egg-info:nth-child(5n-4){
 	margin-left: 0;
@@ -155,19 +164,22 @@
 }
 /* 달걀 */
 .egg-dimention-section .egg-count{
-	font-family: 'Ubuntu', sans-serif;
+	/* font-family: 'Ubuntu', sans-serif; */
+	font-family: 'Rowdies', cursive;
 	font-size: 2rem;
 	font-weight: bold;
 	/*color: white;*/
-	-webkit-text-stroke: 1px var(--fc-purple);
+	/* -webkit-text-stroke: 1.5px var(--fc-purple); */
 	  /*background-color: #565656;*/
-background-color: #757575;
-  color: transparent;
+/* background-color: #757575; */
+  /* color: transparent; */
+  color:#ffd2ab;
+  /* color:#fff; */
   /*text-shadow: .25px 1px 1px rgba(255,255,255,0.9);*/
-text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
+/* text-shadow: 2px 1px 1px rgba(232,232,232,0.9);
   -webkit-background-clip: text;
      -moz-background-clip: text;
-          background-clip: text;
+          background-clip: text; */
 } 
 .egg-dimention-section .egg-wrapper {
 	position: relative;
