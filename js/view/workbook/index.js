@@ -225,17 +225,15 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 		$passageSection.find('.passage').remove();
 	})
 	
-   // 탭 접고 펼치기 
-   $('.tab-section').on('click show.bs.tab', '[role=tab]', function(e) {
-      e.cancelBubble = true;
-      // 이미 열려진 탭에 대해선 이벤트 'show.bs.tab'이 발동하지 않으므로
-      // 이벤트 페이즈는 3으로 넘어간다. 이 경우 탭 숨기기
-      if(e.eventPhase == Event.BUBBLING_PHASE) {
-         $(this).add(this.dataset.bsTarget).removeClass('active');
-         $(this).attr('aria-selected', false);
-      }
-      $(this).closest('.nav-tabs') // 탭버튼 뭉치의 스타일 변경
-            .toggleClass('active', e.eventPhase != Event.BUBBLING_PHASE);
-   });
+   // 하단 도움말 탭 접고 펼치기 
+   let currentHelpTab;
+   $('.tab-section').on('show.bs.tab click', '[role=tab].active', function(e) {
+		if(e.currentTarget != currentHelpTab) {
+			currentHelpTab = e.currentTarget;
+		}else {
+			$(e.currentTarget).add(e.currentTarget.dataset.bsTarget).removeClass('active show');
+			currentHelpTab = null;
+		}
+	});
 	
 }
