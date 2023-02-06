@@ -1,8 +1,8 @@
 /** workbook/index.html
  * @author LGM
  */
-function pageinit(recentOpenWorkBooks, memberId){
-	$('#loadingModal').modal('hide');
+function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, memberId){
+	$('#loadingModal').modal('hide').hide();
 	const isMobile = window.visualViewport.width < 768;
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, horizontalOrder: true, transitionDuration: '0.8s'
@@ -12,9 +12,14 @@ function pageinit(recentOpenWorkBooks, memberId){
 	// 화면 가로길이에 따른 lazyLoad 갯수 조정(일부 잘린 항목도 보이도록)
 	let rowNum = isMobile ? 3 : 2;
 	
-	appendList(recentOpenWorkBooks)
+	if(publicOpenWorkBooks)
+		appendList(publicOpenWorkBooks, $('.public-workbook-section .list-inline').get(0));
+	if(protectedOpenWorkBooks)
+		appendList(protectedOpenWorkBooks, $('.protected-workbook-section .list-inline').get(0));
+	if(classNoteBooks)
+		appendList(classNoteBooks, $('.classnote-workbook-section .list-inline').get(0));
 	
-	let swiper = new Swiper('.swiper', {
+	new Swiper('.swiper', {
 		slidesPerView: 'auto',
 		watchSlidesProgress: true,
 		simulateTouch: true,
@@ -31,7 +36,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 		on: {
 			click: function(s,e) {
 				if(!s.clickedSlide) return;
-				const $overviewSection = $('.workbook-overview-section');
+				const $overviewSection = $(s.el).closest('.workbook-section').siblings('.workbook-overview-section');
 				const bookDiv = s.clickedSlide||e.path.find(d=>d.matches('.book-unit'));
 				const workBookId = bookDiv.dataset.workBookId,
 						workBookId56 = ntoa(workBookId);
@@ -50,7 +55,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 						showOverview($(bookDiv).data('overview'));
 					}
 				}else {
-					$('.workbook-overview-section').collapse('hide');
+					$overviewSection.collapse('hide');
 				}
 				
 				// 개요 정보 표시
@@ -61,7 +66,6 @@ function pageinit(recentOpenWorkBooks, memberId){
 									? (`url(/resource/profile/images/${aliasImage})`)
 									: 'var(--fc-logo-head)');
 					
-					$('#subscribeWorkbook').data('workBookId', workBookId);
 					
 					$overviewSection.find('.title').text(title);
 					
@@ -71,7 +75,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 										? (price.toLocaleString() + ' fico')
 										: '무료');
 					
-					$overviewSection.find('#subscribeWorkbook')
+					$overviewSection.find('.sub-btn').data('workBookId', workBookId)
 									.toggleClass('bg-secondary', sub)
 									.prop('disabled', sub)
 									.text(sub ? '구독중' : '구독');
@@ -127,8 +131,14 @@ function pageinit(recentOpenWorkBooks, memberId){
 				if(s.isLast || s.isLoading) return;
 				else {
 					s.isLoading = true;
-					$.getJSON(`/workbook/public/list/${s.pageNum++||2}`, function(bookPage) {
-						appendList(bookPage);
+					if(!s.pageNum) s.pageNum = 2;
+					let workbookType = 'public';
+					if($(s.el).closest('.protected-workbook-section').length > 0)
+						workbookType = 'protected';
+					else if($(s.el).closest('.classnote-workbook-section').length > 0)
+						workbookType = 'class';
+					$.getJSON(`/workbook/${workbookType}/list/${s.pageNum++}`, function(bookPage) {
+						appendList(bookPage, s.wrapperEl);
 						s.update();
 						s.slideNext();
 						delete s.isLoading;
@@ -139,9 +149,8 @@ function pageinit(recentOpenWorkBooks, memberId){
 			}
 		}
 	});
-	swiper.pageNum = 2;
 	
-	function appendList(list) {
+	function appendList(list, container) {
 		let DOMList = [];
 		for(let i = 0,len = list.content?.length; i < len; i++) {
 			const book = list.content[i];
@@ -161,13 +170,13 @@ function pageinit(recentOpenWorkBooks, memberId){
 			}
 			
 			$dom.find('.workbook-type').text(book.workBookType);
-			$dom.find('.workbook-type').addClass('type-'+book.workBookType);
+			$dom.find('.workbook-type').addClass(`type-${book.workBookType}`);
 			$dom.find('.book-title').text(book.title);
 			$dom.find('.book-price').html(book.price > 0 
 					? (book.price.toLocaleString() + ' fico') : '멤버십 무료');
 			DOMList.push($dom[0]);
+			container.appendChild($dom[0])
 		}
-		$('.book-section .list-inline').append(DOMList)
 	}	
 	$('.workbook-overview-section').on('shown.bs.collapse', function() {
 		this.scrollIntoView();
@@ -179,7 +188,7 @@ function pageinit(recentOpenWorkBooks, memberId){
 		$.ajax({dataType: 'script', cache: true, url:'https://static.findsvoc.com/js/app/tutorials.min.js'});
 	});
 	// [워크북 구독]---------------------------------------------------------------
-	$('#subscribeWorkbook').click(function() {
+	$('.sub-btn').click(function() {
 		if(memberId == 0) {
 			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
 			return;
@@ -210,23 +219,23 @@ function pageinit(recentOpenWorkBooks, memberId){
 	// [워크북 개요의 지문 레이아웃 정렬]--------------------------------------------
 	$('.workbook-overview-section').on('shown.bs.collapse', function() {
 		this.scrollIntoView({block: 'center'});
-		$('.workbook-overview-section .list-passage-section').masonry(masonryOptsForPassages);
+		$(this).find('.list-passage-section').masonry(masonryOptsForPassages);
 	}).on('hidden.bs.collapse', function() {
 		const $passageSection = $(this).find('.list-passage-section');
 		$passageSection.find('.passage').remove();
 	})
 	
    // 탭 접고 펼치기 
-   $('.tab-section').on('click show.bs.tab', '[role=tab]', function() {
-      event.cancelBubble = true;
+   $('.tab-section').on('click show.bs.tab', '[role=tab]', function(e) {
+      e.cancelBubble = true;
       // 이미 열려진 탭에 대해선 이벤트 'show.bs.tab'이 발동하지 않으므로
       // 이벤트 페이즈는 3으로 넘어간다. 이 경우 탭 숨기기
-      if(event.eventPhase == Event.BUBBLING_PHASE) {
+      if(e.eventPhase == Event.BUBBLING_PHASE) {
          $(this).add(this.dataset.bsTarget).removeClass('active');
          $(this).attr('aria-selected', false);
       }
       $(this).closest('.nav-tabs') // 탭버튼 뭉치의 스타일 변경
-            .toggleClass('active', event.eventPhase != Event.BUBBLING_PHASE);
+            .toggleClass('active', e.eventPhase != Event.BUBBLING_PHASE);
    });
 	
 }
