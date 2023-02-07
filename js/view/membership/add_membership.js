@@ -451,7 +451,7 @@ function pageinit(membershipCommand, membershipItemList) {
 			$('.check-email-input').val(result ? '' : email).trigger('input');
 			$('#paymentForm').addClass('was-validated');
 			if(result) $('.check-modal-section').modal('show');
-			else alert('사용가능한 E-mail입니다. 가입 진행을 계속해 주세요.');
+			else alertModal('사용가능한 E-mail입니다. 가입 진행을 계속해 주세요.');
 		});
 		// ----------------------------------------------------
 	})
@@ -530,8 +530,11 @@ function pageinit(membershipCommand, membershipItemList) {
 			data["orderItemList"] = orderItemList;
 			postJSON('/membership',data, msg => {
 				Cookies.remove('FMID');
-				alert(msg + '\n\'확인\'을 누르면 ' + (loggedin?'메인':'로그인') +' 화면으로 이동합니다.');
-				location.assign(loggedin?'/':'/auth/login');
+				if(loggedin) {
+					alertModal(`${msg}\n'확인'을 누르면 로그아웃 됩니다.\n다시 로그인해 주세요.`, () => document.forms.logout.submit());
+				else
+					alertModal(`${msg}\n'확인'을 누르면 로그인 화면으로 이동합니다.`, () => location.assign('/auth/login'));
+				
 				//$('#done-info-modal').modal('hide');
 			}, '가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.');
 		}
@@ -548,8 +551,7 @@ function postJSON(url, jsonCommand, callback, failMsg) {
 		url: url, type: 'POST', data: JSON.stringify(jsonCommand),
 		contentType: 'application/json', success: callback,
 		error: () => {
-			alert(failMsg);
-			$('#done-info-moal').modal('hide');
+			alertModal(failMsg, () => $('#done-info-moal').modal('hide'));
 		}
 	});
 }
