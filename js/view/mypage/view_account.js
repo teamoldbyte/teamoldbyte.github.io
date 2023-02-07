@@ -2,7 +2,6 @@
 @author LGM
  */
 function pageinit(tray, normalEggCount, goldEggCount) {
-	const MOBILE_WIDTH_MAX_BOUNDARY = 576;
 	let eggInfoList = [];
 	$.getJSON('https://static.findsvoc.com/data/egg/egg-info.json', list => {
 		eggInfoList = list;
@@ -59,24 +58,21 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	setTimeout(() => {
 		anime.timeline({
 			duration: 1000,
-			fontSize: ['0%', '100%'],
+			easing: 'linear',
+			round: 1
 		})
 		.add({
 			targets: '#total-egg-count',
-			update: function(anim) {
-				anim.animatables[0].target.textContent = Math.round((normalEggCount || 0) * anim.progress / 100);
-			}
+			textContent: [0, normalEggCount || 0]
 		})
 		.add({
 			targets: '#total-gold-egg-count',
-			update: function(anim) {
-				anim.animatables[0].target.textContent = Math.round((goldEggCount || 0) * anim.progress / 100);
-			}
+			textContent: [0, goldEggCount || 0]
 		})
 	}, 500);
 	
 	// [버킷 진행도 표시]---------------------------------------------------------
-	let bucketLevel = 1, bucketSize = 1, _quotient = normalEggCount;
+	/*let bucketLevel = 1, bucketSize = 1, _quotient = normalEggCount;
 	while(_quotient >= 9) {
 		_quotient /= 3;
 		bucketSize *= 3;
@@ -146,7 +142,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 						})
 				}
 			}, '-=200')
-	}, 1000);
+	}, 1000);*/
 	
 	
 	// [에그를 클릭하면 에그정보 상세보기]--------------------------------------------------
@@ -156,7 +152,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		const eggIndex = parseInt((selectedEgg.className.match(/egg-(\d+)/)||{ 1 : 10 })[1]) - 1;
 		if(selectedEgg.matches('.uncollected')) return;
 		
-		if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY) {
+		if(devSize.isPhone()) {
 			if(window.history.state != 'eggModal')
 				window.history.pushState('eggModal', 'eggModal');
 			$('html').addClass('overflow-hidden');
@@ -195,7 +191,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				size: 1, distance: 100, colors: ['#FFFFFF'], interval: 500, count: 5, particles: 5
 			});
 		// 데스크톱용 상세보기 위치 설정
-		if(window.innerWidth >= MOBILE_WIDTH_MAX_BOUNDARY) {
+		if(!devSize.isPhone()) {
 			if(e.currentTarget.getBoundingClientRect().x > window.innerWidth / 2) {
 				detail.style.left = 'unset';
 				detail.style.right = `${document.body.clientWidth - this.offsetLeft - this.offsetWidth}px`;
@@ -215,12 +211,12 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	})
 	// [에그 상세보기에서 커서를 떼면 닫기]---------------------------------------------
 	.on('mouseleave', '.egg-detail-section', function(e) {
-		if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY) return;
+		if(devSize.isPhone()) return;
 		e.stopPropagation();
 		e.stopImmediatePropagation();
 		$('.egg-detail-section').hide();
 	})
-	if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY) {
+	if(devSize.isPhone()) {
 		window.addEventListener('popstate', () => {
 			if(history.state != 'eggModal') {
 				$('.egg-detail-section').hide(100);
@@ -242,14 +238,14 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	$(document).on('click', '#accountEventPagination .page-link', function() {
 		const pageNum = this.dataset.pagenum;
 		// 에그 내역 추가 조회(ajax)-------------------------------------------
-		$.getJSON('/mypage/account/event/list?pageNum=' + pageNum, listEvents)
+		$.getJSON('/mypage/account/event/list', { pageNum }, listEvents)
 		.fail(() => alert('에그 내역을 불러오지 못했습니다.'));
 		//------------------------------------------------------------------
 	})
 	// [버킷을 클릭하면 버킷 전체정보 보기]---------------------------------------------
-	$(document).on('click', '.bucket-icon', function() {
+	/*$(document).on('click', '.bucket-icon', function() {
 		$('#bucket-modal').modal('show');
-	});
+	});*/
 	function listEvents(events) {
 		const eventList = document.getElementById('accountEventList');
 		if(!events?.empty) {
@@ -258,25 +254,25 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			const eventRecords = [];
 			for(let i = 0, len = contents.length; i < len; i++) {
 				const myEvent = contents[i];
-				eventRecords.push({
-						el: 'tr', children: [
-							// 레코드 번호 표시
-							{ el: 'th', className: 'd-none d-md-table-cell', scope: 'row', innerText: events.size * events.number + i + 1 },
-							// 이벤트 상세
-							{ el: 'td', innerText: myEvent.description },
-							{ el: 'td', children: [
-								// 에그 표시
-								myEvent.amount != 0 
-								? { el: 'span', className: 'text-' + (myEvent.amount < 0 ? 'danger':'success'),
-								children: [
-									{ el: 'i', className: `fas fa-egg ${myEvent.gold ? 'egg-icon gold':'text-white text-stroke-gray'} ms-3 me-2` },
-									Number(myEvent.amount).toLocaleString('ko-KR',{signDisplay:'always'})
-								]} : ''
-							]},
-							// 날짜
-							{ el: 'td', innerText: new Date(myEvent.txDate).format('yyyy-MM-dd(e)') }
-						]
-					});
+				eventRecords.push(
+					{ el: 'tr', children: [
+						// 레코드 번호 표시
+						{ el: 'td', className: 'd-none d-md-table-cell', scope: 'row', innerText: events.size * events.number + i + 1 },
+						// 이벤트 상세
+						{ el: 'td', innerText: myEvent.description },
+						{ el: 'td', children: [
+							// 에그 표시
+							myEvent.amount != 0 
+							? { el: 'span', className: 'text-' + (myEvent.amount < 0 ? 'danger':'success'),
+							children: [
+								{ el: 'i', className: `fas fa-egg ${myEvent.gold ? 'egg-icon gold':'text-white text-stroke-gray'} ms-3 me-2` },
+								Number(myEvent.amount).toLocaleString('ko-KR',{signDisplay:'always'})
+							]} : ''
+						]},
+						// 날짜
+						{ el: 'td', innerText: new Date(myEvent.txDate).format('yyyy-MM-dd(e)') }
+					]}
+				);
 			}
 			eventList.replaceChildren(createElement(eventRecords));
 			// 페이지네이션 표시
@@ -304,9 +300,72 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				]});
 			pagination.replaceChildren(createElement(pageitems));
 		} else {
-			eventList.replaceChildren(createElement({el: 'tr', innerText: '내역이 존재하지 않습니다.'}));
+			eventList.replaceChildren(createElement({el: 'tr', children: [{el: 'td', colSpan: 4, innerText: '내역이 존재하지 않습니다.'}]}));
 		}
 	}
+	
+	// [바우처 내역 조회]-----------------------------------------------------------
+	$('#myTab .nav-link').on('show.bs.tab', function(e) {
+		$('#myTab .nav-link').not(this).removeClass('active');
+		const $contentDiv = $(e.target.dataset.bsTarget);
+		if(e.target.matches('#voucherTab') && $contentDiv.find('tbody').is(':empty')) {
+			$.getJSON('/voucher/purchase/list', listVouchers)
+		}
+	});
+	$(document).on('click', '#voucherTable .page-link', function() {
+		const pageNum = this.dataset.pagenum;
+		$.getJSON('/voucher/purchase/list', { pageNum }, listVouchers)
+	});
+	
+	function listVouchers(vouchersPage) {
+		const voucherTable = document.getElementById('voucherTable');
+		if(!vouchersPage?.empty) {
+			const contents = vouchersPage.content
+			// 레코드 표시
+			const records = [];
+			for(let i = 0, len = contents.length; i < len; i++) {
+				const voucher = contents[i];
+				records.push(
+					{ el: 'tr', children: [
+						// 레코드 번호 표시
+						{ el: 'td', className: 'd-none d-md-table-cell', scope: 'row', innerText: vouchersPage.size * vouchersPage.number + i + 1 },
+						// 이벤트 상세
+						{ el: 'td', innerText: voucher.title },
+						{ el: 'td', innerText: voucher.amount },
+						// 날짜
+						{ el: 'td', className: 'd-none d-md-table-cell', innerText: new Date(voucher.regDate).format('yyyy-MM-dd(e)') }
+					]}
+				);
+			}
+			voucherTable.querySelector('tbody').replaceChildren(createElement(records));
+			// 페이지네이션 표시
+			const pagination = voucherTable.querySelector('.pagination');
+			const totalPages = vouchersPage.totalPages;
+			const currPage = vouchersPage.number;
+			const startNum = Math.floor(currPage / 10) * 10 + 1;
+			const endNum = Math.min(startNum + 9, totalPages);
+			const pageitems = [];
+			
+			// 이전 버튼
+			if(startNum > 10) pageitems.push({
+				el: 'li', className: 'page-item', ariaLabel: 'Previous', children: [
+					{ el: 'a', className: 'page-link', ariaHidden: true, 'data-pagenum': startNum - 1, innerHTML: '&laquo;' }
+				]});
+			// 페이지번호 버튼
+			for(let pi = startNum; pi <= endNum; pi++) pageitems.push({
+				el: 'li', className: 'page-item' + (pi == currPage + 1 ? ' active' : ''), children: [
+					{ el: 'a', className: 'page-link', 'data-pagenum': pi, innerHTML: pi }
+				]});
+			// 다음 버튼
+			if(startNum + 9 < totalPages) pageitems.push({
+				el: 'li', className: 'page-item', ariaLabel: 'Next', children: [
+					{ el: 'a', className: 'page-link', ariaHidden: true, 'data-pagenum': startNum + 10, innerHTML: '&raquo;' }
+				]});
+			pagination.replaceChildren(createElement(pageitems));
+		} else {
+			voucherTable.querySelector('tbody').replaceChildren(createElement({el: 'tr', children: [{el: 'td', colSpan: 4, innerText: '내역이 존재하지 않습니다.'}]}));
+		}
+	}	
 	
 	
 	// [코인 충전 혹은 멤버십 연장 버튼을 눌러 결제 모달 표시]------------------------------
@@ -362,6 +421,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		e.preventDefault();
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
+			$('#modalDiv .modal').modal('hide');
 			data["orderItemList"] = orderItemList;
 			$.ajax({
 				url: '/membership', type: 'POST', 
@@ -380,9 +440,8 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	});
 	// 모바일 화면일 경우 에그 내역 페이지네이션을 작게
 	function fitWindowSize() {
-		const isMobileSize = window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY;
-		$('#accountEventPagination').toggleClass('pagination-sm', isMobileSize);
-		$('#accountEventList').toggleClass('align-middle text-sm', isMobileSize);
+		$('#accountEventPagination').toggleClass('pagination-sm', devSize.isPhone());
+		$('#accountEventList').toggleClass('align-middle text-sm', devSize.isPhone());
 	}
 	fitWindowSize();
 	window.addEventListener('resize', fitWindowSize);
@@ -435,7 +494,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				]}
 			]}
 		]},
-		{ el: 'div', className: 'bucket-detail-section modal', id: 'bucket-modal', tabIndex: '-1', children: [
+		/*{ el: 'div', className: 'bucket-detail-section modal', id: 'bucket-modal', tabIndex: '-1', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
 				{ el: 'div', className: 'modal-content', children: [
 					{ el: 'div', className: 'modal-header', children: [
@@ -447,10 +506,10 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					]}
 				]}
 			]}
-		]},
-		{ el: 'div', className: 'egg-detail-section' + (window.innerWidth < 576 ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
+		]},*/
+		{ el: 'div', className: 'egg-detail-section' + (devSize.isPhone() ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
 			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: () => {
-				if(window.innerWidth < MOBILE_WIDTH_MAX_BOUNDARY && window.history.state == 'eggModal') {
+				if(devSize.isPhone() && window.history.state == 'eggModal') {
 					window.history.back();
 				}else {
 					$('.egg-detail-section').hide(100);
@@ -477,9 +536,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' },
 					{ el: 'div', className: 'footer-text', children: [
 						{ el: 'span', className: 'count-text mb-0', children: [
-							'Hatching D-Day : ',
-							{ el: 'span', className: 'egg-count' },
-							' left.'
+							'Hatching D-Day : ', { el: 'span', className: 'egg-count' }, ' left.'
 						]},
 						{ el: 'span', className: 'hatching-info', textContent: '에그를 부화시켜 마법사 에그시가 숨겨놓은 선물을 받아가세요.' }
 					]},

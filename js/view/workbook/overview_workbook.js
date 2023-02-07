@@ -1,9 +1,9 @@
 /** workbook/overview_workbook.html
  * @author LGM
  */
-function pageinit(workbookId, workbookCover, passageIdList, page) {
+function pageinit(workbookId, workbookCover, passageIdList, publicOpenWorkBooks, protectedOpenWorkBooks) {
 	const isMobile = window.visualViewport.width < 768;
-	$('#loadingModal').modal('hide');
+	$('#loadingModal').modal('hide').hide();
 	// [지문 레이아웃 정렬]--------------------------------------------
 	$('.list-passage-section').masonry({
 		// options
@@ -30,9 +30,11 @@ function pageinit(workbookId, workbookCover, passageIdList, page) {
 	// 화면 가로길이에 따른 lazyLoad 갯수 조정(일부 잘린 항목도 보이도록)	
 	let rowNum = isMobile ? 3 : 2;
 	
-	appendList(page)	
+	appendList(publicOpenWorkBooks, $('.public-workbook-section .list-inline').get(0));
+	if($('.protected-workbook-section').length > 0)
+	appendList(protectedOpenWorkBooks, $('.protected-workbook-section .list-inline').get(0));
 	
-	let swiper = new Swiper('.swiper', {
+	new Swiper('.swiper', {
 		slidesPerView: 'auto',
 		watchSlidesProgress: true,
 		simulateTouch: true,
@@ -51,8 +53,10 @@ function pageinit(workbookId, workbookCover, passageIdList, page) {
 				if(s.isLast || s.isLoading) return;
 				else {
 					s.isLoading = true;
-					$.getJSON(`/workbook/public/list/${s.pageNum++||2}`, function(bookPage) {
-						appendList(bookPage);
+					if(!s.pageNum) s.pageNum = 2;
+					const workbookType = $(s.el).closest('.public-workbook-section').length > 0 ? 'public' : 'protected';
+					$.getJSON(`/workbook/${workbookType}/list/${s.pageNum++}`, function(bookPage) {
+						appendList(bookPage, s.wrapperEl);
 						s.update();
 						s.slideNext();
 						delete s.isLoading;
@@ -63,8 +67,7 @@ function pageinit(workbookId, workbookCover, passageIdList, page) {
 			}			
 		}
 	});
-	swiper.pageNum = 2;
-	function appendList(list) {
+	function appendList(list, container) {
 		let DOMList = [];
 		for(let i = 0,len = list.content?.length; i < len; i++) {
 			const book = list.content[i];
@@ -86,7 +89,7 @@ function pageinit(workbookId, workbookCover, passageIdList, page) {
 			}
 			$dom.find('.book-title').text(book.title);
 			DOMList.push($dom[0]);
+			container.appendChild($dom[0])
 		}
-		$('.book-section .list-inline').append(DOMList)
 	}		
 }
