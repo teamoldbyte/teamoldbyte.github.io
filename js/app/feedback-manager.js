@@ -43,7 +43,7 @@
 							{ el: 'div', className: 'row', children: [
 								{ el: 'label', className: 'col-1 col-form-label', textContent: '본문' },
 								{ el: 'div', className: 'col-11', children: [
-									{ el: 'textarea', className: 'workbook-feedback-content content form-control', rows: '15',}
+									{ el: 'textarea', className: 'workbook-feedback-content content form-control', rows: '15', maxLength: '1000'}
 								]}
 							]}
 						]},
