@@ -203,7 +203,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				$passageList.append($passage).masonry('appended', $passage);
 			}
 			if(passages.last) scrollObserver.disconnect();
-			pageScroller.dataset.pagenum = passages.number + 1;
+			pageScroller.dataset.pagenum++;
 		}else {
 			scrollObserver.disconnect();
 		}	
