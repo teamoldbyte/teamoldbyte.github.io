@@ -530,7 +530,7 @@ function pageinit(membershipCommand, membershipItemList) {
 			data["orderItemList"] = orderItemList;
 			postJSON('/membership',data, msg => {
 				Cookies.remove('FMID');
-				if(loggedin) {
+				if(loggedin) 
 					alertModal(`${msg}\n'확인'을 누르면 로그아웃 됩니다.\n다시 로그인해 주세요.`, () => document.forms.logout.submit());
 				else
 					alertModal(`${msg}\n'확인'을 누르면 로그인 화면으로 이동합니다.`, () => location.assign('/auth/login'));
