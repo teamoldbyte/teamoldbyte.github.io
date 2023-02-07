@@ -10,7 +10,7 @@
 		
 		wfModal = createElement({
 			el: 'div', id: 'workBookFeedbackModal', className: 'modal fade', children: [
-				{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
+				{ el: 'div', className: 'modal-dialog modal-lg modal-dialog-centered', children: [
 					{ el: 'div', className: 'modal-content', children: [
 						{ el: 'div', className: 'modal-header bg-fc-yellow', children: [
 							{ el: 'h5', className: 'modal-title fw-bold', textContent: '피드백 전달' },
@@ -18,8 +18,8 @@
 						]},
 						{ el: 'div', className: 'modal-body', children: [
 							{ el: 'div', className: 'row', children: [
-								{ el: 'label', className: 'col-2 col-form-label', textContent: '타입' },
-								{ el: 'div', className: 'col-10', children: [
+								{ el: 'label', className: 'col-1 col-form-label', textContent: '타입' },
+								{ el: 'div', className: 'col-11', children: [
 									{ el: 'div', className: 'form-check form-check-inline', children: [
 										{ el: 'input', className: 'form-check-input', type: 'radio', id: 'wft1', name: 'feedbackType', value: 'add', checked: true, oninput: function() {
 											$('.feedback-wid').show();
@@ -35,15 +35,15 @@
 								]}
 							]},
 							{ el: 'div', className: 'feedback-wid row', children: [
-								{ el: 'label', className: 'col-2 col-form-label', textContent: '워크북' },
-								{ el: 'div', className: 'col-10', children: [
+								{ el: 'label', className: 'col-1 col-form-label', textContent: '워크북' },
+								{ el: 'div', className: 'col-11', children: [
 									{ el: 'input', type: 'text', className: 'form-control-plaintext', value: workbookTitle, readOnly: true}
 								]}
 							]},
 							{ el: 'div', className: 'row', children: [
-								{ el: 'label', className: 'col-2 col-form-label', textContent: '본문' },
-								{ el: 'div', className: 'col-10', children: [
-									{ el: 'textarea', className: 'workbook-feedback-content content form-control', rows: '10',}
+								{ el: 'label', className: 'col-1 col-form-label', textContent: '본문' },
+								{ el: 'div', className: 'col-11', children: [
+									{ el: 'textarea', className: 'workbook-feedback-content content form-control', rows: '15',}
 								]}
 							]}
 						]},
