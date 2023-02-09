@@ -203,7 +203,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				$passageList.append($passage).masonry('appended', $passage);
 			}
 			if(passages.last) scrollObserver.disconnect();
-			pageScroller.dataset.pagenum = passages.number + 1;
+			pageScroller.dataset.pagenum++;
 		}else {
 			scrollObserver.disconnect();
 		}	
@@ -399,9 +399,8 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			const $text = $(this).find('.feedback-text');
 			const textMax = $text.data('org');
 			const textMin = textMax.replace(/[\r\n].+/g,'');
-			$text.css('white-space', $(this).is('.open') ? 'nowrap' : 'break-spaces');
-			$text.text($(this).is('.open') ? `${textMin}...` : textMax);
-			$(this).toggleClass('open')
+			$text.text($(this).is('.open') ? textMin : textMax);
+			$(this).toggleClass('open');
 		})
 		
 		
@@ -438,7 +437,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		function feedbackPageRefresh(page) {
 			const contentJSONs = Array.from(page.content, item => {
 				return { el: 'div', className: 'feedback-unit row g-0', role: 'button', title: '펼쳐보기/접기', children: [
-					{ el: 'div', className: 'col-8 col-xl-10 row g-0 m-auto', children: [
+					{ el: 'div', className: 'feedback-text-block col-8 col-xl-10 row g-0 m-auto', children: [
 						{ el: 'span', className: 'feedback-text text-truncate', 'data-org': item.content , textContent: item.content.replace(/\n.+/g, '') }
 					]},
 					{ el: 'div', className: 'col-2 m-auto text-center', children: [
