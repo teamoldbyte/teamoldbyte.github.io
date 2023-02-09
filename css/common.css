@@ -377,7 +377,7 @@ a:hover {
 	color: rgb(220, 38, 38) !important;
 }
 .text-red-700{
-	color: rgb(185, 28, 28) !important;
+	color: rgb(180, 60, 60) !important;
 }
 .text-gray-300{
 	color: rgb(209 213 219) !important;
@@ -688,7 +688,9 @@ u {
 	position: relative;
 }
 
-
+/* 깜빡임 애니메이션(TTS플레이 아이콘, 모바일 툴팁 등) */
+.blink-2{-webkit-animation:blink-2 .9s infinite both;animation:blink-2 .9s infinite both}
+@-webkit-keyframes blink-2{0%{opacity:1}50%{opacity:.2}100%{opacity:1}}@keyframes blink-2{0%{opacity:1}50%{opacity:.2}100%{opacity:1}}
 /**********************************************************
  *			접기 아이콘
  **********************************************************/
