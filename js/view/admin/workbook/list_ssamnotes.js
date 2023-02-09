@@ -94,13 +94,14 @@ function pageinit(memberId, memberAlias, memberImage){
 			]}
 		]
 	}	
-	var $transCopyBlock = $('.ai-translation-block');
-	var $wordCopySection = $('.one-word-unit-section');
-	var $partCopySection = $('.one-part-unit-section');			
+	const $transCopyBlock = $('.ai-translation-block');
+	const $wordCopySection = $('.one-word-unit-section');
+	const $partCopySection = $('.one-part-unit-section');			
+	let selectedRow;  
 	$(document).on('click', '.js-open-detail', function() {
 		const sentenceId = this.dataset.sid;
-		const currentRow = this.closest('tr');
-		$(currentRow).addClass('bg-info')
+		selectedRow = this.closest('tr');
+		$(selectedRow).addClass('bg-info')
 		.siblings('tr').removeClass('bg-info');
 					
 					
@@ -289,9 +290,10 @@ function pageinit(memberId, memberAlias, memberImage){
 		}, 500);
 		// 편집 저장 실행
 		function saveFunc(svocText) {
-			const sentenceId = Number($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
-			const svocId = Number($semantics.data('svocId') || 0);
-			const svocCommand = {sentenceId, memberId, encSvocText: svocText};
+			const sentenceId = parseInt($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
+			const ownerId = parseInt(selectedRow.dataset.ownerId);
+			const svocId = parseInt($semantics.data('svocId') || 0);
+			const svocCommand = {sentenceId, ownerId, memberId, encSvocText: svocText};
 			
 			if(memberId == Number($semantics.data('memberId')) && svocId > 0) {
 				svocCommand.svocId = svocId;
