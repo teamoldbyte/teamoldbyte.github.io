@@ -108,10 +108,8 @@ function pageinit(memberId, memberAlias, memberImage){
 		const $unitSection = $('.one-sentence-unit-section');			
 		$unitSection.find('.s-id').text(sentenceId);
 		
-		$unitSection.addClass('loading');
 		$.getJSON(`/adminxyz/workbook/sentence/${sentenceId}`, sentenceInfo => {
 			showSentenceDetail(sentenceInfo, $unitSection);
-			$unitSection.removeClass('loading').addClass('loaded');
 		});
 		// 워크북 정보 조회
 		$.getJSON(`/adminxyz/workbook/info/${sentenceId}`, workbookInfo => {
@@ -421,15 +419,12 @@ function pageinit(memberId, memberAlias, memberImage){
 	})
 	// [문장의 노트 목록 가져오기(1회)]------------------------------------------------
 	.on('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=note]', async function(){
-		const $nav = $(this);
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
 		const workbookId = $sentenceSection.data('workbookId');
 		const sentenceId = $sentenceSection.data('sentenceId');
 		const $noteSection = $(this.dataset.bsTarget);
 		
 		
-		if($(this).is('.loading,.loaded')) return;
-		$(this).addClass('loading');
 		$noteSection.find('.empty-list').show();
 		// 문장의 노트 새로 가져오기(ajax)-------------------------------------
 		await $.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentenceId}/${memberId}`, notes => listNotes(notes))
@@ -449,7 +444,6 @@ function pageinit(memberId, memberAlias, memberImage){
 							   //------------------
 				$block.appendTo($noteList);
 			}
-			$nav.toggleClass('loading loaded');
 		}
 	})
 	// [문장의 노트 추가]-----------------------------------------------------------
