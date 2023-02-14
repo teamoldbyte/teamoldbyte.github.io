@@ -202,7 +202,7 @@ function pageinit(sentenceList, memberId) {
 		const $section = $(this.closest('.edit-section,.add-section')),
 			$submitBtn = $section.find('.js-edit,.js-add'),
 			$invalid = $section.find('.invalid-text');
-		let edited = $(this).val().parseToSentences().join(' ').capitalize1st();
+		let edited = tokenizer.sentences($(this).val()).join(' ').capitalize1st();
 
 		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
 		if (edited.length == 0) {
@@ -220,8 +220,8 @@ function pageinit(sentenceList, memberId) {
 	})
 
 	// [문장 추가 등록]------------------------------------------------------------
-	$('.js-add').click(function() {
-		const text = $('.add-section textarea').val().parseToSentences().join(' ').capitalize1st(),
+	$('.js-add').on('click', function() {
+		const text = tokenizer.sentences($('.add-section textarea').val()).join(' ').capitalize1st(),
 			orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
 		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
 		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
@@ -278,8 +278,8 @@ function pageinit(sentenceList, memberId) {
 	$(document).on('click', '.js-edit', function() {
 		const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
 		let origin = $sentenceSection.find('.sentence-text').text();
-		let edited = $sentenceSection.find('.edit-section textarea').val()
-			.parseToSentences().join(' ').capitalize1st();
+		let edited = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val())
+			.join(' ').capitalize1st();
 
 		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
 		if (edited.length == 0 || edited.length > maxChars
