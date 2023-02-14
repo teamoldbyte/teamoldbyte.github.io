@@ -324,56 +324,66 @@ function pageinit(isHelloBook, memberId) {
 		}else {
 			
 			
-				const total = sentences.join(' ');
-				let eng = sentences[0];
-				textarea.value = total;
-				
-				// 직접 검색 키워드 넘겨질 경우
-				if(paramKeyword != null) {
-					eng = paramKeyword;
-				}
-				else {
-					let checkingPos = 0;
-					// 입력된 문장들 각각을 검사.
-					for(let i = 0, len = sentences.length; i < len; i++) {
-						const tempSentence = sentences[i];
-						if(tempSentence.length > MAX_SENTENCE_LENGTH) {
-							alertModal(`${(i + 1)}번째 문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.\n문장 내용은 아래와 같습니다.\n${tempSentence}`);
+			const total = Array.from(sentences, sentence => {
+				// 아래와 같은 경우 번호 삭제
+				// 426. I was
+				// was bored." 427.
+				return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
+							.replace(/(['"])\s+\d+[?!.]$/, '$1')
+			}).filter(sentence => {
+				return /[a-zA-Z\s]/.test(sentence);
+			});
+			let eng = total[0];
+			textarea.value = total.join(' ');
+			
+			// 직접 검색 키워드 넘겨질 경우
+			if(paramKeyword != null) {
+				eng = paramKeyword;
+			}
+			else {
+				let checkingPos = 0;
+				// 입력된 문장들 각각을 검사.
+				for(let i = 0, len = total.length; i < len; i++) {
+					const tempSentence = total[i];
+					const alertAndFocusWrongSentence = (msg) => {
+						alertModal(`${i + 1}번째 ${msg}\n문장 내용은 아래와 같습니다.\n${tempSentence}`, () => {
 							textarea.focus();
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
-							return;					
-						}else if(!(/^["']?[A-Z0-9]+/.test(tempSentence))) {
-							alertModal((i + 1) + '번째 문장의 시작이 영문대문자나 숫자 혹은 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
-							textarea.focus();
-							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
-							return;					
-						}else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
-							alertModal((i + 1) + '번째 문장의 끝이 구두점(. ? !)이나 따옴표(" \')가 아닙니다.\n문장 내용은 아래와 같습니다.\n' + tempSentence);
-							textarea.focus();
-							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
-							return;
-						}
-						// 가장 긴 문장을 검색문자열로 사용(검색 정확도를 높이기 위함)
-						eng = (tempSentence.length > eng.length) ? tempSentence : eng;
-						checkingPos += tempSentence.length + (i<len-1?1:0);
+						})
 					}
-					// 유효한 제시어를 무시한 경우 3단계로 이동
-					if(searchingSentenceDone) {
-						$('#text').val(textarea.value);
-						$('.search-result-section .list-group-item').removeClass('active');
-						$('.step-2').addClass('opacity-50 pe-none');
-						$('.step-3').removeClass('opacity-50 pe-none');
-						$('.step-1 .collapse,.step-3 .collapse').collapse('toggle');
-						$('#editPassage, .edit-passage').hide();
-						$('.final-pssage').show();	
-						return;		
+					if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
+						return;					
 					}
+					else if(!/^["']?[A-Z0-9]/.test(tempSentence)) {
+						alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
+						return;					
+					}
+					else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+						alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
+						return;
+					}
+					// 가장 긴 문장을 검색문자열로 사용(검색 정확도를 높이기 위함)
+					eng = (tempSentence.length > eng.length) ? tempSentence : eng;
+					checkingPos += tempSentence.length + (i<len-1?1:0);
 				}
-				$('.search-sentence').text(eng);
-				// 지문 검색(ajax)--------------------------------------------
-				$.getJSON('/workbook/passage/search', {eng}, displayDtoList)
-				.fail(() => alertModal('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
-				//----------------------------------------------------------
+				// 유효한 제시어를 무시한 경우 3단계로 이동
+				if(searchingSentenceDone) {
+					$('#text').val(textarea.value);
+					$('.search-result-section .list-group-item').removeClass('active');
+					$('.step-2').addClass('opacity-50 pe-none');
+					$('.step-3').removeClass('opacity-50 pe-none');
+					$('.step-1 .collapse,.step-3 .collapse').collapse('toggle');
+					$('#editPassage, .edit-passage').hide();
+					$('.final-pssage').show();	
+					return;		
+				}
+			}
+			$('.search-sentence').text(eng);
+			// 지문 검색(ajax)--------------------------------------------
+			$.getJSON('/workbook/passage/search', {eng}, displayDtoList)
+			.fail(() => alertModal('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+			//----------------------------------------------------------
 				
 			
 			function displayDtoList(searchResult){
@@ -388,12 +398,12 @@ function pageinit(isHelloBook, memberId) {
 					const $item = $('#hiddenDivs .list-group-item').clone();
 					const searchedSentence = passageDtoList[i];
 					$item.data('passageId', passageDtoList[i].passageId)
-						 .html(searchedSentence.text.replaceAll(new RegExp(sentences.join('|').replaceAll(/[\(\)\{\}\[\]]/gm,'\\$&'),'gm'),
+						 .html(searchedSentence.text.replaceAll(new RegExp(total.join('|').replaceAll(/[\(\)\{\}\[\]]/gm,'\\$&'),'gm'),
 											'<span class="bg-fc-yellow">$&</span>'));
 					$passageList.append($item);
 				}
 				// 한 문장만 입력했을 경우 문장 검색결과도 출력)
-				if(sentences.length == 1) {
+				if(total.length == 1) {
 					for(let i = 0, len = sentenceDtoList.length; i < len; i++){
 						const $item = $('#hiddenDivs .list-group-item').clone();
 		
@@ -403,8 +413,8 @@ function pageinit(isHelloBook, memberId) {
 						$passageList.append($item);
 					}
 				}
-				if((sentences.length > 1 && passageDtoList.length == 0)
-				|| (sentences.length == 1 && sentenceDtoList.length == 0)) {
+				if((total.length > 1 && passageDtoList.length == 0)
+				|| (total.length == 1 && sentenceDtoList.length == 0)) {
 					$passageList.append('<li class="list-group-item pe-none">검색 결과가 없습니다.</li>');
 				}else {
 					$passageList.append($('#jumpTo3').clone(true, true));
@@ -413,8 +423,8 @@ function pageinit(isHelloBook, memberId) {
 				// $('#newPassageText').prop('disabled', true);
 				$('.step-2').removeClass('opacity-50 pe-none');
 				$('.step-2 .collapse').one('shown.bs.collapse', function() {
-					if((sentences.length > 1 && passageDtoList.length == 0)
-					|| (sentences.length == 1 && sentenceDtoList.length == 0)) {
+					if((total.length > 1 && passageDtoList.length == 0)
+					|| (total.length == 1 && sentenceDtoList.length == 0)) {
 						$('#jumpTo3').click();
 					} else {
 						$passageList.masonry(masonryOptsForPassages);
