@@ -355,7 +355,7 @@ function pageinit(isHelloBook, memberId) {
 						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 						return;					
 					}
-					else if(!/^["']?[A-Z0-9]/.test(tempSentence)) {
+					else if(!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
 						alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
 						return;					
 					}
