@@ -7,7 +7,7 @@ function pageinit(sentenceList, memberId) {
 		workbookId = Number(sessionStorage.getItem('workbookId'));
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
-
+	const MAX_SENTENCE_LENGTH = 500;
 	const oneSentenceJSON = {
 		"el": "div", "class": "one-sentence-unit-section p-2 p-lg-4 mb-2 border-0",
 		"data-ordernum": "0", "data-sid": "0", "children": [
@@ -197,19 +197,16 @@ function pageinit(sentenceList, memberId) {
 	});
 
 	// [문장 입력 시 제한사항 적용]---------------------------------------------------
-	const maxChars = 500;
 	$(document).on('input', '.edit-section textarea,.add-section textarea', function() {
 		const $section = $(this.closest('.edit-section,.add-section')),
 			$submitBtn = $section.find('.js-edit,.js-add'),
 			$invalid = $section.find('.invalid-text');
-		let edited = tokenizer.sentences($(this).val()).join(' ').capitalize1st();
-
+		const extracts = extractHighlightInfo(this.value, this.selectionStart);
 		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
-		if (edited.length == 0) {
+		if (extracts.input.length == 0) {
 			$invalid.hide();
 			$submitBtn.prop('disabled', true);
-		} else if (edited.length == 0 || edited.length > maxChars
-			|| edited.match(/[^\u0020-\u007F\u0085\u00A0\u2028\u2029\u2018-\u201A\u201C-\u201D]/gi)) {
+		} else if (extracts.input.length > MAX_SENTENCE_LENGTH || extracts.input.includes('×')) {
 			$invalid.show();
 			$submitBtn.prop('disabled', true);
 			return;
@@ -221,8 +218,49 @@ function pageinit(sentenceList, memberId) {
 
 	// [문장 추가 등록]------------------------------------------------------------
 	$('.js-add').on('click', function() {
-		const text = tokenizer.sentences($('.add-section textarea').val()).join(' ').capitalize1st(),
-			orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
+		const sentences = tokenizer.sentences($('.add-section textarea').val());
+		const orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
+			
+		// 문장 검사
+		const total = Array.from(sentences, sentence => {
+			// 아래와 같은 경우 번호 삭제
+			// 426. I was
+			// was bored." 427.
+			return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
+						.replace(/(['"])\s+\d+[?!.]$/, '$1')
+		}).filter(sentence => {
+			return /[a-zA-Z\s]/.test(sentence);
+		});
+		let text = total.join(' ').capitalize1st();
+		const textarea = $('.add-section textarea').get(0);
+		textarea.value = text;
+		let checkingPos = 0;
+		// 입력된 문장들 각각을 검사.
+		for(let i = 0, len = total.length; i < len; i++) {
+			const tempSentence = total[i];
+			const alertAndFocusWrongSentence = (msg) => {
+				alertModal(`${i + 1}번째 ${msg}\n문장 내용은 아래와 같습니다.\n${tempSentence}`, () => {
+					textarea.focus();
+					textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
+				})
+			}
+			if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+				alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
+				return;					
+			}
+			else if(!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
+				alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
+				return;					
+			}
+			else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+				alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
+				return;
+			}
+			checkingPos += tempSentence.length + (i < len - 1 ? 1 : 0);
+		}
+		
+		
+		// 일일 사용량이 넘어가는 순간 더이상 문장 추가/수정 불가.
 		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
 		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			myFicoUsages.confirmed = false;
@@ -278,28 +316,63 @@ function pageinit(sentenceList, memberId) {
 	$(document).on('click', '.js-edit', function() {
 		const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
 		let origin = $sentenceSection.find('.sentence-text').text();
-		let edited = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val())
-			.join(' ').capitalize1st();
+		const sentences = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val());
 
-		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
-		if (edited.length == 0 || edited.length > maxChars
-			|| edited.match(/[^\u0020-\u007F\u0085\u00A0\u2028\u2029\u2018-\u201A\u201C-\u201D]/gi)) {
-			return;
+
+		// 문장 검사
+		const total = Array.from(sentences, sentence => {
+			// 아래와 같은 경우 번호 삭제
+			// 426. I was
+			// was bored." 427.
+			return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
+						.replace(/(['"])\s+\d+[?!.]$/, '$1')
+		}).filter(sentence => {
+			return /[a-zA-Z\s]/.test(sentence);
+		});
+		let text = total.join(' ').capitalize1st();
+		const textarea = $sentenceSection.find('.edit-section textarea').get(0);
+		textarea.value = text;
+		let checkingPos = 0;
+		// 입력된 문장들 각각을 검사.
+		for(let i = 0, len = total.length; i < len; i++) {
+			const tempSentence = total[i];
+			const alertAndFocusWrongSentence = (msg) => {
+				alertModal(`${i + 1}번째 ${msg}\n문장 내용은 아래와 같습니다.\n${tempSentence}`, () => {
+					textarea.focus();
+					textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
+				})
+			}
+			if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+				alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
+				return;					
+			}
+			else if(!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
+				alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
+				return;					
+			}
+			else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+				alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
+				return;
+			}
+			checkingPos += tempSentence.length + (i < len - 1 ? 1 : 0);
 		}
+		
+
+
 		// 수정 전과 동일하면 취소
-		else if (edited == origin) {
+		if (text == origin) {
 			$sentenceSection.find('.collapse').collapse('toggle');
 			return;
 		}
 		// 전송 내용 생성.
 		const command = {
 			sentenceId: Number($sentenceSection[0].dataset.sid),
-			passageId: passageId, eng: edited, sameText: false,
+			passageId: passageId, eng: text, sameText: false,
 			orderNum: Number($sentenceSection[0].dataset.ordernum)
 		};
 		
 		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
-		&& myFicoUsages.length + edited.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			myFicoUsages.confirmed = false;
 			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
 			$('.origin-sentence').removeAttr('data-toggle');
@@ -307,11 +380,11 @@ function pageinit(sentenceList, memberId) {
 			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
 			delete oneSentenceJSON.children[0].children[2]["data-toggle"];			
 		}
-		myFicoUsages.length += edited.length;
+		myFicoUsages.length += text.length;
 		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));		
 
 		// 기존 문장과 동일한 지 검사
-		command['sameTextSeq'] = (origin.toLowerCase() == edited.toLowerCase());
+		command['sameTextSeq'] = (origin.toLowerCase() == text.toLowerCase());
 
 		$('#loadingModal').modal('show');
 		// 지문 문장 수정(ajax)-------------------------------
