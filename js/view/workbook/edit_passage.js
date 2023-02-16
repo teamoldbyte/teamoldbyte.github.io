@@ -43,7 +43,7 @@ function pageinit(sentenceList, memberId) {
 				]},
 				// 문장 수정 영역
 				{ "el": "div", "class": "edit-section collapse mt-2", "children": [
-					{ "el": "textarea", "class": "form-control mb-2", "textContent": "" },
+					{ "el": "textarea", "class": "form-control mb-2", "rows": "5", "textContent": "" },
 					{ "el": "button", "type": "button", "class": "btn btn-outline-fico", "data-toggle": "collapse", "textContent": "취소" },
 					{ "el": "button", "type": "button", "class": "js-edit btn btn-fico", "disabled": true, "textContent": "수정" },
 					{ "el": "span", "class": "invalid-text text-danger", "style": "display: none;", "textContent": "영문이 아니거나 글자수가 너무 많습니다." }
@@ -201,15 +201,21 @@ function pageinit(sentenceList, memberId) {
 		const $section = $(this.closest('.edit-section,.add-section')),
 			$submitBtn = $section.find('.js-edit,.js-add'),
 			$invalid = $section.find('.invalid-text');
-		const extracts = extractHighlightInfo(this.value, this.selectionStart);
+		const { input, arr, inputCursor } = extractHighlightInfo(this.value, this.selectionStart);
+
 		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
-		if (extracts.input.length == 0) {
+		if (input.length === 0) {
 			$invalid.hide();
 			$submitBtn.prop('disabled', true);
-		} else if (extracts.input.length > MAX_SENTENCE_LENGTH || extracts.input.includes('×')) {
+		} else if (input.length > MAX_SENTENCE_LENGTH || input.includes('×')) {
 			$invalid.show();
+			this.value = input;
+			$(this).highlightWithinTextarea({ highlight: [
+				{className: 'bg-fc-yellow', highlight: ['×']},
+				{className: 'bg-fc-purple corrected', highlight: arr}]})
+			this.setSelectionRange(inputCursor, inputCursor);
+			this.focus();
 			$submitBtn.prop('disabled', true);
-			return;
 		} else {
 			$invalid.hide();
 			$submitBtn.prop('disabled', false);
