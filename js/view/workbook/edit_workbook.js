@@ -232,7 +232,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			}
 			sessionStorage.setItem('workbookCover',this.dataset.cover);
 			sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));
-			location.assign(`/workbook/passage/add/${ntoa(workbookId)}`);
+			location.assign(`/workbook/passage/add/${ntoa(workbookId)}?wtitle=${encodeURIComponent($('#title').val())}`);
 		});
 		// 지문 타이틀 등록으로 이동
 		$('.js-add-passage-title').click(function() {
@@ -276,12 +276,12 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		// [지문 수정 화면으로 이동]-----------------------------------------------------
 		.on('click', '.js-edit-passage', function() {
 			const passageId = Number(this.closest('.passage').dataset.pid);
-	
+			const passageTitle = this.closest('.passage').querySelector('.passage-title').title;
 			sessionStorage.setItem('workbookId', workbookId);
 			sessionStorage.setItem('workbookCover', workbookCover);
 			sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));		
 			sessionStorage.setItem('editingPassageId', passageId);
-			location.assign('/workbook/mybook/edit/passage/' + ntoa(passageId));
+			location.assign(`/workbook/mybook/edit/passage/${ntoa(passageId)}?ptitle=${encodeURIComponent(passageTitle)}`);
 		})
 		
 		// [지문 삭제]----------------------------------------------------------------
