@@ -5,11 +5,10 @@
  * @param callback 오디오 재생 완료 시 호출할 함수
  * @author LGM
  */
- 
-(function(window) {
+/*(function(window) {
 	// define online and offline audio context
 	
-	const audioCtx = new AudioContext();
+	let audioCtx;
 	
 	let source;
 	
@@ -18,7 +17,7 @@
 	// use XHR to load an audio track, and
 	// decodeAudioData to decode it and OfflineAudioContext to render it
 	
-	function load(src) {
+	async function load(src) {
 	  const request = new XMLHttpRequest();
 	
 	  request.open('GET', src, true);
@@ -27,11 +26,13 @@
 	
 	  request.onload = () => {
 	    cachedArrayBufferMap[src] = request.response;
+	    return Promise.resolve();
 	  }
 	  request.send();
 	}
 	
 	function play(src) {
+		audioCtx = audioCtx || new AudioContext();
 		const srcToPlay = src || Object.keys(cachedArrayBufferMap).slice(-1)[0];
 		audioCtx.decodeAudioData(cachedArrayBufferMap[srcToPlay].slice(), (buff) => {
 			// Create a source node from the buffer
@@ -40,9 +41,54 @@
 			// Connect to the final output node (the speakers)
 			source.connect(audioCtx.destination);
 			// 오디오를 딜레이 없이 즉시 pausedAt 시점부터 재생
-			source.start(0);
+			if (source.start) {
+				source.start(0);
+			} else if (source.play) {
+				source.play(0);
+			} else if (source.noteOn) {
+				source.noteOn(0);
+			}else console.error('cannot play')
 		})
 	}
 	
 	window['WebAudioJS'] = {play, load};
+})(window);*/
+// 2023.02.16 코드 리팩토링
+(function(window) {
+	let audioCtx;
+	const cachedBuffers = {};
+
+	async function load(src) {
+		if (cachedBuffers[src]) {
+			return;
+		}
+		const response = await fetch(src);
+		const arrayBuffer = await response.arrayBuffer();
+		cachedBuffers[src] = await audioCtx.decodeAudioData(arrayBuffer);
+	}
+
+	function play(src) {
+		audioCtx = audioCtx || new AudioContext();
+		load(src).then(() => {
+			const buffer = cachedBuffers[src];
+			if (!buffer) {
+				console.error(`Buffer not found for ${src}`);
+				return;
+			}
+			const source = audioCtx.createBufferSource();
+			source.buffer = buffer;
+			source.connect(audioCtx.destination);
+			if (source.start) {
+				source.start(0);
+			} else if (source.play) {
+				source.play(0);
+			} else if (source.noteOn) {
+				source.noteOn(0);
+			} else {
+				console.error('Cannot play audio');
+			}
+		});
+	}
+
+	window.WebAudioJS = { play, load };
 })(window);
