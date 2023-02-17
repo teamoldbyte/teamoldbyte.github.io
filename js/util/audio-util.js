@@ -64,7 +64,7 @@
 		}
 		const response = await fetch(src);
 		const arrayBuffer = await response.arrayBuffer();
-		cachedBuffers[src] = await audioCtx.decodeAudioData(arrayBuffer);
+		cachedBuffers[src] = await (audioCtx||(audioCtx=new AudioContext())).decodeAudioData(arrayBuffer);
 	}
 
 	function play(src) {
