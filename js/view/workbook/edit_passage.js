@@ -198,27 +198,52 @@ function pageinit(sentenceList, memberId) {
 
 	// [문장 입력 시 제한사항 적용]---------------------------------------------------
 	$(document).on('input', '.edit-section textarea,.add-section textarea', function() {
-		const $section = $(this.closest('.edit-section,.add-section')),
-			$submitBtn = $section.find('.js-edit,.js-add'),
-			$invalid = $section.find('.invalid-text');
+		// extract the necessary elements from the DOM
+		const section = this.closest('.edit-section, .add-section');
+		const submitBtn = section.querySelector('.js-edit, .js-add');
+		const invalidText = section.querySelector('.invalid-text');
+
+		// extract the necessary information from the input
 		const { input, arr, inputCursor } = extractHighlightInfo(this.value, this.selectionStart);
 
-		// 길이가 0이거나 영문자 외에 입력값이 있는지 검사
+		// check for invalid input
+		let isInvalid = false;
 		if (input.length === 0) {
-			$invalid.hide();
-			$submitBtn.prop('disabled', true);
-		} else if (input.length > MAX_SENTENCE_LENGTH || input.includes('×')) {
-			$invalid.show();
+			isInvalid = true;
+		} else {
+			const sentences = tokenizer.sentences(input);
+			const isSentenceTooLong = sentences.some(sentence => sentence.length > MAX_SENTENCE_LENGTH);
+			if (isSentenceTooLong) {
+				const index = sentences.findIndex(sentence => sentence.length > MAX_SENTENCE_LENGTH) + 1;
+				invalidText.textContent = `${index}번째 문장의 글자수가 너무 많습니다.`;
+				isInvalid = true;
+			} else if (input.includes('×')) {
+				invalidText.textContent = '영문장에 부적절한 문자가 포함되어 × 기호로 치환됐습니다.';
+				isInvalid = true;
+			}
+		}
+
+		// update the DOM based on the input validation result
+		if (isInvalid) {
+			invalidText.style.display = 'block';
+			submitBtn.disabled = true;
+		} else {
+			invalidText.style.display = 'none';
+			submitBtn.disabled = false;
+		}
+
+		// highlight the input if necessary
+		
+		if (input.includes('×')) {
 			this.value = input;
-			$(this).highlightWithinTextarea({ highlight: [
-				{className: 'bg-fc-yellow', highlight: ['×']},
-				{className: 'bg-fc-purple corrected', highlight: arr}]})
+			$(this).highlightWithinTextarea({
+				highlight: [
+					{ className: 'bg-fc-yellow', highlight: ['×'] },
+					{ className: 'bg-fc-purple corrected', highlight: arr }
+				]
+			});
 			this.setSelectionRange(inputCursor, inputCursor);
 			this.focus();
-			$submitBtn.prop('disabled', true);
-		} else {
-			$invalid.hide();
-			$submitBtn.prop('disabled', false);
 		}
 	})
 
@@ -226,57 +251,63 @@ function pageinit(sentenceList, memberId) {
 	$('.js-add').on('click', function() {
 		const sentences = tokenizer.sentences($('.add-section textarea').val());
 		const orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
-			
+
 		// 문장 검사
-		const total = Array.from(sentences, sentence => {
+		const filteredSentences = sentences.map(sentence => {
 			// 아래와 같은 경우 번호 삭제
 			// 426. I was
 			// was bored." 427.
-			return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
-						.replace(/(['"])\s+\d+[?!.]$/, '$1')
+			const trimmedSentence = sentence.trim();
+			const match = trimmedSentence.match(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/);
+			const sentenceWithoutNumber = match ? match[1] : trimmedSentence;
+			return sentenceWithoutNumber.replace(/(['"])\s+\d+[?!.]$/, '$1');
 		}).filter(sentence => {
 			return /[a-zA-Z\s]/.test(sentence);
 		});
-		let text = total.join(' ').capitalize1st();
+
+		if (filteredSentences.length === 0) {
+			return;
+		}
+		const total = filteredSentences.join(' ').capitalize1st();
 		const textarea = $('.add-section textarea').get(0);
-		textarea.value = text;
+		textarea.value = total;
 		let checkingPos = 0;
 		// 입력된 문장들 각각을 검사.
-		for(let i = 0, len = total.length; i < len; i++) {
-			const tempSentence = total[i];
+		for (let i = 0, len = filteredSentences.length; i < len; i++) {
+			const tempSentence = filteredSentences[i];
 			const alertAndFocusWrongSentence = (msg) => {
 				alertModal(`${i + 1}번째 ${msg}\n문장 내용은 아래와 같습니다.\n${tempSentence}`, () => {
 					textarea.focus();
 					textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 				})
 			}
-			if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+			if (tempSentence.length > MAX_SENTENCE_LENGTH) {
 				alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
-				return;					
+				return;
 			}
-			else if(!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
+			else if (!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
 				alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
-				return;					
+				return;
 			}
-			else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+			else if (!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
 				alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
 				return;
 			}
 			checkingPos += tempSentence.length + (i < len - 1 ? 1 : 0);
 		}
-		
-		
+
 		// 일일 사용량이 넘어가는 순간 더이상 문장 추가/수정 불가.
-		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
-		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		const isUsageExceeded = myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
+			&& myFicoUsages.length + total.length >= MAX_SENTENCE_LENGTH_PER_DAY;
+		if (isUsageExceeded) {
 			myFicoUsages.confirmed = false;
 			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
 			$('.origin-sentence').removeAttr('data-toggle');
 			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
 			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
-			delete oneSentenceJSON.children[0].children[2]["data-toggle"];			
+			delete oneSentenceJSON.children[0].children[2]["data-toggle"];
 		}
-		myFicoUsages.length += text.length;
+		myFicoUsages.length += total.length;
 		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
 		// 전송 내용 생성.
 		const command = { sentenceId: 0, passageId: passageId, eng: text, orderNum };
@@ -287,34 +318,41 @@ function pageinit(sentenceList, memberId) {
 		//-----------------------------------------------
 
 		function successAdd(sentences) {
-			$('#loadingModal').modal('hide');
-			if (sentences.length > 0) {
-				let alertMsg = `아래와 같은 ${sentences.length}개의 문장이 추가되었습니다.`;
-				$('.js-cancel-add').trigger('click');
+			const $loadingModal = $('#loadingModal');
+			$loadingModal.modal('hide');
 
-				const sentenceListSection = document.querySelector(LIST_SENTENCE_SELECTOR);
-				const anims = [];
-				for (let i = 0, len = sentences.length; i < len; i++) {
-					const sentenceUnit = sentences[i];
-					const sentenceBlock = createElement(oneSentenceJSON);
-					sentenceBlock.querySelector('.sentence-text').textContent = sentenceUnit.eng;
-					sentenceBlock.querySelector('.edit-section textarea').textContent = sentenceUnit.eng;
-					sentenceBlock.dataset.sid = sentenceUnit.sentenceId;
-					sentenceBlock.dataset.ordernum = sentenceUnit.orderNum;
-					sentenceListSection.appendChild(sentenceBlock);
-					alertMsg += `\n[${(i + 1)}] ${sentenceUnit.eng}`;
-					anims.push(sentenceBlock);
-				}
-				arrangeSentences();
-				calcParaLengthToggleAddBtn();
-				alertModal(alertMsg);
-				focusEffectSentence(anims);
+			if (sentences.length === 0) {
+				return;
 			}
+
+			const sentenceListSection = document.querySelector(LIST_SENTENCE_SELECTOR);
+			const anims = [];
+			let alertMsg = `아래와 같은 ${sentences.length}개의 문장이 추가되었습니다.`;
+
+			$('.js-cancel-add').trigger('click');
+
+			for (let i = 0; i < sentences.length; i++) {
+				const sentenceUnit = sentences[i];
+				const sentenceBlock = createElement(oneSentenceJSON);
+				sentenceBlock.querySelector('.sentence-text').textContent = sentenceUnit.eng;
+				sentenceBlock.querySelector('.edit-section textarea').textContent = sentenceUnit.eng;
+				sentenceBlock.dataset.sid = sentenceUnit.sentenceId;
+				sentenceBlock.dataset.ordernum = sentenceUnit.orderNum;
+				sentenceListSection.appendChild(sentenceBlock);
+				alertMsg += `\n[${i + 1}] ${sentenceUnit.eng}`;
+				anims.push(sentenceBlock);
+			}
+
+			arrangeSentences();
+			calcParaLengthToggleAddBtn();
+			alertModal(alertMsg);
+			focusEffectSentence(anims);
 		}
 
 		function failAdd() {
+			const $loadingModal = $('#loadingModal');
 			alertModal('등록에 실패했습니다.');
-			$('#loadingModal').modal('hide');
+			$loadingModal.modal('hide');
 		}
 	});
 
