@@ -405,17 +405,38 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		
 		
 		function createWorker(worker) {
-			return { el: 'div', className: 'coworker row g-0', 'data-mid': worker.memberId, children: [
-				{ el: 'div', className: 'member-personacon', children: [
-					{ el: 'img', className: 'personacon-profile', src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
-					style: {
-					    backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat',
-					    backgroundImage: (worker?.image.length > 0) ? `url(/resource/profile/images/${worker.image})` : 'var(--fc-logo-head)'
-					}}
-				]},
-				{ el: 'span', className: 'email col-6 my-auto', textContent: worker.email },
-				{ el: 'span', className: 'alias col-3 my-auto', textContent: worker.alias },
-				{ el: 'button', className: 'my-auto btn del-btn col-1 fas fa-trash-alt', onclick: function() {
+			const imageSrc = worker?.image?.length > 0
+				? `/resource/profile/images/${worker.image}`
+				: 'var(--fc-logo-head)';
+
+			const memberPersonacon = {
+				el: 'img',
+				className: 'personacon-profile',
+				src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
+				style: {
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+					backgroundRepeat: 'no-repeat',
+					backgroundImage: `url(${imageSrc})`,
+				},
+			};
+
+			const email = {
+				el: 'span',
+				className: 'email col-6 my-auto',
+				textContent: worker.email,
+			};
+
+			const alias = {
+				el: 'span',
+				className: 'alias col-3 my-auto',
+				textContent: worker.alias,
+			};
+
+			const deleteButton = {
+				el: 'button',
+				className: 'my-auto btn del-btn col-1 fas fa-trash-alt',
+				onclick: function() {
 					const _this = this;
 					confirmModal(`${worker.alias}님을 작업자에서 제외하시겠습니까?`, function() {
 						$.ajax({
@@ -428,11 +449,23 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 							},
 							error: function() {
 								alertModal('작업자 제외가 실패했습니다.');
-							}
-						})
-					})
-				}}
-			]}
+							},
+						});
+					});
+				},
+			};
+
+			return {
+				el: 'div',
+				className: 'coworker row g-0',
+				'data-mid': worker.memberId,
+				children: [
+					{ el: 'div', className: 'member-personacon', children: [memberPersonacon] },
+					email,
+					alias,
+					deleteButton,
+				],
+			};
 		}
 		function feedbackPageRefresh(page) {
 			const contentJSONs = Array.from(page.content, item => {
