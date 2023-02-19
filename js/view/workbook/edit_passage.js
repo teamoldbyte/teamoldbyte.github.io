@@ -60,26 +60,23 @@ function pageinit(sentenceList, memberId) {
 	/**
 	myFicoUsage = date : today's date, length: total sentences length of today, confirmed: whether alert modal popped ever.
 	 */
-	let myFicoUsages = localStorage.getItem('MFUSG');
-	
-	if(myFicoUsages && myFicoUsages.user == ntoa(memberId)) {
-		myFicoUsages = JSON.parse(atob(localStorage.getItem('MFUSG')));
-		// 기존 사용량 날짜가 다르다면 오늘자로 사용량 초기화
-		if(myFicoUsages.date != THIS_DATE) {
-			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: true });
-		}
+	const MY_FICO_USAGES_KEY = 'MFUSG';
+
+	let myFicoUsages = JSON.parse(atob(localStorage.getItem(MY_FICO_USAGES_KEY)) || '{}');
+	if (myFicoUsages.user !== ntoa(memberId) || myFicoUsages.date !== THIS_DATE) {
+		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
+		myFicoUsages = { user: ntoa(memberId), date: THIS_DATE, length: 0, confirmed: false };
+		$.getJSON('/workbook/passage/usage')
+			.done(length => Object.assign(myFicoUsages, { length, confirmed: true }))
+			.always(() => _verifyLimit());
+	} else {
 		_verifyLimit();
-	}else {
-		myFicoUsages = { user: ntoa(memberId) };
-		$.getJSON('/workbook/passage/usage', function(length) {
-			Object.assign(myFicoUsages, { date: THIS_DATE, length, confirmed: false });
-			
-		}).fail(() => {
-			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: false });
-		}).always(_verifyLimit);
 	}
 	
-	function _verifyLimit() {
+	/**
+	 * 현재 문장 분석량 확인. 초과시 경고 메세지 표시
+	 */
+	function _verifyLimit(callback) {
 		if(myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
 			$('.origin-sentence').removeAttr('data-toggle');
@@ -87,11 +84,14 @@ function pageinit(sentenceList, memberId) {
 			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
 			delete oneSentenceJSON.children[0].children[2]["data-toggle"];
 			if(!myFicoUsages.confirmed) {
-				alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>하여\n문장을 <span class="text-red-700">추가 및 수정</span>할 수 없습니다.\n문장을 <span class="text-blue-600">순서 이동 및 삭제</span>할 수 있습니다.`);
+				alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>하여\n문장을 <span class="text-red-700">추가 및 수정</span>할 수 없습니다.\n문장을 <span class="text-blue-600">순서 이동 및 삭제</span>할 수 있습니다.`, () => callback&&callback());
 				myFicoUsages.confirmed = true;
 			}
+			localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
+		}else {
+			localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
+			if(callback) callback();
 		}
-		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
 	}	
 
 // ----------------------사용량 측정 End ------------------------------------
@@ -198,15 +198,15 @@ function pageinit(sentenceList, memberId) {
 
 	// [문장 입력 시 제한사항 적용]---------------------------------------------------
 	$(document).on('input', '.edit-section textarea,.add-section textarea', function() {
-		// extract the necessary elements from the DOM
+		// Get necessary DOM elements
 		const section = this.closest('.edit-section, .add-section');
 		const submitBtn = section.querySelector('.js-edit, .js-add');
 		const invalidText = section.querySelector('.invalid-text');
 
-		// extract the necessary information from the input
-		const { input, arr, inputCursor } = extractHighlightInfo(this.value, this.selectionStart);
+		// Extract necessary information from input
+		const { input, inputCursor } = extractHighlightInfo(this.value, this.selectionStart);
 
-		// check for invalid input
+		// Validate input
 		let isInvalid = false;
 		if (input.length === 0) {
 			isInvalid = true;
@@ -223,24 +223,15 @@ function pageinit(sentenceList, memberId) {
 			}
 		}
 
-		// update the DOM based on the input validation result
-		if (isInvalid) {
-			invalidText.style.display = 'block';
-			submitBtn.disabled = true;
-		} else {
-			invalidText.style.display = 'none';
-			submitBtn.disabled = false;
-		}
+		// Update DOM based on input validation result
+		invalidText.style.display = isInvalid ? 'block' : 'none';
+		submitBtn.disabled = isInvalid;
 
-		// highlight the input if necessary
-		
+		// Highlight input if necessary
 		if (input.includes('×')) {
 			this.value = input;
 			$(this).highlightWithinTextarea({
-				highlight: [
-					{ className: 'bg-fc-yellow', highlight: ['×'] },
-					{ className: 'bg-fc-purple corrected', highlight: arr }
-				]
+				highlight: [{ className: 'bg-fc-yellow', highlight: ['×'] }]
 			});
 			this.setSelectionRange(inputCursor, inputCursor);
 			this.focus();
@@ -301,16 +292,10 @@ function pageinit(sentenceList, memberId) {
 			&& myFicoUsages.length + total.length >= MAX_SENTENCE_LENGTH_PER_DAY;
 		if (isUsageExceeded) {
 			myFicoUsages.confirmed = false;
-			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
-			$('.origin-sentence').removeAttr('data-toggle');
-			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
-			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
-			delete oneSentenceJSON.children[0].children[2]["data-toggle"];
 		}
 		myFicoUsages.length += total.length;
-		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
 		// 전송 내용 생성.
-		const command = { sentenceId: 0, passageId: passageId, eng: text, orderNum };
+		const command = { sentenceId: 0, passageId: passageId, eng: total, orderNum };
 
 		$('#loadingModal').modal('show');
 		// 지문 문장 수정(ajax)-----------------------------
@@ -345,8 +330,9 @@ function pageinit(sentenceList, memberId) {
 
 			arrangeSentences();
 			calcParaLengthToggleAddBtn();
-			alertModal(alertMsg);
-			focusEffectSentence(anims);
+			alertModal(alertMsg, () => {
+				_verifyLimit(() => focusEffectSentence(anims));
+			});
 		}
 
 		function failAdd() {
@@ -376,7 +362,9 @@ function pageinit(sentenceList, memberId) {
 		let text = total.join(' ').capitalize1st();
 		const textarea = $sentenceSection.find('.edit-section textarea').get(0);
 		textarea.value = text;
+		
 		let checkingPos = 0;
+		
 		// 입력된 문장들 각각을 검사.
 		for(let i = 0, len = total.length; i < len; i++) {
 			const tempSentence = total[i];
@@ -417,18 +405,12 @@ function pageinit(sentenceList, memberId) {
 		
 		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
 		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
-			myFicoUsages.confirmed = false;
-			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
-			$('.origin-sentence').removeAttr('data-toggle');
-			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
-			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
-			delete oneSentenceJSON.children[0].children[2]["data-toggle"];			
+			myFicoUsages.confirmed = false;	
 		}
 		myFicoUsages.length += text.length;
-		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));		
 
 		// 기존 문장과 동일한 지 검사
-		command['sameTextSeq'] = (origin.toLowerCase() == text.toLowerCase());
+		command.sameTextSeq = (origin.toLowerCase() === text.toLowerCase());
 
 		$('#loadingModal').modal('show');
 		// 지문 문장 수정(ajax)-------------------------------
@@ -437,12 +419,13 @@ function pageinit(sentenceList, memberId) {
 
 		function successEdit(sentences) {
 			$('#loadingModal').modal('hide');
-			if (sentences.length > 1) {
-				let alertMsg = `문장이 아래와 같이 ${sentences.length}개로 나뉘었습니다.`;
+			const len = sentences.length;
+			if (len > 1) {
+				let alertMsg = `문장이 아래와 같이 ${len}개로 나뉘었습니다.`;
 				$sentenceSection.find('.edit-section').one('hidden.bs.collapse', function() {
-					$sentenceSection.hide(function() {
-						const anims = [];
-						for (let i = 0, len = sentences.length; i < len; i++) {
+					$sentenceSection.hide(() => {
+						const anims = new Array(len);
+						for (let i = 0; i < len; i++) {
 							const sentenceUnit = sentences[i];
 							const $sentenceBlock = $sentenceSection.clone();
 							$sentenceBlock.find('.sentence-text, textarea')
@@ -451,24 +434,28 @@ function pageinit(sentenceList, memberId) {
 							$sentenceBlock[0].dataset.ordernum = sentenceUnit.orderNum;
 							$sentenceSection.before($sentenceBlock);
 							alertMsg += `\n[${(i + 1)}] ${sentenceUnit.eng}`;
-							anims.push($sentenceBlock[0]);
+							anims[i] = $sentenceBlock[0];
 						}
 						$sentenceSection.remove();
 						$(ONE_SENTENCE_SELECTOR).slideDown();
 						arrangeSentences();
 						calcParaLengthToggleAddBtn();
-						alertModal(alertMsg);
-						focusEffectSentence(anims);
+						alertModal(alertMsg, () => {
+							_verifyLimit(() => focusEffectSentence(anims));
+						});
 					});
+				}).collapse('hide');
+			} else if (len === 1) {
+				const sentenceUnit = sentences[0];
+				const $sentenceSectionEdit = $sentenceSection.find('.edit-section');
+				alertModal('수정되었습니다.', () => {
+					_verifyLimit(() => {
+						$sentenceSection.find('.sentence-text').text(sentenceUnit.eng);
+						$sentenceSection[0].dataset.sid = sentenceUnit.sentenceId;
+						$sentenceSectionEdit.find('textarea').val(sentenceUnit.eng).end().collapse('hide');
+						focusEffectSentence($sentenceSection[0]);
+					})
 				});
-				$sentenceSection.find('.edit-section').collapse('hide');
-			} else if (sentences.length == 1) {
-				alertModal('수정되었습니다.');
-				$sentenceSection.find('.sentence-text').text(sentences[0].eng);
-				$sentenceSection[0].dataset.sid = sentences[0].sentenceId;
-				$sentenceSection.find('.edit-section textarea').val(sentences[0].eng);
-				$sentenceSection.find('.edit-section').collapse('hide');
-				focusEffectSentence($sentenceSection[0]);
 			}
 		}
 
@@ -477,25 +464,24 @@ function pageinit(sentenceList, memberId) {
 			$('#loadingModal').modal('hide');
 		}
 	})
+	// [문장을 지문에서 삭제]--------------------------------------------------------
+	.on('click', '.js-del-sentence', function() {
 
-		// [문장을 지문에서 삭제]--------------------------------------------------------
-		.on('click', '.js-del-sentence', function() {
+		if (!confirm('문장을 삭제하시겠습니까?')) return;
+		const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
+		// 문장 삭제(ajax)------------------------
+		delPassageSentence({ passageId: passageId, sentenceId: Number($sentenceSection[0].dataset.sid) }, successDel);
+		//--------------------------------------
 
-			if (!confirm('문장을 삭제하시겠습니까?')) return;
-			const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
-			// 문장 삭제(ajax)------------------------
-			delPassageSentence({ passageId: passageId, sentenceId: Number($sentenceSection[0].dataset.sid) }, successDel);
-			//--------------------------------------
-
-			function successDel() {
-				alertModal('문장이 삭제되었습니다.');
-				$sentenceSection.slideUp(function() {
-					$(this).remove();
-					arrangeSentences();
-					calcParaLengthToggleAddBtn();
-				})
-			}
-		});
+		function successDel() {
+			alertModal('문장이 삭제되었습니다.');
+			$sentenceSection.slideUp(function() {
+				$(this).remove();
+				arrangeSentences();
+				calcParaLengthToggleAddBtn();
+			})
+		}
+	});
 
 	// - - - - - - - - - - - Embeded functions - - - - - - - - - - - - - - - - -
 	// 문장섹션을 잠깐 강조 효과 적용
@@ -512,7 +498,8 @@ function pageinit(sentenceList, memberId) {
 		);
 	}
 
-	// 전체 문장의 길이 계산하여 문장 추가 버튼과 지문 추가 버튼 토글하기
+	/** 전체 문장의 길이 계산하여 문장 추가 버튼과 지문 추가 버튼 토글하기
+	 */
 	function calcParaLengthToggleAddBtn() {
 		const overflow = Array.from($(`${ONE_SENTENCE_SELECTOR} .sentence-text`).get(), sentence => sentence.textContent).join('').length >= 1500;
 
