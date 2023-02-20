@@ -62,7 +62,9 @@ function pageinit(sentenceList, memberId) {
 	 */
 	const MY_FICO_USAGES_KEY = 'MFUSG';
 
-	let myFicoUsages = JSON.parse(atob(localStorage.getItem(MY_FICO_USAGES_KEY)) || '{}');
+	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
+	
+	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
 	if (myFicoUsages.user !== ntoa(memberId) || myFicoUsages.date !== THIS_DATE) {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
 		myFicoUsages = { user: ntoa(memberId), date: THIS_DATE, length: 0, confirmed: false };
