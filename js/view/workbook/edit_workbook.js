@@ -370,7 +370,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			$.ajax({
 				url: '/workbook/coworker/add',
 				type: 'POST',
-				data: { workbookId, coworkerIdList },
+				data: { workbookId: workbookId, coworkerIdList },
 				success: function() {
 					alertModal('공동 작업자가 추가되었습니다.');
 					$('#coworker-email').val('');
@@ -386,6 +386,30 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				}
 			})
 		})
+		// [공동 작업자 제외]
+		$(document).on('click', '.del-coworker', function() {
+			console.log(this.closest('.coworker'))
+			const $coworker = $(this).closest('.coworker');
+			const alias = $coworker.find('.alias').text();
+			const memberId = parseInt($coworker.data('mid'));
+			confirmModal(`${alias}님을 작업자에서 제외하시겠습니까?`, () => {
+				console.log($coworker)
+				$.ajax({
+					url: '/workbook/coworker/del',
+					type: 'POST',
+					data: { workbookId: workbookId, coworkerIdList: [memberId] },
+					success: () => {
+						console.log($coworker)
+						$coworker.remove();
+						alertModal(`${alias}님을 작업자에서 제외했습니다.`);
+					},
+					error: function() {
+						alertModal('작업자 제외가 실패했습니다.');
+					},
+				});
+			});
+		})
+		
 		// [피드백 목록, 피코쌤노트요청 목록 추가 조회]----------------------------------
 		$(document).on('click', '.feedback-list .page-item, .note-request-list .page-item', function() {
 			const content = this.closest('.pagination-section').dataset.content;
@@ -405,34 +429,50 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		
 		
 		function createWorker(worker) {
-			return { el: 'div', className: 'coworker row g-0', 'data-mid': worker.memberId, children: [
-				{ el: 'div', className: 'member-personacon', children: [
-					{ el: 'img', className: 'personacon-profile', src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
-					style: {
-					    backgroundPosition: 'center', backgroundSize: 'cover', backgroundRepeat: 'no-repeat',
-					    backgroundImage: (worker?.image.length > 0) ? `url(/resource/profile/images/${worker.image})` : 'var(--fc-logo-head)'
-					}}
-				]},
-				{ el: 'span', className: 'email col-6 my-auto', textContent: worker.email },
-				{ el: 'span', className: 'alias col-3 my-auto', textContent: worker.alias },
-				{ el: 'button', className: 'my-auto btn del-btn col-1 fas fa-trash-alt', onclick: function() {
-					const _this = this;
-					confirmModal(`${worker.alias}님을 작업자에서 제외하시겠습니까?`, function() {
-						$.ajax({
-							url: '/workbook/coworker/del',
-							type: 'POST',
-							data: { workbookId, coworkerIdList: [worker.memberId] },
-							success: function() {
-								$(_this).closest('.coworker').remove();
-								alertModal(`${worker.alias}님을 작업자에서 제외했습니다.`);
-							},
-							error: function() {
-								alertModal('작업자 제외가 실패했습니다.');
-							}
-						})
-					})
-				}}
-			]}
+			const imageSrc = worker?.image?.length > 0
+				? `/resource/profile/images/${worker.image}`
+				: 'var(--fc-logo-head)';
+
+			const memberPersonacon = {
+				el: 'img',
+				className: 'personacon-profile',
+				src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
+				style: {
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+					backgroundRepeat: 'no-repeat',
+					backgroundImage: `url(${imageSrc})`,
+				},
+			};
+
+			const email = {
+				el: 'span',
+				className: 'email col-6 my-auto',
+				textContent: worker.email,
+			};
+
+			const alias = {
+				el: 'span',
+				className: 'alias col-3 my-auto',
+				textContent: worker.alias,
+			};
+
+			const deleteButton = {
+				el: 'button',
+				className: 'del-coworker my-auto btn del-btn col-1 fas fa-trash-alt',
+			};
+
+			return {
+				el: 'div',
+				className: 'coworker row g-0',
+				'data-mid': worker.memberId,
+				children: [
+					{ el: 'div', className: 'member-personacon', children: [memberPersonacon] },
+					email,
+					alias,
+					deleteButton,
+				],
+			};
 		}
 		function feedbackPageRefresh(page) {
 			const contentJSONs = Array.from(page.content, item => {
