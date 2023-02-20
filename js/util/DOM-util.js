@@ -7,7 +7,7 @@
 */
 function createElement(json) {
 	// 키-값 쌍이 아닌 '문자열'인 경우 텍스트노드로 반환
-	if(typeof json == 'string') return document.createTextNode(json);
+	if (typeof json === "string") return document.createTextNode(json);
 	// 배열인 경우 자식 요소 뭉치로 반환
 	if(Array.isArray(json)) {
 		const fragment = document.createDocumentFragment();
@@ -17,39 +17,34 @@ function createElement(json) {
 		return fragment;
 	}
 	const element = document.createElement(json.el);
-	const keys = Object.keys(json);
-	for(let i = 0, len = keys.length; i < len; i++) {
-		const key = keys[i];
-		if(key.match(/^data-/)) 
-			// 사용자정의 속성. data-xx 
-			element.dataset[key.replace('data-', '')
-			.replace(/-(\w)/g, g0 => g0.toUpperCase()[1])] = json[key];
-		else if(key == 'children') { 
-			// 자식태그들
-			const childGroupFragment = document.createDocumentFragment(),
-				children = json[key];
-			for(let j = 0, clen = children.length; j < clen; j++) {
-				childGroupFragment.appendChild(createElement(children[j]));
+	
+	for (const [key, value] of Object.entries(json)) {
+		if (key === "children") {
+			// If the key is "children", create a document fragment and append each child element to it.
+			const childFragment = document.createDocumentFragment();
+			const childrenLen = value.length;
+			for (let j = 0; j < childrenLen; j++) {
+				childFragment.appendChild(createElement(value[j]));
 			}
-			element.appendChild(childGroupFragment);
-		}else if(key == 'style') { 
-			// 스타일 속성들. (한 번 더 들어가야 함)
-			if(typeof json[key] == 'string') {
-				element.style.cssText = json[key];
-			}else if(typeof json[key] == 'object') {
-				Object.assign(element.style, json[key]);
-				/*const styleProperties = json[key],
-					styleKeys = Object.keys(styleProperties);
-				for(let j = 0, slen = styleKeys.length; j < slen; j++) {
-					const property = styleKeys[j];
-					element[key][property] = styleProperties[property];
-				}*/
-			}else console.error('style에 ' + typeof json[key] + '은/는 맞지 않습니다.');
-		}else if(key != 'el') { // 나머지 속성들 적용
-			if(typeof element[key] == 'undefined') {
-				element.setAttribute(key, json[key]);
-			}else element[key] = json[key];
-		}		
+			element.appendChild(childFragment);
+		} else if (key === "style") {
+			// If the key is "style", apply each style property to the element's style object.
+			if (typeof value === "string") {
+				element.style.cssText = value;
+			} else if (typeof value === "object") {
+				Object.assign(element.style, value);
+			} else {
+				console.error(`Invalid type for "style": ${typeof value}`);
+			}
+		} else if (key.startsWith("data-")) {
+			// If the key starts with "data-", set the corresponding dataset property on the element.
+			element.dataset[
+				key.replace(/^data-/, '').replace(/-(\w)/g, (_m, p1) => p1.toUpperCase())
+			] = value;
+		} else if (key !== "el") {
+			// Otherwise, set the key as an attribute or property on the element.
+			element[key] = value;
+		}
 	}
 	return element;
 }
@@ -95,30 +90,70 @@ function parseHTML(html) {
 
 // alert를 대신하여 BootStrap Modal을 생성해서 표시
 function alertModal(msg, callback) {
-	let modal = document.getElementById('alertModal');
-	if(!modal) {
-		modal = createElement({
-			"el":"div","id":"alertModal","class":"modal fade","data-bs-backdrop":"static","tabIndex":0,"children":[
-				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
-					{"el":"div","class":"modal-content","children":[
-						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')},
-							{"el":"div","class":"button-section row g-1 col-6 mx-auto","children":[
-								{"el":"button","class":"btn btn-fico", 'data-bs-dismiss':'modal',"textContent": "확인"}
-		]}]}]}]}]});
+	const modal = document.getElementById('alertModal');
+	if (!modal) {
+		const button = {
+			el: "button",
+			class: "btn btn-fico",
+			"data-bs-dismiss": "modal",
+			textContent: "확인",
+		};
+		const children = [
+			{
+				el: "div",
+				class: "text-section my-3 text-center text-dark",
+				innerHTML: msg.replace(/\n/g, "<br>"),
+			},
+			{
+				el: "div",
+				class: "button-section row g-1 col-6 mx-auto",
+				children: [button],
+			},
+		];
+		const modalContent = {
+			el: "div",
+			class: "modal-content",
+			children: [
+				{
+					el: "div",
+					class: "modal-body row g-0",
+					children: children,
+				},
+			],
+		};
+		const modalDialog = {
+			el: "div",
+			class: "modal-dialog modal-md modal-dialog-centered",
+			children: [modalContent],
+		};
+		const modalEl = {
+			el: "div",
+			id: "alertModal",
+			class: "modal fade",
+			"data-bs-backdrop": "static",
+			tabIndex: 0,
+			children: [modalDialog],
+		};
+		const modal = createElement(modalEl);
 		document.body.appendChild(modal);
-		modal.addEventListener('keypress', function(event) {
-			if(event.code == 'Enter') {
-				bootstrap?.Modal?.getInstance(modal).hide();
+		modal.addEventListener("keypress", function(event) {
+			if (event.code === "Enter") {
+				const modalInstance = bootstrap?.Modal?.getInstance(modal);
+				modalInstance && modalInstance.hide();
 			}
-		});		
-	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
-	modal.removeEventListener('hidden.bs.modal', onHidden);
-	modal.addEventListener('hidden.bs.modal', onHidden);
-	function onHidden() {
-		if(callback) callback();
+		});
+		modal.addEventListener("hidden.bs.modal", onHidden);
+	} else {
+		const textSection = modal.querySelector(".text-section");
+		textSection && (textSection.innerHTML = msg.replace(/\n/g, "<br>"));
 	}
-	bootstrap?.Modal?.getOrCreateInstance(modal).show();
+	modal.removeEventListener("hidden.bs.modal", onHidden);
+	modal.addEventListener("hidden.bs.modal", onHidden);
+	function onHidden() {
+		if (callback) callback();
+	}
+	const modalInstance = bootstrap?.Modal?.getOrCreateInstance(modal);
+	modalInstance && modalInstance.show();
 }
 // window.confirm을 대신하여 Bootstrap Modal을 생성해서 표시. '확인'을 누르면 callback 실행
 function confirmModal(msg, callback) {
