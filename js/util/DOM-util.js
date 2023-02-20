@@ -113,10 +113,10 @@ function alertModal(msg, callback) {
 			}
 		});		
 	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
-	modal.removeEventListener('hidden.bs.modal', onHidden);
 	modal.addEventListener('hidden.bs.modal', onHidden);
 	function onHidden() {
 		if(callback) callback();
+		modal.removeEventListener('hidden.bs.modal', onHidden);
 	}
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
@@ -149,13 +149,16 @@ function confirmModal(msg, callback) {
 				bootstrap?.Modal?.getInstance(modal).hide();
 			}
 		})
-		modal.addEventListener('hide.bs.modal', (e) => onHide(e));
+		modal.addEventListener('hidden.bs.modal', onHide);
 	}else {
 		modal.dataset.bsReturn = 0;
 		modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
+		modal.addEventListener('hidden.bs.modal', onHide);
 	}
+
 	function onHide(event) {
-		if(Boolean(parseInt(event.target.dataset.bsReturn))) callback();
+		if (Boolean(parseInt(event.target.dataset.bsReturn))) callback();
+		modal.removeEventListener('hidden.bs.modal', onHide)
 	}
 	
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
