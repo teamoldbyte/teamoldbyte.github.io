@@ -422,20 +422,17 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		.on('click', '.feedback-unit', function() {
 			const $text = $(this).find('.feedback-text');
 			const textMax = $text.data('org');
-			const textMin = textMax.replace(/[\r\n].+/g,'');
-			$text.text($(this).is('.open') ? textMin : textMax);
-			if($(this).is('.open')) {
-				$(this).siblings().show();
-			}else {
-				$(this).siblings().hide();
-			}
-			$(this).toggleClass('open');
+			const textMin = textMax.replace(/[\r\n].+/g, '');
+			const isOpen = $(this).toggleClass('open').hasClass('open');
+
+			$text.text(isOpen ? textMax : textMin);
+			$(this).siblings().toggle(!isOpen);
 		})
 		
 		
 		function createWorker(worker) {
 			const imageSrc = worker?.image?.length > 0
-				? `/resource/profile/images/${worker.image}`
+				? `url(/resource/profile/images/${worker.image})`
 				: 'var(--fc-logo-head)';
 
 			const memberPersonacon = {
@@ -446,7 +443,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 					backgroundPosition: 'center',
 					backgroundSize: 'cover',
 					backgroundRepeat: 'no-repeat',
-					backgroundImage: `url(${imageSrc})`,
+					backgroundImage: imageSrc,
 				},
 			};
 
