@@ -20,7 +20,7 @@ function pageinit() {
 			$('#searchResult .one-word-unit-section').toggle(normalWord != null);
 			$('#searchResult .one-word-unit-section').children(':not(.title,.title-section)').remove();
 			if(normalWord) {
-				$('#searchResult').attr('data-word-id', normalWord.wid);
+				$('#searchResult').data('wordId', normalWord.wid);
 				$('#searchResult .level').text(normalWord.level);
 				$('#searchResult .level-input').val(normalWord.level);
 				$('#searchResult .one-word-unit-section').get(0).appendChild(createElement(createSenseListAndForm(false, normalWord.senseList)));
