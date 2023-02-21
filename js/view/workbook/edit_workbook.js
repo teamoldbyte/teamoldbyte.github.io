@@ -424,6 +424,11 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			const textMax = $text.data('org');
 			const textMin = textMax.replace(/[\r\n].+/g,'');
 			$text.text($(this).is('.open') ? textMin : textMax);
+			if($(this).is('.open')) {
+				$(this).siblings().show();
+			}else {
+				$(this).siblings().hide();
+			}
 			$(this).toggleClass('open');
 		})
 		
