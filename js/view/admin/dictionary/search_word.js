@@ -20,7 +20,7 @@ function pageinit() {
 			$('#searchResult .one-word-unit-section').toggle(normalWord != null);
 			$('#searchResult .one-word-unit-section').children(':not(.title,.title-section)').remove();
 			if(normalWord) {
-				$('#searchResult').data('wordId', normalWord.wid);
+				$('#searchResult').get(0).dataset.wordId = normalWord.wid;
 				$('#searchResult .level').text(normalWord.level);
 				$('#searchResult .level-input').val(normalWord.level);
 				$('#searchResult .one-word-unit-section').get(0).appendChild(createElement(createSenseListAndForm(false, normalWord.senseList)));
@@ -69,7 +69,7 @@ function pageinit() {
 			return;
 		}
 		
-		const wordId = parseInt($('#searchResult').attr('data-word-id'));
+		const wordId = parseInt($('#searchResult').get(0).dataset.wordId);
 	
 		$.ajax({
 			type: 'POST',
@@ -135,7 +135,7 @@ function pageinit() {
 	// 뜻 수정
 	.on('click', '.js-edit-meaning', function() {
 		const $senseSection = $(this).closest('.one-part-unit-section');
-		const sid = $senseSection.data('sid');
+		const sid = parseInt($senseSection.get(0).dataset.sid);
 		const $input = $senseSection.find('.input-meaning');
 		const $exampleEng = $senseSection.find('.input-example-eng');
 		const $exampleKor = $senseSection.find('.input-example-kor');
@@ -143,7 +143,7 @@ function pageinit() {
 		const isPhrasalVerb = $senseSection.closest('.showup-sense-list-section').length > 0;
 		
 		if(isPhrasalVerb) {
-			command['wordId'] = $senseSection.closest('.showup-word').data('wordId');
+			command['wordId'] = parseInt($senseSection.closest('.showup-word').get(0).dataset.wordId);
 			command['showUpId'] = sid;
 			command['partType'] = $senseSection.find('.part').text();
 			command['eng'] = $exampleEng.html().trim();
@@ -171,9 +171,9 @@ function pageinit() {
 	.on('click', '.js-edit-cancel', function() {
 		$(this).closest('.one-part-unit-section').find('input,[contenteditable]').each(function() {
 			if(this.matches('input'))
-				$(this).val($(this).data('org'));
+				$(this).val($(this).get(0).dataset.org);
 			else
-				$(this).html($(this).data('org'));
+				$(this).html($(this).get(0).dataset.org);
 		})
 		$(this).hide();
 		$(this).siblings('.js-edit-meaning').hide();		
@@ -185,7 +185,7 @@ function pageinit() {
 		const $input = $addSection.find('input');
 		if($input.val().trim() == 0) return;
 		const isPhrasalVerb = $(this).closest('.showup-word').length > 0;
-		const command = { wordId: parseInt($(this).closest('.showup-word,#searchResult').data('wordId')), 
+		const command = { wordId: parseInt($(this).closest('.showup-word,#searchResult').get(0).dataset.wordId), 
 						partType: $partSelect.val(), meaning: $input.val().trim() };
 		if(isPhrasalVerb) {
 			command['eng'] = $addSection.find('.input-example-eng').html().trim();
@@ -214,8 +214,8 @@ function pageinit() {
 	// 뜻 삭제
 	.on('click', '.js-del-meaning', function() {
 		const $partSection = $(this).closest('.one-part-unit-section');
-		const command = { wordId: $partSection.closest('.showup-word').data('wordId'), 
-						showUpId: $partSection.data('sid') };
+		const command = { wordId: parseInt($partSection.closest('.showup-word').get(0).dataset.wordId), 
+						showUpId: parseInt($partSection.get(0).dataset.sid) };
 		$.ajax({
 			url: '/adminxyz/dictionary/showupsense/del',
 			type: 'POST',
