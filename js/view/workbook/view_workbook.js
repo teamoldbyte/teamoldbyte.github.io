@@ -98,7 +98,7 @@ function pageinit(workbookId, workbookCover, helloBook, isMyOwn, sampleCount, pa
 		}
 		sessionStorage.setItem('workbookCover',this.dataset.cover);
 		sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));
-		location.assign(`/workbook/passage/add/${ntoa(/*[[*{workbookId}]]*/0)}?wtitle=${encodeURIComponent($('#title').text())}`);
+		location.assign(`/workbook/passage/add/${ntoa(workbookId)}?wtitle=${encodeURIComponent($('#title').text())}`);
 	});
 	
 	// [지문 타이틀 수정]-----------------------------------------------------------
