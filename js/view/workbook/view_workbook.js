@@ -22,7 +22,7 @@ function pageinit(workbookId, workbookCover, helloBook, isMyOwn, sampleCount, pa
 	const scrollObserver = new IntersectionObserver((entries) => {
 		if (entries[0].isIntersecting) {
 			const pageNum = $pageScroller.data('pagenum');
-			$.getJSON(`/workbook/passages/${workbookId}?pageNum=${pageNum+1}`, successGetPassages)
+			$.getJSON(`/workbook/passages/${workbookId}?pageNum=${pageNum}`, successGetPassages)
 				.fail(() => {
 					alert('지문 조회에 실패했습니다. 다시 접속해주세요.');
 				});
