@@ -289,7 +289,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		// 편집 저장 실행
 		function saveFunc(svocText) {
 			const sentenceId = parseInt($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
-			const ownerId = parseInt(selectedRow.dataset.ownerId);
+			const ownerId = parseInt($('.workbook-overview-section').data('memberId'));
 			const svocId = parseInt($semantics.data('svocId') || 0);
 			const svocCommand = {sentenceId, ownerId, memberId, encSvocText: svocText};
 			
@@ -633,9 +633,10 @@ function pageinit(memberId, memberAlias, memberImage){
 		const $sentenceUnit = $(_this).closest('.one-sentence-unit-section');
 		const sentenceId = $sentenceUnit.data('sentenceId');
 		const workbookId = $sentenceUnit.data('workbookId');
+		const applicantId = selectedRow.dataset.applicantId;
 		// 피코쌤 노트 상태값 먼저 변경하고, 상태값 변경에 성공 후 편집기 펼치기
 		$.ajax({
-			url: `/adminxyz/workbook/sentence/note/status/${workbookId}/${sentenceId}`,
+			url: `/adminxyz/workbook/sentence/note/status/${workbookId}/${sentenceId}/${applicantId}`,
 			success: (failMsg) => {
 				if(!failMsg) {
 					$('#ssamNoteRequestListDiv tr.bg-info .status-text').text('작성중');
@@ -1260,7 +1261,7 @@ function pageinit(memberId, memberAlias, memberImage){
 	function showWorkBookInfo(workbookInfo, $section) {
 		const $workbookSection = $section.find('.workbook-overview-section');
 		$section.data('workbookId', workbookInfo.workbookId);
-		$workbookSection.find('.wb-id').text(workbookInfo.workbookId);
+		$workbookSection.data('memberId', workbookInfo.memberId).find('.wb-id').text(workbookInfo.workbookId);
 		$workbookSection.find('.image-section img').on('click', () => location.assign(`/workbook/passage/${ntoa(workbookInfo.workbookId)}/${ntoa(workbookInfo.passageId)}`))
 		if(workbookInfo.imagePath)
 			$workbookSection.find('.image-section img').css('backgroundImage', `url(/resource/workbook/cover/${workbookInfo.imagePath})`);
