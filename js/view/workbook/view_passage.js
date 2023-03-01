@@ -1772,7 +1772,7 @@
 		const $unitSection = $(this).closest('.one-sentence-unit-section');
 		const eng = $unitSection.find('.origin-sentence .sentence-text').text().trim();
 		const sentenceId = $unitSection.data('sentenceId');
-		confirmModal('fico쌤 노트를 신청하시겠습니까?', function() {
+		confirmModal('<img class="align-baseline" src="https://static.findsvoc.com/images/icons/ssamnote.png" style="width: 5rem;">를 신청하시겠습니까?', function() {
 			$.ajax({
 				url: '/workbook/ssamnote/request',
 				type: 'POST',
