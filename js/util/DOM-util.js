@@ -121,7 +121,7 @@ function alertModal(msg, callback) {
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
 // window.confirm을 대신하여 Bootstrap Modal을 생성해서 표시. '확인'을 누르면 callback 실행
-function confirmModal(msg, callback) {
+function confirmModal(msg, confirmedCallback, deniedCallback) {
 	let modal = document.getElementById('confirmModal');
 	if(!modal) {
 		modal = createElement({
@@ -157,7 +157,16 @@ function confirmModal(msg, callback) {
 	}
 
 	function onHide(event) {
-		if (Boolean(parseInt(event.target.dataset.bsReturn))) callback();
+		const bsReturn = parseInt(event.target.dataset.bsReturn);
+		if (bsReturn > 0) {
+			if (confirmedCallback) {
+				confirmedCallback();
+			}
+		} else {
+			if (deniedCallback) {
+				deniedCallback();
+			}
+		}
 		modal.removeEventListener('hidden.bs.modal', onHide)
 	}
 	
