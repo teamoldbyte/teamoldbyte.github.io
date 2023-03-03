@@ -341,10 +341,10 @@ function pageinit(memberId, memberAlias, memberImage){
 	var $results = $('#passagePosterDetailSection');
 	
 	$(document).on('click', '.js-open-detail', function() {
-		const passageId = parseInt(this.dataset.pid);
-		const currentRow = this.closest('tr');
-		$(currentRow).addClass('bg-info')
-		.siblings('tr').removeClass('bg-info');
+		const currentRow = this.closest('.passage-info-row');
+		const passageId = parseInt(currentRow.querySelector('.passage-id').textContent);
+		$(currentRow).addClass('bg-info active')
+		.siblings('tr').removeClass('bg-info active');
 		$.getJSON(`/adminxyz/ssam/today/${passageId}`, sentenceList => displaySentences(sentenceList));
 	})
 	var $copySection = $('.one-sentence-unit-section').clone();
@@ -702,10 +702,11 @@ function pageinit(memberId, memberAlias, memberImage){
 		}, 500);
 		// 편집 저장 실행
 		function saveFunc(svocText) {
-			const workbookId = parseInt($semantics.closest('.one-sentence-unit-section').data('workbookId'));
-			const passageId = parseInt($semantics.closest('.one-sentence-unit-section').find('.p-id').text())
+			const currentRow = document.querySelector('.passage-info-row.active');
+			const workbookId = parseInt(currentRow.querySelector('.workbook-id').textContent);
+			const passageId = parseInt(currentRow.querySelector('.passage-id').textContent);
 			const sentenceId = parseInt($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
-			const ownerId = parseInt($semantics.closest('.one-sentence-unit-section').find('.workbook-overview-section .writer-section').data('memberId'));
+			const ownerId = parseInt(currentRow.querySelector('.member-id').textContent);
 			const svocId = parseInt($semantics.data('svocId') || 0);
 			const svocCommand = {workbookId, passageId, ownerId, sentenceId, memberId, encSvocText: svocText};
 			
