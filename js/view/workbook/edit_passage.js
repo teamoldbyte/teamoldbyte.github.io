@@ -56,7 +56,7 @@ function pageinit(sentenceList, memberId) {
 	const MAX_SENTENCE_LENGTH_PER_DAY = 5000, 
 		STR_MSLPD = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
 	
-	const THIS_DATE = new Date().format('yyyy-MM-dd');
+	const TODAY_DATE = new Date().format('yyyy-MM-dd');
 	/**
 	myFicoUsage = date : today's date, length: total sentences length of today, confirmed: whether alert modal popped ever.
 	 */
@@ -65,30 +65,27 @@ function pageinit(sentenceList, memberId) {
 	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
 	
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
-	if (myFicoUsages.user !== ntoa(memberId) || myFicoUsages.date !== THIS_DATE) {
+	if (myFicoUsages.user !== ntoa(memberId) || myFicoUsages.date !== TODAY_DATE) {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
-		myFicoUsages = { user: ntoa(memberId), date: THIS_DATE, length: 0, confirmed: false };
+		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0};
 		$.getJSON('/workbook/passage/usage')
-			.done(length => Object.assign(myFicoUsages, { length, confirmed: true }))
-			.always(() => _verifyLimit());
+			.done(length => Object.assign(myFicoUsages, { length }))
+			.always(() => _verifyUsageLimit());
 	} else {
-		_verifyLimit();
+		_verifyUsageLimit();
 	}
 	
 	/**
 	 * 현재 문장 분석량 확인. 초과시 경고 메세지 표시
 	 */
-	function _verifyLimit(callback) {
+	function _verifyUsageLimit(callback) {
 		if(myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
-			$('.js-open-add-sentence,.edit-icon-section').prop('disabled', true);
+			$('.js-open-add-sentence,.edit-icon-section').attr('data-toggle','tooltip').attr('title', '일일 사용량을 초과하여 문장의 추가 및 수정이 불가합니다.').prop('disabled', true);
 			$('.origin-sentence').removeAttr('data-toggle');
 			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
 			oneSentenceJSON.children[0].children[1].children[2]['disabled'] = true;
 			delete oneSentenceJSON.children[0].children[2]["data-toggle"];
-			if(!myFicoUsages.confirmed) {
-				alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>하여\n문장을 <span class="text-red-700">추가 및 수정</span>할 수 없습니다.\n문장을 <span class="text-blue-600">순서 이동 및 삭제</span>할 수 있습니다.`, () => callback&&callback());
-				myFicoUsages.confirmed = true;
-			}
+			alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>하여\n문장의 <span class="text-red-700">추가 및 수정</span>이 불가합니다.\n문장의 <span class="text-blue-600">순서 이동 및 삭제</span>는 가능합니다.`, () => callback&&callback());
 			localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 		}else {
 			localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
@@ -290,11 +287,6 @@ function pageinit(sentenceList, memberId) {
 		}
 
 		// 일일 사용량이 넘어가는 순간 더이상 문장 추가/수정 불가.
-		const isUsageExceeded = myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
-			&& myFicoUsages.length + total.length >= MAX_SENTENCE_LENGTH_PER_DAY;
-		if (isUsageExceeded) {
-			myFicoUsages.confirmed = false;
-		}
 		myFicoUsages.length += total.length;
 		// 전송 내용 생성.
 		const command = { sentenceId: 0, passageId: passageId, eng: total, orderNum };
@@ -333,7 +325,7 @@ function pageinit(sentenceList, memberId) {
 			arrangeSentences();
 			calcParaLengthToggleAddBtn();
 			alertModal(alertMsg, () => {
-				_verifyLimit(() => focusEffectSentence(anims));
+				_verifyUsageLimit(() => focusEffectSentence(anims));
 			});
 		}
 
@@ -405,14 +397,10 @@ function pageinit(sentenceList, memberId) {
 			orderNum: Number($sentenceSection[0].dataset.ordernum)
 		};
 		
-		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY
-		&& myFicoUsages.length + text.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
-			myFicoUsages.confirmed = false;	
-		}
 		myFicoUsages.length += text.length;
 
 		// 기존 문장과 동일한 지 검사
-		command.sameTextSeq = (origin.toLowerCase() === text.toLowerCase());
+		command['sameTextSeq'] = (origin.toLowerCase() === text.toLowerCase());
 
 		$('#loadingModal').modal('show');
 		// 지문 문장 수정(ajax)-------------------------------
@@ -443,7 +431,7 @@ function pageinit(sentenceList, memberId) {
 						arrangeSentences();
 						calcParaLengthToggleAddBtn();
 						alertModal(alertMsg, () => {
-							_verifyLimit(() => focusEffectSentence(anims));
+							_verifyUsageLimit(() => focusEffectSentence(anims));
 						});
 					});
 				}).collapse('hide');
@@ -451,7 +439,7 @@ function pageinit(sentenceList, memberId) {
 				const sentenceUnit = sentences[0];
 				const $sentenceSectionEdit = $sentenceSection.find('.edit-section');
 				alertModal('수정되었습니다.', () => {
-					_verifyLimit(() => {
+					_verifyUsageLimit(() => {
 						$sentenceSection.find('.sentence-text').text(sentenceUnit.eng);
 						$sentenceSection[0].dataset.sid = sentenceUnit.sentenceId;
 						$sentenceSectionEdit.find('textarea').val(sentenceUnit.eng).end().collapse('hide');
