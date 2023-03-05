@@ -8,41 +8,34 @@ function pageinit(isHelloBook, memberId) {
 		};
 	const MAX_SENTENCE_LENGTH = 500,
 		MAX_SENTENCE_LENGTH_PER_DAY = 5000, 
-		STR_MSLPD = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
+		MAX_SENTENCE_LENGTH_PER_DAY_STR = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
 	
-	const THIS_DATE = new Date().format('yyyy-MM-dd');
+	const TODAY_DATE = new Date().format('yyyy-MM-dd');
 	/**
-	myFicoUsage = date : today's date, length: total sentences length of today, confirmed: whether alert modal popped ever.
+	myFicoUsage = date : today's date, length: total sentences length of today
 	 */
-	let myFicoUsages = localStorage.getItem('MFUSG');
+	const MY_FICO_USAGES_KEY = 'MFUSG';
+
+	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
 	
-	if(myFicoUsages && myFicoUsages.user == ntoa(memberId)) {
-		myFicoUsages = JSON.parse(atob(localStorage.getItem('MFUSG')));
-		// 기존 사용량 날짜가 다르다면 오늘자로 사용량 초기화
-		if(myFicoUsages.date != THIS_DATE) {
-			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: true });
-		}
-		_verifyLimit();
-	}else {
-		myFicoUsages = { user: ntoa(memberId) };
-		$.getJSON('/workbook/passage/usage', function(length) {
-			Object.assign(myFicoUsages, { date: THIS_DATE, length, confirmed: false });
-			
-		}).fail(() => {
-			Object.assign(myFicoUsages, { date: THIS_DATE, length: 0, confirmed: false });
-		}).always(_verifyLimit);
+	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
+	if (myFicoUsages.user == ntoa(memberId) && myFicoUsages.date == TODAY_DATE) {
+		_verifyUsageLimit();
+	} else {
+		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
+		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0};
+		$.getJSON('/workbook/passage/usage')
+			.done(length => Object.assign(myFicoUsages, { length }))
+			.always(() => _verifyUsageLimit());
 	}
 	
-	function _verifyLimit() {
+	function _verifyUsageLimit() {
 		if(myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('#inputComplete, .ocr-btn').prop('disabled', true);
-			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${STR_MSLPD}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
-			if(!myFicoUsages.confirmed) {
-				alertModal(`일일 분석량<span class="text-red-700">(${STR_MSLPD}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
-				myFicoUsages.confirmed = true;
-			}
+			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
+			alertModal(`일일 분석량<span class="text-red-700">(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
 		}
-		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
+		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 	}
 	
 	
@@ -616,12 +609,8 @@ function pageinit(isHelloBook, memberId) {
 				localStorage.setItem('PassageTagHistory', encodeURI(JSON.stringify(taghistory)));
 			}			
 		}
-		if(myFicoUsages.length < MAX_SENTENCE_LENGTH_PER_DAY 
-		&& (myFicoUsages.length + sentencesLength >= MAX_SENTENCE_LENGTH_PER_DAY)) {
-			myFicoUsages.confirmed = false;
-		}
 		myFicoUsages.length += sentencesLength;
-		localStorage.setItem('MFUSG', btoa(JSON.stringify(myFicoUsages)));
+		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 		$form.submit();
 	});
 	$('#passageForm').on('submit', () => $('#loadingModal').modal('show'));
