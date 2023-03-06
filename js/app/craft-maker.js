@@ -24,7 +24,7 @@
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
-	$.getJSON('/tandem/craft-toolbar.json', json => {
+	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
 		craftToolbarGroup = json;
 		staticCraftPanel = createElement(json.craftPanel);
 		battleAsks = json.battleAsks;
