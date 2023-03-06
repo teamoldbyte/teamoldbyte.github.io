@@ -1,0 +1,1110 @@
+{
+	"craftPanel": {
+		"el": "div",
+		"className": "battle-section-panel",
+		"children": [
+			{
+				"el": "div",
+				"className": "bg-white row py-3 mx-0 mb-3 rounded-5",
+				"children": [
+					{
+						"el": "label",
+						"className": "col-auto lh-1 ps-3 my-auto text-fc-purple fw-bold",
+						"textContent": "기존 등록 배틀 조회"
+					},
+					{
+						"el": "div",
+						"className": "existing-battles-section col-auto"
+					}
+				]
+			},
+			{
+				"el": "div",
+				"className": "add-battle-section",
+				"children": [
+					{
+						"el": "div",
+						"className": "battle-book-section p-3 bg-white row mx-0 mb-3 rounded-5 collapse show",
+						"children": [
+							{
+								"el": "label",
+								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold",
+								"textContent": "배틀북 선택"
+							},
+							{
+								"el": "label",
+								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold opacity-50",
+								"textContent": "북 타입"
+							},
+							{
+								"el": "select",
+								"className": "select-book-type form-select d-inline-block w-auto col-auto",
+								"children": [
+									{ "el": "option", "value": "", "disabled": true, "textContent": "배틀북을 선택하세요" },
+									{ "el": "option", "value": "step", "textContent": "단계", "selected": true },
+									{ "el": "option", "value": "grammar", "textContent": "문법" },
+									{ "el": "option", "value": "theme", "textContent": "테마" },
+									{ "el": "option", "value": "new", "textContent": "새로운 배틀북 생성" }
+								]
+							},
+							{
+								"el": "label",
+								"className": "col-auto lh-1 my-auto text-fc-purple fw-bold opacity-50",
+								"textContent": "배틀북"
+							},
+							{
+								"el": "select",
+								"className": "select-book form-select d-inline-block w-auto col", "children": [
+									{ "el" : "option",  "textContent": "단계별 배틀", "value": "10000001" }
+								]
+							}
+						]
+					},
+					{
+						"el": "form",
+						"className": "add-book-section position-relative p-3 bg-white row mx-0 mb-3 rounded-5 collapse border",
+						"children": [
+							{
+								"el": "label",
+								"className": "col-md-1 lh-1 ps-0 my-auto text-fc-purple fw-bold",
+								"textContent": "배틀북 생성"
+							},
+							{
+								"el": "button",
+								"type": "button",
+								"className": "js-cancel-add-book position-absolute btn p-3 col-auto top-0 end-0 fas fa-times"
+							},
+							{
+								"el": "div",
+								"className": "col-md-11 row",
+								"children": [
+									{
+										"el": "div",
+										"className": "col-md-4",
+										"children": [
+											{
+												"el": "div",
+												"className": "row",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "타이틀"
+													},
+													{
+														"el": "input",
+														"type": "text",
+														"name": "title",
+														"required": true,
+														"className": "input-book-title form-control col-auto d-inline-block w-auto"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "북타입"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookTypeT",
+														"name": "bookType",
+														"className": "input-book-type btn-check",
+														"checked": true,
+														"value": "T"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookTypeT",
+														"textContent": "테마"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookTypeG",
+														"name": "bookType",
+														"className": "input-book-type btn-check",
+														"value": "G"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookTypeG",
+														"textContent": "문법"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "공개타입"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOpenTypeT",
+														"name": "openType",
+														"className": "input-open-type btn-check",
+														"value": "P"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOpenTypeP",
+														"textContent": "전체"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOpenTypeT",
+														"name": "openType",
+														"className": "input-open-type btn-check",
+														"value": "T"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOpenTypeT",
+														"textContent": "그룹"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOpenTypeR",
+														"name": "openType",
+														"className": "input-open-type btn-check",
+														"checked": true,
+														"value": "R"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOpenTypeR",
+														"textContent": "개인"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "가격"
+													},
+													{
+														"el": "input",
+														"type": "number",
+														"name": "price",
+														"value": "0",
+														"min": "0",
+														"max": "1000000",
+														"className": "input-book-price form-control col-auto d-inline-block w-auto"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "col-md-2",
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "lh-1 my-auto text-fc-purple fw-bold", 
+												"textContent": "북커버"
+											},
+											{
+												"el": "div",
+												"className": "js-edit-battlebook-cover position-relative w-100",
+												"role": "button",
+												"style": "height:calc(100% - 24px)",
+												"children": [
+													{
+														"el": "img",
+														"className": "battlebook-cover-preview personacon-profile profile-default w-100 h-100"
+													},
+													{
+														"el": "input",
+														"type": "file",
+														"name": "coverImage",
+														"className": "input-book-cover d-none"
+													},
+													{
+														"el": "div",
+														"className": "position-absolute top-50 start-50 translate-middle fa-3x opacity-50 fas fa-plus-circle"
+													},
+													{
+														"el": "button",
+														"type": "button",
+														"className": "js-cancel-battlebook-cover btn btn-secondary fas fa-times position-absolute top-0 end-0",
+														"style": "display: none;"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "col-md-6",
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "lh-1 my-auto text-fc-purple fw-bold", 
+												"textContent": "설명"
+											},
+											{
+												"el": "textarea",
+												"type": "text",
+												"name": "description",
+												"className": "input-book-desc form-control col"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "mt-3",
+										"children": [
+											{
+												"el": "button",
+												"type": "button",
+												"className": "js-add-battlebook btn btn-fico",
+												"textContent": "배틀북 등록"
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"el": "div",
+						"className": "battle-type-section p-3 bg-white row mx-0 mb-3 rounded-5 g-3",
+						"data-radio": "btnradioBattletype",
+						"children": [
+							{
+								"el": "div",
+								"style": "flex-basis:100%;", "children": [
+								{
+									"el": "label",
+									"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold",
+									"textContent": "배틀 타입 선택"
+								},
+								{
+									"el": "input",
+									"type": "radio",
+									"className": "btn-check",
+									"autocomplete": "off",
+									"value": 1,
+									"checked": "checked"
+								},
+								{
+									"el": "label",
+									"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+									"textContent": "1. 성분 찾기"
+								},
+								{
+									"el": "input",
+									"type": "radio",
+									"className": "btn-check",
+									"autocomplete": "off",
+									"value": 2
+								},
+								{
+									"el": "label",
+									"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+									"textContent": "2. 수식어 찾기"
+								},
+								{
+									"el": "input",
+									"type": "radio",
+									"className": "btn-check",
+									"autocomplete": "off",
+									"value": 3
+								},
+								{
+									"el": "label",
+									"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+									"textContent": "3. 맞는 어법 찾기(양자택일)"
+								},
+								{
+									"el": "input",
+									"type": "radio",
+									"className": "btn-check",
+									"autocomplete": "off",
+									"value": 4
+								},
+								{
+									"el": "label",
+									"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+									"textContent": "4. 틀린 어법 찾기"
+								}
+									
+								]
+							},
+							{
+								"el": "div",
+								"style": "flex-basis:100%;margin-left:90px", "children": [
+								{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 5
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "5. 문장요소 배열하기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 6
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "6. 빈 칸 채우기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 7
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "7. 한글 해석하기"
+							},
+							{
+								"el": "input",
+								"type": "radio",
+								"className": "btn-check",
+								"autocomplete": "off",
+								"value": 8
+							},
+							{
+								"el": "label",
+								"className": "btn rounded-pill btn-outline-fico col-auto mx-2",
+								"textContent": "8. 맞는 어법 찾기(n지선다)"
+							}
+								]
+							}
+							
+						]
+					},
+					{
+						"el": "div",
+						"className": "add-detail-battle-section p-3 bg-white rounded-5",
+						"children": [
+							{
+								"el": "div",
+								"className": "battle-editor-section pb-3",
+								"children": [
+									{
+										"el": "div",
+										"className": "craft-maker-container"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "row pb-3",
+								"children": [
+									{
+										"el": "div",
+										"className": "battle-category-section col-12 col-md-3 row",
+										"children": [
+											{
+												"el": "label",
+												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "문법"
+											},
+											{
+												"el": "select",
+												"className": "form-select d-inline-block w-auto col"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "battle-askTag-section col-12 ms-md-4 col-md-3 row",
+										"children": [
+											{
+												"el": "label",
+												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "태그"
+											},
+											{
+												"el": "input",
+												"type": "text",
+												"className": "askTag form-control d-inline-block col",
+												"placeholder": "ex) 목적어(부), 관계사(카테고리명)"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className": "battle-source-section col ms-md-4 row me-md-2",
+										"children": [
+											{
+												"el": "label",
+												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "출처"
+											},
+											{
+												"el": "input",
+												"type": "text",
+												"className": "source form-control d-inline col",
+												"placeholder": "ex) OOO 워크북, 2022년 6월 고3 모의고사 등"
+											}
+										]
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "battle-comment-section pb-3 row me-md-2",
+								"children": [
+									{
+										"el": "label",
+										"className": "col-auto text-fc-purple fw-bold",
+										"textContent": "해설"
+									},
+									{
+										"el": "textarea",
+										"className": "comment form-control d-inline col h-auto",
+										"rows": "4",
+										"placeholder": "문제에 대한 한 줄 코멘트, 참조 링크 등"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "button-section text-center",
+								"children": [
+									{
+										"el": "button",
+										"type": "button",
+										"className": "js-add-battle btn btn-fico btn-lg",
+										"textContent": "등록"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	},	
+	"battleCounterPanel": {
+		"el": "div",
+		"className": "battles-counter-section p-3 bg-white row mx-0 mb-3 rounded-5",
+		"children": [
+			{
+				"el": "div", "className": "col-md row",
+				"children": [
+					{ "el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "전체" },
+					{ "el": "span", "className": "counter-total col-auto", "textContent": "-"}
+				]
+			},
+			{
+				"el": "div", "className": "col-md-6 row",
+				"children": [
+					{
+						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "배틀타입"
+					},
+					{
+						"el": "div", "className": "counter-same-type col-auto row", "children": [
+							{ "el": "span", "className": "col-auto", "textContent": "-" }
+						]
+					}
+				]
+			},
+			{
+				"el": "div", "className": "col-md row",
+				"children": [
+					{
+						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "난이도"
+					},
+					{
+						"el": "div", "className": "counter-same-difflevel col-auto row", "children": [
+							{ "el": "span", "className": "col-auto", "textContent": "-" }
+						]
+					}
+				]				
+			},
+			{
+				"el": "div", "className": "col-md row",
+				"children": [
+					{
+						"el": "label", "className": "col-auto bg-fc-purple text-white rounded", "textContent": "문법"
+					},
+					{
+						"el": "div", "className": "counter-same-category col-auto row", "children": [
+							{ "el": "span", "className": "col-auto", "textContent": "-" }
+						]
+					}
+				]
+			}
+		]
+	},
+	"battleAsks": [
+		"다음 문장의 {}를 선택하세요.", 
+		"[{}] 수식어와 피수식어를 선택하세요.",
+		"다음 문장에서 두 보기 중 적절한 것을 선택하세요.",
+		"다음 문장에서 어법상 틀린 것을 선택하세요.",
+		"다음 어구들을 해석에 맞게 배치해 보세요.",
+		"다음 빈칸에 어울리는 단어/구를 채우세요.",
+		"한글낱말을 배열하여 영어문장을 해석해 보세요.",
+		"다음 문장에서 빈 칸에 적절한 보기를 선택하세요."
+	],
+	"battleTypeInfos": [
+		[
+			{
+				"ask": "#1", 
+				"tag": "주어(부)",
+				"selector": ".s" 
+			},			
+			{
+				"ask": "#1", 
+				"tag": "동사(부)",
+				"selector": ".v"
+			},		
+			{
+				"ask": "#1", 
+				"tag": "목적어(부)",
+				"selector": ".o"
+			},		
+			{
+				"ask": "#1", 
+				"tag": "보어(부)",
+				"selector": ".c"
+			},
+			{
+				"ask": "#1", 
+				"tag": "목적보어(부)",
+				"selector": ".oc"
+			},
+			{
+				"ask": "#1", 
+				"tag": "주절의 주어(부)",
+				"selector": ".advcls~.s, .ncls~.s, .acls~.s" 
+			},
+			{
+				"ask": "#1", 
+				"tag": "주절의 동사(부)",
+				"selector": ".advcls~.v, .ncls~.v, .acls~.c" 
+			},	
+			{
+				"ask": "#1", 
+				"tag": "주절의 목적어(부)",
+				"selector": ".advcls~.o, .ncls~.o, .acls~.o" 
+			},
+			{
+				"ask": "#1", 
+				"tag": "주절의 보어(부)",
+				"selector": ".advcls~.c, .ncls~.c, .acls~.c" 
+			},				
+			{
+				"ask": "#1", 
+				"tag": "주절의 목적보어(부)",
+				"selector": ".advcls~.oc, .ncls~.oc, .acls~.oc" 
+			},				
+			{
+				"ask": "#1", 
+				"tag": "종속절의 주어(부)",
+				"selector": ".advcls>*>.s, .ncls>*>.s, .acls>*>.s" 
+			},
+			{
+				"ask": "#1", 
+				"tag": "종속절의 동사(부)",
+				"selector": ".advcls>*>.v, .ncls>*>.v, .acls>*>.v" 
+			},	
+			{
+				"ask": "#1", 
+				"tag": "종속절의 목적어(부)",
+				"selector": ".advcls>*>.o, .ncls>*>.o, .acls>*>.o" 
+			},
+			{
+				"ask": "#1", 
+				"tag": "종속절의 보어(부)",
+				"selector": ".advcls>*>.c, .ncls>*>.c, .acls>*>.c" 
+			},				
+			{
+				"ask": "#1", 
+				"tag": "종속절의 목적보어(부)",
+				"selector": ".advcls>*>.oc, .ncls>*>.oc, .acls>*>.oc" 
+			},				
+			{
+				"ask": "#1",
+				"tag": "의미상주어(부)",
+				"selector": ".s[data-rc=\"s.s.\"],.s[data-rc=\"(의)s\"]"
+			},
+			{
+				"ask": "#1",
+				"tag": "진주어(부)",
+				"selector": ".s[data-rc=\"r.s.\"],.s[data-rc=\"진주어\"],.s[data-rc=\"(진)s\"]"
+			},
+			{
+				"ask": "#1",
+				"tag": "진목적어(부)",
+				"selector": ".o[data-rc=\"r.o.\"],.o[data-rc=\"진목적어\"],.o[data-rc=\"(진)o\"]"
+			},
+			{
+				"ask": "#1",
+				"tag": "간접목적어(부)",
+				"selector": ".o[data-rc=\"i.o.\"],.o[data-rc=\"(간)o\"]" 
+			},
+			{
+				"ask": "#1",
+				"tag": "직접목적어(부)", 
+				"selector": ".o[data-rc=\"d.o.\"],.o[data-rc=\"(직)o\"]"
+			},
+			{
+				"ask": "#1",
+				"tag": "분사",
+				"selector": ".ptc"
+			},
+			{
+				"ask": "#1",
+				"tag": "현재분사 목적보어(부)",
+				"selector": ".ptc>.oc:only-child, .oc>.ptc:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "과거분사 목적보어(부)",
+				"selector": ".ptc>.oc:only-child, .oc>.ptc:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "동명사",
+				"selector": ".ger"
+			},
+			{
+				"ask": "#1",
+				"tag": "동명사 목적어(부)",
+				"selector": ".ger>.o:only-child, .o>.ger:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "동명사 보어(부)",
+				"selector": ".ger>.c:only-child, .c>.ger:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "동명사 목적보어(부)",
+				"selector": ".ger>.oc:only-child, .oc>.ger:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사",
+				"selector": ".tor"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사 목적어(부)",
+				"selector": ".tor>.o:only-child, .o>.tor:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사 보어(부)",
+				"selector": ".tor>.c:only-child, .c>.tor:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "to부정사 목적보어(부)",
+				"selector": ".tor>.oc:only-child, .oc>.tor:only-child"
+			},
+			{
+				"ask": "#1",
+				"tag": "원형부정사"
+			}
+		],
+		[
+			{
+				"ask": "#2",
+				"tag": "전치사",
+				"selector": ".adjphr[data-mfd],.phr[data-mfd]"
+			},
+			{
+				"ask": "#2",
+				"tag": "준동사",
+				"selector": ".tor[data-mfd],.ptc[data-mfd]"
+			},
+			{
+				"ask": "#2",
+				"tag": "관계사",
+				"selector": ".acls[data-mfd]"
+			},
+			{
+				"ask": "#2",
+				"tag": "형용사"
+			},
+			{
+				"ask": "#2",
+				"tag": "동격어구/절"
+			}
+		],
+		[
+			{
+				"ask": "#3"
+			}
+		],
+		[
+			{
+				"ask": "#4"
+			}
+		],
+		[
+			{
+				"ask": "#5"
+			}
+		],
+		[
+			{
+				"ask": "#6"
+			}
+		],
+		[
+			{
+				"ask": "#7"
+			}
+		],
+		[
+			{
+				"ask": "#8",
+				"tag": "명사형선택"
+			},
+			{
+				"ask": "#8",
+				"tag": "대명사선택"
+			},
+			{
+				"ask": "#8",
+				"tag": "동사형선택"
+			},
+			{
+				"ask": "#8",
+				"tag": "형용사형선택"
+			},
+			{
+				"ask": "#8",
+				"tag": "부사형선택"
+			},
+			{
+				"ask": "#8",
+				"tag": "주어형선택"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-명사"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-동사"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-동사구"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-형용사"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-부사"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-부사구"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-접속사"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-전치사"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-전치사구"
+			},
+			{
+				"ask": "#8",
+				"tag": "문맥적합단어-접속사"
+			},
+			{
+				"ask": "#8",
+				"tag": "한정대명사"
+			},
+			{
+				"ask": "#8",
+				"tag": "수동태"
+			},
+			{
+				"ask": "#8",
+				"tag": "관계사"
+			},
+			{
+				"ask": "#8",
+				"tag": "조건부사절"
+			}
+		]
+	],
+	"commonEditorBtns": [
+		{
+			"el": "div",
+			"className": "col-auto d-inline",
+			"children":
+			[	
+				{
+					"el": "button",
+					"title": "실행취소 (단축키: Ctrl + Z)",
+					"className": "btn btn-outline-fico col-auto",
+					"innerHTML": "<i class=\"fas fa-undo-alt\"></i>",
+					"disabled": "disabled",
+					"value": "undo"
+				},
+				{
+					"el": "button",
+					"title": "재실행 (단축키: Ctrl + Y)",
+					"className": "btn btn-outline-fico col-auto",
+					"innerHTML": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
+					"disabled": "disabled",
+					"value": "redo"
+				}
+			]
+		}
+	],
+	"addResultModal": { 
+		"el": "div", 
+		"id": "craftResultModal", 
+		"className": "modal fade", 
+		"tabIndex": "-1", 
+		"children": [
+			{ 
+				"el": "div", 
+				"className": "modal-dialog", 
+				"children": [
+					{ 
+						"el": "div", 
+						"className": "modal-content border-0", 
+						"children": [
+							{ 
+								"el": "div", 
+								"className": "modal-header bg-fc-purple", 
+								"children": [
+									{ 
+										"el": "h5", 
+										"className": "modal-title text-white", 
+										"textContent": "배틀 등록 완료" 
+									}
+								]
+							},
+							{ 
+								"el": "div", 
+								"className": "modal-body w-100 text-center", 
+								"children": [
+									{ 
+										"el": "div", 
+										"className": "row", 
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "col-auto text-fc-purple", 
+												"textContent": "등록된 배틀 ID:"
+											},
+											{ 
+												"el": "span", 
+												"className": "battle-id col-auto"
+											}
+										]
+									},
+									{ 
+										"el": "div", 
+										"className": "row", 
+										"children": [
+											{ 
+												"el": "label", 
+												"className": "col-auto text-fc-purple", 
+												"textContent": "동일 분류(배틀 타입+난이도+문법) 배틀 수:"
+											},
+											{ 
+												"el": "span", 
+												"className": "group-count col-auto"
+											}
+										]
+									}
+								]
+							},
+							{ 
+								"el": "div", 
+								"className": "modal-footer justify-content-center", 
+								"children": [
+									{ 
+										"el": "button", 
+										"className": "btn btn-fico", 
+										"data-bs-dismiss": "modal", 
+										"textContent": "확인" 
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	"battle1": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "정답 선택",
+				"innerHTML": "정답",
+				"value": "answer"
+			},
+			{
+				"el": "input",
+				"type": "checkbox",
+				"title": "보기 선택",
+				"innerHTML": "보기",
+				"value": "option"
+			}
+		]
+	},
+	"battle2": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"title": "수식어 선택",
+				"innerHTML": "수식어",
+				"value": "modifier"
+			},
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "피수식어 선택",
+				"innerHTML": "피수식어",
+				"value": "modificand"
+			}
+		]
+	},
+	"battle3": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "빈칸 선택",
+				"innerHTML": "빈칸 선택",
+				"value": "pick-right"
+			}
+		]
+	},
+	"battle4": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "정답 선택",
+				"innerHTML": "정답",
+				"value": "answer-wrong"
+			},
+			{
+				"el": "input",
+				"type": "checkbox",
+				"title": "보기 선택",
+				"innerHTML": "보기",
+				"value": "option"
+			}
+		]
+	},
+	"battle5": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "보기 선택",
+				"innerHTML": "보기",
+				"value": "option"
+			}
+		]
+	},
+	"battle6": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "빈칸 선택",
+				"innerHTML": "빈칸 선택",
+				"value": "fill-right"
+			}
+		]
+	},
+	"battle7": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "해석구간 선택",
+				"innerHTML": "해석구간(미선택시 전체)",
+				"value": "option"
+			}
+		]		
+	},
+	"battle8": {
+		"el": "div",
+		"children":
+		[
+			{
+				"el": "input",
+				"type": "checkbox",
+				"checked": "checked",
+				"title": "빈칸 선택",
+				"innerHTML": "빈칸 선택",
+				"value": "pick-right"
+			}
+		]
+	}
+}
