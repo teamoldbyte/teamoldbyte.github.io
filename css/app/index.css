@@ -141,13 +141,13 @@ body{
 		border: 0.5px solid #0a214a;
 	} */
 	.catch-phrase-section{
-		padding-left: 0;
-		padding-right: 0;
+		padding: 2rem 0 2.5rem 0;
 	}
 	.catchphrase .upper-text{
 		bottom: 1.75em;
 	}
 	.catch-phrase-section .subtext{
+		font-size: 0.75rem; 
 		line-height: 100%;
 	}
 }
