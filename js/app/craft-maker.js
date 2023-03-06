@@ -24,7 +24,7 @@
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
-	$.getJSON('https://static.findsvoc.com/data/tandem/craft-toolbar.json', json => {
+	$.getJSON('/tandem/craft-toolbar.json', json => {
 		craftToolbarGroup = json;
 		staticCraftPanel = createElement(json.craftPanel);
 		battleAsks = json.battleAsks;
@@ -438,10 +438,25 @@
 				// 목록에서 선택한 해석id는 ask로(영문 구간을 따로 선택했다면 입력한 해석내용을 ask로)
 				command.ask = addSection.querySelector('.select-kor').value;
 				// [ 추가단어1, 추가단어2, ... ]
-				command.example = JSON.stringify(Array.from(addSection.querySelector('.battle-kor-ext').value.trim().split('/'), ext => ext.trim()));
+				command.example = JSON.stringify(addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/));
 				
 				break;
-			
+			case '8':
+				let blank8 = battleContext.querySelector('.pick-right');
+				if(!blank8) {
+					alert('문제로 만들 어구를 선택해 주세요.');
+					return;
+				}else if(!addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/).join('')) {
+					alert('오답 보기를 입력해 주세요.');
+					addSection.querySelector('.battle-opt-ext').focus();
+					return;
+				}
+				// [빈칸 위치, 정답 텍스트, [오답 텍스트1, 오답 텍스트2, ...]]
+				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
+												blank8.textContent.trim(), addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/) ]);
+				// [정답 텍스트]
+				command.answer = JSON.stringify([ blank8.textContent.trim() ]);
+				break;
 			default: break;
 		}
 		
@@ -763,7 +778,7 @@
 		
 		
 		const categorySelect = maker.closest('.add-battle-section').querySelector('.battle-category-section select')
-		if(battleType >= 5) {
+		if([5,6,7].includes(battleType)) {
 			// 5유형의 배틀은 '어순'을 기본 문법 카테고리로 선택
 			//categorySelect.value = GRAMMARID_ORDERING;
 			//$(categorySelect).trigger('click');
@@ -779,11 +794,14 @@
 				]
 			}));
 		}
-		if(battleType == 7) {
+		if([7,8].includes(battleType)) {
 			maker.appendChild(createElement({
 				el: 'div', className: 'col-12 row mt-3', children: [
 					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '오답'},
-					{ el: 'input', type: 'text', className: 'battle-kor-ext form-control col lh-1 my-auto', placeholder: '선택지로 추가할 단어들을 입력해 주세요. 추가될 단어들은 / 기호로 구분됩니다. 예) 우리가/우리를'}
+					{ el: 'input', 
+						type: 'text', 
+						className: 'battle-opt-ext form-control col lh-1 my-auto', 
+						placeholder: `선택지로 추가할 단어나 구들을 입력해 주세요. 추가될 단어들은 / 기호로 구분됩니다. 예) ${battleType === 7 ? '우리가/우리를' : 'we/us'}`}
 				]
 			}))
 		}
@@ -826,13 +844,28 @@
 		// 2유형 질문에는 정적 선택지 2개 제일 위에 추가
 		if(parseInt(battleType) == 2) {
 			const modifyExist = (askArray.find(v => v.recommended) != null);
-			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', 
-				value: '의 피수식', innerHTML: '(지정)___의 피수식어를 선택하세요.'
+			options.unshift({ 
+				el: 'option', 
+				className: modifyExist?'bg-fc-light-purple':'', 
+				value: '의 피수식', 
+				innerHTML: '(지정)___의 피수식어를 선택하세요.'
 			});
-			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', 
-				value: '의 수식', innerHTML: '(지정)___의 수식어를 선택하세요.'});
-			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', value: '모든 피수식', innerHTML: '피수식어를 모두 선택하세요.'});
-			options.unshift({ el: 'option', className: modifyExist?'bg-fc-light-purple':'', value: '모든 수식', selected: true, innerHTML: '수식어를 모두 선택하세요.'});
+			options.unshift({ 
+				el: 'option', 
+				className: modifyExist?'bg-fc-light-purple':'', 
+				value: '의 수식', 
+				innerHTML: '(지정)___의 수식어를 선택하세요.'});
+			options.unshift({ 
+				el: 'option', 
+				className: modifyExist?'bg-fc-light-purple':'', 
+				value: '모든 피수식', 
+				innerHTML: '피수식어를 모두 선택하세요.'});
+			options.unshift({ 
+				el: 'option', 
+				className: modifyExist?'bg-fc-light-purple':'', 
+				value: '모든 수식', 
+				selected: true, 
+				innerHTML: '수식어를 모두 선택하세요.'});
 		}		
 		return options;
 	}
@@ -847,6 +880,14 @@
 					textContent: tandem.cleanSvocDOMs(semanticsResult).innerText, onmouseup: () => wrapText(maker)}
 			]}, maker);
 	}
+	// Regular expression that matches any character that is not whitespace or punctuation
+	const REGEX_NOT_WHITESPACE_PUNCT = /[^\s,.!?;:…]/, 
+	// Regular expression that matches any string that starts with whitespace or punctuation
+		REGEX_STARTSWITH_WHITESPACE_PUNCT = /^(\s|[,.!?;:…])/,
+	// Regular expression that matches any string that ends with whitespace or punctuation	
+		REGEX_ENDSWITH_WHITESPACE_PUNCT = /(\s|[,.!?;:…])$/,
+	// Regular expression that matches commonly used short verbs, such as "I'm", "you're", "he's", etc.
+		REGEX_SHORT_VERB = /('m|'re|'s|'d|'ll|'ve)$/;
 	/** BattleMaker 내부에 선택된 텍스트를 span으로 감싸고 에디터에서 선택된 메뉴에 따라 클래스 지정
 	 */
 	function wrapText(maker) {
@@ -854,89 +895,128 @@
 		// 에디터에서 선택된 메뉴버튼
 		const chkdBtn = maker.querySelector('[role=toolbar] [type=checkbox]:checked');
 		
-		const REGEX_NOT_WHITESPACE_PUNCT = /[^\s,.!?;:…]/,
-			REGEX_STARTSWITH_WHITESPACE_PUNCT = /^(\s|[,.!?;:…])/,
-			REGEX_ENDSWITH_WHITESPACE_PUNCT = /(\s|[,.!?;:…])$/,
-			REGEX_SHORT_VERB = /('m|'re|'s|'d|'ll|'ve)$/;
-		if(!sel.isCollapsed && chkdBtn) {
-			const context = maker.querySelector('.battle-context');
-			if(sel.toString().replace(/\W/g,'') == context.textContent.replace(/\W/g,'')
-			|| !(8 & sel.anchorNode.compareDocumentPosition(context)
-				 & sel.focusNode.compareDocumentPosition(context))) return;
+		if(sel.isCollapsed || !chkdBtn) return;
+		
+		const context = maker.querySelector('.battle-context');
+		
+		if(sel.toString().replace(/\W/g,'') == context.textContent.replace(/\W/g,'')
+		|| !(8 & sel.anchorNode.compareDocumentPosition(context)
+			 & sel.focusNode.compareDocumentPosition(context))) return;
+		
+		const battleType = parseInt(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
+		
+		// 배틀 3,4,7 유형에 정답을 두 개 이상 선택하려는 경우 취소 
+		const wrapperClass = chkdBtn.value;
+		if((([3,4].includes(battleType) && wrapperClass.match(/pick-right|answer-wrong/)) || battleType == 7 || battleType == 8) 
+		&& context.getElementsByClassName(wrapperClass).length > 0) {
+			alert('이 유형의 배틀은 복수 정답을 허용하지 않습니다.\n기존 정답을 눌러 지워 주세요.');
+			getSelection().removeAllRanges();
+			return;
+		}
+		
+		/* 선택 범위를 단어 단위로 선택되도록 자동 조절. 선택범위의 양끝 공백은 제거
+			배틀 1, 3 유형은 띄어쓰기가 아닌 apostrophe를 기준으로 범위를 지정할 수도 있어서 예외
+		*/
+		// 드래그 선택 방향이 오른쪽->왼쪽이라면 방향을 뒤집는다.(아래의 로직 전개를 위해)
+		if(sel.anchorNode.compareDocumentPosition(sel.focusNode) & Node.DOCUMENT_POSITION_PRECEDING
+		|| (sel.anchorNode.compareDocumentPosition(sel.focusNode) == 0	// 0 : 동일 노드
+		&& sel.anchorOffset > sel.focusOffset)) {
+			sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
+		}
+		// 왼쪽에 선택할 글자가 있다면 추가선택
+		while(sel.anchorOffset > 0 
+		&& sel.anchorNode.textContent.charAt(sel.anchorOffset).match(REGEX_NOT_WHITESPACE_PUNCT)
+		&& sel.anchorNode.textContent.charAt(sel.anchorOffset -1).match(REGEX_NOT_WHITESPACE_PUNCT)
+		&& (![1,3].includes(battleType) || !sel.toString().trim().match(REGEX_SHORT_VERB))) {
+			sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset - 1, sel.focusNode, sel.focusOffset);
+		}
+		// 왼쪽 끝이 공백이거나 구두점이면 왼쪽 범위를 축소
+		while(sel.toString().match(REGEX_STARTSWITH_WHITESPACE_PUNCT)) {
+			sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset + 1, sel.focusNode, sel.focusOffset);
+		}
+		// 오른쪽에 선택할 글자가 있다면 추가선택
+		while( sel.focusOffset < sel.focusNode.textContent.length
+			// 마지막 글자가 공백문자가 아니고
+		&& sel.focusNode.textContent.charAt(sel.focusOffset - 1).match(REGEX_NOT_WHITESPACE_PUNCT) 
+			// 오른쪽 글자도 공백문자가 아닌 것 중에
+		&& sel.focusNode.textContent.charAt(sel.focusOffset).match(REGEX_NOT_WHITESPACE_PUNCT)
+			// 배틀 1,3 타입이 아니거나 
+		&& (![1,3].includes(battleType) 
+			// 텍스트 길이가 2보다 길면서 
+			|| !(sel.focusNode.textContent.length > 2 
+				&& sel.focusNode.textContent.substring(sel.focusOffset, sel.focusOffset + 3).trim().match(REGEX_SHORT_VERB))
+			)
+		) {
+			sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset + 1);
+		}
+		// 오른쪽 끝이 공백이거나 구두점이면 오른쪽 범위를 축소
+		while(sel.toString().match(REGEX_ENDSWITH_WHITESPACE_PUNCT)) {
+			sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset - 1);
+		}
+		if(sel.toString().trim().length == 0 || sel.toString().replace(/\W/g,'') == context.textContent.replace(/\W/g,'')) 
+			return;
 			
-			const battleType = parseInt(maker.closest('.add-battle-section').querySelector('.battle-type-section input:checked').value);
-			
-			// 배틀 3,4,7 유형에 정답을 두 개 이상 선택하려는 경우 취소 
-			if(([3,4].includes(battleType) && chkdBtn.value.match(/pick-right|answer-wrong/) && context.getElementsByClassName(chkdBtn.value).length > 0)
-			|| (battleType == 7 && context.getElementsByClassName(chkdBtn.value).length > 0)) {
-				alert('이 유형의 배틀은 복수 정답을 허용하지 않습니다.\n기존 정답을 눌러 지워 주세요.');
-				return;
+		// Undo 리스트에 추가
+		pushEditHistory(context);
+		
+		// 선택범위의 텍스트를 span으로 변환
+		const wrapper = document.createElement('span');
+		wrapper.className = wrapperClass;
+		const range = sel.getRangeAt(0);
+		
+		wrapper.textContent = range.extractContents().textContent;
+		range.insertNode(wrapper);
+		sel.removeAllRanges();
+
+		// 빈 요소가 생겼을 경우 제거	
+		const emtpyWrapperTreeWalker = document.createTreeWalker(context, NodeFilter.SHOW_ELEMENT,
+			{ acceptNode: node => node.textContent.length === 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP }
+		);
+		while(emtpyWrapperTreeWalker.nextNode()) {
+			emtpyWrapperTreeWalker.currentNode.parentNode.removeChild(emtpyWrapperTreeWalker.currentNode);
+		}
+		
+		// 새로운 wrapper로 인해 영향받는 컨텍스트 내의 모든 요소들에 trim()을 적용
+		const allWrapperTreeWalker = document.createTreeWalker(context, NodeFilter.SHOW_ELEMENT);
+		while(allWrapperTreeWalker.nextNode()) {
+			let { textContent } = allWrapperTreeWalker.currentNode;
+			if (textContent.startsWith(' ')) {
+				const match = textContent.match(/^\s+/)[0];
+				const textNode = document.createTextNode(match);
+				allWrapperTreeWalker.currentNode.parentNode.insertBefore(textNode, allWrapperTreeWalker.currentNode);
+				allWrapperTreeWalker.currentNode.textContent = textContent.substring(match.length);
+				textContent = allWrapperTreeWalker.currentNode.textContent;
 			}
-			
-			/* 선택 범위를 단어 단위로 선택되도록 자동 조절. 선택범위의 양끝 공백은 제거
-				배틀 1, 3 유형은 띄어쓰기가 아닌 apostrophe를 기준으로 범위를 지정할 수도 있어서 예외
-			*/
-			// 드래그 선택 방향이 오른쪽->왼쪽이라면 방향을 뒤집는다.(아래의 로직 전개를 위해)
-			if(sel.anchorNode.compareDocumentPosition(sel.focusNode) == 2
-			|| (sel.anchorNode.compareDocumentPosition(sel.focusNode) == 0
-			&& sel.anchorOffset > sel.focusOffset)) {
-				sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
+			if (textContent.endsWith(' ')) {
+				const match = textContent.match(/\s+$/)[0];
+				const textNode = document.createTextNode(match);
+				allWrapperTreeWalker.currentNode.parentNode.insertBefore(textNode, allWrapperTreeWalker.nextSibling)
+				allWrapperTreeWalker.currentNode.textContent = textContent.substring(0, textContent.length - match.length);
 			}
-			// 왼쪽에 선택할 글자가 있다면 추가선택
-			while(sel.anchorOffset > 0 
-			&& sel.anchorNode.textContent.charAt(sel.anchorOffset).match(REGEX_NOT_WHITESPACE_PUNCT)
-			&& sel.anchorNode.textContent.charAt(sel.anchorOffset -1).match(REGEX_NOT_WHITESPACE_PUNCT)
-			&& (![1,3].includes(battleType) || !sel.toString().trim().match(REGEX_SHORT_VERB))) {
-				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset - 1, sel.focusNode, sel.focusOffset);
+		}
+		
+		
+		// 해당 구간에 대한 오답이 없을 때 롤백한다.
+		if([3,4,7].includes(battleType) && wrapperClass.match(/pick-right|answer-wrong/)) {
+			const wrong = prompt(`${wrapper.textContent}의 오답을 입력하세요.`);
+			if(wrong) {
+				wrapper.dataset.wrong = wrong;
+			}else {
+				context.innerHTML = undoList.pop();
 			}
-			// 왼쪽 끝이 공백이거나 구두점이면 왼쪽 범위를 축소
-			while(sel.toString().match(REGEX_STARTSWITH_WHITESPACE_PUNCT)) {
-				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset + 1, sel.focusNode, sel.focusOffset);
+		}
+		// 해당 구간에 대한 해석이 없을 때 롤백한다.
+		if(battleType == 7) {
+			const kor = prompt('선택한 구간의 해석을 입력하세요.');
+			if(kor) {
+				maker.querySelector('.select-kor').appendChild(createElement({
+					el: 'option', className: 'custom-trans', value: kor, 'data-trans': kor, textContent: kor, selected: true
+				}));
+				maker.querySelector('.select-kor').classList.add('pe-none');
+			}else {
+				context.innerHTML = undoList.pop();
 			}
-			// 오른쪽에 선택할 글자가 있다면 추가선택
-			while( sel.focusOffset < sel.focusNode.textContent.length - 1
-			&& sel.focusNode.textContent.charAt(sel.focusOffset - 1).match(REGEX_NOT_WHITESPACE_PUNCT) 
-			&& sel.focusNode.textContent.charAt(sel.focusOffset).match(REGEX_NOT_WHITESPACE_PUNCT)
-			&& (![1,3].includes(battleType) || !(sel.focusNode.textContent.length > 2 
-					&& sel.focusNode.textContent.substring(sel.focusOffset, sel.focusOffset + 3).trim().match(REGEX_SHORT_VERB)))) {
-				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset + 1);
-			}
-			// 오른쪽 끝이 공백이거나 구두점이면 오른쪽 범위를 축소
-			while(sel.toString().match(REGEX_ENDSWITH_WHITESPACE_PUNCT)) {
-				sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset - 1);
-			}
-			if(sel.toString().trim().length == 0 || sel.toString().replace(/\W/g,'') == context.textContent.replace(/\W/g,'')) 
-				return;
-			pushEditHistory(context);
-			
-			const wrapper = document.createElement('span');
-			wrapper.className = chkdBtn.value;
-			const range = sel.getRangeAt(0);
-			
-			wrapper.textContent = range.extractContents().textContent;
-			range.insertNode(wrapper);
-			sel.removeAllRanges();
-			
-			if(chkdBtn.value.match(/pick-right|answer-wrong/)) {
-				const wrong = prompt(`${wrapper.textContent}의 오답을 입력하세요.`);
-				if(wrong) {
-					wrapper.dataset.wrong = wrong;
-				}else {
-					$(wrapper.firstChild).unwrap();
-				}
-			}
-			if(battleType == 7) {
-				const kor = prompt('선택한 구간의 해석을 입력하세요.');
-				if(kor) {
-					maker.querySelector('.select-kor').appendChild(createElement({
-						el: 'option', className: 'custom-trans', value: kor, 'data-trans': kor, textContent: kor, selected: true
-					}));
-					maker.querySelector('.select-kor').classList.add('pe-none');
-				}else {
-					$(wrapper.firstChild).unwrap();
-				}
-			}
-		} 		
+		}
 	}
 	
 	/** 배틀 조회 목록에 추가할 '유형명&갯수 표시','상세보기목록' json을 반환.
@@ -1074,146 +1154,185 @@
 		const examples = JSON.parse(battle.example||"[]");
 		let offsetPos = 0;
 		const contextChildren = [];
-		if(battle.battleType == '1') {
-		/* 성분 찾기. 
-			example = [[보기1start,보기1end],[보기2start,보기2end],...]
-			answer = [[정답1start,정답1end],[정답2start,정답2end],...]
-		*/ 
-			examples.sort(sortByPosition).forEach((example, j, arr) => {
-				let leftStr = eng.substring(offsetPos, example[0]);
-				if(leftStr) contextChildren.push(leftStr);
-				contextChildren.push({
-					el: 'span',
-					className: (answers.find(a => a[0] == example[0] && a[1] == example[1])) ? 'answer' : 'option', 
-					textContent: eng.substring(example[0],example[1])
-				});
-				if(j == arr.length - 1 && example[1] < eng.length) {
-					contextChildren.push(eng.substring(example[1]));
-				}
-				offsetPos = example[1];
-			});
-		}else if(battle.battleType == '2') {
-		/* 수식어 찾기.
-			answer = [[[수식어start,수식어end],[수식어start,수식어end],...],[[피수식어start,피수식어end],[피수식어start,피수식어end],...]]
-		 */
-		 	const [ modifiers, modificands ] = answers;
-		 	// answerArr = [[start,end,class],[start,end,class],...]
-		 	const answerArr = Array.from(modifiers, modifier => modifier.concat('modifier'))
-	 						.concat(Array.from(modificands, modificand => modificand.concat('modificand')));
-			answerArr.sort(sortByPosition).forEach((answer, j, arr) => {
-				let leftStr = eng.substring(offsetPos, answer[0]);
-				if(leftStr) contextChildren.push(leftStr);
-				contextChildren.push({
-					el: 'span',
-					className: answer[2], 
-					textContent: eng.substring(answer[0],answer[1])
-				});
-				if(j == arr.length - 1 && answer[1] < eng.length) {
-					contextChildren.push(eng.substring(answer[1]));
-				}
-				offsetPos = answer[1];
-			});
-		}else if(battle.battleType == '3') {
-		/* 맞는 어법 찾기.
-			example = [[대상start,대상end],정답텍스트,오답텍스트]
-			answer = [정답텍스트]
-		*/
-			let leftStr = eng.substring(offsetPos, examples[0][0]);
-			if(leftStr) contextChildren.push(leftStr);
-			contextChildren.push({
-				el: 'span',
-				className: 'pick-right',
-				'data-wrong': examples[2],
-				textContent: eng.substring(examples[0][0],examples[0][1])
-			});				
-			if(examples[0][1] < eng.length)
-				contextChildren.push(eng.substring(examples[0][1]));
-		}else if(battle.battleType == '4') {
-		/* 틀린 어법 찾기.
-			example = [[보기1start,보기1end],[보기2start,보기2end],...]
-			answer = [[정답start,정답end],정답텍스트,오답텍스트]
-		 */
-			examples.sort(sortByPosition).forEach((example, j, arr) => {
-				let leftStr = eng.substring(offsetPos, example[0]);
-				if(leftStr) contextChildren.push(leftStr);
-				const span = {
-					el: 'span',
-					className: 'option', 
-					textContent: eng.substring(example[0],example[1])
-				};
-				if(answers[0][0] == example[0] && answers[0][1] == example[1]) {
-					span.className = 'answer-wrong';
-					span['data-wrong'] = answers[2];
-				}
-				contextChildren.push(span);
-				if(j == arr.length - 1 && example[1] < eng.length) {
-					contextChildren.push(eng.substring(example[1]));
-				}
-				offsetPos = example[1];
-			});
-		}else if(battle.battleType == '5') {
-		/* 배열하기.
-			ask = 해석 아이디(선택한 해석일 경우)
-			example = [[보기1start,보기1end],[보기2start,보기2end],...]
-		 */
-		 	examples.sort(sortByPosition).forEach((example, j, arr) => {
-				let leftStr = eng.substring(offsetPos, example[0]);
-				if(leftStr) contextChildren.push(leftStr);
-				contextChildren.push({
-					el: 'span',
-					className: 'option', 
-					textContent: eng.substring(example[0],example[1])
-				});
-				if(j == arr.length - 1 && example[1] < eng.length) {
-					contextChildren.push(eng.substring(example[1]));
-				}
-				offsetPos = example[1];
-			});
-		}else if(battle.battleType == '6') {
-		/** 빈칸 채우기
-			ask = 해석 아이디(선택한 해석일 경우)
-			example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트],...]
-		 */	
-		 	examples.sort((a,b) => a[0][0] - b[0][0]).forEach((example, j, arr) => {
-				let leftStr = eng.substring(offsetPos, example[0][0]);
-				if(leftStr) contextChildren.push(leftStr);
-				contextChildren.push({
-					el: 'span',
-					className: 'fill-right',
-					textContent: eng.substring(example[0][0],example[0][1])
-				});				
-				if(j == arr.length - 1 && example[0][1] < eng.length)
-					contextChildren.push(eng.substring(example[0][1]));	
-				offsetPos = example[0][1];	 	
-			});
-		}else if(battle.battleType == '7') {
-		/** 해석 배열하기
-			ask = 해석 아이디(선택한 해석일 경우)
-			example = [추가 단어1, 추가 단어2, ...](추가 단어를 입력했을 경우)
-		 */	
-		 	contextChildren.push({
-				el: 'div', className: 'row', children: [
-					{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '영문'},
-					{ el: 'span', textContent: eng }
-				]
-			});
-			contextChildren.push({
-				el: 'div', className: 'row', children: [
-					{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '정답'},
-					{ el: 'span', textContent: battle.kor}
-				]
-			});
-			contextChildren.push({
-				el: 'div', className: 'row', children: [
-					{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '보기'},
-					{ el: 'span', children: Array.from(battle.kor.split(/\s+/), k => {
-							return { el: 'span', class: 'btn border border-dark', textContent: k }
-						}).concat(Array.from(examples.filter(ex => ex.length > 0), k => {
-							return { el: 'span', class: 'btn border border-danger', textContent: k }
-						}))
+		const { battleType, kor } = battle;
+
+		const getOffsetStr = (start, _end) => eng.substring(offsetPos, start);
+
+		const getAnswerClass = (start, end) => {
+			const answer = answers.find(a => a[0] == start && a[1] == end);
+			return answer ? 'answer' : 'option';
+		};
+
+		const getAnswerWrongData = (start, end) => {
+			const answer = answers.find(a => a[0] == start && a[1] == end);
+			return answer ? { 'data-wrong': answer[2] } : {};
+		};		
+		switch(battleType) {
+			case '1':
+			/* 성분 찾기. 
+				example = [[보기1start,보기1end],[보기2start,보기2end],...]
+				answer = [[정답1start,정답1end],[정답2start,정답2end],...]
+			*/ 
+				examples.sort(sortByPosition).forEach(([start1, end1], j, arr) => {
+					contextChildren.push(getOffsetStr(offsetPos, start1));
+					contextChildren.push({
+						el: 'span',
+						className: getAnswerClass(start1, end1), 
+						textContent: eng.substring(start1, end1)
+					});
+					if(j == arr.length - 1 && end1 < eng.length) {
+						contextChildren.push(eng.substring(end1));
 					}
-				]
-			});
+					offsetPos = end1;
+				});
+				break;
+			case '2':
+			/* 수식어 찾기.
+				answer = [[[수식어start,수식어end],[수식어start,수식어end],...],[[피수식어start,피수식어end],[피수식어start,피수식어end],...]]
+			 */
+			 	const [ modifiers2, modificands2 ] = answers;
+			 	// answerArr = [[start,end,class],[start,end,class],...]
+			 	const answerArr = [
+					 ...modifiers2.map(modifier => [...modifier, 'modifier']),
+					 ...modificands2.map(modificand => [...modificand, 'modificand']),
+				 ]
+				answerArr.sort(sortByPosition).forEach(([start2, end2, className2], j, arr) => {
+					contextChildren.push(getOffsetStr(offsetPos, start2));
+					contextChildren.push({
+						el: 'span',
+						className: className2, 
+						...getAnswerWrongData(start2, end2),
+						textContent: eng.substring(start2,end2)
+					});
+					if(j == arr.length - 1 && end2 < eng.length) {
+						contextChildren.push(eng.substring(end2));
+					}
+					offsetPos = end2;
+				});
+				break;
+			case '3':
+			/* 맞는 어법 찾기.
+				example = [[대상start,대상end],정답텍스트,오답텍스트]
+				answer = [정답텍스트]
+			*/
+				const [[start3, end3], _correctText, wrongText] = examples;
+				contextChildren.push(getOffsetStr(offsetPos, start3));
+				contextChildren.push({
+					el: 'span',
+					className: 'pick-right',
+					'data-wrong': wrongText,
+					textContent: eng.substring(start3, end3)
+				});				
+				if(end3 < eng.length)
+					contextChildren.push(eng.substring(end3));
+				break;
+			case '4':
+			/* 틀린 어법 찾기.
+				example = [[보기1start,보기1end],[보기2start,보기2end],...]
+				answer = [[정답start,정답end],정답텍스트,오답텍스트]
+			 */
+				const [[answer_start4, answer_end4], _answerText, wrongText4] = answers;
+				examples.sort(sortByPosition).forEach(([start4, end4], j, arr) => {
+					const leftStr = getOffsetStr(start4, end4);
+					if(leftStr) contextChildren.push(leftStr);
+					const span = {
+						el: 'span',
+						className: getAnswerClass(start4, end4), 
+						textContent: eng.substring(start4, end4)
+					};
+					if(answer_start4 == start4 && answer_end4 == end4) {
+						span.className = 'answer-wrong';
+						span['data-wrong'] = wrongText4;
+					}
+					contextChildren.push(span);
+					if(j == arr.length - 1 && end4 < eng.length) {
+						contextChildren.push(eng.substring(end4));
+					}
+					offsetPos = end4;
+				});
+				break;
+			case '5':
+			/* 배열하기.
+				ask = 해석 아이디(선택한 해석일 경우)
+				example = [[보기1start,보기1end],[보기2start,보기2end],...]
+			 */
+			 	examples.sort(sortByPosition).forEach(([start5, end5], j, arr) => {
+					const leftStr = getOffsetStr(start5, end5);
+					if(leftStr) contextChildren.push(leftStr);
+					contextChildren.push({
+						el: 'span',
+						className: 'option', 
+						textContent: eng.substring(start5, end5)
+					});
+					if(j == arr.length - 1 && end5 < eng.length) {
+						contextChildren.push(eng.substring(end5));
+					}
+					offsetPos = end5;
+				});
+				break;
+			case '6':
+			/** 빈칸 채우기
+				ask = 해석 아이디(선택한 해석일 경우)
+				example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트],...]
+			 */	
+			 	examples.sort((a,b) => a[0][0] - b[0][0]).forEach(([[start6, end6], _text], j, arr) => {
+					const leftStr = getOffsetStr(start6, end6);
+					if(leftStr) contextChildren.push(leftStr);
+					contextChildren.push({
+						el: 'span',
+						className: 'fill-right',
+						textContent: eng.substring(start6, end6)
+					});				
+					if(j == arr.length - 1 && end6 < eng.length)
+						contextChildren.push(eng.substring(end6));	
+					offsetPos = end6;	 	
+				});
+				break;
+			case '7':
+			/** 해석 배열하기
+				ask = 해석 아이디(선택한 해석일 경우)
+				example = [추가 단어1, 추가 단어2, ...](추가 단어를 입력했을 경우)
+			 */	
+			 	contextChildren.push({
+					el: 'div', className: 'row', children: [
+						{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '영문'},
+						{ el: 'span', textContent: eng }
+					]
+				});
+				contextChildren.push({
+					el: 'div', className: 'row', children: [
+						{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '정답'},
+						{ el: 'span', textContent: kor}
+					]
+				});
+				contextChildren.push({
+					el: 'div', className: 'row', children: [
+						{ el: 'label', class: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '보기'},
+						{ el: 'span', children: [
+							...kor.split(/\s+/).map((k) => ({ el: 'span', class: 'btn border border-dark', textContent: k })),
+							...examples.filter((ex) => ex.length > 0).map((k) => ({ el: 'span', class: 'btn border border-danger', textContent: k })),
+						]}
+					]
+				});
+				break;
+			case '8':
+			/* 맞는 어법 찾기.
+				example = [[대상start,대상end],정답텍스트,[오답텍스트1,오답텍스트2,..]]
+				answer = [정답텍스트]
+			*/
+				const [start8, end8] = examples[0];
+				const leftStr = eng.substring(offsetPos, start8);
+				const targetStr = eng.substring(start8, end8);
+				const rightStr = eng.substring(end8);
+				let leftStr8 = eng.substring(offsetPos, examples[0][0]);
+				if(leftStr8) contextChildren.push(leftStr8);
+				contextChildren.push(
+					leftStr,
+					{ el: 'span', className: 'pick-right', 'data-wrong': examples[2].join('/'), textContent: targetStr },
+					rightStr
+				);				
+				break;
+			default: break;
 		}
 		return contextChildren;		
 	}
@@ -1245,41 +1364,42 @@
 	// battleType과 ask값을 통해 질문을 완전한 문장으로 구성.
 	function combineAsk(battleType, ask) {
 		let completeAsk = battleAsks[battleType - 1].replace('{}', ask);
-		if(battleType == 1 && completeAsk.match(/종속절의|주절의/)) {
+		if (battleType === 1 && completeAsk.includes('절의')) {
 			completeAsk = completeAsk.replace('문장의', '문장에서');
-		}else if(battleType == 2 && (ask.includes('의 수식') || ask.includes('의 피수식'))) {
+		}else if(battleType === 2 && (ask.includes('의 수식') || ask.includes('의 피수식'))) {
 			completeAsk = `${completeAsk}어를 선택하세요.`;
+		}else if(battleType === 8) {
+			completeAsk = ask;
 		}
 		return completeAsk;
 	}
 	
 	// 문장 난이도(E,N,D)와 문장길이로 상세난이도 반환
+	const diffLevels = {
+		A: [
+			{ limit: 30, rank: '이병' },
+			{ limit: 60, rank: '일병' },
+			{ limit: Infinity, rank: '병장' },
+		],
+		B: [
+			{ limit: 50, rank: '하사' },
+			{ limit: 70, rank: '상사' },
+			{ limit: 100, rank: '소위' },
+			{ limit: 120, rank: '대위' },
+			{ limit: Infinity, rank: '소령' },
+		],
+		C: [
+			{ limit: 150, rank: '대령' },
+			{ limit: 200, rank: '준장' },
+			{ limit: Infinity, rank: '소장' },
+		],
+	};	
 	function calcDiffSpecific(diffLevel, engLength) {
 		let diffSpecificLevel;
-		if(diffLevel == 'A') {
-			if(engLength <= 30) {
-				diffSpecificLevel = '이병';
-			}else if(engLength <= 60){
-				diffSpecificLevel = '일병';
-			}else diffSpecificLevel = '병장';
-		}else if(diffLevel == 'B') {
-			if(engLength <= 50) {
-				diffSpecificLevel = '하사';
-			}else if(engLength <= 70) {
-				diffSpecificLevel = '상사';
-			}else if(engLength <= 100) {
-				diffSpecificLevel = '소위';
-			}else if(engLength <= 120){
-				diffSpecificLevel = '대위';
-			}else diffSpecificLevel = '소령';
-		}else if(diffLevel == 'C') {
-			if(engLength <= 150) {
-				diffSpecificLevel = '대령';
-			}else if(engLength <= 200) {
-				diffSpecificLevel = '준장';
-			}else {
-				diffSpecificLevel = '소장';
-			}
+		if (diffLevels[diffLevel]) {
+			diffSpecificLevel = diffLevels[diffLevel].find(
+				({ limit }) => engLength <= limit
+			)?.rank;
 		}
 		return diffSpecificLevel;
 	}
