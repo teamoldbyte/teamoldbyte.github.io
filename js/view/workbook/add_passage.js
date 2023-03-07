@@ -19,7 +19,7 @@ function pageinit(isHelloBook, memberId) {
 	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
 	
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
-	if (myFicoUsages.user == ntoa(memberId) && myFicoUsages.date == TODAY_DATE) {
+	if (ntoa(memberId) != 'MeaiWcUUcUUWSiQgSaUg' && myFicoUsages.user == ntoa(memberId) && myFicoUsages.date == TODAY_DATE) {
 		_verifyUsageLimit();
 	} else {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
