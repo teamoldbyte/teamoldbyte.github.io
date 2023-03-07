@@ -131,7 +131,7 @@
 		}
 		function setBookList() {
 			$bookSelect[0].replaceChildren(createElement(Array.from(battleBooksMap[bookType], book => {
-				return { el: 'option', value: book.bbid, textContent: book.title + (book.description?` - ${book.description}`:'') }
+				return { el: 'option', value: book.battleBookId, textContent: book.title + (book.description?` - ${book.description}`:'') }
 			})))
 		}
 	})
@@ -219,7 +219,7 @@
 					(alertModal||alert)('배틀북을 등록했습니다.');
 					// 등록한 배틀북을 배틀북 선택 목록에 추가
 					if(battleBooksMap[bookType])
-						battleBooksMap[bookType].push(book);
+						battleBooksMap[bookType].push(Object.assign({battleBookId: book.bbid},book));
 					// 배틀북 생성 패널이 새로 만들어지도록.
 					$addSection.closest('.add-battle-section').find(`.select-book-type`)
 						.val(bookType).trigger('change');
