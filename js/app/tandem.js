@@ -2,16 +2,6 @@
 @author LGM
  */
 (function($, window, document) {
-	/* Allow user to set any option except for dataType, cache, and url
-	Use $.ajax() since it is more flexible than $.getScript
-	Return the jqXHR object so we can chain callbacks */
-	$.cachedScript = $.cachedScript || function( url, options ) {
-		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
-	};
-	let pakoPromise = null;
-	if (typeof pako == 'undefined' || typeof pako.inflate == 'undefined' || typeof pako.deflate == 'undefined') {
-		pakoPromise = $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
-	}
 	/* jquery.curvedarrow.min.js */
 	const drawCurvedArrow = (function() {
 		function t(e2, t2, a) {
@@ -52,7 +42,7 @@
 	async function showSemanticAnalysis(text, svocBytes, $container) {
 
 		// 각 문장마다의 구문분석 구분자
-		window.semanticSequence = (window.semanticSequence) || 0;
+		window.semanticSequence = window.semanticSequence || 0;
 
 		// (TBD) 커스텀 CSS 추가(밑줄,대괄호,글자 색상 등)--------------------------
 
@@ -178,63 +168,62 @@
 		return btoa(ab2str(await deflateSvoc(encSvoc(JSON.stringify(svocList)))));
 	}
 	/* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
+	const markTypes = /\b(s|v|o|c|oc|a|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
 	function svocDom2Arr(node, arr) {
-		const markTypes = /\b(s|v|o|c|oc|a|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
-		// 탐색 위치 초기화
 		svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 		arr = arr ? arr : [];
-		if (node.classList != null && node.classList.contains('semantics-result')) {
-			const childNodes = node.childNodes;
-			for (let i = 0, len = childNodes.length; i < len; i++) {
-				arr = svocDom2Arr(childNodes[i], arr);
+		const stack = [node];
+		while (stack.length > 0) {
+			const n = stack.pop();
+			// If the node is a 'semantics-result' node, add its children to the stack.
+			if (n.classList != null && n.classList.contains('semantics-result')) {
+				for (let i = n.childNodes.length - 1; i >= 0; i--) {
+					stack.push(n.childNodes[i]);
+				}
+			// If the node is a 'SPAN' node and not a 'line-end' or 'brkt' node, process it for a semantic mark.
+			} else if (n.hasChildNodes() && n.nodeName == 'SPAN'
+				&& !n.classList.contains('line-end') && !n.classList.contains('brkt')) {
+					
+				// Extract the semantic mark type from the node's class name.
+				const markType = n.className.match(markTypes);
+				
+				// If a valid semantic mark type was found, add the mark to the array.
+				if (markType != null) {
+					const brktNodesCount = n.getElementsByClassName('brkt').length,
+						textLength = n.textContent.replaceAll(/[\n\u200b]/gm, '').length;
+					arr.push({
+						markType: markType[0].toUpperCase(),
+						start: svocDom2Arr.pos,
+						end: (svocDom2Arr.pos + textLength - brktNodesCount),
+						rcomment: n.dataset.rc, gcomment: n.dataset.gc,
+						hasModificand: (n.dataset.mfd != null)
+					});
+				}
+				
+				// Add the node's children to the stack.
+				for (let i = n.childNodes.length - 1; i >= 0; i--) {
+					stack.push(n.childNodes[i]);
+				}
+				
+			// If the node is a text node, update the position counter.
+			} else if (n.nodeType == 3) {
+				svocDom2Arr.pos += n.textContent.replaceAll(/[\n\u200b]/gm, '').length;
 			}
-			return arr;
-		}
-		// 괄호가 아닌 태그이면서 자식노드(텍스트노드 포함)를 가진 span 태그일 경우 배열에 추가
-		if (node.hasChildNodes() && node.nodeName == 'SPAN'
-			&& !node.classList.contains('line-end') && !node.classList.contains('brkt')) {
-			const markType = node.className.match(markTypes);
-			if (markType != null) {
-				const brktNodesCount = node.querySelectorAll('.brkt').length,
-					textLength = node.textContent.replaceAll(/[\n\u200b]/gm, '').length;
-				arr.push({
-					markType: markType[0].toUpperCase(),
-					start: svocDom2Arr.pos,
-					end: (svocDom2Arr.pos + textLength - brktNodesCount),
-					rcomment: node.dataset.rc, gcomment: node.dataset.gc,
-					hasModificand: (node.dataset.mfd != null)
-				});
-			}
-			// 자식노드에 대해 순환탐색
-			for (let child of node.childNodes) {
-				arr = svocDom2Arr(child, arr);
-			}
-			// 텍스트 노드일 경우 글자 길이만큼 탐색 위치를 옮김
-		} else if (node.nodeType == 3) {
-			svocDom2Arr.pos += node.textContent.replaceAll(/[\n\u200b]/gm, '').length;
 		}
 		return arr;
 	}
 
 	/* svoc문자열 인코딩(정적치환) */
 	function encSvoc(svoc) {
-		const reverseTable = Object.keys(keywordTable).reduce(function(acc, k) {
-			acc[keywordTable[k]] = k;
-			return acc;
-		}, {});
-		const keys = Object.keys(reverseTable), keysLen = keys.length;
-		for (let i = 0; i < keysLen; i++) {
-			svoc = svoc.replaceAll(keys[i], reverseTable[keys[i]]);
-		}
-		return svoc;
+		const regex = new RegExp(Object.keys(keywordTable).join('|'), 'g');
+		return svoc.replace(regex, (matched) => keywordTable[matched]);
 	}
+
 	/* svoc문자열 디코딩(정적치환) */
 	function decSvoc(svoc) {
-		const keys = Object.keys(keywordTable), keysLen = keys.length;
-		for (let i = 0; i < keysLen; i++) {
-			svoc = svoc.replaceAll(keys[i], keywordTable[keys[i]]);
-		}
-		return svoc;
+		const keys = Object.keys(keywordTable);
+		const regex = new RegExp(keys.join('|'), 'g');
+		return svoc.replace(regex, match => keywordTable[match]);
 	}
 	/* 문자열을 byte[]로 변환 */
 	function str2ab(str) {
@@ -251,28 +240,21 @@
 	}
 	/* svoc byte[] 압축해제(문자열로)*/
 	async function inflateSvoc(svoc) {
-		return callPakoFunc(() => pako.inflate(new Uint16Array(svoc), { to: 'string' }));
+		return await callPakoFunc(() => pako.inflate(new Uint16Array(svoc), { to: 'string' }));
 	}
 	/* svoc 문자열 압축(byte[]로) */
 	async function deflateSvoc(svoc) {
-		return callPakoFunc(() => pako.deflate(svoc));
+		return await callPakoFunc(() => pako.deflate(svoc));
 	}
 	async function callPakoFunc(func) {
-		if (typeof pako == 'undefined' || typeof pako.deflate == 'undefined') {
-			if(pakoPromise != null) {
-				return pakoPromise.then(() => func.call(this));
-			}else {
-				return new Promise((resolve) =>
-					$.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js')
-					.then(() => resolve(func.call(this)))
-					.fail(async () => {
-						await $.cachedScript('https://static.findsvoc.com/js/public/pako.min.js');
-						resolve(func.call(this));
-					})
-				);
-			}
-		} else return func.call(this);
+		const pakoModule = await (typeof pako !== 'undefined' ? Promise.resolve(pako) : Promise.any([
+			import('pako'),
+			import('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js').catch(() => { }),
+			import('https://static.findsvoc.com/js/public/pako.min.js').catch(() => { })
+		]));
+		return func.call(this, pakoModule);
 	}
+
 
 	/**
 	 * 전달된 sentence 정보를 div 속에 그림.
@@ -322,7 +304,7 @@
 		
 		let i = 0;
 		while (svocList[i + 1] != null) {
-			let tag = svocList[i], second = svocList[i + 1], third = svocList[i + 2];
+			const [tag, second, third] = svocList.slice(i, i + 3);
 			// 이전 태그들 중에 범위가 일부 겹치는 태그가 있으면
 			const unclosedTag = svocList.find((priorTag,j) => j < i && priorTag.end > tag.start && priorTag.end < tag.end);
 			if(unclosedTag) {
@@ -714,18 +696,20 @@
 	function checkGCDepth(div) {
 		const rem = parseFloat(getComputedStyle(div.ownerDocument.documentElement).fontSize);
 		const tagsWithGComment = div.querySelectorAll('.sem[data-gc]'),
-			tagsLen = tagsWithGComment.length;
+			numTags = tagsWithGComment.length;
 
-		for (let i = 0; i < tagsLen; i++) {
-			requestAnimationFrame(() => checkDepth(i));
+		for (let i = 0; i < numTags; i++) {
+			requestAnimationFrame(() => setDepth(i));
 		}
 		requestAnimationFrame(() => checkLineEnds(div));
 
-		function checkDepth(i) {
+		function setDepth(i) {
 			const el = tagsWithGComment[i];
 			let priorTop, priorLeft, base = 0;
+			
 			delete el.dataset.gcLv;
-			for (let j = i; j < tagsLen; j++) {
+			
+			for (let j = i; j < numTags; j++) {
 				const curr = tagsWithGComment[j], rects = curr.getClientRects();
 				const currRect = (curr.classList.contains('odd') && rects.length > 1) ? rects[1] : rects[0];
 				const currTop = currRect == null ? 0 : currRect.top;
@@ -747,10 +731,22 @@
 					const priorTag = tagsWithGComment[j - 1];
 					const priorGCWidth = parseFloat(getComputedStyle(priorTag, '::after').width);
 					// gcomment끼리 너무 가까우면 앞의 gcomment 높이를 +1 
-					if (Math.abs(priorTop - currTop) < rem
-						&& Math.abs(priorLeft - currLeft) < (5 + priorGCWidth)
-						&& (!curr.classList.contains('rcm') || !priorTag.classList.contains('rcm')
-							|| curr.textContent != priorTag.textContent)) {
+					if (Math.abs(priorTop - currTop) < rem // 이전 gcomment와 세로 높이 차이가 1rem 미만이고,
+					&& Math.abs(priorLeft - currLeft) < (5 + priorGCWidth) // 이전 gcomment와 가로 간격이 5px 미만이면서
+					&& (!curr.classList.contains('rcm') // 수식어가 아닌 경우(수식어는 gcomment가 오른쪽끝을 기준으로 위치하기 때문) 
+						|| !priorTag.classList.contains('rcm') 
+						|| curr.textContent != priorTag.textContent)) { // 혹은 둘 다 수식어 태그지만 텍스트 내용이 다를 경우
+						if(curr.classList.contains('tor')) {
+							if(priorTag.classList.contains('adjphr')) {
+								delete curr.dataset.gc;
+								priorTag.dataset.gc = '[to부정사 | 형용사구]';
+								break;
+							}else if(priorTag.classList.contains('advphr')) {
+								delete curr.dataset.gc;
+								priorTag.dataset.gc = '[to부정사 | 부사구]';
+								break;
+							}
+						}
 						el.dataset.gcLv = ++base;
 					} else {
 						break;
@@ -868,7 +864,8 @@
 		// 텍스트 내용이 없는 태그는 삭제
 		div.querySelectorAll('.sem').forEach( elem => {
 			if(elem.textContent.length == 0) elem.remove();
-		})
+		});
+		// 정렬 관련 클래스 리셋
 		const elementsHaveAlign = div.querySelectorAll('.cmnt-align-center,.cmnt-align-start');
 		for (let i = 0, len = elementsHaveAlign.length; i < len; i++) {
 			elementsHaveAlign[i].classList.remove('cmnt-align-center', 'cmnt-align-start', 'odd');
@@ -877,28 +874,27 @@
 		for (let i = 0, len = elements.length; i < len; i++) {
 			const el = elements[i];
 			/*  단어가 위 아래 두 그룹으로 분리되었으나 첫번째 그룹의 너비가 한 글자 미만인 경우
-			  첫 번째 그룹은 무시하고 두 번째 그룹에 가운데 정렬 적용.  
+			  첫 번째 그룹은 무시하고 두 번째 그룹에 가운데 정렬 적용.(=.odd)  
 			  left위치는 첫번째 그룹을 기준으로 적용되므로 
 			  첫 번째, 두 번째 그룹의 left값 차이만큼 왼쪽으로 이동. */
 			const rects = el.getClientRects();
 			if (rects.length > 1) {
 				if ((el.matches('.rcm') || rects[0].width < 10)) {
-					const indent = el.matches('.rcm') ? (rects[rects.length - 1].right - rects[0].left)
-						: (rects[1].left - rects[0].left);
+					const indent = (el.matches('.rcm') ? rects[rects.length - 1].right : rects[1].left) - rects[0].left;
 					const indentMin = el.matches('.rcm') ? indent : (indent + rects[1].width / 2);
 					el.style.setProperty('--indent', `${indent}px`);
 					el.style.setProperty('--indent-min', `${indentMin}px`);
 					el.classList.remove('cmnt-align-start');
 					el.classList.add('cmnt-align-center', 'odd');
 				} else {
-					el.style.setProperty('--indent', null);
-					el.style.setProperty('--indent-min', null);
+					el.style.removeProperty('--indent');
+					el.style.removeProperty('--indent-min');
 					el.classList.remove('cmnt-align-center', 'odd');
 					el.classList.add('cmnt-align-start');
 				}
 			} else {
-				el.style.setProperty('--indent', null);
-				el.style.setProperty('--indent-min', null);
+				el.style.removeProperty('--indent');
+				el.style.removeProperty('--indent-min');
 				el.classList.remove('cmnt-align-start', 'odd');
 				el.classList.add('cmnt-align-center');
 			}
