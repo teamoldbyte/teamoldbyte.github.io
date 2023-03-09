@@ -526,10 +526,10 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
-	const posClasses = '.s, .v, .o, .c, .oc, .a, .m';
+	const posClasses = ['.s', '.v', '.o', '.c', '.oc', '.a', '.m'];
 	function checkPOSDepth(element) {
 		const children = element.querySelectorAll('.sem');
-		let base = element.matches(posClasses) & 1;
+		let base = posClasses.some(cls => element.matches(cls)) ? 1 : 0;
 		let childBase = 0;
 		// 자신의 depth 초기화
 		element.removeAttribute('data-lv');
@@ -553,49 +553,41 @@
 		return base + childBase;
 	}
 
+	const bracketclassList = ['acls', 'ncls', 'advcls', 'ccls', 'pcls', 'cls', 'phr', 'adjphr', 'advphr', 'ptcphr', 'conj'];
+	const BRACKET_TYPES = {
+		ccls: { type: 'ccls', brackets: ['{', '}'] },
+		pcls: { type: 'ccls', brackets: ['{', '}'] },
+		conj: { type: 'conj', brackets: ['(', ')'] },
+		phr: { type: 'phr', brackets: ['(', ')'] },
+		adjphr: { type: 'phr', brackets: ['(', ')'] },
+		advphr: { type: 'phr', brackets: ['(', ')'] },
+		ptcphr: { type: 'phr', brackets: ['(', ')'] },
+		acls: { type: 'acls cls', brackets: ['[', ']'] },
+		advcls: { type: 'advcls cls', brackets: ['[', ']'] },
+		ncls: { type: 'ncls cls', brackets: ['[', ']'] },
+		cls: { type: 'cls', brackets: ['[', ']'] },
+	};
 	/**
 	 * 절과 구 태그 양쪽으로 괄호 태그를 추가.
 	 * 절과 구는 아니지만 내부 성분 레이어를 가지는 성분 태그 양쪽에도 괄호 태그를 추가.
 	 * + 분사구,to부정사구도 성분 레이어를 가질 수 있다.
-	 */
+	 */	
 	function wrapWithBracket(div) {
 		// 기존 괄호 제거
-		$(div.querySelectorAll('.cls-start,.cls-end,.ccls-start,.ccls-end,.phr-start,.phr-end,'
-			+ '.adjphr-start,.adjphr-end,.conj-start,.conj-end,.etc-start,.etc-end')).remove();
+		Array.from(div.querySelectorAll('.cls-start,.cls-end,.ccls-start,.ccls-end,.phr-start,.phr-end,.adjphr-start,.adjphr-end,.conj-start,.conj-end,.etc-start,.etc-end')).forEach(el => el.remove())
 		// 괄호 적용할 대상을 trim
 		trimTextContent(div);
 
-		$(div).find('.acls, .ncls, .advcls, .cls, .ccls, .pcls, .phr, .adjphr, .advphr, .ptcphr, .conj')
-			.add($(div).find('.sem[data-lv]').filter(function() {
-				return (this.textContent.length != this.parentElement.textContent.length
-					|| $(this.parentElement).is('.ptc, .tor'));
-			})).get().reverse().forEach(function(el) {
-				let clsType = el.className.match(/\bacls\b|\bncls\b|\badvcls\b|\bcls\b|\bccls\b|pcls\b|\bphr\b|\badjphr\b|\badvphr\b|\bptcphr\b|\bconj\b/);
-				clsType = (clsType != null && clsType.length > 0) ? clsType[0] : '';
-				let brackets, type = 'etc';
-				switch (clsType) {
-					case 'ccls': case 'pcls':
-						type = 'ccls';
-						brackets = ['{', '}'];
-						break;
-					case 'conj':
-					case 'phr': case 'adjphr':
-						type = clsType;
-						brackets = ['(', ')'];
-						break;
-					case 'advphr': case 'ptcphr':
-						type = 'phr'
-						brackets = ['(', ')'];
-						break;
-					case 'acls': case 'advcls': case 'ncls': case 'cls':
-						type = clsType + ' cls';
-						brackets = ['[', ']'];
-						break;
-					default:
-						brackets = ['[', ']'];
-						break;
-				}
+		// 괄호 적용 대상 선정
+		$(div).find('.acls, .ncls, .advcls, .cls, .ccls, .pcls, .phr, .adjphr, .advphr, .ptcphr, .conj, .sem[data-lv]:not(:only-child), .ptc > .sem[data-lv], .tor > .sem[data-lv]')
+			.get().reverse().forEach(function(el) {
+				
+				// 괄호 타입과 모양 결정
+				const clsType = bracketclassList.find(className => el.classList.contains(className)) || '';
 
+				const { type, brackets } = BRACKET_TYPES[clsType] || { type: 'etc', brackets: ['[', ']'] };
+
+				// 괄호 태그 생성
 				let openBracket = div.ownerDocument.createElement('span');
 				let closeBracket = div.ownerDocument.createElement('span');
 
@@ -604,19 +596,19 @@
 				openBracket.textContent = brackets[0];
 				closeBracket.textContent = brackets[1];
 				// cls나 etc 타입의 괄호끼리 레이어 처리
-				if (brackets.indexOf('[') > -1) {
-					let childLv = Number(el.dataset.lv || 0);
-					$(el).find('.sem[data-lv],.brkt[data-lv]').each(function() {
-						if (el.textContent.replaceAll(/[\[\]\(\)\{\}]/g, '').length > this.textContent.replaceAll(/[\[\]\(\)\{\}]/g, '').length) {
-							childLv = Math.max(childLv, Number(this.dataset.lv) + 1);
-						} else {
-							childLv = Math.max(childLv, Number(this.dataset.lv));
-						}
-					});
-					if (childLv > 0) {
-						el.dataset.lv = childLv;
-						openBracket.dataset.lv = childLv;
-						closeBracket.dataset.lv = childLv;
+				if (brackets.includes('[')) {
+					let childLv = parseInt(el.dataset.lv || 0);
+					const elements = el.querySelectorAll('.sem[data-lv], .brkt[data-lv]');
+					let maxLv = childLv;
+					for (let i = 0; i < elements.length; i++) {
+						const element = elements[i];
+						const textContent = element.textContent.replace(/[[\](){}]/g, '');
+						maxLv = Math.max(maxLv, parseInt(element.dataset.lv || 0) + (textContent.length > el.textContent.replace(/[[\](){}]/g, '').length ? 1 : 0));
+					}
+					if (maxLv > 0) {
+						el.dataset.lv = maxLv;
+						openBracket.dataset.lv = maxLv;
+						closeBracket.dataset.lv = maxLv;
 					}
 				}
 				el.insertAdjacentElement('beforebegin', openBracket);
@@ -697,18 +689,14 @@
 		const rem = parseFloat(getComputedStyle(div.ownerDocument.documentElement).fontSize);
 		const tagsWithGComment = div.querySelectorAll('.sem[data-gc]'),
 			numTags = tagsWithGComment.length;
+		let i = 0;
 
-		for (let i = 0; i < numTags; i++) {
-			requestAnimationFrame(() => setDepth(i));
-		}
-		requestAnimationFrame(() => checkLineEnds(div));
-
-		function setDepth(i) {
+		function loop() {
 			const el = tagsWithGComment[i];
 			let priorTop, priorLeft, base = 0;
-			
-			delete el.dataset.gcLv;
-			
+
+			delete el?.dataset?.gcLv;
+
 			for (let j = i; j < numTags; j++) {
 				const curr = tagsWithGComment[j], rects = curr.getClientRects();
 				const currRect = (curr.classList.contains('odd') && rects.length > 1) ? rects[1] : rects[0];
@@ -719,7 +707,7 @@
 				if (curr.classList.contains('rcm')) {
 					if (curr.classList.contains('cmnt-align-start')) {
 						currLeft -= rem;
-					} else if(currRect != null && currGCommentStyle != null){
+					} else if (currRect != null && currGCommentStyle != null) {
 						currLeft += currRect.width - parseFloat(currGCommentStyle.width)
 							- parseFloat(currGCommentStyle.right);
 					}
@@ -732,18 +720,28 @@
 					const priorGCWidth = parseFloat(getComputedStyle(priorTag, '::after').width);
 					// gcomment끼리 너무 가까우면 앞의 gcomment 높이를 +1 
 					if (Math.abs(priorTop - currTop) < rem // 이전 gcomment와 세로 높이 차이가 1rem 미만이고,
-					&& Math.abs(priorLeft - currLeft) < (5 + priorGCWidth) // 이전 gcomment와 가로 간격이 5px 미만이면서
-					&& (!curr.classList.contains('rcm') // 수식어가 아닌 경우(수식어는 gcomment가 오른쪽끝을 기준으로 위치하기 때문) 
-						|| !priorTag.classList.contains('rcm') 
-						|| curr.textContent != priorTag.textContent)) { // 혹은 둘 다 수식어 태그지만 텍스트 내용이 다를 경우
-						if(curr.classList.contains('tor')) {
-							if(priorTag.classList.contains('adjphr')) {
+						&& Math.abs(priorLeft - currLeft) < (5 + priorGCWidth) // 이전 gcomment와 가로 간격이 5px 미만이면서
+						&& (!curr.classList.contains('rcm') // 수식어가 아닌 경우(수식어는 gcomment가 오른쪽끝을 기준으로 위치하기 때문) 
+							|| !priorTag.classList.contains('rcm')
+							|| curr.textContent != priorTag.textContent)) { // 혹은 둘 다 수식어 태그지만 텍스트 내용이 다를 경우
+						if (curr.classList.contains('tor')) {
+							if (priorTag.classList.contains('adjphr')) {
 								delete curr.dataset.gc;
 								priorTag.dataset.gc = '[to부정사 | 형용사구]';
 								break;
-							}else if(priorTag.classList.contains('advphr')) {
+							} else if (priorTag.classList.contains('advphr')) {
 								delete curr.dataset.gc;
 								priorTag.dataset.gc = '[to부정사 | 부사구]';
+								break;
+							}
+						} else if (curr.classList.contains('ptc')) {
+							if (priorTag.classList.contains('adjphr')) {
+								delete curr.dataset.gc;
+								priorTag.dataset.gc = '[분사 | 형용사구]';
+								break;
+							} else if (priorTag.classList.contains('advphr')) {
+								delete curr.dataset.gc;
+								priorTag.dataset.gc = '[분사 | 부사구]';
 								break;
 							}
 						}
@@ -755,8 +753,18 @@
 				priorTop = currTop;
 				priorLeft = currLeft;
 			}
+
+			i++;
+			if (i < numTags) {
+				requestAnimationFrame(loop);
+			} else {
+				requestAnimationFrame(() => checkLineEnds(div));
+			}
 		}
-	}
+
+		requestAnimationFrame(loop);
+	} 	
+
 	/**
 	 * inner 태그끼리의 겹침을 없앤다. (V(S)V) -> (V)(S)(V)
 	 * 목적어를 제외한 성분끼리 바로 앞뒤로 붙어있으면 하나의 태그로 합친다.
@@ -1328,17 +1336,40 @@
 	/**
 	* 자식을 더이상 갖지 않는 노드들을 모두 선택하여 반환.
 	*/
-	function getLeafNodes(nodes, result = []) {
-		for (let i = 0, length = nodes.length; i < length; i++) {
-			if (nodes[i] == null) continue;
-			
-			if (!nodes[i].childNodes || nodes[i].childNodes.length === 0) {
-				result.push(nodes[i]);
+	function getLeafNodes(nodes) {
+		const result = [];
+
+		function traverse(node) {
+			if (!node.childNodes || node.childNodes.length === 0) {
+				result.push(node);
 			} else {
-				result = getLeafNodes(nodes[i].childNodes, result);
+				for (let i = 0; i < node.childNodes.length; i++) {
+					traverse(node.childNodes[i]);
+				}
 			}
 		}
+
+		for (let i = 0; i < nodes.length; i++) {
+			if (nodes[i] != null) {
+				traverse(nodes[i]);
+			}
+		}
+
 		return result;
+	}
+
+	/**
+	 * 부모와 자식 노드를 서로 맞바꿈. (손자 노드들은 제자리)
+	 */
+	function swapParentAndChild(parent, child) {
+		if(!parent.contains(child)) {
+			console.warn(`${parent}는 ${child}의 부모가 아닙니다.`);
+			return;
+		}
+		
+		parent.parentNode.replaceChild(child, parent);
+		Array.from(child.childNodes).forEach(descendant => parent.appendChild(descendant));
+		child.appendChild(parent);
 	}
 
 	window['tandem'] = { showSemanticAnalysis, checkGCDepth, checkPOSDepth, svocText2Arr,
