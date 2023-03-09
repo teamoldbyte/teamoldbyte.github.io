@@ -1375,5 +1375,5 @@
 	window['tandem'] = { showSemanticAnalysis, checkGCDepth, checkPOSDepth, svocText2Arr,
 						cleanSvocDOMs, correctMarkLine, createBasicDOMs, 
 						drawConnections, splitInners, getSvocBytes, 
-						trimTextContent, wrapWithBracket };
+						trimTextContent, wrapWithBracket, swapParentAndChild };
 })(jQuery, this, document);
