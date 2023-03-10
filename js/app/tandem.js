@@ -553,13 +553,13 @@
 		return base + childBase;
 	}
 
-	const bracketclassList = ['acls', 'ncls', 'advcls', 'ccls', 'pcls', 'cls', 'phr', 'adjphr', 'advphr', 'ptcphr', 'conj'];
+	const bracketclassList = ['acls', 'ncls', 'advcls', 'ccls', 'pcls', 'cls', 'adjphr', 'advphr', 'ptcphr', 'phr', 'conj'];
 	const BRACKET_TYPES = {
 		ccls: { type: 'ccls', brackets: ['{', '}'] },
 		pcls: { type: 'ccls', brackets: ['{', '}'] },
 		conj: { type: 'conj', brackets: ['(', ')'] },
 		phr: { type: 'phr', brackets: ['(', ')'] },
-		adjphr: { type: 'phr', brackets: ['(', ')'] },
+		adjphr: { type: 'adjphr', brackets: ['(', ')'] },
 		advphr: { type: 'phr', brackets: ['(', ')'] },
 		ptcphr: { type: 'phr', brackets: ['(', ')'] },
 		acls: { type: 'acls cls', brackets: ['[', ']'] },
