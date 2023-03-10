@@ -410,6 +410,7 @@
 					   		var x1 = rects[isRcm ? rects.length - 1 : 0][leftOrRight] 
 					   					+ toLeft * pseudoHpos;
 					   		var x2 = x1 + toLeft * pseudoWidth;
+					   		
 							// 마우스 위치가 코멘트 영역 내부인지 판단
 					   		if(Math.min(y1,y2,y) != y && Math.max(y1,y2,y) != y
 					   		&& Math.min(x1,x2,x) != x && Math.max(x1,x2,x) != x){
@@ -852,32 +853,37 @@
 		range.detach();
 		selection.removeAllRanges();
 		
+		// 만약 to부정사나 분사가 형용사구나 부사구의 부모로 지정되면 부모자식 관계를 뒤집는다.
+		if(['tor','ptc'].includes(role) 
+		&& el.childElementCount == 1
+		&& ['.adjphr','.advphr'].find(c => el.firstElementChild.matches(c))) {
+			tandem.swapParentAndChild(el, el.firstElementChild);
+		}
+		
 		const container = $(el).closest('.semantics-result')[0];
 		
 		refreshDOMs(container);
 	}
 	
+	const rcomments = {s:'S', o:'O',c:'C', oc:'o.c.', m:'M', a:'A'},
+		  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
+					acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절'};
 	/**
 	 * 선택 영역을 괄호로 감싼 후 성분 태그까지 겹쳐서 추가한다.
 	 */
 	function wrapBracket(selection, wrapper){
-		const rcomments = {s:'S', o:'O',c:'C', oc:'o.c.', m:'M', a:'A'},
-			  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
-						acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절'};
 		const range = selection.getRangeAt(0);
-		const container = $(range.startContainer).closest('.semantics-result')[0];
+		const container = (range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer).closest('.semantics-result');
 		switch (wrapper) {
 		case 'ncls':
 			const assistant = document.createElement('div');
 			assistant.className = 'cls-role-menu';
 			assistant.style.position = 'absolute';
-			assistant.style.top = `${scrollY + range.getClientRects()[0].top + range.getClientRects()[0].height}px`;
-			assistant.style.left = `${scrollX + range.getClientRects()[0].left}px`;
-			assistant.insertAdjacentHTML('afterbegin', 
-				'<button class="cls-role-btn" value="s">s</button>' +
-				'<button class="cls-role-btn" value="o">o</button>' +
-				'<button class="cls-role-btn" value="c">c</button>' +
-				'<button class="cls-role-btn" value="oc">oc</button>');
+			const rangeRect = range.getClientRects()[0];
+			assistant.style.top = `${scrollY + rangeRect.top + rangeRect.height}px`;
+			assistant.style.left = `${scrollX + rangeRect.left}px`;
+			const buttonsHTML = ['s','o','c','oc'].map(value => `<button class="cls-role-btn" value="${value}">${value}</button>`)
+			assistant.insertAdjacentHTML('afterbegin', buttonsHTML);
 			document.body.appendChild(assistant);
 			let once = false;
 			$(document).on('click', function exitClsRoleMenu(e){
@@ -931,7 +937,7 @@
 			range.selectNode(el);
 		default:
 			const el2 = document.createElement('span');
-			el2.className = `sem ${wrapper}`;
+			el2.classList.add('sem', wrapper);
 			if(gcomments[wrapper]) el2.dataset.gc = gcomments[wrapper];
 			try {
 				range.surroundContents(el2);
@@ -941,6 +947,13 @@
 			}
 			range.detach();
 			selection.removeAllRanges();
+			
+			// 만약 to부정사나 분사가 형용사구나 부사구의 부모로 지정되면 부모자식 관계를 뒤집는다.
+			if(['adjphr','advphr'].includes(wrapper)
+			&& ['.tor','.ptc'].some(c => el2.parentElement.matches(c))
+			&& Array.from(el2.parentElement.childNodes).filter(n => n.textContent.length > 0).length === 1) {
+				tandem.swapParentAndChild(el2.parentElement, el2);
+			}
 			
 			refreshDOMs(container);
 			
