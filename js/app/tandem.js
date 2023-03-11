@@ -920,10 +920,9 @@
 	 * @param div 수식태그와 수식대상을 포함하는 부모 element(jQuery Object)
 	 */
 	function drawConnections(div) {
-		const lines = div.querySelectorAll('.curved_arrow,.gc_line');
-		for (let i = 0, len = lines.length; i < len; i++) {
-			if (lines[i].parentNode) lines[i].parentNode.removeChild(lines[i]);
-		}
+		const lines = Array.from(div.querySelectorAll('.curved_arrow,.gc_line'));
+		lines.forEach( line => line.remove());
+		
 		const ownerDocument = div.ownerDocument;
 
 		const rem = parseFloat(getComputedStyle(ownerDocument.documentElement).fontSize);
@@ -933,13 +932,17 @@
 			scrolledDivTop = ownerWindow.scrollY - divTop;
 		let drawSettings1 = { lineWidth: rem / 8, size: rem / 3, strokeStyle: '#FFCC99', header: false },
 			drawSettings2 = { lineWidth: rem / 8, size: rem / 3, strokeStyle: '#FFCC99' };
-		let eachLineRects = [], currentLineTop = (div.getClientRects()[0] == null) ? 0 : div.getClientRects()[0].top;
+		let eachLineRects = [], currentLineTop = div.getClientRects()[0]?.top || 0;
+		
+		// 현재 각 줄의 상단위치, 하단 위치를 모은다.
 		const lineEnds = div.querySelectorAll('.line-end');
 		for (let i = 0, len = lineEnds.length; i < len; i++) {
 			const bottom = currentLineTop + parseFloat(getComputedStyle(lineEnds[i]).lineHeight);
 			eachLineRects.push({ top: currentLineTop, bottom });
 			currentLineTop = bottom;
 		}
+		
+		// 수식어들을 돌면서 수식선을 그린다
 		const modifiers = div.querySelectorAll('[data-mfd]');
 		for (let i = 0, len = modifiers.length; i < len; i++) {
 			const modifier = modifiers[i];
@@ -962,17 +965,17 @@
 				targetEndNode = modificandChildNodes[i_te--];
 			}
 			// 해당 노드가 실제하지 않는 노드일 경우 다음(앞/뒤) 노드 선택
-			while (modBeginNode.length == 0 && i_mb < mdfChildLen) {
-				modBeginNode = modifierChildNodes[i_mb++];
+			for (; i_mb < mdfChildLen && modBeginNode.length === 0; i_mb++) {
+				modBeginNode = modifierChildNodes[i_mb];
 			}
-			while (modEndNode.length == 0 && i_me >= 0) {
-				modEndNode = modifierChildNodes[i_me--];
+			for (let j = i_me; j >= 0 && modEndNode.length === 0; j--) {
+				modEndNode = modifierChildNodes[j];
 			}
-			while (targetBeginNode.length == 0 && i_tb < mdfdChildLen) {
-				targetBeginNode = modificandChildNodes[i_tb++];
+			for (; i_tb < mdfdChildLen && targetBeginNode.length === 0; i_tb++) {
+				targetBeginNode = modificandChildNodes[i_tb];
 			}
-			while (targetEndNode.length == 0 && i_te >= 0) {
-				targetEndNode = modificandChildNodes[i_te--];
+			for (let j = i_te; j >= 0 && targetEndNode.length === 0; j--) {
+				targetEndNode = modificandChildNodes[j];
 			}
 			// 수식어구와 수식 대상의 coordinates(top,left,right)
 			const modLeftCoord = getCoords(modBeginNode)[0],
@@ -1126,10 +1129,9 @@
 	function getCoords(node) {
 		let range = node.ownerDocument.createRange();
 		range.selectNodeContents(node);
-		const rects = range.getClientRects();
-		if (rects.length > 0) {
-			return [rects[0], rects[rects.length - 1]];
-		} else return [null, null];
+		const rects = Array.from(range.getClientRects());
+		const filteredRects = rects.filter(r => r.width > 0);
+		return filteredRects.length > 0 ? [filteredRects[0], filteredRects[filteredRects.length - 1]] : [null, null];
 	}
 
 	/**
