@@ -117,7 +117,7 @@
 }
 .sem.outer .sem.inner.odd[data-rc]::before {
 	top: auto!important;
-	bottom: -0.75rem;
+	bottom: -0.25rem;
 }
 /* 자식 필수성분을 갖는 필수성분의 rcomment */
 .sem.outer[data-rc]::before {
