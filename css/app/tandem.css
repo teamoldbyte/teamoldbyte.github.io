@@ -412,6 +412,18 @@
 	top: auto!important;
 	bottom: 1.55rem/*2.0rem*/;
 }
+.sem:not(.s,.v,.o,.c,.oc,.m,.a).odd[data-gc][data-lv="1"]::after {
+	bottom: 2.4rem;
+}
+.sem:not(.s,.v,.o,.c,.oc,.m,.a).odd[data-gc][data-lv="2"]::after {
+	bottom: 3.75rem;
+}
+.sem:not(.s,.v,.o,.c,.oc,.m,.a).odd[data-gc][data-lv="3"]::after {
+	bottom: 5rem;
+}
+.sem:not(.s,.v,.o,.c,.oc,.m,.a).odd[data-gc][data-lv="4"]::after {
+	bottom: 6.125rem;
+}
 .sem.rcm.odd[data-gc]::after {
 	left:auto!important;
 	right: calc(0.5rem - var(--indent));
