@@ -604,7 +604,7 @@
 		$(panelInstance).data('semantics', semanticsDiv)
 						.data('sentenceId', sentenceId)
 						.data('eng', sentenceEng)
-						.data('transList', transList);
+						.data('transList', transList.filter(t => !!t.id));
 						
 		// 패널 내의 라디오버튼들에 유니크한 이름 설정(다른 패널들과 동작이 겹치지 않도록)
 		const now = Date.now();
