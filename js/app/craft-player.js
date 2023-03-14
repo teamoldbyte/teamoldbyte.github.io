@@ -99,12 +99,6 @@
 		
 	 */
 	
-	
-	
-	
-	
-	
-	
 	const DB_NAME = 'findsvoc-idb';	// url 호스트별로 유일한 데이터베이스명을 가집니다.
 	let DB_VERSION = 1;	// 데이터베이스 버전(테이블 스키마 변경이 필요할 경우 올리세요.)
 	let req, idb, idbstore;
@@ -155,75 +149,76 @@
 		
 		// 각 배틀타입에 맞게 채점 진행
 		switch(currentBattle.battleType) {
-			case '1':
+			case '1': {
 				const answerIndexes = [];
 				examples.sort(([a], [b]) => a - b).forEach(([start, end], i) => {
-					if(null != answers.find(([aStart,aEnd]) => start == aStart && end == aEnd))
-						answerIndexes.push(i);
+					const isAnswer = answers.some(([aStart, aEnd]) => start === aStart && end === aEnd);
+					if(isAnswer) answerIndexes.push(i);
 				});
+				
 				view.querySelectorAll('.option').forEach((sel, i) => {
-					if(answerIndexes.includes(i))
-						sel.classList.add('right');
+					if(answerIndexes.includes(i)) sel.classList.add('right');
 					else if(sel.matches('.selected')) {
 						correct = false;
 						sel.classList.add('wrong');
 					}
 				})
 				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
-				break;	
+				break;
+			}
 			case '2':
 				view.querySelectorAll('.option,.modifier,.modificand').forEach(opt => {
-					if(!opt.matches('.selected')) opt.classList.add('unselected');
+					if (!opt.matches('.selected')) opt.classList.add('unselected');
+					
 					if(currentBattle.ask.includes('모든')) {
 						if(selectHistory.includes(opt) && opt.matches('.modifier, .modificand')) {
 							opt.classList.add('right');
 						}else if(selectHistory.includes(opt) ^ opt.matches('.modifier, .modificand')) {
 							correct = false;
-							if(selectHistory.includes(opt)) {
-								opt.classList.add('wrong');
-							}
+							if(selectHistory.includes(opt)) opt.classList.add('wrong');
 						}
 					}else {
-						if(selectHistory.includes(opt) && opt.matches(selectHistory.indexOf(opt) % 2 ? '.modificand' : '.modifier')) {
+						if(selectHistory.includes(opt) && opt.matches(selectHistory.indexOf(opt) % 2 ? '.modificand' : '.modifier'))
 							opt.classList.add('right');							
-						}else if(selectHistory.includes(opt)) {
+						else if (selectHistory.includes(opt)) {
 							opt.classList.add('wrong');
 							correct = false;
-						}else if(opt.matches('.modificand.unselected,.modifier.unselected')){
-							correct = false;
-						}
+						} else if (opt.matches('.modificand.unselected,.modifier.unselected')) correct = false;
 					}
 				})
 				view.querySelector('.mod-guide-text').remove();
 				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
-			case '3':
-				const selectedOpt3 = view.querySelector('.example-btn-section .active');
-				const selectedText3 = selectedOpt3.textContent;
-				const selectedIndex3 = Array.from(view.querySelectorAll('.example-btn-section button')).indexOf(selectedOpt3);
-				if(answers.includes(selectedText3)) correct = true;
-				else correct = false;
+			case '3': {
+				const selectedOpt = view.querySelector('.example-btn-section .active');
+				const selectedText = selectedOpt.textContent;
+				const selectedIndex = Array.from(view.querySelectorAll('.example-btn-section button')).indexOf(selectedOpt);
+				correct = answers.includes(selectedText);
+
 				view.querySelectorAll('.pick-right .pick-option').forEach((opt, i) => {
-					if(i == selectedIndex3) {
-						opt.classList.add(correct ? 'right' : 'wrong');
-					}else if(!correct) {
+					if (i === selectedIndex) {
+						const className = correct ? 'right' : 'wrong';
+						opt.classList.add(className);
+					} else if (!correct) {
 						opt.classList.add('right');
 					}
 				})
+
 				view.querySelector('.example-btn-section').style.display = 'none';
 				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
-			case '4':
-				const selectedIndex4 = $(view).find('.example-btn-section .active').index();
-				const answerIndexes4 = [];
+			}
+			case '4': {
+				const selectedIndex = $(view).find('.example-btn-section .active').index();
+				const answerIndexes = [];
 				examples.sort(([a], [b]) => a - b).forEach(([start, end], i) => {
 					if(null != answers.find(([aStart,aEnd]) => start == aStart && end == aEnd))
-						answerIndexes4.push(i);
+						answerIndexes.push(i);
 				});
 				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				view.querySelector('.example-btn-section').style.display = 'none';
 				view.querySelectorAll('.sentence .option,.sentence .answer-wrong').forEach((sel, i) => {
-					if(answerIndexes4.includes(i)) {
+					if(answerIndexes.includes(i)) {
 						sel.classList.add('right');
 						// 정답 원문 텍스트 표시
 						const rightAnswer = createElement({ 
@@ -238,12 +233,13 @@
 							opacity: 1,
 							delay: 600
 						})
-					}else if(i == selectedIndex4) {
+					}else if(i == selectedIndex) {
 						correct = false;
 						sel.classList.add('wrong');
 					}
 				})
 				break;
+			}
 			case '5':
 				correct = view.querySelector('.arranged-example-section').textContent.replace(/\W/g,'').trim() == currentBattle.eng.replace(/\W/g,'').trim();
 				view.querySelector('.arranged-example-section').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}));
@@ -265,10 +261,10 @@
 				view.querySelector('.arranged-example-section').prepend(createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.eng}))
 				appendSentenceTTSBtns(view.querySelector('.arranged-example-section .full-sentence'));
 				break;
-			case '7':
-				let options7 = Array.from((currentBattle.answer?currentBattle.ask:currentBattle.kor).split(/\s+/), option => option.replace(/[,.!?]$/,''));
+			case '7': {
+				let options = Array.from((currentBattle.answer?currentBattle.ask:currentBattle.kor).split(/\s+/), option => option.replace(/[,.!?]$/,''));
 				let tempOption = '';
-				options7 = options7.reduce((acc, curr, i, arr) => {
+				options = options.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
 						const newAcc = (acc||[]).concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
 						tempOption = '';
@@ -280,9 +276,9 @@
 						}else return acc;
 					}
 				},[]);			
-				if(view.querySelectorAll('.arranged-example-section .btn').length != options7.length){
+				if(view.querySelectorAll('.arranged-example-section .btn').length != options.length){
 					view.querySelectorAll('.arranged-example-section .btn').forEach( option => {
-						if(options7.includes(option.textContent)) {
+						if(options.includes(option.textContent)) {
 							option.classList.add('right');
 						}else {
 							option.classList.add('wrong');
@@ -292,7 +288,7 @@
 				} 
 				else {
 					view.querySelectorAll('.arranged-example-section .btn').forEach( option => {
-						if(options7.includes(option.textContent)) {
+						if(options.includes(option.textContent)) {
 							option.classList.add('right');
 						}else {
 							option.classList.add('wrong');
@@ -306,6 +302,41 @@
 				view.querySelector('.example-btn-section').style.display = 'none';
 				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
 				break;
+			}
+			case '8': {
+				const activeBtn = view.querySelector('.example-btn-section .active');
+				const sentenceEl = view.querySelector('.ask-section .sentence');
+				appendSentenceTTSBtns(sentenceEl);
+				view.querySelector('.example-btn-section').style.display = 'none';
+
+				correct = answers.includes(activeBtn.textContent);
+				const pickRightEl = view.querySelector('.sentence .pick-right');
+				pickRightEl.textContent = correct ? answers[0] : activeBtn.textContent;
+				pickRightEl.classList.add(correct ? 'right' : 'wrong');
+
+				if (!correct) {
+					const rightAnswerEl = createElement({
+						el: 'span',
+						textContent: answers[0],
+						className: 'original-text',
+						style: {
+							opacity: 0,
+							position: 'absolute',
+							left: `${pickRightEl.offsetLeft}px`,
+							top: `${pickRightEl.offsetTop}px`
+						}
+					});
+					pickRightEl.parentElement.appendChild(rightAnswerEl);
+
+					anime({
+						targets: rightAnswerEl,
+						top: '-=30',
+						opacity: 1,
+						delay: 600
+					});
+				}
+				break;	
+			}
 			default: break;
 		}
 		// 정답문장 듣기 버튼 표시
@@ -456,7 +487,7 @@
 			return;
 		}
 		
-		currentView.querySelector('.tts-block').remove();
+		currentView.querySelector('.tts-block')?.remove();
 		WebAudioJS.play(NEXT_SOUND);
 		$(this).toggleClass('js-solve-btn js-next-btn').text('확인');
 		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
@@ -592,7 +623,7 @@
 		
 
 		switch(currentBattle.battleType) {
-			case '1' :
+			case '1' : {
 				// 질문 표시
 				ask.textContent = `다음 문장의 ${currentBattle.ask}를 선택하세요.`;
 				simpleAsk.textContent = ask.textContent;
@@ -616,7 +647,8 @@
 				});
 				sentence.replaceChildren(createElement(contextChildren));
 				break;
-			case '2' :
+			}
+			case '2' : {
 			
 				const modGuideText = createElement({el: 'span', class: 'mod-guide-text', style: { color: 'transparent'}});
 				// 질문 표시
@@ -651,7 +683,7 @@
 				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
 			 	const [ modifiers, modificands ] = answers;
-			 	const optionDummy2 = { el: 'span', role: 'button', onclick: function() {
+			 	const optionDummy = { el: 'span', role: 'button', onclick: function() {
 					// 선택 해제
 					if(this.matches('.selected')) {
 						const searchedIndex = selectHistory.indexOf(this);
@@ -694,16 +726,16 @@
 					if(leftStr) {
 						if(leftStr.includes(' ')) {
 							Array.from(leftStr.split(' ').filter(s => s.length > 0), s => {
-								return Object.assign({ className: `option d-inline-block haptic-btn shadow-none`, textContent: s }, optionDummy2);
+								return Object.assign({ className: `option d-inline-block haptic-btn shadow-none`, textContent: s }, optionDummy);
 							}).forEach( el => contextChildren.push(el, ' '));
 						}else contextChildren.push(leftStr, ' ');
 					}
-					contextChildren.push(Object.assign({ className: `${className} d-inline-block haptic-btn shadow-none`, textContent: eng.substring(start, end) }, optionDummy2));
+					contextChildren.push(Object.assign({ className: `${className} d-inline-block haptic-btn shadow-none`, textContent: eng.substring(start, end) }, optionDummy));
 					if(end < eng.length) contextChildren.push(' ');
 					if(j == arr.length - 1 && end < eng.length) {
 						if(eng.indexOf(' ', end) > -1) {
 							Array.from(eng.substring(end).split(' ').filter(s => s.length > 0), s => {
-								return Object.assign({ className: 'option d-inline-block haptic-btn shadow-none', textContent: s }, optionDummy2);
+								return Object.assign({ className: 'option d-inline-block haptic-btn shadow-none', textContent: s }, optionDummy);
 							}).forEach( el => contextChildren.push(el, ' '));
 						}else contextChildren.push(eng.substring(end));
 					}
@@ -712,7 +744,8 @@
 				
 				sentence.replaceChildren(createElement(contextChildren));
 				break;
-			case '3' :
+			}
+			case '3' : {
 				/* 맞는 어법 찾기.
 					example = [[대상start,대상end],정답텍스트,오답텍스트]
 					answer = [정답텍스트]
@@ -744,7 +777,8 @@
 						}};
 				})));
 				break;
-			case '4' :
+			}
+			case '4' : {
 				/* 틀린 어법 찾기.
 					example = [[보기1start,보기1end],[보기2start,보기2end],...]
 					answer = [[정답start,정답end],정답텍스트,오답텍스트]
@@ -780,7 +814,8 @@
 				sentence.replaceChildren(createElement(contextChildren));		
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(options));
 				break;	
-			case '5' :
+			}
+			case '5' : {
 				/* 배열하기.
 					example = [[보기1start,보기1end],[보기2start,보기2end],...]
 				 */
@@ -853,7 +888,8 @@
 				})
 				
 				break;
-			case '6' :
+			}
+			case '6' : {
 				/** 빈칸 채우기
 					example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트]]
 				 */
@@ -895,12 +931,13 @@
 					moveSolveBtn(!Array.from(currentView.querySelectorAll('.example-btn-section input')).every(input => input.value.length > 0));
 				})
 				break;
-			case '7' :
+			}
+			case '7' : {
 				/** 해석 배열하기
 					example = [오답1, 오답2]
 					정답: (부분해석의 경우) ask / (전체해석의 경우) kor
 				 */
-				let options7 = currentBattle[answers.length > 0 ? 'ask' : 'kor'].split(/\s+/);
+				let options = currentBattle[answers.length > 0 ? 'ask' : 'kor'].split(/\s+/);
 				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
 				
 				// 부분해석 범위가 있는 경우, sentence의 해당 범위를 밑줄 처리
@@ -913,9 +950,9 @@
 						className: 'text-decoration-underline', textContent: answerRange.extractContents().textContent
 					}));
 				}
-				const arrangedSection7 = currentView.querySelector('.arranged-example-section');
+				const arrangedSection = currentView.querySelector('.arranged-example-section');
 				let tempOption = '';
-				options7 = options7.reduce((acc, curr, i, arr) => {
+				options = options.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
 						const newAcc = (acc||[]).concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
 						tempOption = '';
@@ -928,14 +965,14 @@
 					}
 					// 오답을 선택지에 추가하여 랜덤섞기
 				}, []).concat(examples).sort(() => Math.random() - 0.5);
-				options7.forEach( option => {
+				options.forEach( option => {
 					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn shadow-none', 
 						textContent: option.replace(/[,.!?]$/,''), onclick: throwSelect
 					});					
 				})
 				// 선택 초기화
-				arrangedSection7.replaceChildren(createElement({el: 'div', className: 'arranged-example d-inline-block'}));
-				$(arrangedSection7).sortable({
+				arrangedSection.replaceChildren(createElement({el: 'div', className: 'arranged-example d-inline-block'}));
+				$(arrangedSection).sortable({
 					items: '> .haptic-btn'
 				});
 				$(currentView).find('.arranged-example,.example-btn-section').sortable({
@@ -961,6 +998,36 @@
 				})
 				currentView.querySelector('.example-btn-section').replaceChildren(createElement(contextChildren));
 				break;
+			}
+			case '8' : {
+				/* 맞는 어법 찾기.
+					example = [[대상start,대상end],정답텍스트,[오답텍스트1,오답텍스트2,...]]
+					answer = [정답텍스트]
+				*/
+				const [[ blankStart, blankEnd ], answerText, wrongTexts ] = examples;
+				leftStr = eng.substring(offsetPos, blankStart);
+				if(leftStr) contextChildren.push(leftStr);
+				wrongTexts.push(answerText);
+				options = wrongTexts.sort(() => Math.random() - 0.5);
+				contextChildren.push({
+					el: 'span',
+					className: 'pick-right',
+					'data-answer': answerText, 
+					textContent: '-------'
+				});				
+				if(blankEnd < eng.length)
+					contextChildren.push(eng.substring(blankEnd));
+				sentence.replaceChildren(createElement(contextChildren));	
+					
+				currentView.querySelector('.example-btn-section').replaceChildren(
+					createElement(Array.from(options, option => {
+						return { el: 'button', className: 'btn btn-outline-fico haptic-btn shadow-none', textContent: option , onclick: function() {
+							$(this).addClass('active').siblings().removeClass('active');
+							moveSolveBtn(false);
+						}};
+				})));
+				break;	
+			}
 			default: break;
 		}
 		
@@ -1417,7 +1484,7 @@
 		document.querySelector('.craft-header-section').classList.remove('min');
 		document.querySelector('.scrolling-section').style.marginTop = '0';		
 		scrollTo(0, 75);
-	}	
+	}
 	
 	/** 확인/다음 버튼을 옆으로 움직인다(true: 우측, false: 좌측)
 	 */
