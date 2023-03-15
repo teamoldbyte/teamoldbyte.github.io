@@ -45,7 +45,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 				 .replace(/[´＇｀`‘’‛′‵❛❜]/gi, "'") // 작은따옴표
 				 .replace(/[‚،﹐﹑，､]/gi, ",") // 쉼표
 				 .replace(/[\u00A0\u2000-\u200B\u202F\u205F]/gi, " ") // 공백
-				 .replace(/[−–—]/g,'-'); // 대쉬
+				 .replace(/[−–—‒]/g,'-'); // 대쉬
 	};
 	
 	// 첫 글자를 대문자로
