@@ -136,7 +136,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 		match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
 		// 정규식에 걸리지 않을 때까지 재검사
-		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-z]{2,}|\d+|I'[a-z]+))|\d\.[A-z]+) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|([−–—‒])|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
 			for(i = 1; i < 9; i++) {
 				if(match[i] != null) {
 					switch(i) {
@@ -153,18 +153,22 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 							arr.push({highlight: [match.index, match.index + 1]});
 							input = input.replace(match[0], '\'');
 							break;
-						case 4: // 구두점 앞의 하나 이상의 공백은 생략
+						case 4:	// 비정규화된 대쉬를 ASCII 대쉬로
+							arr.push({highlight: [match.index, match.index + 1]});
+							input = input.replace(match[0], '-');
+							break;
+						case 5: // 구두점 앞의 하나 이상의 공백은 생략
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({highlight: [match.index, match.index + 2]});
 							input = input.replace(match[0], match[i]);
 							break;
-						case 5: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
+						case 6: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
 							if(inputCursor >= match.index + 1) inputCursor += 1;
 							arr.push({highlight: [match.index + 2, match.index + 3]});
 							input = input.replace(match[0], `${match[i].substring(0,2)} ${match[i].substring(2)}`)
 							break;
-						case 6: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
-						case 7: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
+						case 7: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
+						case 8: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
 							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
 							arr.push({highlight: [match.index, match.index + match[i].length]});
 							input = input.replace(match[0], `'${match[i]}`);
