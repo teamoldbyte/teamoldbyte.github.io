@@ -1630,6 +1630,12 @@
 .note img{
 	max-width: 100%;
 }
+
+@media (max-width: 576px)  {
+    .note img{
+		width: 100%!important;
+	}
+}
 /*.full-text-section .note-block .note-mdf-btns{
 	background-color: #fff;
 	border-radius: 5px;
