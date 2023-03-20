@@ -1206,7 +1206,7 @@
 		else if(age < 19) _ageGroup = 'H';
 		else  _ageGroup = 'C';
 		// 지난 회차에 배틀북에 포함된 문제를 다 푼 경우
-		if(_battleSize !== 0 && _battleSize === _progressNum) {
+		if(!!_battleSize && _battleSize === _progressNum) {
 			_progressNum = 0;
 			_lastBattleId = -1;
 		}
