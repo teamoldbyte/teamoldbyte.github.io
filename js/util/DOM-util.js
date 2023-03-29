@@ -45,7 +45,10 @@ function createElement(json) {
 					element[key][property] = styleProperties[property];
 				}*/
 			}else console.error('style에 ' + typeof json[key] + '은/는 맞지 않습니다.');
-		}else if(key != 'el') { // 나머지 속성들 적용
+		}else if(key == 'dataset') {
+			Object.assign(element.dataset, json[key]);
+		}
+		else if(key != 'el') { // 나머지 속성들 적용
 			if(typeof element[key] == 'undefined') {
 				element.setAttribute(key, json[key]);
 			}else element[key] = json[key];
