@@ -71,3 +71,10 @@
 .battle-context *:hover::after { 
 	background: gold
 }
+
+/**/
+.add-battle-section textarea.comment{
+	font-family: Rubik,HCRDotum,sans-serif;
+	font-size: 1rem;
+	white-space: pre-wrap;
+}
