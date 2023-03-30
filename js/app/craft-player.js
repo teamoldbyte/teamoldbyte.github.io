@@ -1115,7 +1115,7 @@
 			idbstore.createIndex('bid', 'bid', { unique: true});
 			idbstore.createIndex('data', 'data'); // 실제 Battle
 			idbstore.createIndex('solve', 'solve', { unique: false}); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
-			initDatas(age);
+			initDatas(stepCommand.age);
 		}
 		let lastRnum = 0;
 		function getBattlesFromIDB() {
@@ -1138,7 +1138,7 @@
 				cursor.continue();
 			}else {
 				battlePool.sort((a,b) => a.rnum - b.rnum);
-				initDatas(age);
+				initDatas(stepCommand.age);
 			} 			
 		}
 	}
