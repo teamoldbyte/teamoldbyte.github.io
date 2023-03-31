@@ -50,7 +50,7 @@
 			counterSection = createElement(craftToolbarGroup.battleCounterPanel)
 			$.getJSON('/craft/battle/stats/total', total => {
 				counterSection.querySelector('.counter-total').textContent = `${total}건`;
-			}).fail(() => alert('전체 배틀 갯수를 조회할 수 없습니다.'));
+			}).fail(() => alertModal('전체 배틀 갯수를 조회할 수 없습니다.'));
 			addSection.querySelector('.battle-type-section').before(counterSection);
 		}
 		if(this.matches('.battle-type-section .btn')) {
@@ -93,7 +93,7 @@
 			}
 			if($.fn.bounce != undefined)
 				$(section).bounce();
-		}).fail(() => alert('배틀 갯수 조회에 실패했습니다.'));
+		}).fail(() => alertModal('배틀 갯수 조회에 실패했습니다.'));
 	})
 	// 배틀북 북 타입 선택시 해당 배틀북 목록을 불러와 표시한다.
 	.on('change', '.select-book-type', function() {
@@ -330,6 +330,9 @@
 				$(battleMaker).find('[value=redo]').trigger('click');
 		}
 	})
+	.on('input change', '.add-battle-section :input,.add-battle-section textarea', function() {
+		$(this.closest('.add-battle-section')).find('.js-add-battle').prop('disabled', false);
+	})
 	// 배틀 등록 버튼 클릭시 배틀입력 정보를 커맨드로 취합하여 전송
 	.on('click', '.js-add-battle', function() {
 		const addSection = this.closest('.add-battle-section');
@@ -361,55 +364,66 @@
 				
 		// 배틀 유형별 example, answer 정보 구성.
 		switch(battleType) {
-			case '1':
-				// [보기 위치1, 보기 위치2, ...]
-				command.example = JSON.stringify(findPositions(battleContext, '.answer, .option'));
-				// [정답 위치]
-				command.answer = JSON.stringify(findPositions(battleContext, '.answer'));
+			case '1': {
+											// [보기 위치1, 보기 위치2, ...]
+				const [examples, answers] = [findPositions(battleContext, '.answer, .option'),
+											// [정답 위치]
+											findPositions(battleContext, '.answer')];
+				if(answers.length == 0) {
+					alertModal('문제로 만들 어구를 선택해 주세요.');
+					return;
+				}else if(examples.length == answers.length) {
+					alertModal('오답 보기를 선택해 주세요.');
+					return;
+				}
+				Object.assign(command, { example: JSON.stringify(examples), answer: JSON.stringify(answers)});
 				break;
+			}
 			case '2':
 				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
 				const modifiers = findPositions(battleContext, '.modifier'),
 					modificands = findPositions(battleContext, '.modificand');
 				if(ask.includes('모든 피수식') && (modifiers.length > 0 || modificands.length == 0)) {
-					alert('피수식어만 1개 이상 선택해 주세요.');
+					alertModal('피수식어만 1개 이상 선택해 주세요.');
 					return;
 				}else if(ask.includes('모든 수식') && (modificands.length > 0 || modifiers.length == 0)) {
-					alert('수식어만 1개 이상 선택해 주세요.');
+					alertModal('수식어만 1개 이상 선택해 주세요.');
 					return;
 				}else if(!ask.includes('모든') && (modifiers.length && modificands.length) == 0) {
-					alert('수식어/피수식어를 1쌍 이상 선택해 주세요.');
+					alertModal('수식어/피수식어를 1쌍 이상 선택해 주세요.');
 					return;
 				}
 				command.answer = JSON.stringify([ modifiers, modificands ]);
 				break;
-			case '3':
-				let blank3 = battleContext.querySelector('.pick-right');
-				if(!blank3) {
-					alert('문제로 만들 어구를 선택해 주세요.');
+			case '3': {
+				const blank = battleContext.querySelector('.pick-right');
+				if(!blank) {
+					alertModal('문제로 만들 어구를 선택해 주세요.');
 					return;
 				}
 				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
 				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
-												blank3.textContent.trim(), blank3.dataset.wrong.trim() ]);
+												blank.textContent.trim(), blank.dataset.wrong.trim() ]);
 				// [정답 텍스트]
-				command.answer = JSON.stringify([ blank3.textContent.trim() ]);
+				command.answer = JSON.stringify([ blank.textContent.trim() ]);
 				break;
-			case '4':
-				let wrong4 = battleContext.querySelector('.answer-wrong');
+			}
+			case '4': {
+				const wrong = battleContext.querySelector('.answer-wrong');
 				if(battleContext.querySelector('.option') == null) {
-					alert('보기 어구를 선택해 주세요.');
+					alertModal('보기 어구를 선택해 주세요.');
 					return;					
 				}
 				// [보기 위치1, 보기 위치2, ...]
 				command.example = JSON.stringify(findPositions(battleContext, '.option, .answer-wrong'));
 				// [정답 위치, 정답 텍스트, 오답 텍스트]
 				command.answer = JSON.stringify([ findPositions(battleContext, '.answer-wrong')[0], 
-												wrong4.textContent.trim(), wrong4.dataset.wrong.trim() ]);
+												wrong.textContent.trim(), wrong.dataset.wrong.trim() ]);
 				break;
+			}
 			case '5':
 				if(battleContext.querySelectorAll('.option').length == 0) {
-					alert('보기를 추가해 주세요.');
+					alertModal('보기를 추가해 주세요.');
 					return;
 				}
 				// 목록에서 선택한 해석id는 ask로
@@ -418,19 +432,20 @@
 				command.example = JSON.stringify(findPositions(battleContext, '.option'));
 
 				break;
-			case '6':
+			case '6': {
 				if(battleContext.querySelector('.fill-right') == null) {
-					alert('문제로 만들 어구를 선택해 주세요.');
+					alertModal('문제로 만들 어구를 선택해 주세요.');
 					return;					
 				}
-				let blank6 = battleContext.querySelectorAll('.fill-right');
+				const blank = battleContext.querySelectorAll('.fill-right');
 				// 목록에서 선택한 해석id는 ask로
 				command.ask = addSection.querySelector('.select-kor').value;
 				// [빈칸 위치, 정답 텍스트]
 				command.example = JSON.stringify(Array.from(findPositions(battleContext, '.fill-right'), (pos,i) => {
-					return [pos, blank6[i].textContent.trim()];
+					return [pos, blank[i].textContent.trim()];
 				}));
 				break;
+			}
 			case '7':
 				if(battleContext.querySelectorAll('.option').length > 0) {
 					command.answer = JSON.stringify(findPositions(battleContext, '.option'))
@@ -441,22 +456,23 @@
 				command.example = JSON.stringify(addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/));
 				
 				break;
-			case '8':
-				let blank8 = battleContext.querySelector('.pick-right');
-				if(!blank8) {
-					alert('문제로 만들 어구를 선택해 주세요.');
+			case '8': {
+				const blank = battleContext.querySelector('.pick-right');
+				if(!blank) {
+					alertModal('문제로 만들 어구를 선택해 주세요.');
 					return;
 				}else if(!addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/).join('')) {
-					alert('오답 보기를 입력해 주세요.');
+					alertModal('오답 보기를 입력해 주세요.');
 					addSection.querySelector('.battle-opt-ext').focus();
 					return;
 				}
 				// [빈칸 위치, 정답 텍스트, [오답 텍스트1, 오답 텍스트2, ...]]
 				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
-												blank8.textContent.trim(), addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/) ]);
+												blank.textContent.trim(), addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/) ]);
 				// [정답 텍스트]
-				command.answer = JSON.stringify([ blank8.textContent.trim() ]);
+				command.answer = JSON.stringify([ blank.textContent.trim() ]);
 				break;
+			}
 			default: break;
 		}
 		
@@ -482,6 +498,8 @@
 				if(!document.getElementById('craftResultModal')) {
 					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
 				}
+				
+				$(addSection).find('.js-add-battle').prop('disabled', true);
 				$('#craftResultModal .battle-id').text(response.battleId);
 				$('#craftResultModal .group-count').text(response.groupCount);
 				$('#craftResultModal').modal('show');
@@ -532,7 +550,7 @@
 				$(newBattleBlock).css('display','none').slideDown()
 			},
 			error: function(err) {
-				alert(err);
+				alertModal(err);
 			}
 		})
 	})
@@ -543,7 +561,7 @@
 		const battleGroupBtn = battlesBlock.previousElementSibling;
 		const battleId = battleBlock.dataset.id;
 		$.post(`/craft/battle/del/${battleId}`, function() {
-			alert('배틀이 삭제되었습니다.');
+			alertModal('배틀이 삭제되었습니다.');
 			battleBlock.remove();
 			const counter = battleGroupBtn.querySelector('.battle-count');
 			const decreased = parseInt(counter.textContent) - 1;
@@ -553,11 +571,11 @@
 				battlesBlock.remove();
 				battleGroupBtn.remove();
 			}
-		}).fail(() => alert('배틀 삭제에 실패했습니다.'))
+		}).fail(() => alertModal('배틀 삭제에 실패했습니다.'))
 	})
 	/** 배틀 출제 패널을 컨테이너에 삽입
 	 */
-	function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList) {
+	async function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList) {
 		if(!$.fn.autocomplete) {
 			document.head.append(createElement(
 				[{el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'},
@@ -574,6 +592,7 @@
 			});
 			return;
 		}
+		
 		
 		// 카테고리 화면에서 최초 1회 불러오기
 		const categorySection = staticCraftPanel.querySelector('.battle-category-section select');
@@ -593,6 +612,12 @@
 		
 		// 공용 패널 복사본으로 패널 새로 생성
 		let panelInstance = staticCraftPanel.cloneNode(true);
+		if(typeof openSummernote == 'undefined') {
+			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.editor.min.js');
+		}
+		if(!staticCraftPanel.querySelector('.battle-comment-section textarea.comment~.note-editor')) {
+			await openSummernote($(panelInstance).find('.battle-comment-section textarea.comment').removeClass('d-inline'));
+		}
 		
 		// 배틀북 선택 초기화
 		$(panelInstance).find('.battle-book-section .select-book-type').val('step');
@@ -909,7 +934,7 @@
 		const wrapperClass = chkdBtn.value;
 		if((([3,4].includes(battleType) && wrapperClass.match(/pick-right|answer-wrong/)) || battleType == 7 || battleType == 8) 
 		&& context.getElementsByClassName(wrapperClass).length > 0) {
-			alert('이 유형의 배틀은 복수 정답을 허용하지 않습니다.\n기존 정답을 눌러 지워 주세요.');
+			alertModal('이 유형의 배틀은 복수 정답을 허용하지 않습니다.\n기존 정답을 눌러 지워 주세요.');
 			getSelection().removeAllRanges();
 			return;
 		}
