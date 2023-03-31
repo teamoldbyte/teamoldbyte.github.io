@@ -499,6 +499,8 @@
 					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
 				}
 				
+				$(addSection).find('textarea.comment').summernote('reset');
+				
 				$(addSection).find('.js-add-battle').prop('disabled', true);
 				$('#craftResultModal .battle-id').text(response.battleId);
 				$('#craftResultModal .group-count').text(response.groupCount);
