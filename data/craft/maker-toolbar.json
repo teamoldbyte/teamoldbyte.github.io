@@ -202,6 +202,46 @@
 													{ 
 														"el": "label", 
 														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
+														"textContent": "정렬순서"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOrderSortI",
+														"name": "orderSort",
+														"className": "input-open-type btn-check",
+														"checked": true,
+														"value": "i"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOrderSortI",
+														"textContent": "등록순"
+													},
+													{
+														"el": "input",
+														"type": "radio",
+														"id": "inputBookOrderSortR",
+														"name": "orderSort",
+														"className": "input-open-type btn-check",
+														"value": "r"
+													},
+													{
+														"el": "label",
+														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
+														"htmlFor": "inputBookOrderSortR",
+														"textContent": "난이도+길이순"
+													}
+												]
+											},
+											{
+												"el": "div",
+												"className": "row mt-3",
+												"children": [
+													{ 
+														"el": "label", 
+														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
 														"textContent": "가격"
 													},
 													{
