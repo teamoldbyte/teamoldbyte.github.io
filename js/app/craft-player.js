@@ -429,7 +429,7 @@
 		if(_memberId == 0 && memberId56 != null) command['memberId56'] = memberId56; 
 		if(bookMarkCommand != null && bookMarkCommand.markType != null) command['markType'] = bookMarkCommand.markType;
 		// 설명 펼치기
-		$(view).find('.explain-section').slideDown(500).find('.comment-section').text(currentBattle.comment || '작성된 코멘트가 없습니다.');
+		$(view).find('.explain-section').slideDown(500).find('.comment-section').html(currentBattle.comment || '작성된 코멘트가 없습니다.');
 		// (ajax) 해설정보 조회 및 표시
 		$.getJSON(`/craft/battle/${currentBattle.sentenceId}`, battleAnswerInfo => 
 				displayAnswerInfo(currentBattle.eng, view.querySelector('.explain-section'), battleAnswerInfo))
