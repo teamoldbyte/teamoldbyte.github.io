@@ -1823,6 +1823,10 @@
 .view-passage-section .note-section{
 	font-size: 14px;
 }
+.view-passage-section .note-section .note-text{
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
 /* 노트의 첨부 동영상 */
 .view-passage-section .note-text iframe{
 	max-width: 100%;

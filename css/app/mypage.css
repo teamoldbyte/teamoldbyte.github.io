@@ -17,6 +17,10 @@
 	border-right: 1px solid #dee2e6;
 }
 
+/**/
+.sub-menu-section .image-section .personacon-profile{
+	border-radius : 50%;
+}
 
 .mypage-section .sub-menu{
 	font-size: 1.1rem;
