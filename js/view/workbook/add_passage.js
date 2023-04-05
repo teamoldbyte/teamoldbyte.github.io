@@ -40,7 +40,7 @@ function pageinit(isHelloBook, memberId) {
 	
 	
 	// [각 단계별 이동]
-	$('[class^=step-] .title-section').click(function() {
+	$('[class^=step-] .title-section').on('click', function() {
 		$('[class^=step-] .collapse').not($(this).closest('[class^=step-]')
 			.find('.collapse').collapse('show')).collapse('hide');
 	});
@@ -59,7 +59,7 @@ function pageinit(isHelloBook, memberId) {
 	const autocompleteInstance = $('#newPassageText').autocomplete({
 		position: {my: 'left+10 top-10'},
     	delay: 300,
-    	search: function(e) {
+    	search: function() {
 			const text = this.value.sentenceNormalize(), textLen = text.length;
 			// 입력어가 5자 미만 혹은 최대길이를 초과하거나,
 			// 특수문자를 포함, 혹은 이전 검색어(입력란의 첫번째 문장)와 차이가 없으면 검색 X
@@ -84,13 +84,13 @@ function pageinit(isHelloBook, memberId) {
 				response([]);
 			});
 		},
-		focus: (event, ui) => {return false},// 포커싱됐을 때 자동입력 방지
-		close: function(event, ui) { // 자동완성 목록이 닫힐 때 현재 입력 글자 수 카운트
+		focus: () => {return false},// 포커싱됐을 때 자동입력 방지
+		close: function() { // 자동완성 목록이 닫힐 때 현재 입력 글자 수 카운트
 			const textLen = this.value.trim().length;
 			$('.demo-counter').text(textLen + '/' + maxChars); // 글자수 표시
 			$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
 		},
-		change: function(event, ui) { // 유효한 선택지를 선택하면 자동입력
+		change: function(_event, ui) { // 유효한 선택지를 선택하면 자동입력
 			if(isHelloBook) {
 				if(ui.item != null) {
 					this.value = ui.item.value;
@@ -100,7 +100,7 @@ function pageinit(isHelloBook, memberId) {
 				}
 			}
 		},
-		select: function(event, ui) {
+		select: function(_event, ui) {
 			if(!isHelloBook) {
 				if(confirm('선택한 문장으로 지문을 검색하시겠습니까?'))
 					$('#searchBtn').trigger('click', ui.item.value);
@@ -116,14 +116,14 @@ function pageinit(isHelloBook, memberId) {
 	 
 	  return $li.appendTo( ul );
 	}
-	autocompleteInstance._resizeMenu = function(ul, item) {
+	autocompleteInstance._resizeMenu = function() {
 		this.menu.element.outerWidth($('#newPassageText').innerWidth());
 	};
 	
 	// [신규 지문 입력 시 비활성화된 등록 버튼 활성화]
 	let maxChars = isHelloBook ? 300 : 1000; // default 1000, 피코 추가소모로 500 늘릴 수 있음.
 	let textTooltip;
-	$(document).on('input', '#newPassageText', function(e, manual) {
+	$(document).on('input', '#newPassageText', function() {
 		const validateResult = replaceAndHighlights();
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
 		$('.demo-counter').text(textLen + '/' + maxChars);
@@ -152,7 +152,7 @@ function pageinit(isHelloBook, memberId) {
 			(textTooltip || (textTooltip = new bootstrap.Tooltip(this, {
 				title: `영어 문장을 ${maxChars}자 이내로 입력하세요.`,
 				trigger: 'manual', customClass: 'text-invalid',
-				offset: ({placement,refer,popper}) => {
+				offset: ({placement}) => {
 					if(placement == 'top') return [100,0];
 					else return [0,0];
 				}}))).enable();		
@@ -170,7 +170,7 @@ function pageinit(isHelloBook, memberId) {
 		$('#newPassageText').highlightWithinTextarea({highlight: [
 			{className: 'bg-fc-yellow', highlight: ['×']},
 			{className: 'bg-fc-purple corrected', highlight: result.arr}]})
-		$('#newPassageText').focus()[0].setSelectionRange(result.inputCursor, result.inputCursor);
+		$('#newPassageText').trigger('focus')[0].setSelectionRange(result.inputCursor, result.inputCursor);
 		return [ result.input.includes('×'), result.arr.length > 0 ];
 	}
 	
@@ -213,7 +213,7 @@ function pageinit(isHelloBook, memberId) {
 	}
 	
 	// [지문 입력 완료]------------------------------------------------------------
-	$('#inputComplete').click(async function() {
+	$('#inputComplete').on('click', async function() {
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());
 		if(!isHelloBook && sentences.length == 1) {
@@ -268,6 +268,8 @@ function pageinit(isHelloBook, memberId) {
 				));
 			}
 			$('#askMoreSentenceModal').modal('show');
+		}else if(isHelloBook && sentences.reduce((acc, curr) => acc + curr.length, 0) > maxChars) {
+			alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
 		}else $('#beforeSubmitModal').modal('show');
 	});
 	// [(공통)단위 문장 수정]
@@ -300,10 +302,14 @@ function pageinit(isHelloBook, memberId) {
 		$new.fadeIn().find(':text').trigger('input');
 	});
 	// [지문 검색 버튼 클릭]
-	$('#searchBtn').click(async function(e, paramKeyword) {
+	$('#searchBtn').on('click', async function(_e, paramKeyword) {
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());
 		if(isHelloBook) {
+			if(sentences.reduce((acc, curr) => acc + curr.length, 0) > maxChars) {
+				alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
+				return;
+			}
 			const $result = $('#dividedResult').empty();
 			for(let i = 0, len = sentences.length; i < len; i++) {
 				const $sentence = $('#hiddenDivs .divided-sentence').clone();
@@ -418,7 +424,7 @@ function pageinit(isHelloBook, memberId) {
 				$('.step-2 .collapse').one('shown.bs.collapse', function() {
 					if((total.length > 1 && passageDtoList.length == 0)
 					|| (total.length == 1 && sentenceDtoList.length == 0)) {
-						$('#jumpTo3').click();
+						$('#jumpTo3').trigger('click');
 					} else {
 						$passageList.masonry(masonryOptsForPassages);
 					}
@@ -442,12 +448,12 @@ function pageinit(isHelloBook, memberId) {
 			$('.step-1').removeClass('opacity-50 pe-none');
 			$('.step-2, .step-3').addClass('opacity-50 pe-none');
 		}
-		$('#newPassageText').val('').prop('disabled', false).trigger('input').focus();
+		$('#newPassageText').val('').prop('disabled', false).trigger('input').trigger('focus');
 	});
 	let taghistory;
 	if(!isHelloBook) {
 		// [(워크북)검색결과 건너뛰기]----------------------------------------------------------
-		$('#jumpTo3').click(function() {
+		$('#jumpTo3').on('click', function() {
 			$('#text').val($('#newPassageText').val());
 			$('.search-result-section .list-group-item').removeClass('active');
 			$('.step-2,.step-3').removeClass('opacity-50 pe-none');
@@ -455,7 +461,7 @@ function pageinit(isHelloBook, memberId) {
 			$('#editPassage, .edit-passage').hide();
 			$('.final-pssage').show();
 		});
-		$('.step-2 .collapse:eq(0)').on('shown.bs.collapse hidden.bs.collapse', function(e) {
+		$('.step-2 .collapse:eq(0)').on('shown.bs.collapse hidden.bs.collapse', function() {
 			$('#jumpTo3').fadeToggle();
 		});
 		// [(워크북)검색결과 선택]-------------------------------------------------------------
@@ -482,7 +488,7 @@ function pageinit(isHelloBook, memberId) {
 		});
 		
 		// [(워크북)선택지문 편집 요청]
-		$('#editPassage').click(function() {
+		$('#editPassage').on('click', function() {
 			const $selected = $('.search-result-section .list-group-item.active');
 			if($selected.data('passageId')) {
 				const passageId = $selected.data('passageId');
@@ -510,7 +516,7 @@ function pageinit(isHelloBook, memberId) {
 			}
 		});
 		// [(워크북)선택지문 편집 취소]
-		$('#cancelEdit').click(function() {
+		$('#cancelEdit').on('click', function() {
 			$('.final-passage, .edit-passage').toggle();
 		});
 		// 워크북 지문 태그 목록을 localStorage로부터 조회하여 표시.
@@ -539,6 +545,10 @@ function pageinit(isHelloBook, memberId) {
 				sentences.push(normalizedText);
 				sentencesLength += normalizedText.length;
 			});
+			if(sentences.reduce((acc, curr) => acc + curr.length, 0) > maxChars) {
+				alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
+				return;
+			}
 			createHidden($form, 'text', sentences.join('\n'));
 		}else {
 			if($('#title').val().length == 0) {
@@ -611,7 +621,13 @@ function pageinit(isHelloBook, memberId) {
 		}
 		myFicoUsages.length += sentencesLength;
 		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
-		$form.submit();
+		$form.trigger('submit');
 	});
-	$('#passageForm').on('submit', () => $('#loadingModal').modal('show'));
+	$('#passageForm').on('submit', function() {
+		if(isHelloBook && $(this).find('input[name="text"]').text().length > maxChars) {
+			alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
+			return;
+		}
+		$('#loadingModal').modal('show');
+	});
 }
