@@ -452,6 +452,7 @@
 		"PP", // 17500, "과거분사"
 		"PP_OC", // 17510, "과거분사(목적격 보어)"
 		"PP_COMP", // 17520, "과거분사(보어)"
+		"SENSE_OBJ", // 2023.04.08 추
 		"SENSE_SUBJ", // 18000, "의미상 주어"
 		"ACTUAL_SUBJ",	// 18100, "진주어"
 		"ACTUAL_OBJ",	// 18200, "진목적어"
@@ -603,6 +604,7 @@
 		"PHR_UNDERNEATH", // 11202, "underneath"
 		"PHR_UNLIKE", // 11204, "unlike"
 		"PHR_UNTIL", // 11206, "until"
+		"PHR_UNTO", // 2023.04.08 추가
 		"PHR_UP", // 11250, "up"
 		"PHR_UP_AGAINST", // 11252, "up against"
 		"PHR_UP_TO", // 11254, "up to"
