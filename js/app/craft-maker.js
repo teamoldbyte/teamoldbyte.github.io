@@ -191,7 +191,7 @@
 		deleteList.forEach(k => command.delete(k));
 		command.append('ownerId', _memberId);
 		
-		if(fileInput.value != null) {
+		if(!!fileInput.value) {
 			new Compressor(fileInput.files[0], {
 				success(result) {
 					command.delete('coverImage');
