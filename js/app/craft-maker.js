@@ -618,6 +618,10 @@
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.editor.min.js');
 		}
 		if(!staticCraftPanel.querySelector('.battle-comment-section textarea.comment~.note-editor')) {
+			const $sentenceUnit = $(container).closest('.one-sentence-unit-section');
+			if($sentenceUnit.length > 0 && $sentenceUnit.find('.note-list .note-text').length > 0) {
+				$(panelInstance).find('.battle-comment-section textarea.comment').val($sentenceUnit.find('.note-list .note-text').html());
+			}
 			await openSummernote($(panelInstance).find('.battle-comment-section textarea.comment').removeClass('d-inline'));
 		}
 		
