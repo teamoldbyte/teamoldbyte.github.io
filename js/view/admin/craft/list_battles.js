@@ -1,7 +1,7 @@
 /** /admin/craft/list_battles.html
 @author LGM
  */
-function pageinit(battlePage) {
+async function pageinit(battlePage) {
 	
 	const battleListContainer = document.querySelector('#battleListDiv tbody');
 	const battlePaginationContainer = document.querySelector('#battlePagination');
@@ -232,7 +232,7 @@ function pageinit(battlePage) {
 				] },
 				{ el: 'div', className: 'battleComment col-12 row mt-3', children: [
 					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해설' },
-					{ el: 'textarea', className: 'form-control col battle-comment', rows: '5' }
+					{ el: 'textarea', className: 'form-control col battle-comment', rows: 10 }
 				]},
 				{ el: 'div', className: 'battleEditBtns mt-3 position-relative text-center', children: [
 					{ el: 'button', type: 'button', id: 'deleteBattle', className: 'btn btn-outline-fico col-auto', children: [
@@ -262,11 +262,14 @@ function pageinit(battlePage) {
 			]}
 		]}
 	]));
+	
+	
 	$.getJSON('/grammar/category/list', categories => {
 		document.querySelector('#battleDetailSection .battle-category').appendChild(createElement(Array.from(categories, c => {
 			return { el:'option', value: c.cid, textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
 		})))
 	});
+	await openSummernote($('#battleDetailSection textarea.battle-comment'));
 	
 	
 	function buildBattleCommand() {
@@ -392,6 +395,8 @@ function pageinit(battlePage) {
 		//코멘트
 		askDetailSection.querySelector('.battle-comment').dataset.org = battle.comment;
 		askDetailSection.querySelector('.battle-comment').value = battle.comment;
+		$(askDetailSection.querySelector('.battle-comment')).summernote('reset');
+		$(askDetailSection.querySelector('.battle-comment')).summernote('pasteHTML', battle.comment);
 		
 		// 삭제, 수정버튼에 배틀아이디 할당
 		askDetailSection.querySelector('#deleteBattle').dataset.battleid = battle.bid;
