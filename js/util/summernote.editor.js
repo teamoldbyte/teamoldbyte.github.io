@@ -21,7 +21,8 @@
 				['para', ['ul', 'ol', 'paragraph']],
 				['table', ['table']],
 				['insert', ['link', 'picture', 'video']],
-				['view', ['help','codeview']] ],
+				['view', ['help','codeview']],
+				/*['grammar', ['subjectrole','actionrole','objectrole','empMod-f','empMod-b','empAdv','hinteraser']]*/],
 			styleTags: [ 'p', { title: '제목', tag: 'h4', value: 'h4' } ],
 			fontNames: ['RIDIBatang', 'HCRDotum'],
 			fontSizes: ['10', '12', '14', '16', '18', '24', '36'],
@@ -37,14 +38,15 @@
 			}, 10);
 		}		
 	}
-	function onChange(contents, $input, $editable) {
-		const maxContents = 65000,
+	function onChange(contents, maxLength, $input, $editable) {
+		const maxContents = maxLength > 0 ? maxLength : 65000,
 			popover = bootstrap.Popover.getOrCreateInstance($editable[0],
 				{
 					html: true, title: '<span class="fw-bold">※ 경고</span>',
 					trigger: 'manual',
 					content: '<span class="fw-bold text-danger">본문 내용이 너무 길어 마지막 입력이 취소되었습니다.</span>'
 				});
+		$editable.attr('data-char-count', `현재 글자 수: ${contents.length}`);
 		if (contents.length > maxContents) {
 			$input.summernote('undo');
 			setTimeout(() => popover.show(), 150);
@@ -80,14 +82,16 @@
 			$('head').append('<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">');
 			await $.cachedScript('https://cdn.jsdelivr.net/combine/npm/summernote@0.8.18/dist/summernote-lite.min.js,npm/summernote@0.8.18/lang/summernote-ko-KR.min.js');
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
+			/*await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');*/
 			const customstyle = document.createElement('style');
-			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";}';
+			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";}@media(min-width: 576px){.note-editable{background:linear-gradient(to right, transparent calc(320px - 1px), #eee 320px, transparent calc(320px + 1px));}.note-editable::before{content: "모바일 안전선";position: absolute;color: #bbb;font-size: 5px;left: 320px;top: 0;transform: translateX(-50%);}}.note-editable::after{position:absolute;right: 12px;top: 0;content:attr(data-char-count);font-size: 5px}';
 			document.head.append(customstyle);
 		}
 		$input.summernote(Object.assign(options, {
 			callbacks: {
 				onPaste: function(e) { onPaste($input, e); },
-				onChange: function(contents, $editable) { onChange(contents, $(this), $editable); },
+				onChange: function(contents, $editable) { 
+					onChange(contents, this.maxLength, $(this), $editable); },
 				onImageUpload: function(files) {
 					let formData = new FormData();
 					for (let i = 0, filesLen = files.length; i < filesLen; i++) {
