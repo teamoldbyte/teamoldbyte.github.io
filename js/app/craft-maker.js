@@ -131,7 +131,7 @@
 		}
 		function setBookList() {
 			$bookSelect[0].replaceChildren(createElement(Array.from(battleBooksMap[bookType], book => {
-				return { el: 'option', value: book.battleBookId, textContent: book.title + (book.description?` - ${book.description}`:'') }
+				return { el: 'option', value: book.battleBookId, textContent: book.title || '제목 없음' }
 			})))
 		}
 	})
