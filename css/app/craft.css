@@ -696,6 +696,7 @@ u {
 }
 /* 개인별 학습 - 구독한 배틀북 */
 .battle-book-list .subscription .book-cover{
+	cursor: pointer;
 	display: block;
 	width: 5rem;
 	height: 7rem;
@@ -1756,11 +1757,17 @@ u {
 	width:60vw;
 	/* max-height: 50vh; */
 }
+@media(max-width: 768px){
+	.battle-menu-section{
+		width: 100%;
+	}
+}
 /* 배틀 목록 버튼 */
 .list-btn-section{
 	position: absolute;
 	/* bottom: calc(50% - 1rem); */
-	right: calc(50% - 1.75rem);
+	/* right: calc(50% - 1.75rem); */
+	left: 0;
 	z-index: 10;
 	top: -3rem;
 }
@@ -1838,6 +1845,8 @@ u {
 	text-align: center;
 	margin-right: 0.25rem;
 	padding: 0 0.25rem;
+	font-size: 0.75rem;
+	line-height: 1.25rem;
 }
 .list-battle-section .battle-block .eng{
 	/* text-shadow: 0px 0px 2px #000; */
