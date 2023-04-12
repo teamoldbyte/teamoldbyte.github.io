@@ -84,7 +84,7 @@
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
 			/*await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');*/
 			const customstyle = document.createElement('style');
-			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";}@media(min-width: 576px){.note-editable{background:linear-gradient(to right, transparent calc(320px - 1px), #eee 320px, transparent calc(320px + 1px));}.note-editable::before{content: "모바일 안전선";position: absolute;color: #bbb;font-size: 5px;left: 320px;top: 0;transform: translateX(-50%);}}.note-editable::after{position:absolute;right: 12px;top: 0;content:attr(data-char-count);font-size: 5px}';
+			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";}@media(min-width: 576px){.note-editable{background:linear-gradient(to right, transparent calc(320px - 1px), #eee 320px, transparent calc(320px + 1px));}.note-editable::before{content: "모바일 경계선";position: absolute;color: #bbb;font-size: 5px;left: 320px;top: 0;transform: translateX(-50%);}}.note-editable::after{position:absolute;right: 12px;top: 0;content:attr(data-char-count);font-size: 5px}';
 			document.head.append(customstyle);
 		}
 		$input.summernote(Object.assign(options, {
