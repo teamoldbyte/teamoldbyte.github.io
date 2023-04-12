@@ -30,6 +30,7 @@
 			]}
 		]}
 	]};
+	
 	const tts = new FicoTTS();
 	$(function() {
 		
@@ -75,7 +76,7 @@
 	
 	let solveResults = []; // 연속 맞힘 기록
 	let rankClasses = []; // 계급도(ajax)
-	let _contentType; // 플레이 컨텐츠 종류(step, book)
+	let _bookTypeStr; // 플레이 컨텐츠 종류(step, theme, grammar)
 	let stepCommand = {}; // 단계별 문제 호출 및 평가 전송 시 전송할 커맨드
 	let bookMarkCommand = {}; // 배틀북(단계별 포함) 문제 호출 및 평가 전송 시 전송할 커맨드 (비회원은 사용X)
 	let _lastBattleId; // 마지막으로 푼 배틀ID(풀 때마다 갱신됨)
@@ -84,7 +85,7 @@
 	let _todayBattleSolveCount; // 오늘자 배틀 풀이 횟수
 	let _todaySolveLimit = 50; // 일일 배틀 풀이 최대 횟수
 	const MAX_NUMS_PER_POOL = 25; // 한 번에 가져올 수 있는 최대 배틀 수(이 미만을 가져왔다는 것은 문제가 모자라다는 것)
-	let currentBattle, battlePool = []; // 현재 문제, 현재 문제 풀
+	let currentBattle, battlePool = [], allBattlePool = []; // 현재 문제, 현재 문제 풀
 	let currentView;
 	let _memberId, _ageGroup, memberId56; // 사용자 정보
 	let _battleRecord; // 배틀 전적 정보
@@ -100,17 +101,130 @@
 	 */
 	
 	const DB_NAME = 'findsvoc-idb';	// url 호스트별로 유일한 데이터베이스명을 가집니다.
-	let DB_VERSION = 1;	// 데이터베이스 버전(테이블 스키마 변경이 필요할 경우 올리세요.)
-	let req, idb, idbstore;
-	const indexedDB = window.indexedDB;
+	let DB_VERSION = 2;	// 데이터베이스 버전(테이블 스키마 변경이 필요할 경우 올리세요.)
+	//let req, idb, idbstore;
+	let storeName;
+	let STORE_NAME_BOOKTYPE_MAP = {step: 'StepBattle', theme: 'ThemeBattle', grammar: 'GrammarBattle'};
+	// 키릴자모(\u0040~\u04FF)를 이용한 치환 테이블
+	const SUBSTITUTION_TABLE = {
+		"\u0400": "\"bid\":",
+		"\u0401": "\"rnum\":",
+		"\u0402": "\"categoryId\":",
+		"\u0403": "\"sentenceId\":",
+		"\u0404": "\"memberId\":",
+		"\u0405": "\"diffLevel\":",
+		"\u0406": "\"engLength\":",
+		"\u0407": "\"engLevel\":",
+		"\u0408": "\"battleType\":",
+		"\u0409": "\"eng\":",
+		"\u040A": "\"grammarTitle\":",
+		"\u040B": "\"askTag\":",
+		"\u040C": "\"ask\":",
+		"\u040D": "\"source\":",
+		"\u040E": "\"comment\":",
+		"\u040F": "\"example\":",
+		"\u0410": "\"answer\":",
+		"\u0411": "\"regDate\":",
+		"\u0412": "\"updateDate\":",
+		"\u0413": "\"[[",
+		"\u0414": "]]\"",
+		"\u0415": "],["
+	}
+	function substitute(inputString) {
+		let pattern = new RegExp(Array.from(Object.keys(SUBSTITUTION_TABLE)).join("|"), "g");
+		return inputString.replace(pattern, (match) => SUBSTITUTION_TABLE[match]);
+	}
+	function r_substitute(inputString) {
+		let reverseSUBS_TABLE = new Map(Object.entries(SUBSTITUTION_TABLE).map(([key,value]) => [value, key]));
+		let pattern = new RegExp(Array.from(reverseSUBS_TABLE.keys()).join("|").replace(/\[/g,'\\['), "g");
+		return inputString.replace(pattern, (match) => reverseSUBS_TABLE.get(match));
+	}
+	function bytes2Battle(bytes) {
+		return JSON.parse(substitute(pako.inflateRaw(bytes, { to: 'string'})));
+	}
+	function battle2Bytes(battle) {
+		return pako.deflateRaw(r_substitute(JSON.stringify(battle)));
+	}
 	
 	let selectHistory = []; // 현재 문제에서 선택한 선택지들 모음(1,2,5유형용)
-	
+	let allBattleBriefList = [] // 배틀 네비게이션용 목록 (목록에서 골라서 바로 풀기)
 	$(document)
-	.on('click', '.js-view-rnum', function() {
-		if($(this).css('opacity') == '0') {
-			$(this).css('opacity', 1).text(currentBattle.rnum);
-		}else $(this).css('opacity',0)
+	// 단계별 배틀북 제외하고 리뷰배틀/오답배틀/보관배틀에 대한 전체 목록 조회
+	.on('click', '.js-history', async function() {
+		if(allBattleBriefList.length == 0) {
+			await $.getJSON('/craft/battlebook/evaluation/list', {...bookMarkCommand}, list => {
+				allBattleBriefList = list;
+				// 목록 div 채우기
+				$('.list-battle-section').empty().append(
+					createElement(Array.from(allBattleBriefList, ({battleId, eng, regDate}, i) => {
+						return { el: 'div', className: 'battle-block js-navigate-to', 'data-bid': battleId, children: [
+							{ el: 'span', className: 'number', textContent: i + 1 },
+							{ el: 'span', className: 'eng', textContent: eng },
+							{ el: 'span', className: 'date', textContent: new Date(regDate).format('yyyy.MM.dd') },
+						]}
+				})));
+			});
+		}
+		
+		// 목록 div 펼치기
+		if(this.classList.contains('opened')) {
+			this.classList.remove('opened');
+			anime({
+				targets: '.battle-menu-section',
+				bottom: ['50vh', 0],
+				easing: 'linear',
+				duration: 150
+			});
+		}else {
+			this.classList.add('opened');
+			// 현재의 순번 찾기
+			const currentIndex = allBattleBriefList.findIndex(({battleId}) => battleId == currentBattle.bid);
+			const $current = $('.list-battle-section').find('.battle-block').eq(currentIndex).addClass('active');
+			$current.siblings('.battle-block').removeClass('active');
+			anime({
+				targets: '.battle-menu-section',
+				bottom: [0, '50vh'],
+				easing: 'linear',
+				duration: 150,
+				changeComplete: () => {
+					$current[0].scrollIntoView();
+				}
+			});
+		}
+	})
+	// 전체 배틀 목록에서 선택하여 풀이 진행
+	.on('click', '.js-navigate-to', function() {
+		tts.stop();
+		
+		currentView.querySelector('.tts-block')?.remove();
+		WebAudioJS.play(NEXT_SOUND);
+		$('.js-next-btn').toggleClass('js-solve-btn js-next-btn').text('확인');
+		document.querySelector('.craft-layout-content-section').classList.remove('bg-fc-transparent');
+		
+		// 맞힘/틀림 메세지 숨김
+		anime({
+			targets: '.js-result-msg',
+			bottom: 0,
+			height: 0,
+			duration: 500,
+			easing: 'easeInOutExpo',
+			complete: anim => anim.animatables.forEach(msg => msg.target.remove())	
+		})
+		nextBtnObserver.disconnect();
+		
+		const selectedIndex = $(this).index('.battle-block');
+		_lastBattleId = selectedIndex > 0 ? allBattleBriefList[selectedIndex - 1] : 0;// 선택한 배틀의 이전 배틀 ID
+		_progressNum = selectedIndex;
+		calcProgress();
+		// 문제를 조회(ajax)하여 진행
+		_getNextBattles();
+		$('.js-history').removeClass('opened');
+		anime({
+			targets: '.battle-menu-section',
+			bottom: ['50vh', 0],
+			easing: 'linear',
+			duration: 150
+		});
 	})
 	// 배틀 저장(ajax)
 	.on('click', '#save-btn', function() {
@@ -377,7 +491,7 @@
 			})
 		}
 		// 오늘자 풀이량 카운트
-		if(_contentType == 'step') {
+		if(bookMarkCommand.markType === 'b') {
 			_todayBattleSolveCount.count++;
 			window.localStorage.setItem(`TCBSC_${ntoa(_memberId)}`, JSON.stringify(_todayBattleSolveCount));
 		}
@@ -386,8 +500,8 @@
 		const resultToast = createElement({"el":"div","class":'js-result-msg result-toast',
 								style: { transformOrigin: 'top'}});
 		document.querySelector('.craft-header-section').append(resultToast);
-		// 해설화면에 캐릭터 안보이도록 투명화
-		document.querySelector('.craft-layout-content-section').classList.add('bg-fc-transparent');
+		// 해설화면에 달수 캐릭터 안보이도록 투명화
+		//document.querySelector('.craft-layout-content-section').classList.add('bg-fc-transparent');
 		anime.timeline({
 			targets: resultToast,
 		}).add({
@@ -434,19 +548,33 @@
 		$.getJSON(`/craft/battle/${currentBattle.sentenceId}`, battleAnswerInfo => 
 				displayAnswerInfo(currentBattle.eng, view.querySelector('.explain-section'), battleAnswerInfo))
 		.always((_x, s) => {
-			if(s == 'parsererror') {
+			if(s == 'parsererror') { // 세션 만료로 인해 JSON이 아닌 로그인 페이지 html을 받은 경우
 				loginExpiredModal();
 			}else {
 				// (ajax) 배틀 채점 정보 전송 ! 배틀북 내의 가장 나중 배틀보다 이전의 배틀을 풀었을 땐 전송하지 않는다.
 				$.ajax({
 					url: '/craft/battle/evaluation/add',
 					type: 'GET', contentType: 'application/json', data: command,
-					success: () => { 
+					success: async() => { 
 						if(correct) { 
 							_battleRecord.correct++;
 						}
 						if(_memberId == 0) {
-							req = indexedDB.open(DB_NAME, DB_VERSION);
+							const db = await idb.openDB(DB_NAME, DB_VERSION);
+							const tx = db.transaction(storeName, 'readwrite');
+							const store = tx.objectStore(storeName);
+							const index = store.index('bid');
+							
+							for await(const cursor of index.iterate(ntoa(currentBattle.bid))) {
+								const record = { ...cursor.value, solve: (correct ? 'O': 'X')}
+								cursor.update(record);
+							}
+							await tx.done;
+							
+							//const item = { data: battle2Bytes(currentBattle) };							
+							//item.solve = correct? 'O': 'X';
+							//await db.put(storeName, item, keyPath);
+							/*req = indexedDB.open(DB_NAME, DB_VERSION);
 							req.onsuccess = function() {
 								idb = this.result;
 								const tx = idb.transaction(['StepBattle'], 'readwrite');
@@ -463,11 +591,16 @@
 										cursor.continue();
 									}
 								};
-							};	
+							};	*/
 						}
 						moveSolveBtn(true);
 						if(_progressNum != null) _progressNum++;
-						calcProgress(); 
+						calcProgress();
+						// (리뷰/오답/보관 제외)배틀을 끝까지 다 풀었으면 lastBattleId = -1 호출
+						if(bookMarkCommand.markType === 'b' && _progressNum >= _battleSize) {
+							$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
+							//solveAllsOfBook();
+						}
 					},
 					error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
 					complete: (_x,s) => {
@@ -480,7 +613,7 @@
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function(e) {
 		tts.stop();
-		if(_contentType == 'step' && _todayBattleSolveCount.count >= _todaySolveLimit) {
+		if(bookMarkCommand.markType === 'b' && _todayBattleSolveCount.count >= _todaySolveLimit) {
 			solveLimitExceed();
 			e.preventDefault();
 			e.stopPropagation();
@@ -506,9 +639,11 @@
 		if(battlePool.length > 0) {
 			_askStep();
 		}
-		// 남은 문제가 없으면 새로 문제를 조회(ajax)하여 진행	
-		else if(isLastPageOfTheBook) 
+		else if(isLastPageOfTheBook) {
+			//$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
 			solveAllsOfBook();
+		}
+		// 남은 문제가 없으면 새로 문제를 조회(ajax)하여 진행	
 		else _getNextBattles();		
 	})
 	// svoc 분석이 펼쳐질 때 줄바꿈 재처리
@@ -527,26 +662,56 @@
 	*/
 	function _getNextBattles() {
 		
-		const url = _contentType == 'step' ? '/craft/battle/step/next':'/craft/battlebook/next';
-		$.getJSON(url, _contentType == 'step' 
-			? Object.assign({}, stepCommand, bookMarkCommand, {lastBattleId: _lastBattleId, rankLevel: currRank.battleLevel})
-			: Object.assign({}, bookMarkCommand, { lastBattleId: _lastBattleId }) 
-		,function(battles) {
+		// 이미 화면 내에 갖고 있는 문제라면
+		if(allBattlePool[_progressNum]) {
+			const firstUndefinedIndex = allBattlePool.slice(_progressNum).findIndex(x => x === undefined);
+			battlePool = firstUndefinedIndex === -1 ? allBattlePool.slice(_progressNum) 
+				: allBattlePool.slice(_progressNum, _progressNum + firstUndefinedIndex);
+			isLastPageOfTheBook = (_progressNum + battlePool.length >= _battleSize);
+			_askStep();
+			return;
+		}
+		
+		const url = `/craft/battlebook/${_bookTypeStr}`;
+		const data = _bookTypeStr === 'step' && bookMarkCommand.markType === 'b'
+  			? { ...stepCommand, ...bookMarkCommand, lastBattleId: _lastBattleId, rankLevel: currRank.battleLevel }
+  			: { ...bookMarkCommand, lastBattleId: _lastBattleId };
+  		
+  		// 서버로부터 문제 조회
+		$.getJSON(url, data, function(battles) {
 			battlePool = battles;
-			isLastPageOfTheBook = (battles.length < MAX_NUMS_PER_POOL);
+			isLastPageOfTheBook = (_bookTypeStr == 'step' && battles.length < MAX_NUMS_PER_POOL || _progressNum + battles.length >= _battleSize);
 			if(battles.length == 0) {
-				// 처음 진입부터 풀 배틀이 없는 경우는 지난 회차에서 배틀북 끝까지 풀고 그만두거나
-				// 다시 첫문제로 돌아온 후 아직 풀이를 안 한 상황
-				if(currentBattle == null && _lastBattleId != -1) {
+				// 처음 진입부터 풀 배틀이 없는 경우는 
+				// 1. 이 배틀북을 진행할 조건이 미달하거나
+				if(currentBattle == null && _lastBattleId == 0) {
+					solveAllsOfBook();
+				}
+				// 2. 지난 회차에서 배틀북 끝까지 풀고 그만두거나
+				// 	다시 첫문제로 돌아온 후 아직 풀이를 안 한 상황
+				else if(currentBattle == null && _lastBattleId != -1) {
 					_lastBattleId = -1;
 					_progressNum = 0;
 					calcProgress();
 					_getNextBattles();
-				}else solveAllsOfBook();
+				} else solveAllsOfBook();
 			}
-			else {
+			else { // 조회된 문제가 있을 경우
+				// 전체 배틀 풀에 추가
+				battles.forEach((battle, i) => {
+					allBattlePool[i + _progressNum] = battle;
+				});
 				if(_memberId == 0) {
-					req = indexedDB.open(DB_NAME, DB_VERSION);
+					// 무료회원은 조회된 문제들을 모두 IndexedDB에 저장한다.
+					idb.openDB(DB_NAME, DB_VERSION).then(async db => {
+						const tx = db.transaction(storeName, 'readwrite');
+						await Promise.all(Array.from(battles, battle => {
+							return tx.store.add({bid: ntoa(battle.bid), data: battle2Bytes(battle), solve: '' });
+						}).concat([tx.done]))
+						_askStep();
+					})
+					
+					/*req = indexedDB.open(DB_NAME, DB_VERSION);
 					req.onsuccess = function() {
 						idb = this.result;
 						const tx = idb.transaction(['StepBattle'], 'readwrite');
@@ -564,7 +729,7 @@
 								_askStep();
 							}
 						}
-					};				
+					};*/				
 				}else _askStep();
 			}
 		}).fail(() => {
@@ -878,10 +1043,10 @@
 					}
 					moveSolveBtn(currentView.querySelectorAll('.arranged-example .haptic-btn').length != JSON.parse(currentBattle.example).length);
 				$(currentView).find('.example-btn-section')
-				}).on('sortover', (e,ui) => {
+				}).on('sortover', (_e,ui) => {
 					const optNum = ui.item[0].dataset.opt;
 					$(currentView).find(`.example-btn-section [data-opt="${optNum}"]`).not(ui.item[0]).hide();
-				}).on('sortout', (e,ui) => {
+				}).on('sortout', (_e,ui) => {
 					const optNum = ui.item[0].dataset.opt;
 					if(ui.sender[0]?.matches('.arranged-example'))
 						$(currentView).find(`.example-btn-section [data-opt="${optNum}"]`).not(ui.item[0]).show();
@@ -988,10 +1153,10 @@
 					}
 					moveSolveBtn(currentView.querySelectorAll('.arranged-example .haptic-btn').length != JSON.parse(currentBattle.example).length);
 				$(currentView).find('.example-btn-section')
-				}).on('sortover', (e,ui) => {
+				}).on('sortover', (_e,ui) => {
 					const optNum = ui.item[0].dataset.opt;
 					$(currentView).find(`.example-btn-section [data-opt="${optNum}"]`).not(ui.item[0]).hide();
-				}).on('sortout', (e,ui) => {
+				}).on('sortout', (_e,ui) => {
 					const optNum = ui.item[0].dataset.opt;
 					if(ui.sender[0]?.matches('.arranged-example'))
 						$(currentView).find(`.example-btn-section [data-opt="${optNum}"]`).not(ui.item[0]).show();
@@ -1040,8 +1205,8 @@
 	
 	/** 플레이어 초기화
 	 */
-	function initPlayer(age, contentType, battleRecord, command, progressNum, battleSize) {
-		_contentType = contentType;
+	async function initPlayer(age, battleRecord, command, progressNum, battleSize) {
+		_bookTypeStr = location.pathname.match(/(?:\/craft\/battle\/)(\w+)/)[1];
 		_battleRecord = battleRecord;
 		bookMarkCommand = command
 		bookMarkCommand.regDate = new Date(command.regDate);
@@ -1053,7 +1218,7 @@
 		if(battleSize != null) _battleSize = battleSize;
 		
 		// Today Craft Battle Solve Count
-		if(_contentType == 'step') {
+		if(bookMarkCommand.markType === 'b') {
 			if(window.localStorage.getItem(`TCBSC_${ntoa(_memberId)}`)) {
 				_todayBattleSolveCount = JSON.parse(window.localStorage.getItem(`TCBSC_${ntoa(_memberId)}`));
 				if(_todayBattleSolveCount.date != new Date().toLocaleDateString()) {
@@ -1067,26 +1232,98 @@
 				}
 			}else _todayBattleSolveCount = { date: new Date().toLocaleDateString(), count: 0}
 		}
+		
+		// 오답/보관 배틀 최소갯수
+		if(['w','s'].includes(bookMarkCommand.markType) && _battleSize < 10) {
+			solveAllsOfBook();
+		}
 
 		// 비회원일 경우 로컬에서 기록 탐색
 		if(_memberId == 0) {
 			if(typeof Cookies == 'undefined') {
-				$.getScript('https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js', function() {
-					const fmId = Cookies.get('FMID');
-					if(!fmId) location.replace('/craft/main');
-					else memberId56 = fmId;
-				})
-			}else {
-				const fmId = Cookies.get('FMID');
-				if(!fmId) location.replace('/craft/main');
-				else memberId56 = fmId;
+				await $.cachedScript('https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js');
 			}
+			const fmId = Cookies.get('FMID');
+			if(!fmId) location.replace('/craft/main');
+			else memberId56 = fmId;
+			
+			// idb(IndexedDB Wrapper Library) 호출
+			await $.cachedScript('https://cdn.jsdelivr.net/npm/idb@7/build/umd-with-async-ittr.js');
+			await $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
+			storeName = STORE_NAME_BOOKTYPE_MAP[_bookTypeStr] + ntoa(_battleBookId);
 			
 			stepCommand['age'] = parseInt(localStorage.getItem('FM_AGE'));
 			
 			document.querySelector('#save-btn').disabled = true;
-			_battleRecord = { numOfTest: 0, correct: 0, incorrect: 0 };
-			req = indexedDB.open(DB_NAME, DB_VERSION);
+			_battleRecord = { correct: 0, incorrect: 0 };
+			
+			const databases = await indexedDB.databases();
+			databases.forEach(({name, version}) => (name == DB_NAME) && (version >= DB_VERSION) && (DB_VERSION = version))
+			idb.openDB(DB_NAME, DB_VERSION, {
+				async upgrade(db, oldVer, _, tx) {
+					const newstore = db.createObjectStore(storeName, { autoIncrement: true});
+					newstore.createIndex('bid', 'bid'); // 배틀 ID(base56)
+					newstore.createIndex('data', 'data'); // 실제 Battle
+					newstore.createIndex('solve', 'solve'); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
+					
+					if(oldVer == 1) { // 1버전엔 StepBattle만 있었음.
+						const oldstore = tx.objectStore('StepBattle');
+						const records = await oldstore.getAll();
+						records.sort((a, b) => {
+							return a.data.rnum - b.data.rnum;
+						})
+						// 레코드를 변형하여 2버전으로 마이그레이션
+						for(const record of records) {
+							await newstore.add({...record, bid: ntoa(record.bid), data: battle2Bytes(record.data)});
+						}
+						db.deleteObjectStore('StepBattle')
+					}
+				}
+			}).then(async db => {
+				if(db.objectStoreNames.contains(storeName)) {
+					let lastRnum = 0;
+					let cursor = await db.transaction(storeName).store.openCursor();
+					_progressNum = 0;
+					while(cursor) {
+						const battle = bytes2Battle(cursor.value.data);
+						// 풀었던 배틀일 경우(solve 값이 "O" 혹은 "X", 안풀었을 경우 "")
+						if(/[OX]/.test(cursor.value.solve)) {
+							// 레코드(전적)에 합산
+							_battleRecord[cursor.value.solve == 'O' ? 'correct':'incorrect']++;
+							// 마지막으로 푼 배틀 찾아서 lastBattleId 할당하기
+							if(_bookTypeStr !== 'step') {
+								_lastBattleId = battle.bid;
+							}
+							else if(battle.rnum > lastRnum) {
+								lastRnum = battle.rnum;
+								_lastBattleId = battle.bid;
+							}
+							_progressNum++;
+						}else {
+							// 아직 풀지 않은 배틀은 이제 풀어야 할 배틀 풀에 저장
+							battlePool.push(battle);
+						}
+						cursor = await cursor.continue();
+					}
+					if(_bookTypeStr == 'step') battlePool.sort((a,b) => a.rnum - b.rnum);
+					initDatas(stepCommand.age);
+				}else {
+					db.close();
+					db = await idb.openDB(DB_NAME, ++DB_VERSION, {
+						upgrade(db) {
+							const newstore = db.createObjectStore(storeName, { autoIncrement: true});
+							newstore.createIndex('bid', 'bid'); // 배틀 ID(base56)
+							newstore.createIndex('data', 'data'); // 실제 Battle
+							newstore.createIndex('solve', 'solve'); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
+							
+							initDatas(stepCommand.age);
+						}
+					})
+				}
+			})
+			
+			
+			/*req = indexedDB.open(DB_NAME, DB_VERSION);
 			req.onsuccess = function listBattles() {
 				idb = this.result;
 				if(!idb.objectStoreNames.contains('StepBattle')) {
@@ -1105,19 +1342,18 @@
 				}
 			};
 			// 테이블 스키마 변경이 필요할 경우 아래 코드를 변경하세요.
-			req.onupgradeneeded = createBattleStore;
+			req.onupgradeneeded = createBattleStore;*/
 			
 		}else initDatas(age);
 		
-		function createBattleStore() {
-			idb = this.result;
-			idbstore = idb.createObjectStore('StepBattle');
+		/*function createBattleStore(db) {
+			idbstore = db.createObjectStore('StepBattle');
 			idbstore.createIndex('bid', 'bid', { unique: true});
 			idbstore.createIndex('data', 'data'); // 실제 Battle
 			idbstore.createIndex('solve', 'solve', { unique: false}); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
-			initDatas(stepCommand.age);
-		}
-		let lastRnum = 0;
+			initDatas(age);
+		}*/
+		/*let lastRnum = 0;
 		function getBattlesFromIDB() {
 			const cursor = this.result;
 			if(cursor) {
@@ -1138,9 +1374,9 @@
 				cursor.continue();
 			}else {
 				battlePool.sort((a,b) => a.rnum - b.rnum);
-				initDatas(stepCommand.age);
+				initDatas(age);
 			} 			
-		}
+		}*/
 	}
 	
 	function throwSelect(e) {
@@ -1201,14 +1437,28 @@
 	function initDatas(age) {
 		stepCommand['age'] = age;
 		// 나이를 연령대로 변환
-		if(age < 13) _ageGroup = 'E';
-		else if(age < 16) _ageGroup = 'M';
-		else if(age < 19) _ageGroup = 'H';
-		else  _ageGroup = 'C';
-		// 지난 회차에 배틀북에 포함된 문제를 다 푼 경우
-		if(!!_battleSize && _battleSize === _progressNum) {
+		switch (true) {
+			case (age < 13):
+				_ageGroup = 'E';	// Elementary
+				break;
+			case (age < 16):
+				_ageGroup = 'M';	// 
+				break;
+			case (age < 19):
+				_ageGroup = 'H';
+				break;
+			default:
+				_ageGroup = 'C';
+				break;
+		}
+		// 지난 회차에 배틀북에 포함된 문제를 다 푼 경우 (단계별 진행 시엔 battleSize,progressNum 모두 null이다)
+		if(!!_battleSize && _battleSize == _progressNum) {
 			_progressNum = 0;
 			_lastBattleId = -1;
+			if(bookMarkCommand.markType === 'b') {
+				$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
+				solveAllsOfBook();
+			}
 		}
 		// 진급 진행도 표시
 		calcProgress().then(() => {
@@ -1232,7 +1482,11 @@
 									{"el":"button","class":"btn btn-fico",onclick: () => {
 										location.replace(_memberId == 0 ? '/craft/main' : '/auth/login');
 									},"textContent": _memberId == 0 ? '시작 화면으로' : "로그인"}
-			]}]}]}]}]}));
+								]}
+							]}
+						]}
+					]}
+				]}));
 		}
 		bootstrap.Modal.getOrCreateInstance(document.getElementById('loginExpiredModal')).show();
 	}
@@ -1240,7 +1494,11 @@
 	/** 배틀북 내의 문제 모두 소진 --> 다시 플레이 요구
 	 */
 	function solveAllsOfBook() {
-		if(_contentType == 'step') {
+		
+		// 단계별 배틀의 마지막 문제에 도달
+		if(_bookTypeStr === 'step' && bookMarkCommand.markType === 'b') {
+			
+			// 단계별 배틀 최고 계급까지 오른 상태면 
 			if(currRank.rankTitle == '대장') {
 				if(!document.getElementById('newRankModal')) {
 					document.body.prepend(createElement(newRankModal));
@@ -1257,7 +1515,7 @@
 					}
 				});
 				$('#newRankModal .modal-body').append(newRank);
-				$('#newRankModal button').text('시작화면으로').click(function() {
+				$('#newRankModal button').text('시작화면으로').on('click',function() {
 					location.replace('/craft/main');
 				});
 				$('#newRankModal').modal('show');
@@ -1287,7 +1545,7 @@
 					scale: [0,1],
 					opacity: [0,1]
 				})
-			}else {
+			}else { // 최고 계급에 도달하지 않았는데 마지막 문제에 도달한 경우는 현 계급용으로 준비된 문제 수로 진급에 실패했다는 의미
 				if($('#lowVictoryModal').length == 0) {
 					document.querySelector('.craft-layout-content-section').appendChild(createElement({
 						"el":"div","id":"lowVictoryModal","class":"modal fade","data-bs-backdrop":"static","data-bs-keyboard":"false","tabIndex":-1,"children":[
@@ -1310,26 +1568,53 @@
 			}
 		}
 		
-		
+		// 단계별 배틀 진행을 제외하고(단계별 리뷰/오답/보관 및 테마별/문법별 진행/리뷰/오답/보관)
 		else if(!document.getElementById('lastBattleModal')) {
+			let modalBody = [];
+			
+			// (오답/보관 등)배틀 진행할 조건이 미달하다는 메세지
+			if(_lastBattleId == 0) {
+				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
+					"innerHTML":'플레이를 위한 배틀이 부족합니다.(최소 10개)'});
+			}
+			// 배틀북 진행을 마친 메세지
+			else if(bookMarkCommand.markType === 'b') {
+				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
+					"innerHTML": `축하합니다.<br>이 배틀북을 모두 풀었으니 ${(_memberId == 0) ? "다른 배틀북도 플레이":"리뷰플레이도"} 해 보세요."`});
+			}
+			// 배틀북 리뷰/오답/보관 풀기를 마친 메세지
+			else { 
+				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
+					"innerHTML": "주어진 배틀을 모두 풀었습니다." });
+			}
+			// 메인으로 가는 버튼
+			modalBody.push({"el":"div","class":"button-section row g-1","children":[
+				{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"}
+			]});
+			// 리뷰/오답/보관 풀기일 경우 현재 화면에서 다시풀기 가능. 무료회원은 그대로 종료. 다시 풀기 불가능.
+			if(bookMarkCommand.markType !== 'b' && _battleSize > 10) {
+				modalBody[1].children.push({"el":"button","class":"btn btn-outline-fico", 'data-bs-dismiss': 'modal',"textContent":"첫 배틀부터 다시 플레이", onclick: async () => {
+					isLastPageOfTheBook = false;
+					_lastBattleId = -1;
+					_progressNum = 0;
+					battlePool = [];
+					calcProgress();
+					_getNextBattles();
+				}});
+			}
 			document.querySelector('.craft-layout-content-section').appendChild(createElement({
 				"el":"div","id":"lastBattleModal","class":"modal fade","data-bs-backdrop":"static","data-bs-keyboard":"false","tabIndex":-1,"children":[
 					{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 						{"el":"div","class":"modal-content","children":[
-							{"el":"div","class":"modal-body row g-0","children":[
-								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"마지막 배틀입니다."},
-								{"el":"div","class":"button-section row g-1","children":[
-									{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"},
-									{"el":"button","class":"btn btn-outline-fico", 'data-bs-dismiss': 'modal', onclick: () => {
-										isLastPageOfTheBook = false;
-										_lastBattleId = -1;
-										_progressNum = 0;
-										_getNextBattles();
-										
-									},"textContent":"첫 배틀부터 다시 플레이"}
-			]}]}]}]}]}));
+							{"el":"div","class":"modal-body row g-0","children":modalBody}
+						]}
+					]}]}));
+			// 배틀 진행을 마친 경우 팡파레
+			if(bookMarkCommand.markType == 'b') $('#lastBattleModal').on('shown.bs.modal', function() {
+				showFireworks(this);
+			})		
 		}
-		bootstrap.Modal.getOrCreateInstance(document.getElementById('lastBattleModal')).show();		
+		$('#lastBattleModal').modal('show');
 	}
 	
 	/** 일일 최대 플레이 횟수 초과 모달
@@ -1350,7 +1635,7 @@
 	}
 	
 	async function calcProgress() {
-		if(_contentType == 'step') {
+		if(_bookTypeStr === 'step' && bookMarkCommand.markType === 'b') {
 			const prevRankBase = currRankBase;
 			return new Promise((resolve, reject) => {
 				if(rankClasses.length == 0) {
