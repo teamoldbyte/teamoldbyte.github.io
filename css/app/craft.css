@@ -831,6 +831,7 @@ u {
 }
 
 
+.battle-book-list .grammar .battlebook-overview-section .book-cover,
 .battle-book-list .theme .battlebook-overview-section .book-cover{
 	margin-right: 1rem;
 	margin-left: 0; 
@@ -1049,6 +1050,7 @@ u {
 }
 .battlebook-overview-section .description{
 	overflow-wrap: break-word;
+	text-align: left;
 }
 
 
