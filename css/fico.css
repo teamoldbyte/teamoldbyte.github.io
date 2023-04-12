@@ -18,8 +18,10 @@
 
 
 .block-section{
-	padding: 3rem;
-	padding-top: 8rem;
+	/* padding: 3rem; */
+	padding: calc(3rem + 10px);
+	/* padding-top: 6rem; */
+	padding-top: calc(7rem + 55px);
 	background-color: var(--slate);
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 10px;
@@ -41,14 +43,12 @@
 /* 워크북 메뉴 */ 
 .main-menu-section{
 	position: absolute;
-	top: 6rem;
+	/* top: 6rem; */
+	top: calc(3rem + 62.5px);
 	right: 6rem;
-	width: calc(100% - 12rem);
+	/* width: calc(100% - 12rem); */
+	width: calc(100% - 12rem - 11.5px);
 	padding: 0;
-	/* background-color: #8f1a5a; */
-	/* border: 1.5px solid #585174; */
-	/* box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 1px inset; */
-	/* border-radius: 10px; */
 	z-index: 1000;
 }
 .main-menu-section a{
@@ -152,7 +152,7 @@
 	.main-menu-section{
 		top: 2rem;
 		right: 0;
-		padding: 0;
+		padding: 0 0.5rem;
 		width: 100%;
 	}
 }
