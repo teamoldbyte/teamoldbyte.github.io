@@ -1684,8 +1684,9 @@
 	/* box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 4px 0px inset; */
 	/* box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 4px 0px inset, rgba(0, 0, 0, 0.06) -1px -1px 4px 0px inset; */
 	/* box-shadow: rgb(216 216 216 / 38%) 2px 2px 6px 0px inset, rgb(216 216 216 / 38%) 1px -2px 6px -1px inset; */
-	box-shadow: 2px 2px 6px 0 rgba(40, 40, 40, 0.075) inset,rgb(40, 40, 40, 0.075) 1px -2px 6px -1px inset;
-	background-color: #fff;
+	/* box-shadow: 2px 2px 6px 0 rgba(40, 40, 40, 0.075) inset,rgb(40, 40, 40, 0.075) 1px -2px 6px -1px inset; */
+	/* background-color: #fff; */
+	background-color: var(--slate);
 }
 .view-passage-section .empty-list .one-block{
 	cursor: auto;
