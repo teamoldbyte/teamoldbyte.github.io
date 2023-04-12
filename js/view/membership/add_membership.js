@@ -1,7 +1,7 @@
 /** /membership/add_membership.html
 @author LGM
  */
-function pageinit(membershipCommand, membershipItemList) {
+function pageinit(membershipCommand) {
 	const loggedin = membershipCommand.mid != 0;
 	
 	let nextTimer; 
@@ -307,7 +307,7 @@ function pageinit(membershipCommand, membershipItemList) {
 			slideWidth = memberShipGallery.offsetWidth * 0.85,
 			slidesOffset = memberShipGallery.offsetWidth * 0.075;
 		// alias이 'D'로 시작하는 것만 당분간 표시
-		memberShipGallery.appendChild(createElement(Array.from(membershipItemList.filter(item => item.alias.startsWith('D')), item => {
+		/*memberShipGallery.appendChild(createElement(Array.from(membershipItemList.filter(item => item.alias.startsWith('D')), item => {
 			const forDesktop = item.alias.includes('DDM');
 			return { el: 'div', className: 'membership-info-parent gallery-cell swiper-slide', children: [
 				{ el: 'input', type: 'hidden', className: 'iid', value: item.iid },
@@ -337,9 +337,8 @@ function pageinit(membershipCommand, membershipItemList) {
 					]}
 				]}
 			]}
-		})));
+		})));*/
 		new Swiper('.swiper',{
-			loop: true,
 			pagination: {
 				el: '.swiper-pagination'
 			},
@@ -354,7 +353,7 @@ function pageinit(membershipCommand, membershipItemList) {
 		});
 	}else {
 		// alias이 D로 시작하는 것만 당분간 표시
-		$('.membership-list').get(0).appendChild(createElement(Array.from(membershipItemList.filter(item => item.alias.startsWith('D')), item => {
+		/*$('.membership-list').get(0).appendChild(createElement(Array.from(membershipItemList.filter(item => item.alias.startsWith('D')), item => {
 			const forDesktop = item.alias.includes('DDM');
 			return {
 				el: 'div', className: 'membership-info-parent col-6', 'data-bs-toggle': !forDesktop ? 'tooltip' : '',
@@ -385,7 +384,7 @@ function pageinit(membershipCommand, membershipItemList) {
 					]}
 				]
 			}
-		})));
+		})));*/
 	}
 	
 	$(document).on('show.bs.modal', '#done-info-modal', function(e) {
