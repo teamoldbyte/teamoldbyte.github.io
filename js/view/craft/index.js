@@ -231,8 +231,9 @@ async function pageinit(memberId, memberRoleType) {
 					const bookCoverClass = `book-cover${!!imagePath?'':' default'}`;
 					const bookCoverStyle = !!imagePath ? {backgroundImage: `url(/resource/battlebook/cover/${imagePath})`} : {};
 					return  listType == 'subscription' 
+					// 구독 배틀북
 					? { el: 'div', className: 'book col-6 row g-0', dataset: 
-						{ bid: battleBookId||bbid, bookType: BOOKTYPE_FULLNAMES[bookType], title},
+						{ bid: battleBookId||bbid, bookType: BOOKTYPE_FULLNAMES[bookType], title, completed},
 					children: [
 						{ el: 'div', className: 'col-auto', children: [
 							{ el: 'div', className: bookCoverClass, children: [
@@ -257,6 +258,7 @@ async function pageinit(memberId, memberRoleType) {
 							})}
 						]}
 					]} 
+					// 구독 대상 배틀북
 					: { el: 'div', className: 'book js-open-overview col text-center', 
 					dataset: {
 						bid: battleBookId||bbid, title, bookType: BOOKTYPE_FULLNAMES[bookType], description, imagePath: imagePath||'', completed, price, openType
@@ -359,10 +361,11 @@ async function pageinit(memberId, memberRoleType) {
 	
 	// 배틀 플레이 버튼 동작
 	$(document).on('click', '.js-play-book', function() {
-		const { bid, title, bookType } = this.closest('.book').dataset;
+		const { bid, title, bookType, completed } = this.closest('.book').dataset;
 		const markType = this.dataset.mtype;
 		const bidPath = bookType === 'step' ? '' : `/${ntoa(bid)}`;
-		location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}`);
+		const completedParam = completed === undefined ? '' : `&completed=${completed}`;
+		location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}`);
 	});
 	
 	
