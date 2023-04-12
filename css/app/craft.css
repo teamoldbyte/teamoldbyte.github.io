@@ -477,10 +477,14 @@ u {
 	position:absolute;
 	margin-left: auto;
 }
+.battle-book-intro .button-section .btn-fico:hover{
+	background-color: #585174;
+	border-color: #4e476a;
+}
 .battle-book-list.subscription .battle-book-intro .button-section .btn,
 .battle-book-list.grammar .battle-book-intro .button-section .btn,
 .battle-book-list.theme .battle-book-intro .button-section .btn{
-	cursor: auto;
+	pointer-events: none;
 }
 @media(max-width: 768px){
 	.battle-book-list .battle-book-intro .button-section{
@@ -737,6 +741,7 @@ u {
 	text-shadow: 0px 0px 1px #fff;
 }
 /* */
+.battle-book-list .grammar .book-cover,
 .battle-book-list .theme .book-cover{
 	cursor: pointer;
 	display: block;
@@ -1050,6 +1055,7 @@ u {
 }
 .battlebook-overview-section .description{
 	overflow-wrap: break-word;
+	white-space: break-spaces;
 	text-align: left;
 }
 
@@ -1195,6 +1201,7 @@ u {
 .craft-header-section.min .save-button-section{
 	width: 50%!important;
 	top: -1rem;
+	position: relative;
 }
 
 @media(max-width:768px){
