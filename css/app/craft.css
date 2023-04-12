@@ -841,6 +841,7 @@ u {
 .battle-book-list .theme .battlebook-overview-section .book-cover{
 	margin-right: 1rem;
 	margin-left: 0; 
+	margin-top: 0;
 }
 
 .battle-book-list.step .battle-book-intro .book-cover img{
