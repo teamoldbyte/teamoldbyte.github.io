@@ -686,6 +686,7 @@ u {
 	color: #000;
 	text-shadow: 1px 1px 1px #fff;
 }
+.battle-book-list.grammar .book .title-text-section,
 .battle-book-list.theme .book .title-text-section{
 	margin-top: 0.5rem;
 }
@@ -830,6 +831,7 @@ u {
 }
 
 
+.battle-book-list .grammar .battlebook-overview-section .book-cover,
 .battle-book-list .theme .battlebook-overview-section .book-cover{
 	margin-right: 1rem;
 	margin-left: 0; 
@@ -1048,6 +1050,7 @@ u {
 }
 .battlebook-overview-section .description{
 	overflow-wrap: break-word;
+	text-align: left;
 }
 
 
