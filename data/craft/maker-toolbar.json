@@ -298,11 +298,11 @@
 									},
 									{
 										"el": "div",
-										"className": "col-md-6",
+										"className": "row",
 										"children": [
 											{ 
 												"el": "label", 
-												"className": "lh-1 my-auto text-fc-purple fw-bold", 
+												"className": "lh-1 my-2 text-fc-purple fw-bold", 
 												"textContent": "설명"
 											},
 											{
