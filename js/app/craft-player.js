@@ -1580,7 +1580,7 @@
 			// 배틀북 진행을 마친 메세지
 			else if(bookMarkCommand.markType === 'b') {
 				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
-					"innerHTML": `축하합니다.<br>이 배틀북을 모두 풀었으니 ${(_memberId == 0) ? "다른 배틀북도 플레이":"리뷰플레이도"} 해 보세요."`});
+					"innerHTML": `축하합니다.<br>이 배틀북을 모두 ${(_memberId == 0) ? "풀었으니 다른 배틀북도 플레이":"풀어 리뷰 버튼이 활성화 되었습니다.<br><i class=\"icon fas fa-history\"></i> 버튼을 눌러 복습"} 해 보세요.`});
 			}
 			// 배틀북 리뷰/오답/보관 풀기를 마친 메세지
 			else { 
