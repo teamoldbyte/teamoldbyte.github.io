@@ -327,7 +327,20 @@ async function pageinit(memberId, memberRoleType) {
 			}
 		}
 		
-		$.post(`/craft/battlebook/subscription/${bid}`, (msg) => subscribeCallback(msg, {bid, title, bookType}))
+		$.post(`/craft/battlebook/subscription/${bid}`, (msg) => {
+			switch(msg){
+			case 'success':
+				alertModal(`"${title}"을(를) 구독하였습니다.\n보람찬 플레이 되십시오.`);
+				$(this).prop('disabled', true).text('구독중');
+				break;
+			case 'duplicated':
+	        	alertModal('이미 구독한 배틀북입니다.\n\'개인별 학습\'을 참고해 주세요.');
+	         	break;
+			case 'insufficient':
+				alertModal('잔여 fico 코인이 부족합니다.');
+				break;
+			}		
+		})
 		.fail(() => alertModal('배틀북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'))
 	})
 	function subscribeCallback(msg, {bid, title, bookType}) {
