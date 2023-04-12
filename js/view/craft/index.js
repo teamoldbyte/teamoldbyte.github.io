@@ -285,7 +285,7 @@ async function pageinit(memberId, memberRoleType) {
 		}else {
 			$overviewSection.data('targetBook', this);
 			// 개요 정보 가져오기(ajax)---------------------------------------------
-			$.getJSON(`/craft/battlebook/overview/${ntoa(bid)}`, ({sub}) => {
+			$.getJSON(`/craft/battlebook/overview/${ntoa(bid)}`, sub => {
 				let listBookType = this.closest('.battle-book-list').className.match(/subscription|theme|grammar/);
 				if(listBookType) listBookType = listBookType[0];
 				const order = (Math.floor($(this).index(`.${listBookType} .book`) / COLS_IN_ROW) + 1) * COLS_IN_ROW;
