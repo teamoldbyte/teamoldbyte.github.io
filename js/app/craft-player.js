@@ -1234,7 +1234,7 @@
 		}
 		
 		// 오답/보관 배틀 최소갯수
-		if(['w','s'].includes(bookMarkCommand.markType) && _battleSize < 10) {
+		if(['w','s'].includes(bookMarkCommand.markType) && _battleSize == 0) {
 			solveAllsOfBook();
 		}
 
@@ -1575,7 +1575,7 @@
 			// (오답/보관 등)배틀 진행할 조건이 미달하다는 메세지
 			if(_lastBattleId == 0) {
 				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
-					"innerHTML":'플레이를 위한 배틀이 부족합니다.(최소 10개)'});
+					"innerHTML":bookMarkCommand.markType == 'w' ? '아직 틀린 배틀이 없습니다😎':'보관한 배틀이 없습니다.'});
 			}
 			// 배틀북 진행을 마친 메세지
 			else if(bookMarkCommand.markType === 'b') {
