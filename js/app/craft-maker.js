@@ -109,12 +109,14 @@
 			$bookSelect.empty();
 			this.value = '';
 			if(!$(this).data('bookPanelOpened')) {
-				const timeConstant = new Date().getTime();
-				$battleSection.find('input[type="radio"]').each(function() {
+				const $addBookSection = $battleSection.find('.add-book-section');
+				openSummernote($addBookSection.find('.input-book-desc'));
+				const timeConstant = `_${new Date().getTime()}`;
+				$addBookSection.find('input[type="radio"]').each(function() {
 					this.name += timeConstant;
 					this.id += timeConstant;
 				});
-				$battleSection.find('label[for]').each(function() {
+				$addBookSection.find('label[for]').each(function() {
 					this.htmlFor += timeConstant;
 				})
 				$(this).data('bookPanelOpened', true);
@@ -183,14 +185,15 @@
 		if(!$addSection[0].checkValidity()) return;
 		const deleteList = [];
 		command.forEach((v, k) => {
-			if(k.match(/Type\d+/)) {
-				command.append(k.replace(/\d+/,''), v);
+			if(k.match(/_\d+/)) {
+				command.append(k.replace(/_\d+/,''), v);
 				deleteList.push(k);
 			}
 		});
 		deleteList.forEach(k => command.delete(k));
 		command.append('ownerId', _memberId);
 		
+		command.delete('files');
 		if(!!fileInput.value) {
 			new Compressor(fileInput.files[0], {
 				success(result) {
@@ -207,7 +210,10 @@
 				}
 			})
 			// 배틀북 등록(ajax)--
-		}else addBattleBook();
+		}else {
+			command.delete('coverImage');
+			addBattleBook();
+		}
 		
 		function addBattleBook() {
 			$.ajax({
@@ -221,6 +227,7 @@
 					if(battleBooksMap[bookType])
 						battleBooksMap[bookType].push(Object.assign({battleBookId: book.bbid},book));
 					// 배틀북 생성 패널이 새로 만들어지도록.
+					
 					$addSection.closest('.add-battle-section').find(`.select-book-type`)
 						.val(bookType).trigger('change');
 					$addSection.add($addSection.prev()).collapse('toggle');
@@ -238,7 +245,7 @@
 			$addSection.find('.input-open-type[value="R"]').prop('checked', true);
 			$addSection.find('.input-book-price').val(0);
 			$addSection.find('.battlebook-cover-preview').css('background-image','');
-			
+			$addSection.find('.input-book-desc').summernote('reset');
 		}
 	})
 	// 배틀타입 선택시 에디터 종류를 변경한다.
