@@ -219,13 +219,18 @@ async function pageinit(memberId, memberRoleType) {
 		const bookListEl = this.querySelector('.book-list-container');
 		if(bookListEl == null) return;
 		$.getJSON(`/craft/battlebook/${listBookType}/list`, bookList => {
+			this.setAttribute('initialized', true);
 			if(!bookList || bookList.length == 0) return;
-			bookListEl.appendChild(createElement(Array.from(bookList, 
+			bookListEl.appendChild(createBookDOMList(bookList, listBookType));
+		})
+	})
+	function createBookDOMList(bookList, listType) {
+		return createElement(Array.from(bookList, 
 				({battleBookId, bbid, title, bookType, description, imagePath, completed, price, openType},i) => {
 					const titleText = { el: 'span', className: 'title-text', textContent: title };
 					const bookCoverClass = `book-cover${!!imagePath?'':' default'}`;
 					const bookCoverStyle = !!imagePath ? {backgroundImage: `url(/resource/battlebook/cover/${imagePath})`} : {};
-					return  listBookType == 'subscription' 
+					return  listType == 'subscription' 
 					? { el: 'div', className: 'book col-6 row g-0', dataset: 
 						{ bid: battleBookId||bbid, bookType: BOOKTYPE_FULLNAMES[bookType], title},
 					children: [
@@ -262,12 +267,10 @@ async function pageinit(memberId, memberRoleType) {
 							{ el: 'div', className: 'title-text-section', children: [ titleText ]}
 						]
 					};
-			})));
-		})
-	})
+			}))
+	}
 	
 	// 주제별 배틀북 개요 펼치기
-	const $overviewSection = $('.battlebook-overview-section');
 	let COLS_IN_ROW = devSize.isPhone() ? 3 : 5;
 	$(window).on('resize', function() {
 		COLS_IN_ROW = devSize.isPhone() ? 3 : 5;
@@ -330,8 +333,18 @@ async function pageinit(memberId, memberRoleType) {
 		$.post(`/craft/battlebook/subscription/${bid}`, (msg) => {
 			switch(msg){
 			case 'success':
-				alertModal(`"${title}"을(를) 구독하였습니다.\n보람찬 플레이 되십시오.`);
-				$(this).prop('disabled', true).text('구독중');
+				alertModal(`"${title}"을(를) 구독하였습니다.\n개인별 학습에서 구독한 배틀북을 확인할 수 있습니다.\n녹색 플레이 버튼을 눌러 배틀을 풀어보세요`, () => {
+					$(this).prop('disabled', true).text('구독중');
+					if($('.battle-book-list.subscription').attr('initialized')) {
+						$.getJSON('/craft/battlebook/subscription/list', bookList => {
+							$('.my-book-type.subscription .book-list-container').empty()
+							.append(createBookDOMList(bookList, 'subscription'))
+							.collapse('show');
+						})
+					}else {
+						$('.battle-book-list.subscription').collapse('show');
+					}
+				});
 				break;
 			case 'duplicated':
 	        	alertModal('이미 구독한 배틀북입니다.\n\'개인별 학습\'을 참고해 주세요.');
@@ -343,22 +356,7 @@ async function pageinit(memberId, memberRoleType) {
 		})
 		.fail(() => alertModal('배틀북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'))
 	})
-	function subscribeCallback(msg, {bid, title, bookType}) {
-		switch(msg){
-		case 'success':
-			$overviewSection.find('.sub-btn').addClass('bg-secondary').prop('disabled', true).text('구독중');
-			confirmModal('배틀북을 구독하였습니다.\n바로 배틀을 플레이 하시겠습니까?', () => {
-				location.assign(`/craft/battle/${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}`);
-			}, () => location.reload());
-			break;
-		case 'duplicated':
-        	alertModal('이미 구독한 배틀북입니다.\n\'개인별 학습\'을 참고해 주세요.');
-         	break;
-		case 'insufficient':
-			alertModal('잔여 fico 코인이 부족합니다.');
-			break;
-		}		
-	}
+	
 	// 배틀 플레이 버튼 동작
 	$(document).on('click', '.js-play-book', function() {
 		const { bid, title, bookType } = this.closest('.book').dataset;
