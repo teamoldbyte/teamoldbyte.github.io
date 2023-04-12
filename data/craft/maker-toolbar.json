@@ -298,7 +298,6 @@
 									},
 									{
 										"el": "div",
-										"className": "row",
 										"children": [
 											{ 
 												"el": "label", 
