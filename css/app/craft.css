@@ -688,11 +688,17 @@ u {
 
 .battle-book-list .book .title-text{
 	color: #000;
-	text-shadow: 1px 1px 1px #fff;
+	/* text-shadow: 1px 1px 1px #fff; */
+}
+.battle-book-list .book-list-container .book .title-text{
+	font-weight: 600;
 }
 .battle-book-list.grammar .book .title-text-section,
 .battle-book-list.theme .book .title-text-section{
 	margin-top: 0.5rem;
+	margin-left: auto;
+	margin-right: auto;
+	width: 10rem;
 }
 /* 개인별 학습 - 구독한 배틀북 */
 .battle-book-list .subscription .book-cover{
@@ -727,19 +733,21 @@ u {
 	opacity: .75;
 	z-index: 100;
 	cursor: pointer;
+	text-shadow: 0 0 1px #000;
 }
 .book-cover .completed::before{
 	content: '\f559';
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 600;
-	top: 0;
-	left: 5px;
+	color: #fab005;
+	text-shadow: 0 0 2px #000;
+	top: 50%;
+	left: 50%;
 	position: absolute;
 	display: block;
 	text-align: center;
-	font-size: 2rem;
-	color: #fab005;
-	text-shadow: 0px 0px 1px #fff;
+	transform: translate(-50%,-50%);
+	font-size: 50px;
 }
 /* */
 .battle-book-list .grammar .book-cover,
@@ -761,77 +769,134 @@ u {
 	/* width: 10rem; */
 }
 .book-list-container.grammar .book:nth-child(5n+2) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+2) .title-section,
+.book-list-container.grammar .book:nth-child(5n+2) .title-text-section,
 .book-list-container.theme .book:nth-child(5n+2) .book-cover,
-.book-list-container.theme .book:nth-child(5n+2) .title-section{
+.book-list-container.theme .book:nth-child(5n+2) .title-text-section{
 	margin-left : 0;
 }
 .book-list-container.grammar .book:nth-child(5n+3) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+3) .title-section,
+.book-list-container.grammar .book:nth-child(5n+3) .title-text-section,
 .book-list-container.theme .book:nth-child(5n+3) .book-cover,
-.book-list-container.theme .book:nth-child(5n+3) .title-section{
+.book-list-container.theme .book:nth-child(5n+3) .title-text-section{
 	margin-left: calc((100% - 10rem)/5);
 }
 .book-list-container.grammar .book:nth-child(5n+4) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+4) .title-section,
+.book-list-container.grammar .book:nth-child(5n+4) .title-text-section,
 .book-list-container.theme .book:nth-child(5n+4) .book-cover,
-.book-list-container.theme .book:nth-child(5n+4) .title-section{
-	margin : auto;
+.book-list-container.theme .book:nth-child(5n+4) .title-text-section{
+	margin-left : auto;
+	margin-right : auto;
 }
 .book-list-container.grammar .book:nth-child(5n) .book-cover,
-.book-list-container.grammar .book:nth-child(5n) .title-section,
+.book-list-container.grammar .book:nth-child(5n) .title-text-section,
 .book-list-container.theme .book:nth-child(5n) .book-cover,
-.book-list-container.theme .book:nth-child(5n) .title-section{
+.book-list-container.theme .book:nth-child(5n) .title-text-section{
 	margin-right: calc((100% - 10rem)/5);
 }
 .book-list-container.grammar .book:nth-child(5n+1) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+1) .title-section,
+.book-list-container.grammar .book:nth-child(5n+1) .title-text-section,
 .book-list-container.theme .book:nth-child(5n+1) .book-cover,
-.book-list-container.theme .book:nth-child(5n+1) .title-section{
+.book-list-container.theme .book:nth-child(5n+1) .title-text-section{
 	margin-right : 0;
 }
-@media(max-width: 768px){
+@media(max-width: 992px){
 	.book-list-container.grammar .book:nth-child(5n+2) .book-cover,
-	.book-list-container.grammar .book:nth-child(5n+2) .title-section,
+	.book-list-container.grammar .book:nth-child(5n+2) .title-text-section,
 	.book-list-container.theme .book:nth-child(5n+2) .book-cover,
-	.book-list-container.theme .book:nth-child(5n+2) .title-section{
+	.book-list-container.theme .book:nth-child(5n+2) .title-text-section{
 		margin-left : auto;
 	}
 	.book-list-container.grammar .book:nth-child(5n+3) .book-cover,
-	.book-list-container.grammar .book:nth-child(5n+3) .title-section,
+	.book-list-container.grammar .book:nth-child(5n+3) .title-text-section,
 	.book-list-container.theme .book:nth-child(5n+3) .book-cover,
-	.book-list-container.theme .book:nth-child(5n+3) .title-section{
+	.book-list-container.theme .book:nth-child(5n+3) .title-text-section{
 		margin-left : auto;
 	}
 	.book-list-container.grammar .book:nth-child(5n+4) .book-cover,
-	.book-list-container.grammar .book:nth-child(5n+4) .title-section,
+	.book-list-container.grammar .book:nth-child(5n+4) .title-text-section,
 	.book-list-container.theme .book:nth-child(5n+4) .book-cover,
-	.book-list-container.theme .book:nth-child(5n+4) .title-section{
-		margin : auto;
+	.book-list-container.theme .book:nth-child(5n+4) .title-text-section{
+		margin-left : auto;
+		margin-right : auto;
 	}
 	.book-list-container.grammar .book:nth-child(5n) .book-cover,
-	.book-list-container.grammar .book:nth-child(5n) .title-section,
+	.book-list-container.grammar .book:nth-child(5n) .title-text-section,
 	.book-list-container.theme .book:nth-child(5n) .book-cover,
-	.book-list-container.theme .book:nth-child(5n) .title-section{
+	.book-list-container.theme .book:nth-child(5n) .title-text-section{
 		margin-right: auto;
 	}
 	.book-list-container.grammar .book:nth-child(5n+1) .book-cover,
-	.book-list-container.grammar .book:nth-child(5n+1) .title-section,
+	.book-list-container.grammar .book:nth-child(5n+1) .title-text-section,
 	.book-list-container.theme .book:nth-child(5n+1) .book-cover,
-	.book-list-container.theme .book:nth-child(5n+1) .title-section{
+	.book-list-container.theme .book:nth-child(5n+1) .title-text-section{
 		margin-right : auto;
 	}
 
+	
+	/* 태블릿 사이즈 */
+	.book-list-container.grammar .book:nth-child(4n+2) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+2) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+2) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+2) .title-text-section{
+		margin-left : 0;
+	}
+	.book-list-container.grammar .book:nth-child(4n+3) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+3) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+3) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+3) .title-text-section{
+		margin-left : calc((100% - 10rem)/ 3);
+	}
+	.book-list-container.grammar .book:nth-child(4n) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n) .book-cover,
+	.book-list-container.theme .book:nth-child(4n) .title-text-section{
+		margin-right :  calc((100% - 10rem)/ 3);
+	}
+	.book-list-container.grammar .book:nth-child(4n+1) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+1) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+1) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+1) .title-text-section{
+		margin-right: 0;
+	}
+}
+@media(max-width: 576px){
+	/* 태블릿 사이즈 */
+	.book-list-container.grammar .book:nth-child(4n+2) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+2) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+2) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+2) .title-text-section{
+		margin-left : auto;
+	}
+	.book-list-container.grammar .book:nth-child(4n+3) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+3) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+3) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+3) .title-text-section{
+		margin-left : auto;
+	}
+	.book-list-container.grammar .book:nth-child(4n) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n) .book-cover,
+	.book-list-container.theme .book:nth-child(4n) .title-text-section{
+		margin-right : auto;
+	}
+	.book-list-container.grammar .book:nth-child(4n+1) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+1) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+1) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+1) .title-text-section{
+		margin-right: auto;
+	}
+
+	/* 모바일 사이즈 */
 	.book-list-container.grammar .book:nth-child(3n+2) .book-cover,
-	.book-list-container.grammar .book:nth-child(3n+2) .title-section,
+	.book-list-container.grammar .book:nth-child(3n+2) .title-text-section,
 	.book-list-container.theme .book:nth-child(3n+2) .book-cover,
-	.book-list-container.theme .book:nth-child(3n+2) .title-section{
+	.book-list-container.theme .book:nth-child(3n+2) .title-text-section{
 		margin-left : 0;
 	}
 	.book-list-container.grammar .book:nth-child(3n+1) .book-cover,
-	.book-list-container.grammar .book:nth-child(3n+1) .title-section,
+	.book-list-container.grammar .book:nth-child(3n+1) .title-text-section,
 	.book-list-container.theme .book:nth-child(3n+1) .book-cover,
-	.book-list-container.theme .book:nth-child(3n+1) .title-section{
+	.book-list-container.theme .book:nth-child(3n+1) .title-text-section{
 		margin-right : 0;
 	}
 }
@@ -842,6 +907,10 @@ u {
 	margin-right: 1rem;
 	margin-left: 0; 
 	margin-top: 0;
+}
+
+.battlebook-overview-section .overview-title-section{
+	max-height: 15rem;
 }
 
 .battle-book-list.step .battle-book-intro .book-cover img{
@@ -926,6 +995,10 @@ u {
 		width: 7rem;
 		height: 10rem;
 	}
+	.battle-book-list .grammar .title-text-section,
+	.battle-book-list .theme .title-text-section{
+		width: 7rem;
+	}
 
 	.battle-book-list .grammar .book-cover.default img,
 	.battle-book-list .theme .book-cover.default img{
@@ -1006,8 +1079,9 @@ u {
 }
 .battle-book-list.subscription .book-cover .book .circle{
 	/* background : radial-gradient(circle, rgba(136,251,242,1) 0%, rgba(86,191,182,1) 80%); */
-	background: rgb(194,255,250);
-	background: radial-gradient(circle, rgba(194,255,250,1) 0%, rgba(86,191,182,1) 78%);
+	/* background: rgb(194,255,250); */
+	/* background: radial-gradient(circle, rgba(194,255,250,1) 0%, rgba(86,191,182,1) 78%); */
+	background: radial-gradient(circle, #000 0%, #04786e 78%);
 }
 .battle-book-list.grammar .book-cover .book .circle{
 	background: radial-gradient(circle, rgba(255,248,242,1) 0%, rgba(255,196,200,1) 78%);
@@ -1018,7 +1092,7 @@ u {
 }
 
 .battle-book-list .book-cover .book .circle .text{
-	font-family: 'Frutiger Bold';
+	font-family: 'LINESeedKR-Bd';
 	font-size: 5rem;
 	line-height: 6rem;
 	vertical-align: text-bottom;
@@ -1029,7 +1103,23 @@ u {
 	transform: translate(-50%, -50%);
 }
 .battle-book-list.subscription .book-cover .book .circle .text{
-	font-size: 2rem;
+	color: #fff;
+	font-family: 'NanumBarunGothic';
+	font-size: 1.8rem;
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: normal;
+	line-height: 1.1;
+	width: 6rem;
+	height: fit-content;
+	height: -webkit-fit-content;
+	max-height: 3.7rem;
+	text-align: center;
+	word-wrap: break-word;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
 }
 .battle-book-list.grammar .book-cover .fas{
 	position: absolute;
@@ -1285,7 +1375,11 @@ u {
 	position: absolute;
 	left: 0.5rem;
 	top: -.25rem;
-	font-size: 0.5rem;
+	font-size: 0.75rem;
+}
+.save-button-section .save-btn.reverse{
+	-webkit-animation:blink-2 .9s 3 both;
+	animation:blink-2 .9s 3 both
 }
 .save-button-section .save-btn.reverse::after{
 	font-family: "Font Awesome 5 Free";
@@ -1300,6 +1394,9 @@ u {
 .craft-header-section.min .exit-button-section .exit-btn,
 .craft-header-section.min .save-button-section .save-btn{
 	font-size: 1rem;
+}
+.craft-header-section.min .save-button-section .save-btn::after{
+	font-size: 0.5rem;
 }
 .craft-header-section.min .save-button-section .save-btn.reverse::after{
 	left: 0.5rem;
@@ -1756,6 +1853,7 @@ u {
 	position: fixed;
 	bottom: 0;
 	width:60vw;
+	z-index: 100;
 	/* max-height: 50vh; */
 }
 @media(max-width: 768px){
@@ -1770,7 +1868,7 @@ u {
 	/* right: calc(50% - 1.75rem); */
 	left: 0;
 	z-index: 10;
-	top: -3rem;
+	top: -4rem;
 }
 .list-btn-section .list-btn{
 	padding: 1rem;
@@ -1780,12 +1878,20 @@ u {
 	backdrop-filter: blur( 15px );
 	-webkit-backdrop-filter: blur( 15px );
 	border: 1px solid rgba( 255, 255, 255, 0.05 );
+	position: relative;
+	bottom: 1rem;
 }
 .list-btn-section .list-btn.opened{
 	background: #4e578396;
+	bottom: -1rem;
 }
 .list-btn-section .list-btn .fas{
 	font-size: 1.5rem;
+}
+@media(max-width: 576px){
+	.list-btn-section .list-btn{
+		left: 1rem;
+	}
 }
 /* 배틀 목록 영역 */
 .list-battle-section{
@@ -1807,6 +1913,9 @@ u {
 	overflow-y: scroll;
     -ms-overflow-style: none; /* 인터넷 익스플로러 */
     scrollbar-width: none; /* 파이어폭스 */
+
+	/* box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px; */
+	box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 }
 .list-battle-section::-webkit-scrollbar {
     display: none; /* 크롬, 사파리, 오페라, 엣지 */
@@ -1844,7 +1953,7 @@ u {
 	display: inline-block;
 	min-width: 2.5rem;
 	text-align: center;
-	margin-right: 0.25rem;
+	margin-right: 1rem;
 	padding: 0 0.25rem;
 	font-size: 0.75rem;
 	line-height: 1.25rem;
@@ -1861,6 +1970,6 @@ u {
 @media(max-width: 768px){
 	.list-btn-section{
 		bottom: calc(50vh - 1.5rem);
-		right: 1rem;
+		left: 1rem;
 	}
 }
