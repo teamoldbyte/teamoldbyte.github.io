@@ -268,13 +268,13 @@
 											},
 											{
 												"el": "div",
-												"className": "js-edit-battlebook-cover position-relative w-100",
+												"className": "js-edit-battlebook-cover position-relative",
 												"role": "button",
-												"style": "height:calc(100% - 24px)",
+												"style": "width:10rem;height:15rem;",
 												"children": [
 													{
 														"el": "img",
-														"className": "battlebook-cover-preview personacon-profile profile-default w-100 h-100"
+														"className": "battlebook-cover-preview personacon-profile profile-default"
 													},
 													{
 														"el": "input",
