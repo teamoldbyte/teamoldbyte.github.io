@@ -1557,7 +1557,7 @@
 										"innerHTML":"We are sorry to inform you that You perished in battle."},
 										{el: 'lottie-player', src: 'https://assets1.lottiefiles.com/packages/lf20_k8p8cymw.json', background: 'transparent', autoplay: true, speed: '1', loop: true},
 										{"el":"div","class":"button-section row g-1","children":[
-											{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"},
+											{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"BattleCraft 학습목록으로 가기"},
 										]}
 									]}
 								]}
@@ -1593,7 +1593,7 @@
 			}
 			// 메인으로 가는 버튼
 			modalBody.push({"el":"div","class":"button-section row g-1","children":[
-				{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"}
+				{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"BattleCraft 학습목록으로 가기"}
 			]});
 			// 리뷰/오답/보관 풀기일 경우 현재 화면에서 다시풀기 가능. 무료회원은 그대로 종료. 다시 풀기 불가능.
 			if(bookMarkCommand.markType !== 'b' && _battleSize > 10) {
@@ -1632,7 +1632,7 @@
 							{"el":"div","class":"modal-body row g-0","children":[
 								{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"일일 최대 플레이 횟수에 도달하였습니다.<br>내일 다시 찾아와 주세요."},
 								{"el":"div","class":"button-section row g-1","children":[
-									{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"'배틀 플레이 선택'으로 이동"}
+									{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"BattleCraft 학습목록으로 가기"}
 			]}]}]}]}]}));
 		}
 		bootstrap.Modal.getOrCreateInstance(document.getElementById('battleExceedModal')).show();
