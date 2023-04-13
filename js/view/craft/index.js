@@ -231,8 +231,9 @@ async function pageinit(memberId, memberRoleType) {
 					const bookCoverClass = `book-cover${!!imagePath?'':' default'}`;
 					const bookCoverStyle = !!imagePath ? {backgroundImage: `url(/resource/battlebook/cover/${imagePath})`} : {};
 					return  listType == 'subscription' 
+					// 구독 배틀북
 					? { el: 'div', className: 'book col-6 row g-0', dataset: 
-						{ bid: battleBookId||bbid, bookType: BOOKTYPE_FULLNAMES[bookType], title},
+						{ bid: battleBookId||bbid, bookType: BOOKTYPE_FULLNAMES[bookType], title, completed},
 					children: [
 						{ el: 'div', className: 'col-auto', children: [
 							{ el: 'div', className: bookCoverClass, children: [
@@ -257,6 +258,7 @@ async function pageinit(memberId, memberRoleType) {
 							})}
 						]}
 					]} 
+					// 구독 대상 배틀북
 					: { el: 'div', className: 'book js-open-overview col text-center', 
 					dataset: {
 						bid: battleBookId||bbid, title, bookType: BOOKTYPE_FULLNAMES[bookType], description, imagePath: imagePath||'', completed, price, openType
@@ -275,10 +277,10 @@ async function pageinit(memberId, memberRoleType) {
 	$(window).on('resize', function() {
 		COLS_IN_ROW = devSize.isPhone() ? 3 : 5;
 	})
-	const OPEN_TYPE_INFO = {'T': '특정 클래스 멤버십 결제 회원', 'P': '모든 사용자', 'M': '멤버십 결제 회원'}
+	const OPEN_TYPE_INFO = {'T': '클래스용', 'P': '회원/비회원', 'M': '회원용'}
 	$(document).on('click', '.js-open-overview', function() {
 		const $overviewSection = $(this).siblings('.battlebook-overview-section');
-		const { bid, title, description, imagePath, price, openType } = this.dataset;
+		const { bid, title, description, imagePath, price, openType, completed } = this.dataset;
 		if($overviewSection.data('targetBook') == this) {
 			$overviewSection.collapse('hide');
 			$overviewSection.data('targetBook', null);
@@ -303,9 +305,9 @@ async function pageinit(memberId, memberRoleType) {
 				$overviewSection.find('.book-open-type').text(OPEN_TYPE_INFO[openType]).attr('data-open', openType);
 				$overviewSection.find('.book-price').text(price.toLocaleString());
 				$overviewSection.find('.sub-btn')
-					.toggleClass('bg-secondary', (memberId == 0 && openType != 'P') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
-					.prop('disabled', (memberId == 0 && openType != 'P') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
-					.html(memberId == 0 ? openType == 'P'? '<i class="fas fa-play"></i> 바로 플레이' :'멤버십 전용' 
+					.toggleClass('bg-secondary', (memberId == 0 && openType != 'P' || memberId == 0 && completed == 'true') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
+					.prop('disabled', (memberId == 0 && openType != 'P' || memberId == 0 && completed == 'true') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
+					.html(memberId == 0 ? openType == 'P'? completed == 'true' ? '플레이 완료' : '<i class="fas fa-play"></i> 바로 플레이' :'회원 전용' 
 						: !!sub ? '구독중' : (memberRoleType == 'U') ? '구독 불가 (멤버십 만료)' : '구독');
 			})
 			.fail(() => alertModal('배틀북 정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
@@ -319,10 +321,10 @@ async function pageinit(memberId, memberRoleType) {
 	
 	// 배틀 구독
 	$('.battlebook-overview-section').on('click', '.sub-btn', function() {
-		const { bid, title, openType, bookType } = $(this).closest('.battlebook-overview-section').data('targetBook').dataset;
+		const { bid, title, openType, bookType, completed } = $(this).closest('.battlebook-overview-section').data('targetBook').dataset;
 		if(memberId == 0) {
-			if(openType == 'P') {
-				location.assign(`/craft/battle/${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}`);
+			if(openType == 'P') { // 무료 공개 배틀북 플레이
+				location.assign(`/craft/battle/${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}&completed=${completed}`);
 				return;
 			}else {
 				if(confirmModal('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
@@ -359,10 +361,11 @@ async function pageinit(memberId, memberRoleType) {
 	
 	// 배틀 플레이 버튼 동작
 	$(document).on('click', '.js-play-book', function() {
-		const { bid, title, bookType } = this.closest('.book').dataset;
+		const { bid, title, bookType, completed } = this.closest('.book').dataset;
 		const markType = this.dataset.mtype;
 		const bidPath = bookType === 'step' ? '' : `/${ntoa(bid)}`;
-		location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}`);
+		const completedParam = completed === undefined ? '' : `&completed=${completed}`;
+		location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}`);
 	});
 	
 	
