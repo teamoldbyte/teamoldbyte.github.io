@@ -5,7 +5,7 @@
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
-	
+	const SEARCH_PARAMS = new URLSearchParams(location.search);
 	const CLICK_SOUND = 'https://static.findsvoc.com/sound/popdrop.mp3',
 		NEXT_SOUND = 'https://static.findsvoc.com/sound/page-flip.mp3',
 		CORRECT_SOUND = 'https://static.findsvoc.com/sound/coin.mp3',
@@ -1234,7 +1234,8 @@
 		}
 		
 		// 오답/보관 배틀 최소갯수
-		if(['w','s'].includes(bookMarkCommand.markType) && _battleSize == 0) {
+		if(['w','s'].includes(bookMarkCommand.markType) && ( _battleSize == 0
+		|| SEARCH_PARAMS.get('completed') != 'true' && _battleSize < 10)) {
 			solveAllsOfBook();
 		}
 
@@ -1573,9 +1574,12 @@
 			let modalBody = [];
 			
 			// (오답/보관 등)배틀 진행할 조건이 미달하다는 메세지
-			if(_lastBattleId == 0) {
+			if(_lastBattleId == 0 && _battleSize == 0) {
 				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
-					"innerHTML":bookMarkCommand.markType == 'w' ? '아직 틀린 배틀이 없습니다😎':'보관한 배틀이 없습니다.'});
+					"innerHTML":bookMarkCommand.markType == 'w' ? '<b>틀린 배틀</b>이 없습니다😎':'<b>보관한 배틀</b>이 없습니다.📁'});
+			}else if(_lastBattleId == 0 && _battleSize < 10 && SEARCH_PARAMS.get('completed') != 'true') {
+				modalBody.push({"el":"div","class":"text-section my-3 text-center text-dark",
+					"innerHTML": `배틀북을 끝까지 풀었거나<br><b>${bookMarkCommand.markType == 'w' ? '틀린':'보관한'} 배틀</b>이 10개 이상 쌓였을 때 플레이 할 수 있습니다.`});
 			}
 			// 배틀북 진행을 마친 메세지
 			else if(bookMarkCommand.markType === 'b') {
