@@ -273,9 +273,15 @@ async function pageinit(memberId, memberRoleType) {
 	}
 	
 	// 주제별 배틀북 개요 펼치기
-	let COLS_IN_ROW = devSize.isPhone() ? 3 : 5;
+	let COLS_IN_ROW = devSize.isPhone() ? 3 : devSize.isTablet() ? 4 : 5;
 	$(window).on('resize', function() {
-		COLS_IN_ROW = devSize.isPhone() ? 3 : 5;
+		COLS_IN_ROW = devSize.isPhone() ? 3 : devSize.isTablet() ? 4 : 5;
+		$('.battlebook-overview-section').each(function() {
+			const targetBook = $(this).data('targetBook');
+			if(targetBook) {
+				this.style.order = (Math.floor(targetBook.style.order / COLS_IN_ROW) + 1) * COLS_IN_ROW;
+			}
+		})
 	})
 	const OPEN_TYPE_INFO = {'T': '클래스용', 'P': '회원/비회원', 'M': '회원용'}
 	$(document).on('click', '.js-open-overview', function() {
@@ -290,7 +296,7 @@ async function pageinit(memberId, memberRoleType) {
 			$.getJSON(`/craft/battlebook/overview/${ntoa(bid)}`, sub => {
 				let listBookType = this.closest('.battle-book-list').className.match(/subscription|theme|grammar/);
 				if(listBookType) listBookType = listBookType[0];
-				const order = (Math.floor($(this).index(`.${listBookType} .book`) / COLS_IN_ROW) + 1) * COLS_IN_ROW;
+				const order = (Math.floor(this.style.order / COLS_IN_ROW) + 1) * COLS_IN_ROW;
 				$overviewSection.css('order',  order);
 				if($overviewSection.is('.show')) $overviewSection[0].scrollIntoView({behavior: 'smooth', block: 'nearest'});
 				else $overviewSection.collapse('show');
