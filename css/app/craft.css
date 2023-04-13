@@ -995,8 +995,8 @@ u {
 		width: 7rem;
 		height: 10rem;
 	}
-	.battle-book-list .grammar .title-text-section,
-	.battle-book-list .theme .title-text-section{
+	.battle-book-list.grammar .book .title-text-section, 
+	.battle-book-list.theme .book .title-text-section{
 		width: 7rem;
 	}
 
