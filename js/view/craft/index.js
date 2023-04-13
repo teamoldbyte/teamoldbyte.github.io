@@ -218,10 +218,20 @@ async function pageinit(memberId, memberRoleType) {
 		else return;
 		const bookListEl = this.querySelector('.book-list-container');
 		if(bookListEl == null) return;
-		$.getJSON(`/craft/battlebook/${listBookType}/list`, bookList => {
-			this.setAttribute('initialized', true);
-			if(!bookList || bookList.length == 0) return;
-			bookListEl.appendChild(createBookDOMList(bookList, listBookType));
+		$.ajax({
+			url: `/craft/battlebook/${listBookType}/list`,
+			success: bookList => {
+				this.setAttribute('initialized', true);
+				if(!bookList || bookList.length == 0) return;
+				bookListEl.appendChild(createBookDOMList(bookList, listBookType));
+			},
+			error: (xhr) => {
+				if(xhr.status == 401) {
+					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
+				}else {
+					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
+				}
+			}
 		})
 	})
 	function createBookDOMList(bookList, listType) {
@@ -330,6 +340,7 @@ async function pageinit(memberId, memberRoleType) {
 		const { bid, title, openType, bookType, completed } = $(this).closest('.battlebook-overview-section').data('targetBook').dataset;
 		if(memberId == 0) {
 			if(openType == 'P') { // 무료 공개 배틀북 플레이
+				
 				location.assign(`/craft/battle/${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}&completed=${completed}`);
 				return;
 			}else {
@@ -366,12 +377,18 @@ async function pageinit(memberId, memberRoleType) {
 	})
 	
 	// 배틀 플레이 버튼 동작
-	$(document).on('click', '.js-play-book', function() {
+	$(document)
+	.on('click', '.js-play-step', function() {
+		if(!memberId && !localStorage.getItem('FM_NAME')) location.assign('/membership/free');
+		else location.assign('/craft/battle/step/b?title=단계별 학습&bookType=step');
+	})
+	.on('click', '.js-play-book', function() {
 		const { bid, title, bookType, completed } = this.closest('.book').dataset;
 		const markType = this.dataset.mtype;
 		const bidPath = bookType === 'step' ? '' : `/${ntoa(bid)}`;
 		const completedParam = completed === undefined ? '' : `&completed=${completed}`;
-		location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}`);
+		if(!memberId && !localStorage.getItem('FM_NAME')) location.assign('/membership/free');
+		else location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}`);
 	});
 	
 	
