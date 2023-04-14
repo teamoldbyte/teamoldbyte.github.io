@@ -1691,6 +1691,16 @@ u {
 	font-size: 15px;
 	margin-right: 0.25rem;
 	font-weight: 700;
+	cursor: pointer;
+}
+.explain-section .one-word-unit-section .title:hover::after{
+	display: inline-block;
+	font-family: "Font Awesome 5 Free";
+	content: "\f028";
+	font-style: normal;
+	font-size: 1rem;
+	margin-left: .25rem;
+	color: #019c9e;
 }
 .explain-section .one-word-unit-section .part{
 	font-family: "Apple SD Gothic Neo","Segoe UI";
