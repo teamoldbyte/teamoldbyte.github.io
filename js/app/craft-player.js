@@ -194,7 +194,7 @@
 	})
 	// 전체 배틀 목록에서 선택하여 풀이 진행
 	.on('click', '.js-navigate-to', function() {
-		tts.stop();
+		stopAllTTS();
 		
 		currentView.querySelector('.tts-block')?.remove();
 		WebAudioJS.play(NEXT_SOUND);
@@ -616,7 +616,7 @@
 	})
 	// 단계 넘김 버튼을 누르면 단계 넘김 버튼을 다시 채점 전송 버튼으로 전환 후 다음 문제 진행
 	.on('click', '.js-next-btn', function(e) {
-		tts.stop();
+		stopAllTTS();
 		if(bookMarkCommand.markType === 'b' && _todayBattleSolveCount.count >= _todaySolveLimit) {
 			solveLimitExceed();
 			e.preventDefault();
