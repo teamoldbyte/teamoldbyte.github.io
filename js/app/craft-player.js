@@ -43,12 +43,12 @@
 			requestAnimationFrame(() => {
 				// 헤더 크기(대:150px, 소:35px)에 맞춰서 스타일 변경
 				if(scrollY > prevY) { // 스크롤 내림
-					if(scrollY >= 115) {
-						scSection.style.marginTop = '150px';
+					if(scrollY > 40) {
+						scSection.style.marginTop = '75px';
 						header.classList.add('min');
 					}
 				}else { // 스크롤 올림 
-					if(scrollY < 115) {
+					if(scrollY < 40) {
 						scSection.style.marginTop = '0';
 						header.classList.remove('min');
 					}
@@ -457,26 +457,30 @@
 		function appendSentenceTTSBtns(parent) {
 			parent.appendChild(createElement({ el: 'div', className: 'tts-block text-end', style: { transform: 'scale(0)'}, children:[
 				{ el: 'button', id: 'ttsPlay', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
-					'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-active': 'on', textContent: 'play_circle',
+					'data-bs-toggle': 'tooltip', title: '문장 듣기/중지', 'data-playing': 'false', textContent: 'play_circle',
 					onclick: function() {
-						const on = this.dataset.active == 'on';
-						this.dataset.active = on?'off':'on';
-						this.textContent = on?'stop_circle':'play_circle';
+						const on = this.dataset.playing == 'true';
 						if(on) {
+							stopAllTTS();
+						}else {
+							stopAllTTS(this);
+							this.dataset.playing = 'true';
+							this.textContent = 'stop_circle';
 							tts.speakRepeat(currentBattle.eng, 2, 1000, () => {
-								this.dataset.active = 'on';
+								this.dataset.playing = 'false';
 								this.textContent = 'play_circle';
 							});
-						}else {
-							tts.stop();
 						}
+						
+						
+						
+						
+						
+						
 					}
 				},{ el: 'button', id: 'ttsSetting', class: 'btn d-inline w-auto text-info ms-2 p-0 material-icons-outlined fs-2 border-0 shadow-none bg-transparent',
 					'data-bs-toggle': 'tooltip', title: '음성 설정', textContent: 'tune', onclick: function() {
-						tts.stop();
-						const playBtn = this.previousElementSibling;
-						playBtn.dataset.active = 'on';
-						playBtn.textContent = 'play_circle';
+						stopAllTTS();
 						tts.openSettings();
 			}}]}));
 			anime({
@@ -1753,7 +1757,21 @@
 		explainSection.querySelector('.words-section')
 		.replaceChildren(answerInfo.wordList.length > 0 ? createElement(Array.from(answerInfo.wordList, word => {
 			return 	{ "el": "span", "class": 'one-word-unit-section', "children": [
-				{ "el": "span", "class": "title", textContent: word.title }].concat(Array.from(word.senseList, (sense,i) => {
+				{ "el": "span", "class": "title", textContent: word.title, "data-playing": 'false', onclick: function(e) {
+					e.stopPropagation();
+					const on = this.dataset.playing == 'true';
+					if(on) {
+						stopAllTTS();
+					}else {
+						stopAllTTS(this);
+						this.dataset.playing = 'true';
+						this.classList.add('tts-playing','blink-2');
+						tts.speakRepeat(word.title, 2, 500, () => {
+							this.classList.remove('tts-playing', 'blink-2');
+							this.dataset.playing = 'false';
+						});
+					}
+				} }].concat(Array.from(word.senseList, (sense,i) => {
 					return { "el": "span", "class": `one-part-unit-section${i>0? ' ms-2':''}`, "children": [{ 
 						"el": "span", "class": "part", textContent: sense.partType },
 						{ "el": "span", "class": "meaning", textContent: sense.meaning }
@@ -1774,7 +1792,19 @@
 		document.querySelector('.scrolling-section').style.marginTop = '0';		
 		scrollTo(0, 75);
 	}
-	
+	function stopAllTTS(except) {
+		tts.stop();
+		
+		document.querySelectorAll('#ttsPlay,.tts-playing').forEach(playBtn => {
+			if(except == playBtn) return;
+			if(playBtn.matches('#ttsPlay')) {
+				playBtn.textContent = 'play_circle';
+			}else if(playBtn.matches('.tts-playing')) {
+				playBtn.classList.remove('tts-playing', 'blink-2');
+			}
+			playBtn.dataset.playing = 'false';
+		})
+	}
 	/** 확인/다음 버튼을 옆으로 움직인다(true: 우측, false: 좌측)
 	 */
 	function moveSolveBtn(right) {
