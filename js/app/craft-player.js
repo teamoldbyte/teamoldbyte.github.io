@@ -233,14 +233,25 @@
 			{ memberId: _memberId, battleBookId: _battleBookId, battleId: currentBattle.bid, save: !currentBattle.saved }, (saved) => {
 				currentBattle.saved = saved;
 				// 버튼 상태 전환
-				$(this).toggleClass('reverse', saved);
+				$(this).addClass('pe-none');
+				anime({
+				    targets: this.closest('.save-button-section'),
+				    begin: function(anim) {
+						anim.animatables[0].target.style.transformOrigin = 'right bottom';
+					},
+				    scale: [1,1.7,1],
+				    rotate: ['0deg', '3deg', '-3deg', '3deg', '0deg'],
+				    changeComplete: () => {
+						$(this).removeClass('pe-none').toggleClass('reverse', saved);
+						// 저장여부를 알리는 메세지
+						const saveMsg = createElement({"el":"div","class":'toast battle-save-result-msg fade show',
+							"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "true", "data-bs-delay": 2000, "textContent": currentBattle.saved?"저장되었습니다.":"저장이 취소되었습니다."})
+						this.parentElement.appendChild(saveMsg);
+						bootstrap.Toast.getOrCreateInstance(saveMsg).show();
+						saveMsg.addEventListener('hidden.bs.toast', () => saveMsg.remove())
+					}
+				})
 				
-				// 저장여부를 알리는 메세지
-				const saveMsg = createElement({"el":"div","class":'toast battle-save-result-msg fade show',
-					"role":"alert","aria-live":"assertive","aria-atomic":"true", "data-bs-autohide": "true", "data-bs-delay": 2000, "textContent": currentBattle.saved?"저장되었습니다.":"저장이 취소되었습니다."})
-				this.parentElement.appendChild(saveMsg);
-				bootstrap.Toast.getOrCreateInstance(saveMsg).show();
-				saveMsg.addEventListener('hidden.bs.toast', () => saveMsg.remove())
 		}).always((_x,s) => {
 			if(s == 'parsererror') {
 				loginExpiredModal();
@@ -747,6 +758,7 @@
 	// 한 문제 플레이어에 표시
 	function _askStep() {
 		currentBattle = battlePool.shift();
+		if(bookMarkCommand.markType == 's') currentBattle.saved = true;
 		selectHistory = [];
 		currentView = document.getElementById(`battle-${currentBattle.battleType}`);
 
