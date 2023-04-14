@@ -398,7 +398,7 @@
 							{
 								"el": "label",
 								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "5. 문장요소 배열하기"
+								"textContent": "5. 영작하기"
 							},
 							{
 								"el": "input",
