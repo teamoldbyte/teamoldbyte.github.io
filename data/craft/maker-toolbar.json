@@ -274,7 +274,7 @@
 												"children": [
 													{
 														"el": "img",
-														"className": "battlebook-cover-preview personacon-profile profile-default"
+														"className": "battlebook-cover-preview personacon-profile profile-default w-100 h-100"
 													},
 													{
 														"el": "input",
