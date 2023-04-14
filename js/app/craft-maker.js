@@ -15,7 +15,8 @@
 	let staticCraftPanel, craftToolbarGroup = {}, 
 		battleAsks = [], battleTypeInfos = [], battleBtns = [], 
 		// 캐싱 속성들
-		categories = [], battleBooksMap = { step : [{ bbid: 10000001, title: '단계별 배틀'}] }, workbook_battleSource,
+		categories = [], battleBooksMap = { step : [{ bbid: 10000001, title: '단계별 배틀'}] },
+		battlebook_selection, workbook_battleSource,
 		// 체크박스 그룹화를 위한 시퀀스값
 		chkbxSeq = 0;
 	let _memberId;
@@ -514,6 +515,9 @@
 				$('#craftResultModal').modal('show');
 				
 				
+				// 워크북 내에서 등록한 경우 북타입 기본값 지정.
+				battlebook_selection = { type: addSection.querySelector('.select-book-type').value, bookId: battleBookId };
+				
 				// 워크북 내에서 등록한 경우 배틀 출처 기본값 지정.
 				if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
 					workbook_battleSource = command.source;
@@ -633,10 +637,10 @@
 		}
 		
 		// 배틀북 선택 초기화
-		$(panelInstance).find('.battle-book-section .select-book-type').val('step');
+		/*$(panelInstance).find('.battle-book-section .select-book-type').val('step');
 		$(panelInstance).find('.battle-book-section .select-book').get(0).replaceChildren(createElement({
 			el: 'option', textContent: '단계별 배틀', value: 10000001
-		}))
+		}))*/
 		
 		// 전달받은 인자값들을 패널 요소에 접근하여 얻을 수 있도록 설정
 		$(panelInstance).data('semantics', semanticsDiv)
@@ -714,6 +718,14 @@
 				}
 			})
 		})
+		if(battlebook_selection) {
+			panelInstance.querySelector('.select-book-type').value = battlebook_selection.type;
+			panelInstance.querySelector('select.select-book').replaceChildren(createElement(Array.from(battleBooksMap[battlebook_selection.type], book => {
+				return { el: 'option', value: book.battleBookId, textContent: book.title || '제목 없음' }
+			})))
+			panelInstance.querySelector('select.select-book').value = battlebook_selection.bookId;
+		}
+		
 		if(workbook_battleSource) {
 			panelInstance.querySelector('input.source').value = workbook_battleSource;
 		}
