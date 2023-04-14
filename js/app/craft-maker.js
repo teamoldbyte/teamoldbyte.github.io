@@ -125,7 +125,7 @@
 			if(battleBooksMap[bookType]) {
 				setBookList();
 			}else {
-				$.getJSON(`/craft/battlebook/${this.value}/list`, bookList => {
+				$.getJSON(`/craft/battlebook/my/${this.value}/list`, bookList => {
 					battleBooksMap[bookType] = bookList;
 					setBookList();
 				})
