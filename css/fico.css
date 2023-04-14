@@ -45,9 +45,10 @@
 	position: absolute;
 	/* top: 6rem; */
 	top: calc(3rem + 62.5px);
-	right: 6rem;
+	/* right: 6rem; */
+	left: calc(3rem + 50px);
 	/* width: calc(100% - 12rem); */
-	width: calc(100% - 12rem - 11.5px);
+	width: calc(100% - 6rem - 100px);
 	padding: 0;
 	z-index: 1000;
 }
