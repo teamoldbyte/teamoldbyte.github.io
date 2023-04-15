@@ -1162,12 +1162,11 @@ u {
 #battle-4 .eng .example{
 	text-decoration: underline;
 }
-#battle-4 .original-text{
+#battle-4 .original-text,
+#battle-8 .original-text{
 	color: var(--bs-yellow);
 	font-weight: bold;
 	background: #252A44;
-	backdrop-filter: blur( 15px );
-	-webkit-backdrop-filter: blur( 15px );
 	border-radius: 10px;
 	border: 1px solid rgba(255,255,255,.05);
 	padding: 0 0.5rem;
@@ -1308,6 +1307,9 @@ u {
 /* 크래프트 플레이 상단 헤더 - 영어 타이틀 */
 .craft-header-section .title-section .title{
 	font-family: 'Rubik', sans-serif;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .craft-header-section .title-section .title .eng{
 	font-weight: 500;
@@ -1325,6 +1327,11 @@ u {
 	height:35px;
 	padding: 0 1rem;
 	width: 60vw;
+}
+@media(max-width:768px){
+	.craft-header-section.min{
+		width: 100%;
+	}
 }
 @media(max-width:768px){
 	.craft-header-section.min{
@@ -1366,6 +1373,8 @@ u {
 	font-family: "Font Awesome 5 Free";
 	font-weight: 900;
 	content: "\f07c";
+	position: relative;
+	top: -0.25rem;
 }
 .save-button-section .save-btn::after{
 	font-family: "Font Awesome 5 Free";
@@ -1374,7 +1383,7 @@ u {
 	color:#fff;
 	position: absolute;
 	left: 0.5rem;
-	top: -.25rem;
+	top: -.75rem;
 	font-size: 0.75rem;
 }
 /* .save-button-section .save-btn.reverse{
@@ -1418,8 +1427,12 @@ u {
     color: #fff;
     box-shadow: none;
     text-shadow: 0 0 5px #000, 0 0 10px #fff;
-    background: transparent;
-    border: none;
+
+	background: #4e578396;
+	backdrop-filter: blur( 4px );
+	-webkit-backdrop-filter: blur( 4px );
+	border: 1px solid rgba(255,255,255,.05);
+	padding: 0.5rem;
 }
 /*
 .exit-button-section .exit-btn{
@@ -1686,7 +1699,7 @@ u {
 .explain-section .one-word-unit-section .title{
 	font-family: "Apple SD Gothic Neo","Segoe UI";
 	color: #30386e;
-	font-size: 15px;
+	font-size: 1.125rem;
 	margin-right: 0.25rem;
 	font-weight: 700;
 	cursor: pointer;
@@ -1703,27 +1716,27 @@ u {
 .explain-section .one-word-unit-section .part{
 	font-family: "Apple SD Gothic Neo","Segoe UI";
 	color: #019c9e;
-	font-size: 13px;
+	font-size: 1rem;
 	vertical-align: baseline;
 	display: contents;
 	width: 100%;
 	text-align: center;
 }
 .explain-section .one-word-unit-section .meaning{
-	font-size: 12.6px;
+	font-size: 1rem;
 	word-break: keep-all;
 	color: #636363;
 	margin-left: 0.25rem;
 }
 @media(max-width: 768px){
 	.explain-section .one-word-unit-section .title{
-		font-size: 0.9125rem;
+		font-size: 1.125rem;
 	}
 	.explain-section .one-word-unit-section .part{
-		font-size: 0.8rem;
+		font-size: 1rem;
 	}
 	.explain-section .one-word-unit-section .meaning{
-		font-size: 0.8725rem;
+		font-size: 1rem;
 	}
 }
 /* 보기 버튼 영역 */
