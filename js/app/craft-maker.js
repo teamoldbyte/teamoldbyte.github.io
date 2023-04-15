@@ -1185,6 +1185,10 @@
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '문법:'},
 					{el: 'span', textContent: battle.grammarTitle}
+				]},
+				{el: 'div', className: 'col-auto', children: [
+					{el: 'label', className: 'fw-bold me-2', textContent: '출처:'},
+					{el: 'span', textContent: battle.source}
 				]}
 			]},
 			{ el: 'div', className: 'battle-context pb-3', 
