@@ -84,6 +84,7 @@
 @media(max-width: 576px){
 	.craft-layout-content-section{
 		width: 100%;
+		overflow-x: hidden;
 		/*margin: 7vh auto;*/
 	}
 }
