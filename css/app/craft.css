@@ -1391,15 +1391,23 @@ u {
 	-webkit-animation:blink-2 .9s 3 both;
 	animation:blink-2 .9s 3 both
 } */
+.save-button-section .save-btn.reverse::before{
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	content: "\f07b";
+	position: relative;
+	top: -0.5rem;
+	font-size: 1.5rem;
+}
 .save-button-section .save-btn.reverse::after{
 	font-family: "Font Awesome 5 Free";
 	font-weight: 900;
-	content: "\f062";
+	content: "\f058";
 	color:#fff;
 	position: absolute;
-	left: 0.5rem;
-	top: -.5rem;
-	font-size: 0.75rem;
+	left: 0.45rem;
+	top: -.1875rem;
+	font-size: 0.625rem;
 }
 .craft-header-section.min .exit-button-section .exit-btn,
 .craft-header-section.min .save-button-section .save-btn{
