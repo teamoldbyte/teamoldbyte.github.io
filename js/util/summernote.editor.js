@@ -46,7 +46,7 @@
 					trigger: 'manual',
 					content: '<span class="fw-bold text-danger">본문 내용이 너무 길어 마지막 입력이 취소되었습니다.</span>'
 				});
-		$editable.attr('data-char-count', `현재 글자 수: ${contents.length}`);
+		$editable.attr('data-char-count', `현재 글자 수: ${contents.length} (스타일 정보 포함)`);
 		if (contents.length > maxContents) {
 			$input.summernote('undo');
 			setTimeout(() => popover.show(), 150);
