@@ -130,6 +130,7 @@ async function pageinit(memberId, memberRoleType) {
 	};
 	// 무료회원 설정
 	if(memberId == 0 && localStorage.getItem('FM_NAME')) {
+		
 		$('.record-stat .alias').text(localStorage.getItem('FM_NAME'));
 		// idb(IndexedDB Wrapper Library) 호출
 		const StepBattleStoreName = `StepBattle${ntoa(10000001)}`;
@@ -225,6 +226,7 @@ async function pageinit(memberId, memberRoleType) {
 				if(!bookList || bookList.length == 0) return;
 				bookListEl.appendChild(createBookDOMList(bookList, listBookType));
 			},
+			
 			error: (xhr) => {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
@@ -339,8 +341,11 @@ async function pageinit(memberId, memberRoleType) {
 	$('.battlebook-overview-section').on('click', '.sub-btn', function() {
 		const { bid, title, openType, bookType, completed } = $(this).closest('.battlebook-overview-section').data('targetBook').dataset;
 		if(memberId == 0) {
-			if(openType == 'P') { // 무료 공개 배틀북 플레이
-				
+			if(!memberId && !localStorage.getItem('FM_NAME')) {
+				location.assign('/membership/free');
+				return;
+			} 
+			else if(openType == 'P') { // 무료 공개 배틀북 플레이
 				location.assign(`/craft/battle/${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}&completed=${completed}`);
 				return;
 			}else {
