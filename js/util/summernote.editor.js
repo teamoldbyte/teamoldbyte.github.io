@@ -46,11 +46,9 @@
 					trigger: 'manual',
 					content: '<span class="fw-bold text-danger">본문 내용이 너무 깁니다.</span>'
 				});
-		$editable.attr('data-char-count', `현재 글자 수: ${contents.length} (스타일 정보 포함)`);
-		if (contents.length > maxContents) {
-			//$input.summernote('undo');
-			setTimeout(() => popover.show(), 150);
-		} else popover.hide();		
+		$editable.attr('data-char-count', `현재 글자 수: ${contents.length} (스타일 정보 포함) / ${maxContents}`);
+		
+		$editable.toggleClass('note-overlimit', contents.length > maxContents);
 	}
 	function uploadImage(formData, $input) {
 		$.ajax({
@@ -83,7 +81,7 @@
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
 			/*await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');*/
 			const customstyle = document.createElement('style');
-			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";}@media(min-width: 576px){.note-editable{background:linear-gradient(to right, transparent calc(320px - 1px), #eee 320px, transparent calc(320px + 1px));}.note-editable::before{content: "모바일 경계선";position: absolute;color: #bbb;font-size: 5px;left: 320px;top: 0;transform: translateX(-50%);}}.note-editable::after{position:absolute;right: 12px;top: 0;content:attr(data-char-count);font-size: 5px}';
+			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";}@media(min-width: 576px){.note-editable{background:repeating-linear-gradient(transparent,transparent 10px, #fff 10px, #fff 20px), linear-gradient(to right, transparent calc(320px - 1px), #eee 320px, transparent calc(320px + 1px));}.note-editable::before{content: "모바일 경계선";position: absolute;color: #bbb;font-size: 5px;left: 320px;top: 0;transform: translateX(-50%);}}.note-editable::after{position:absolute;right: 20px;top: 0;content:attr(data-char-count);font-size: 5px}.note-editable.note-overlimit::after{color: #f00}';
 			document.head.append(customstyle);
 		}
 		$input.summernote(Object.assign(options, {
