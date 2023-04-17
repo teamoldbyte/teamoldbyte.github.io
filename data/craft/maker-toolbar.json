@@ -522,7 +522,7 @@
 									{
 										"el": "textarea",
 										"className": "comment form-control d-inline col h-auto",
-										"maxLength": 1000,
+										"maxLength": 1500,
 										"rows": "10",
 										"placeholder": "문제에 대한 한 줄 코멘트, 참조 링크 등"
 									}
