@@ -1184,11 +1184,11 @@
 				]},
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '문법:'},
-					{el: 'span', textContent: battle.grammarTitle}
+					{el: 'span', textContent: battle.grammarTitle || '(미입력)'}
 				]},
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '출처:'},
-					{el: 'span', textContent: battle.source}
+					{el: 'span', textContent: battle.source || '(출처없음)'}
 				]}
 			]},
 			{ el: 'div', className: 'battle-context pb-3', 
