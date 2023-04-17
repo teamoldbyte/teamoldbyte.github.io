@@ -362,6 +362,12 @@
 		const comment = addSection.querySelector('.comment').value.trim();
 		const source = addSection.querySelector('.source').value.trim();
 		const engLength = battleContext.textContent.trim().length;
+		
+		if(comment.length > 1500) {
+			alertModal('배틀 해설의 길이가 너무 깁니다.');
+			return;
+		}
+		
 		const command = {
 			battleBookId, categoryId, battleType, ask, askTag, comment, source, diffLevel, engLength,
 			sentenceId: $(battlePanel).data('sentenceId'),
