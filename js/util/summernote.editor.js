@@ -50,7 +50,6 @@
 		if (contents.length > maxContents) {
 			//$input.summernote('undo');
 			setTimeout(() => popover.show(), 150);
-			$editable.blur();
 		} else popover.hide();		
 	}
 	function uploadImage(formData, $input) {
