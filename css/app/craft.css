@@ -785,49 +785,40 @@ u {
 	margin-bottom: 0.5rem;
 	/* width: 10rem; */
 }
-@media(min-width: 576px){
-	/* 태블릿 사이즈 */
-	.book-list-container.grammar .book:nth-child(4n+2) .book-cover,
-	.book-list-container.grammar .book:nth-child(4n+2) .title-text-section,
-	.book-list-container.theme .book:nth-child(4n+2) .book-cover,
-	.book-list-container.theme .book:nth-child(4n+2) .title-text-section{
-		margin-left : auto;
-	}
-	.book-list-container.grammar .book:nth-child(4n+3) .book-cover,
-	.book-list-container.grammar .book:nth-child(4n+3) .title-text-section,
-	.book-list-container.theme .book:nth-child(4n+3) .book-cover,
-	.book-list-container.theme .book:nth-child(4n+3) .title-text-section{
-		margin-left : auto;
-	}
-	.book-list-container.grammar .book:nth-child(4n) .book-cover,
-	.book-list-container.grammar .book:nth-child(4n) .title-text-section,
-	.book-list-container.theme .book:nth-child(4n) .book-cover,
-	.book-list-container.theme .book:nth-child(4n) .title-text-section{
-		margin-right : auto;
-	}
-	.book-list-container.grammar .book:nth-child(4n+1) .book-cover,
-	.book-list-container.grammar .book:nth-child(4n+1) .title-text-section,
-	.book-list-container.theme .book:nth-child(4n+1) .book-cover,
-	.book-list-container.theme .book:nth-child(4n+1) .title-text-section{
-		margin-right: auto;
-	}
-
-	/* 모바일 사이즈 */
-	.book-list-container.grammar .book:nth-child(3n+2) .book-cover,
-	.book-list-container.grammar .book:nth-child(3n+2) .title-text-section,
-	.book-list-container.theme .book:nth-child(3n+2) .book-cover,
-	.book-list-container.theme .book:nth-child(3n+2) .title-text-section{
-		margin-left : 0;
-	}
-	.book-list-container.grammar .book:nth-child(3n+1) .book-cover,
-	.book-list-container.grammar .book:nth-child(3n+1) .title-text-section,
-	.book-list-container.theme .book:nth-child(3n+1) .book-cover,
-	.book-list-container.theme .book:nth-child(3n+1) .title-text-section{
-		margin-right : 0;
-	}
+.book-list-container.grammar .book:nth-child(5n+2) .book-cover,
+.book-list-container.grammar .book:nth-child(5n+2) .title-text-section,
+.book-list-container.theme .book:nth-child(5n+2) .book-cover,
+.book-list-container.theme .book:nth-child(5n+2) .title-text-section{
+	margin-left : 0;
 }
-
-@media(min-width: 768px){
+.book-list-container.grammar .book:nth-child(5n+3) .book-cover,
+.book-list-container.grammar .book:nth-child(5n+3) .title-text-section,
+.book-list-container.theme .book:nth-child(5n+3) .book-cover,
+.book-list-container.theme .book:nth-child(5n+3) .title-text-section{
+	margin-left: calc((100% - 10rem)/5);
+}
+.book-list-container.grammar .book:nth-child(5n+4) .book-cover,
+.book-list-container.grammar .book:nth-child(5n+4) .title-text-section,
+.book-list-container.theme .book:nth-child(5n+4) .book-cover,
+.book-list-container.theme .book:nth-child(5n+4) .title-text-section{
+	margin-left : auto;
+	margin-right : auto;
+}
+.book-list-container.grammar .book:nth-child(5n) .book-cover,
+.book-list-container.grammar .book:nth-child(5n) .title-text-section,
+.book-list-container.theme .book:nth-child(5n) .book-cover,
+.book-list-container.theme .book:nth-child(5n) .title-text-section{
+	margin-right: calc((100% - 10rem)/5);
+	margin-left: auto;
+}
+.book-list-container.grammar .book:nth-child(5n+1) .book-cover,
+.book-list-container.grammar .book:nth-child(5n+1) .title-text-section,
+.book-list-container.theme .book:nth-child(5n+1) .book-cover,
+.book-list-container.theme .book:nth-child(5n+1) .title-text-section{
+	margin-right : 0;
+	margin-left: auto;
+}
+@media(max-width: 992px){
 	.book-list-container.grammar .book:nth-child(5n+2) .book-cover,
 	.book-list-container.grammar .book:nth-child(5n+2) .title-text-section,
 	.book-list-container.theme .book:nth-child(5n+2) .book-cover,
@@ -887,39 +878,46 @@ u {
 		margin-right: 0;
 	}
 }
+@media(max-width: 576px){
+	/* 태블릿 사이즈 */
+	.book-list-container.grammar .book:nth-child(4n+2) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+2) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+2) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+2) .title-text-section{
+		margin-left : auto;
+	}
+	.book-list-container.grammar .book:nth-child(4n+3) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+3) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+3) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+3) .title-text-section{
+		margin-left : auto;
+	}
+	.book-list-container.grammar .book:nth-child(4n) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n) .book-cover,
+	.book-list-container.theme .book:nth-child(4n) .title-text-section{
+		margin-right : auto;
+	}
+	.book-list-container.grammar .book:nth-child(4n+1) .book-cover,
+	.book-list-container.grammar .book:nth-child(4n+1) .title-text-section,
+	.book-list-container.theme .book:nth-child(4n+1) .book-cover,
+	.book-list-container.theme .book:nth-child(4n+1) .title-text-section{
+		margin-right: auto;
+	}
 
-.book-list-container.grammar .book:nth-child(5n+2) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+2) .title-text-section,
-.book-list-container.theme .book:nth-child(5n+2) .book-cover,
-.book-list-container.theme .book:nth-child(5n+2) .title-text-section{
-	margin-left : 0;
-}
-.book-list-container.grammar .book:nth-child(5n+3) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+3) .title-text-section,
-.book-list-container.theme .book:nth-child(5n+3) .book-cover,
-.book-list-container.theme .book:nth-child(5n+3) .title-text-section{
-	margin-left: calc((100% - 10rem)/5);
-}
-.book-list-container.grammar .book:nth-child(5n+4) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+4) .title-text-section,
-.book-list-container.theme .book:nth-child(5n+4) .book-cover,
-.book-list-container.theme .book:nth-child(5n+4) .title-text-section{
-	margin-left : auto;
-	margin-right : auto;
-}
-.book-list-container.grammar .book:nth-child(5n) .book-cover,
-.book-list-container.grammar .book:nth-child(5n) .title-text-section,
-.book-list-container.theme .book:nth-child(5n) .book-cover,
-.book-list-container.theme .book:nth-child(5n) .title-text-section{
-	margin-right: calc((100% - 10rem)/5);
-	margin-left: auto;
-}
-.book-list-container.grammar .book:nth-child(5n+1) .book-cover,
-.book-list-container.grammar .book:nth-child(5n+1) .title-text-section,
-.book-list-container.theme .book:nth-child(5n+1) .book-cover,
-.book-list-container.theme .book:nth-child(5n+1) .title-text-section{
-	margin-right : 0;
-	margin-left: auto;
+	/* 모바일 사이즈 */
+	.book-list-container.grammar .book:nth-child(3n+2) .book-cover,
+	.book-list-container.grammar .book:nth-child(3n+2) .title-text-section,
+	.book-list-container.theme .book:nth-child(3n+2) .book-cover,
+	.book-list-container.theme .book:nth-child(3n+2) .title-text-section{
+		margin-left : 0;
+	}
+	.book-list-container.grammar .book:nth-child(3n+1) .book-cover,
+	.book-list-container.grammar .book:nth-child(3n+1) .title-text-section,
+	.book-list-container.theme .book:nth-child(3n+1) .book-cover,
+	.book-list-container.theme .book:nth-child(3n+1) .title-text-section{
+		margin-right : 0;
+	}
 }
 
 
@@ -1068,6 +1066,12 @@ u {
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
+@media(max-width: 576px){
+	.battle-book-list .book-cover img,
+	.battle-book-list .book-cover .book{
+		width: auto;
+	}
+}
 .battle-book-list .book-cover:hover img{
 	transform: rotateY(-25deg);
 	box-shadow: 1px 1px 5px 5px rgba(0,0,0,.2);
@@ -1172,6 +1176,8 @@ u {
 	color: #a91461;
 }
 @media (max-width: 576px){
+	.battle-book-list.subscription .book-cover .book .circle,
+	.battle-book-list.grammar .book-cover .book .circle,
 	.battle-book-list.theme .book-cover .book .circle{
 		width: 4rem;
 		height: 4rem;
