@@ -936,6 +936,7 @@ u {
 	/* background: 
 		top/20rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg) #dfb488; */
 	background-image: url(https://static.findsvoc.com/images/logo/app_logo_square.png);
+	width: -webkit-fill-available;
 }
 .battle-book-list.subscription .battle-book-intro .book-cover .book{
 	/* background-image: url(https://static.findsvoc.com/images/app/craft/cover/cover-1.jpg); */
@@ -1069,7 +1070,7 @@ u {
 @media(max-width: 576px){
 	.battle-book-list .book-cover img,
 	.battle-book-list .book-cover .book{
-		width: auto;
+		width: -webkit-fill-available;
 	}
 }
 .battle-book-list .book-cover:hover img{
