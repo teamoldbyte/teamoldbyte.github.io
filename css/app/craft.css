@@ -267,6 +267,9 @@ u {
 	/* right: 1.5rem;	 */
 	left: calc(100% - 4rem);
 }
+.sub-block .icon-section .icon{
+	font-size: 2.5rem;
+}
 .sub-block.disabled{
 	background: #f0f0f0;
 }
@@ -473,6 +476,12 @@ u {
 	margin-left: 1rem;
 	position: relative;
 }
+.battle-book-list .battle-book-intro .book-description-section .description-text{
+	font-size: 1.25rem;
+	color: #212529;
+	font-weight: bold;
+}
+
 .battle-book-list .battle-book-intro .button-section{
 	bottom: 0;
 	position:absolute;
@@ -506,6 +515,13 @@ u {
 		height: 20vh;
 		max-height: 10rem;
 	}
+
+	.battle-book-list .battle-book-intro .book-description-section .description-text{
+		font-size: 1.125rem;
+	}
+	.battle-book-list .battle-book-intro .description{
+		font-size: 15px;
+	}
 }
 
 .my-book-type .book{
@@ -515,10 +531,6 @@ u {
 	border-radius: 5px;
 	display: flex;
 	width: calc((100% - 1rem) / 3);
-}
-.my-book-type.step .book{
-	height: 50px;
-	padding: 0.125rem 0.5rem;
 }
 .my-book-type.step .book{
 	height: 50px;
@@ -644,7 +656,8 @@ u {
 }
 .my-book-type .book .button-section .play-book-btn .icon{
 	/* color: #201ed1;*/
-	color: #8583ee;
+	/* color: #8583ee; */
+	color: #4442ee;
 }
 .my-book-type .book .button-section .wrong-book-btn .icon,
 .my-book-type .book.step .title-text .wrong{
@@ -709,6 +722,11 @@ u {
 }
 .battle-book-list .book-list-container .book .title-text{
 	font-weight: 600;
+}
+@media(max-width: 576px){
+	.battle-book-list .book-list-container .book .title-text{
+		font-size: 15px;
+	}
 }
 .battle-book-list.grammar .book .title-text-section,
 .battle-book-list.theme .book .title-text-section{
