@@ -492,6 +492,14 @@ u {
 		bottom: 0;
 	}
 }
+@media(max-width: 576px){
+	/* 배틀 타입 별 배틀북 목록 */
+	.battle-book-list{
+		border-radius: 0;
+		width:100%;
+	}
+}
+
 .my-book-type .book{
 	margin-bottom: 0.5rem;
 	height: auto;
@@ -1004,6 +1012,23 @@ u {
 	.battle-book-list .grammar .book-cover.default img,
 	.battle-book-list .theme .book-cover.default img{
 		background: top/15rem no-repeat url(https://static.findsvoc.com/images/logo/main_logo_character.svg),#121e34 url(https://static.findsvoc.com/images/app/workbook/background/bubbles.min.svg);
+	}
+}
+@media (max-width: 576px){
+	.battle-book-list .grammar .book-cover,
+	.battle-book-list .theme .book-cover{
+		width: 25vw;
+		max-width: 7rem;
+		height: 20vh;
+		max-height: 10rem;
+	}
+
+	.battle-book-list.theme .book-cover .book .circle{
+		width: 4rem;
+		height: 4rem;
+	}
+	.battle-book-list .book-cover .book .circle .text{
+		font-size: 3rem;
 	}
 }
 
@@ -1791,6 +1816,7 @@ u {
 	color: #fff;
 }
 #battle-6 .example-btn-section{
+	font-size: 1.125rem;
 	margin-bottom: 2rem;
 	padding: 1rem;
 	background: #4e578396;
