@@ -30,7 +30,7 @@
 	
 	function onPaste($input, e) {
 		let bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
-		if (bufferText != null && bufferText.length > 0) {
+		if (!$input.summernote('codeview.isActivated') && bufferText != null && bufferText.length > 0) {
 			e.preventDefault();
 			// Firefox fix
 			setTimeout(function() {
@@ -38,14 +38,8 @@
 			}, 10);
 		}		
 	}
-	function onChange(contents, maxLength, $input, $editable) {
-		const maxContents = maxLength > 0 ? maxLength : 65000,
-			popover = bootstrap.Popover.getOrCreateInstance($editable[0],
-				{
-					html: true, title: '<span class="fw-bold">※ 경고</span>',
-					trigger: 'manual',
-					content: '<span class="fw-bold text-danger">본문 내용이 너무 깁니다.</span>'
-				});
+	function onChange(contents, maxLength, $editable) {
+		const maxContents = maxLength > 0 ? maxLength : 65000;
 		$editable.attr('data-char-count', `현재 글자 수: ${contents.length} (스타일 정보 포함) / ${maxContents}`);
 		
 		$editable.toggleClass('note-overlimit', contents.length > maxContents);
@@ -88,7 +82,7 @@
 			callbacks: {
 				onPaste: function(e) { onPaste($input, e); },
 				onChange: function(contents, $editable) { 
-					onChange(contents, this.maxLength, $(this), $editable); },
+					onChange(contents, this.maxLength, $editable); },
 				onImageUpload: function(files) {
 					let formData = new FormData();
 					for (let i = 0, filesLen = files.length; i < filesLen; i++) {
