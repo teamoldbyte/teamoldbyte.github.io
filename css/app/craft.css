@@ -498,6 +498,14 @@ u {
 		border-radius: 0;
 		width:100%;
 	}
+
+	/**/
+	.battle-book-list .battle-book-intro .book-cover{
+		width: 25vw;
+		max-width: 7rem;
+		height: 20vh;
+		max-height: 10rem;
+	}
 }
 
 .my-book-type .book{
@@ -801,12 +809,14 @@ u {
 .book-list-container.theme .book:nth-child(5n) .book-cover,
 .book-list-container.theme .book:nth-child(5n) .title-text-section{
 	margin-right: calc((100% - 10rem)/5);
+	margin-left: auto;
 }
 .book-list-container.grammar .book:nth-child(5n+1) .book-cover,
 .book-list-container.grammar .book:nth-child(5n+1) .title-text-section,
 .book-list-container.theme .book:nth-child(5n+1) .book-cover,
 .book-list-container.theme .book:nth-child(5n+1) .title-text-section{
 	margin-right : 0;
+	margin-left: auto;
 }
 @media(max-width: 992px){
 	.book-list-container.grammar .book:nth-child(5n+2) .book-cover,
@@ -1019,16 +1029,8 @@ u {
 	.battle-book-list .theme .book-cover{
 		width: 25vw;
 		max-width: 7rem;
-		height: 20vh;
+		height: 21vh;
 		max-height: 10rem;
-	}
-
-	.battle-book-list.theme .book-cover .book .circle{
-		width: 4rem;
-		height: 4rem;
-	}
-	.battle-book-list .book-cover .book .circle .text{
-		font-size: 3rem;
 	}
 }
 
@@ -1063,6 +1065,12 @@ u {
 	background-color: #121e34;
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
+}
+@media(max-width: 576px){
+	.battle-book-list .book-cover img,
+	.battle-book-list .book-cover .book{
+		width: auto;
+	}
 }
 .battle-book-list .book-cover:hover img{
 	transform: rotateY(-25deg);
@@ -1167,6 +1175,17 @@ u {
 	font-size: 0.8rem;
 	color: #a91461;
 }
+@media (max-width: 576px){
+	.battle-book-list.subscription .book-cover .book .circle,
+	.battle-book-list.grammar .book-cover .book .circle,
+	.battle-book-list.theme .book-cover .book .circle{
+		width: 4rem;
+		height: 4rem;
+	}
+	.battle-book-list .book-cover .book .circle .text{
+		font-size: 3rem;
+	}
+}
 /* 배틀북 상세보기 */
 .battlebook-overview-section{
 	box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
@@ -1176,6 +1195,7 @@ u {
 	white-space: break-spaces;
 	text-align: left;
 }
+
 
 
 /**********************************************************
