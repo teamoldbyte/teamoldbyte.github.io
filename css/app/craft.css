@@ -1236,6 +1236,20 @@ u {
 	border: 1px solid rgba(255,255,255,.05);
 	padding: 0 0.5rem;
 }
+#battle-4 .original-text .label-text,
+#battle-8 .original-text .label-text{
+	font-size: 1.1rem;
+	font-weight: bolder;
+	font-family: 'Nanum Gothic';
+}
+@media(max-width:576px){
+	#battle-4 .original-text,
+	#battle-8 .original-text{
+		left: auto!important;
+		right: 0!important;
+		top: -2.125rem!important;
+	}
+}
 /* 선택한 답변 표시 */
 .selected {
 	color: #ED9954;
@@ -2020,6 +2034,7 @@ u {
 	min-height: 3.5rem;
 	margin-bottom: 0.5rem;
 	padding-bottom: 0.5rem;
+	cursor: pointer;
 }
 .list-battle-section .battle-block::before{
 	content : "";
