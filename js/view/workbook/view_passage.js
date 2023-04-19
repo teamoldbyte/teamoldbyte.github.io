@@ -72,7 +72,7 @@
 	const noteSectionJson = {
 		el: 'div', className: 'note-block one-block row g-0', children: [
 			{ el: 'div', className: 'note text-section', children: [
-				{ el: 'div', className: 'note-text', textContent: '노트 본문' },
+				{ el: 'div', className: 'note-text ws-breakspaces', textContent: '노트 본문' },
 				{ el: 'div', className: 'note-editor', style: 'display: none;', children: [
 					{ el: 'textarea', className: 'text-input col-12' },
 					{ el: 'div', className: 'form-check form-switch d-inline-block mx-1', children: [
