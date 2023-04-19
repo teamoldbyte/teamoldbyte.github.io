@@ -347,10 +347,13 @@
 						sel.classList.add('right');
 						// 정답 원문 텍스트 표시
 						const rightAnswer = createElement({ 
-							el: 'span', textContent: sel.dataset.answer, className: 'original-text', 
+							el: 'span', className: 'original-text', 
 							style: {
-								opacity: 0, position: 'absolute', left: `${sel.offsetLeft}px`, top: `${sel.offsetTop}px`
-						}});
+								opacity: 0, position: 'absolute', left: `${sel.offsetLeft - 14}px`, top: `${sel.offsetTop}px`
+							}, children: [
+								{ el: 'span', className: 'label-text', textContent: '정답 : '},
+								{ el: 'span', textContent: sel.dataset.answer }
+							]});
 						sel.parentElement.appendChild(rightAnswer);
 						anime({
 							targets: rightAnswer,
@@ -442,14 +445,16 @@
 				if (!correct) {
 					const rightAnswerEl = createElement({
 						el: 'span',
-						textContent: answers[0],
 						className: 'original-text',
 						style: {
 							opacity: 0,
 							position: 'absolute',
-							left: `${pickRightEl.offsetLeft}px`,
+							left: `${pickRightEl.offsetLeft - 14}px`,
 							top: `${pickRightEl.offsetTop}px`
-						}
+						}, children: [
+							{ el: 'span', className: 'label-text', textContent: '정답 : '},
+							{ el: 'span', textContent: answers[0] }
+						]
 					});
 					pickRightEl.parentElement.appendChild(rightAnswerEl);
 
