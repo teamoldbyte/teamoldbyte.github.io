@@ -5,7 +5,7 @@ async function pageinit(battlePage) {
 	
 	const battleListContainer = document.querySelector('#battleListDiv tbody');
 	const battlePaginationContainer = document.querySelector('#battlePagination');
-
+	const battleTypeTitles = ['#1(성분)','#2(수식어)','#3(택일/2)','#4(틀린/n)','#5(영작)','#6(빈칸)','#7(해석)','#8(토익)'];
 	displayBattleList(battlePage);
 	
 	
@@ -194,7 +194,7 @@ async function pageinit(battlePage) {
 					{ el: 'div', className: 'col-2 row', children: [
 						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '종류' },
 						{ el: 'select', className: 'form-select col battle-type', children: 
-							Array.from(['1','2','3','4','5','6','7'], n => {return {el: 'option', value: n, textContent: `#${n}`}}) 
+							Array.from(['1','2','3','4','5','6','7','8'], n => {return {el: 'option', value: n, textContent: battleTypeTitles[n-1]}}) 
 						}
 					]},
 					{ el: 'div', className: 'col-5 row', children: [
@@ -299,6 +299,7 @@ async function pageinit(battlePage) {
 	
 	/** 조회된 배틀을 DOM 목록 생성하여 표시하고 페이지네이션 갱신
 	 */
+	
 	function displayBattleList(page) {
 		// 선택한 타이틀을 제외한 나머지의 sortMark를 보이지 않도록 한다.
 		$('#battleListDiv .sortMark').hide();
@@ -318,7 +319,7 @@ async function pageinit(battlePage) {
 			return { el: 'tr', children: [
 				{ el: 'td', className: 'data-rnum', textContent: battle.rnum },
 				{ el: 'td', className: 'data-bid text-center', textContent: battle.bid, 'data-battleid': battle.bid },
-				{ el: 'td', className: 'data-type text-center', textContent: battle.battleType },
+				{ el: 'td', className: 'data-type text-center', textContent: battleTypeTitles[battle.battleType-1] },
 				{ el: 'td', className: 'data-englevel text-center', textContent: battle.engLevel },
 				{ el: 'td', className: 'data-gramtitle text-center', textContent: battle.grammarTitle },
 				{ el: 'td', className: 'data-englength text-center', textContent: battle.engLength },
