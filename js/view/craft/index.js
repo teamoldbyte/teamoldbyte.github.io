@@ -90,6 +90,10 @@ async function pageinit(memberId, memberRoleType) {
 		}
 	}*/
 	
+	const WANDERER = !Cookies?.get('EID') && !Cookies?.get('FMID');
+	const URL_MEMBERSHIP_FREE = '/membership/free',
+		URL_PLAY_BASE = '/craft/battle/';
+	let wanderingBooks = [];
 	let DB_NAME = 'findsvoc-idb'
 	let DB_VERSION = 2;
 	// 키릴자모(\u0040~\u04FF)를 이용한 치환 테이블
@@ -129,7 +133,7 @@ async function pageinit(memberId, memberRoleType) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
 	// 무료회원 설정
-	if(memberId == 0 && localStorage.getItem('FM_NAME')) {
+	if(memberId == 0 && Cookies.get('FMID')) {
 		$('.record-stat .alias').text(localStorage.getItem('FM_NAME'));
 		// idb(IndexedDB Wrapper Library) 호출
 		const StepBattleStoreName = `StepBattle${ntoa(10000001)}`;
@@ -186,7 +190,12 @@ async function pageinit(memberId, memberRoleType) {
 				}
 			})
 		})
-	}else calcWinningRate();
+	}else {
+		if(memberId == 0) {
+			wanderingBooks = JSON.parse(localStorage.getItem('wanderingBooks')) || [];
+		}
+		calcWinningRate();
+	}
 	
 	const countStoreName = `TCBSC_${ntoa(memberId)}`;
 	// 오늘 푼 횟수
@@ -221,10 +230,15 @@ async function pageinit(memberId, memberRoleType) {
 		$.ajax({
 			url: `/craft/battlebook/${listBookType}/list`,
 			success: bookList => {
+				if(!Array.prototype.isPrototypeOf(bookList)) {
+					alertModal('올바른 데이터를 받지 못했습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
+					return;
+				}
 				this.setAttribute('initialized', true);
 				if(!bookList || bookList.length == 0) return;
 				bookListEl.appendChild(createBookDOMList(bookList, listBookType));
 			},
+			
 			error: (xhr) => {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
@@ -335,15 +349,19 @@ async function pageinit(memberId, memberRoleType) {
 		this.scrollIntoView({behavior: 'smooth', block: 'nearest'});
 	})
 	
-	// 배틀 구독
+	// 배틀 구독 혹은 플레이
 	$('.battlebook-overview-section').on('click', '.sub-btn', function() {
 		const { bid, title, openType, bookType, completed } = $(this).closest('.battlebook-overview-section').data('targetBook').dataset;
-		if(memberId == 0) {
-			if(openType == 'P') { // 무료 공개 배틀북 플레이
-				
-				location.assign(`/craft/battle/${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}&completed=${completed}`);
-				return;
-			}else {
+		if(!memberId) { // 로그인 사용자가 아닌 경우
+			if(openType == 'P') { // 전체 오픈 배틀북에 한해(비회원 및 방문자에게 있어 바로 플레이 대상임)
+				if(Cookies.get('FMID')) { // 비회원은 곧바로 플레이
+					location.assign(`${URL_PLAY_BASE}${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}&completed=${completed}&wanderer=${WANDERER}`);
+					return;
+				}else { // 방문자는 가입 의사를 묻는다.
+					askMembershipModal(`${URL_PLAY_BASE}${bookType}/b/${ntoa(parseInt(bid))}?title=${encodeURIComponent(title)}&bookType=${bookType}&completed=${completed}&wanderer=${WANDERER}`);
+					return;
+				}
+			}else { // 전체 오픈이 아닌 배틀북을 비회원,방문자가 풀려는 경우 로그인 화면으로 이동.
 				if(confirmModal('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
 				return;
 			}
@@ -379,18 +397,61 @@ async function pageinit(memberId, memberRoleType) {
 	// 배틀 플레이 버튼 동작
 	$(document)
 	.on('click', '.js-play-step', function() {
-		if(!memberId && !localStorage.getItem('FM_NAME')) location.assign('/membership/free');
-		else location.assign('/craft/battle/step/b?title=단계별 학습&bookType=step');
+		// 단계별 배틀은 비회원가입이라도 해야 플레이 할 수 있다.
+		if(WANDERER) location.assign(URL_MEMBERSHIP_FREE);
+		else if(!memberId && Cookies?.get('EID')) location.assign('/auth/login?destPage=/craft/main');
+		else location.assign(`${URL_PLAY_BASE}step/b?title=단계별 학습&bookType=step&wanderer=${WANDERER}`);
 	})
 	.on('click', '.js-play-book', function() {
 		const { bid, title, bookType, completed } = this.closest('.book').dataset;
 		const markType = this.dataset.mtype;
 		const bidPath = bookType === 'step' ? '' : `/${ntoa(bid)}`;
 		const completedParam = completed === undefined ? '' : `&completed=${completed}`;
-		if(!memberId && !localStorage.getItem('FM_NAME')) location.assign('/membership/free');
-		else location.assign(`/craft/battle/${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}`);
+		// 방문자는 비회원가입을 할지 말지 물어보고, 가입 혹은 그대로 플레이
+		if(WANDERER) askMembershipModal(`${URL_PLAY_BASE}${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}&wanderer=${WANDERER}`);
+		else location.assign(`${URL_PLAY_BASE}${bookType}/${markType}${bidPath}?title=${encodeURIComponent(title)}&bookType=${bookType}${completedParam}&wanderer=${WANDERER}`);
 	});
 	
+	/**
+	 * 비회원 가입 의사를 물어보고 가입 혹은 플레이 화면으로 이동.
+	 */
+	function askMembershipModal(destPage) {
+		const targetBook = destPage.match(/(?:craft\/battle\/\w+\/\w\/)(\w+)/)[1];
+		if(wanderingBooks.includes(targetBook)) {
+			location.assign(destPage);
+			return;
+		}
+		const modal = 
+		document.getElementById('askMembershipModal') ||document.body.appendChild(createElement({
+			"el":"div","id":"askMembershipModal","data-bs-backdrop":"static", 'data-bs-return': '0',
+			"class":"modal fade","tabIndex":0,"children":[
+				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
+					{"el":"div","class":"modal-content","children":[
+						{"el":"div","class":"modal-header","children":[
+							{"el":"h5","class":"modal-title","textContent":"※플레이하기 전에※"},
+							{"el":"button","class":"btn-close","data-bs-dismiss":"modal","aria-label":"Close"}
+						]},
+						{"el":"div","class":"modal-body row g-0","children":[
+							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"가입을 하면 <b>전적</b> 및 <b>진행 기록</b>이 활성화되어<br> 배틀을 이어서 풀 수 있습니다.<br>가입 후 플레이하시겠습니까?"},
+							{ "el": "div", className: 'col text-center', children: [
+								{"el":"button","class":"btn btn-fico w-100","innerHTML": "<b>예</b><br><span class='fs-7'>간편가입</span>", onclick: () => {
+									location.assign(`/membership/free?destPage=${destPage}`);
+								}}
+							]},
+							{ "el": "div", className: 'col text-center', children: [
+								{"el":"button","class":"btn btn-outline-fico w-100", "innerHTML": "<b>아니오</b><br><span class='fs-7'>가입 없이 진행</span>", onclick: () => {
+									wanderingBooks.push(targetBook);
+									localStorage.setItem('wanderingBooks', JSON.stringify(wanderingBooks));
+									location.assign(destPage);
+								}}
+							]}
+						]}
+					]}
+				]}
+			]}
+		));
+		$(modal).modal('show');
+	}
 	
 	// 승률 표시
 	function calcWinningRate() {
