@@ -106,6 +106,7 @@ function pageinit() {
 		if($nextPhase.length > 0) {
 			$('#signupForm').removeClass('was-validated');
 			$currPhase.add($nextPhase).collapse('toggle');
+			$(`.msg-text:eq(${phase-1}),.msg-text:eq(${phase})`).collapse('toggle');
 			if($nextPhase.next('.collapse').length == 0) {
 				$nextPhase.find('input').blur();
 				this.type = 'submit';
