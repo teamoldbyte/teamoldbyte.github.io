@@ -189,19 +189,103 @@
 /**********************************************************
  *					add_free_membership.html
  **********************************************************/
+
+ /**/
+ .signup-section .title-section .sub-title{
+	color: #303672;
+ } 
+ .signup-section .title-section .sub-title .text-red{
+	color: #b01a2c;
+ } 
+
 .signup-section .title-section .title-text{
 	font-size: 1.1rem;
-	color: #585174;
-	font-weight: 600;
+	font-family: 'Nanum Gothic';
+	font-weight: bold;
+	color: #303672;
+	margin-bottom: 1.5rem;
 }
-.btn-signup{
-	border-radius: 5px;
-	color: #fff;
-	background-color: #5169e6;
+.input-section .title-section .title-text{
+	font-size: 30px;
+	word-break: keep-all;
+	font-family: 'LINESeedKR-Bd';
+	color: var(--fc-purple);
 }
-.btn-signup:hover{
-	color: #fff;
-	background-color: #3757fe;
+
+/* 왼쪽 메세지 텍스트 */
+.signup-section .msg-text{
+	width: 80%;
+
+	font-family: '나눔명조';
+    font-size: 1.2rem;
+	
+	line-height: 2;
+	margin-left: 0;
+	margin-top: 1rem;
+	text-align: center;
+
+	
+	background-color: rgba(255,255,255,.8);
+	backdrop-filter: blur( 15px );
+	-webkit-backdrop-filter: blur( 15px );
+	border-radius: 3rem;
+	border: 2px solid #303672;
+}
+.signup-section .msg-text > div{
+	padding: 4rem 2rem;
+}
+/* */
+.signup-section .input-name #name{
+	margin-bottom: -1px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.signup-section .input-phone #phone{
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.signup-section .input-section .step{
+	position: relative;
+	top: -3.5rem;
+}
+.signup-section .button-section{
+	align-items: center;
+	margin-left: auto;
+	margin-bottom: 1rem;
+	position: relative;
+	top: -3.5rem;
+}
+.signup-section .goto-login-section{
+	position: relative;
+	top: -3.5rem;
+}
+@media(max-width: 992px){
+	.signup-section .title-section .title-text{
+		margin-bottom: 0;
+	}
+
+	.signup-section .msg-text > div{
+		padding: 1rem 0.5rem;
+	}
+	/* 왼쪽 메세지 텍스트 */
+	.signup-section .msg-text{
+		width: 100%;
+		font-size: 1rem;
+	}
+
+	.signup-section .input-section{
+		margin-top: 1rem;
+	}
+	.signup-section .input-section .step{
+		top: auto;
+	}
+	.signup-section .button-section{
+		top: auto;
+	}
+	.signup-section .goto-login-section{
+		top: auto;
+	}
 }
 /**********************************************************
  *					user_personacon.html
