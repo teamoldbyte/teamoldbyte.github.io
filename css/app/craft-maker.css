@@ -3,6 +3,11 @@
 .battle-maker,.battle-preview { 
 	outline: none; 
 }
+
+/* 배틀 코멘트 축양형 보기 내의 이미지들은 모두 height: 1rem(span의 높이를 줄이기 위함) */
+.battle-preview .comment.short img {
+	height: 1rem;
+}
 /* 각 편집 영역마다 보기 번호 리셋 */
 .battle-context { 
 	line-height: 3; 
@@ -72,9 +77,8 @@
 	background: gold
 }
 
-/**/
 .add-battle-section textarea.comment{
 	font-family: Rubik,HCRDotum,sans-serif;
 	font-size: 1rem;
-	white-space: pre-wrap;
+	white-space: break-spaces;
 }
