@@ -15,7 +15,9 @@
 /* 로그인 페이지 - 타이틀 */
 .signin-section .input-section .title-section .title{
 	font-family: 'Rubik', sans-serif;
+	font-weight: bold;
 	letter-spacing: 0;
+	padding-bottom: 20px;
 }
 .signin-section .input-section input[type="email"]{
   margin-bottom: -1px;
@@ -218,7 +220,7 @@
 
 	font-family: '나눔명조';
     font-size: 1.2rem;
-	
+
 	line-height: 2;
 	margin-left: 0;
 	margin-top: 1rem;
