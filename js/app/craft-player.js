@@ -390,7 +390,7 @@
 				appendSentenceTTSBtns(view.querySelector('.arranged-example-section .full-sentence'));
 				break;
 			case '7': {
-				let options = Array.from((currentBattle.answer?currentBattle.ask:currentBattle.kor).split(/\s+/), option => option.replace(/[,.!?]$/,''));
+				/*let options = Array.from((currentBattle.answer?currentBattle.ask:currentBattle.kor).split(/\s+/), option => option.replace(/[,.!?]$/,''));
 				let tempOption = '';
 				options = options.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
@@ -403,10 +403,11 @@
 							return (acc||[]).concat([ tempOption ]);
 						}else return acc;
 					}
-				},[]);			
-				if(view.querySelectorAll('.arranged-example-section .btn').length != options.length){
+				},[]);			*/
+				const answers_exclude_symbols = Array.from(answers, a => a.replace(/[,.!?]$/,''));
+				if(view.querySelectorAll('.arranged-example-section .btn').length != answers.length){
 					view.querySelectorAll('.arranged-example-section .btn').forEach( option => {
-						if(options.includes(option.textContent)) {
+						if(answers_exclude_symbols.includes(option.textContent)) {
 							option.classList.add('right');
 						}else {
 							option.classList.add('wrong');
@@ -416,7 +417,7 @@
 				} 
 				else {
 					view.querySelectorAll('.arranged-example-section .btn').forEach( option => {
-						if(options.includes(option.textContent)) {
+						if(answers_exclude_symbols.includes(option.textContent)) {
 							option.classList.add('right');
 						}else {
 							option.classList.add('wrong');
@@ -425,7 +426,7 @@
 					})
 				}
 				view.querySelector('.arranged-example-section').prepend(
-					createElement({ el: 'div', className: 'full-sentence', textContent: currentBattle.answer?currentBattle.ask:currentBattle.kor
+					createElement({ el: 'div', className: 'full-sentence', textContent: answers.join(' ')
 				}));
 				view.querySelector('.example-btn-section').style.display = 'none';
 				appendSentenceTTSBtns(view.querySelector('.ask-section .sentence'));
@@ -572,61 +573,68 @@
 				loginExpiredModal();
 			}else {
 				// (ajax) 배틀 채점 정보 전송 ! 배틀북 내의 가장 나중 배틀보다 이전의 배틀을 풀었을 땐 전송하지 않는다.
-				$.ajax({
-					url: '/craft/battle/evaluation/add',
-					type: 'GET', contentType: 'application/json', data: command,
-					success: async() => { 
-						if(correct) { 
-							_battleRecord.correct++;
-						}
-						if(_memberId == 0) {
-							const db = await idb.openDB(DB_NAME, DB_VERSION);
-							const tx = db.transaction(storeName, 'readwrite');
-							const store = tx.objectStore(storeName);
-							const index = store.index('bid');
-							
-							for await(const cursor of index.iterate(ntoa(currentBattle.bid))) {
-								const record = { ...cursor.value, solve: (correct ? 'O': 'X')}
-								cursor.update(record);
+				if(!!_memberId || !!memberId56) {
+					$.ajax({
+						url: '/craft/battle/evaluation/add',
+						type: 'GET', contentType: 'application/json', data: command,
+						success: async() => { 
+							if(correct) { 
+								_battleRecord.correct++;
 							}
-							await tx.done;
-							
-							//const item = { data: battle2Bytes(currentBattle) };							
-							//item.solve = correct? 'O': 'X';
-							//await db.put(storeName, item, keyPath);
-							/*req = indexedDB.open(DB_NAME, DB_VERSION);
-							req.onsuccess = function() {
-								idb = this.result;
-								const tx = idb.transaction(['StepBattle'], 'readwrite');
-								tx.onabort = idbAbort;												
-								idbstore = tx.objectStore('StepBattle');
-								idbstore.index('bid').openCursor().onsuccess = function() {
-									let cursor = this.result;
-									if(cursor) {
-										if(cursor.key == currentBattle.bid) {
-											const record = cursor.value;
-											record.solve = correct? 'O': 'X';
-											cursor.update(record);
+							if(_memberId == 0) {
+								const db = await idb.openDB(DB_NAME, DB_VERSION);
+								const tx = db.transaction(storeName, 'readwrite');
+								const store = tx.objectStore(storeName);
+								const index = store.index('bid');
+								
+								for await(const cursor of index.iterate(ntoa(currentBattle.bid))) {
+									const record = { ...cursor.value, solve: (correct ? 'O': 'X')}
+									cursor.update(record);
+								}
+								await tx.done;
+								
+								//const item = { data: battle2Bytes(currentBattle) };							
+								//item.solve = correct? 'O': 'X';
+								//await db.put(storeName, item, keyPath);
+								/*req = indexedDB.open(DB_NAME, DB_VERSION);
+								req.onsuccess = function() {
+									idb = this.result;
+									const tx = idb.transaction(['StepBattle'], 'readwrite');
+									tx.onabort = idbAbort;												
+									idbstore = tx.objectStore('StepBattle');
+									idbstore.index('bid').openCursor().onsuccess = function() {
+										let cursor = this.result;
+										if(cursor) {
+											if(cursor.key == currentBattle.bid) {
+												const record = cursor.value;
+												record.solve = correct? 'O': 'X';
+												cursor.update(record);
+											}
+											cursor.continue();
 										}
-										cursor.continue();
-									}
-								};
-							};	*/
+									};
+								};	*/
+							}
+							moveSolveBtn(true);
+							if(_progressNum != null) _progressNum++;
+							calcProgress();
+							// (리뷰/오답/보관 제외)배틀을 끝까지 다 풀었으면 lastBattleId = -1 호출
+							if(bookMarkCommand.markType === 'b' && _progressNum >= _battleSize) {
+								$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
+								//solveAllsOfBook();
+							}
+						},
+						error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
+						complete: (_x,s) => {
+							if(s == 'parsererror') loginExpiredModal();
 						}
-						moveSolveBtn(true);
-						if(_progressNum != null) _progressNum++;
-						calcProgress();
-						// (리뷰/오답/보관 제외)배틀을 끝까지 다 풀었으면 lastBattleId = -1 호출
-						if(bookMarkCommand.markType === 'b' && _progressNum >= _battleSize) {
-							$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
-							//solveAllsOfBook();
-						}
-					},
-					error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
-					complete: (_x,s) => {
-						if(s == 'parsererror') loginExpiredModal();
-					}
-				})
+					})
+					
+				}else { // 방문자는 배틀 평가 없이 곧바로 다음 문제 호출
+					moveSolveBtn(true);
+					if(_progressNum != null) _progressNum++;
+					
+				}
 			}
 		});
 	})
@@ -702,12 +710,16 @@
 			battlePool = battles;
 			isLastPageOfTheBook = (_bookTypeStr == 'step' && battles.length < MAX_NUMS_PER_POOL || _progressNum + battles.length >= _battleSize);
 			if(battles.length == 0) {
+				// 1. 방문자는 그대로 종료
+				if(!_memberId && !memberId56) {
+					solveAllsOfBook
+				}
 				// 처음 진입부터 풀 배틀이 없는 경우는 
-				// 1. 이 배틀북을 진행할 조건이 미달하거나
-				if(currentBattle == null && _lastBattleId == 0) {
+				// 2. 이 배틀북을 진행할 조건이 미달하거나
+				else if(currentBattle == null && _lastBattleId == 0) {
 					solveAllsOfBook();
 				}
-				// 2. 지난 회차에서 배틀북 끝까지 풀고 그만두거나
+				// 3. 지난 회차에서 배틀북 끝까지 풀고 그만두거나
 				// 	다시 첫문제로 돌아온 후 아직 풀이를 안 한 상황
 				else if(currentBattle == null && _lastBattleId != -1) {
 					_lastBattleId = -1;
@@ -721,7 +733,7 @@
 				battles.forEach((battle, i) => {
 					allBattlePool[i + _progressNum] = battle;
 				});
-				if(_memberId == 0) {
+				if(_memberId == 0 && Cookies.get('FMID')) {
 					// 무료회원은 조회된 문제들을 모두 IndexedDB에 저장한다.
 					idb.openDB(DB_NAME, DB_VERSION).then(async db => {
 						const tx = db.transaction(storeName, 'readwrite');
@@ -1120,26 +1132,29 @@
 			}
 			case '7' : {
 				/** 해석 배열하기
+				  	answer = [정답1, 정답2]
 					example = [오답1, 오답2]
-					정답: (부분해석의 경우) ask / (전체해석의 경우) kor
+					ask = [밑줄 칠 위치]
 				 */
-				let options = currentBattle[answers.length > 0 ? 'ask' : 'kor'].split(/\s+/);
+				let options = [...examples, ...answers];
 				currentView.querySelector('.ask-section .sentence.eng').textContent = eng;
 				
 				// 부분해석 범위가 있는 경우, sentence의 해당 범위를 밑줄 처리
-				if(answers.length > 0) {
+				if(currentBattle.ask.match(/\[.*]/)) {
 					const answerRange = new Range();
+					const askRange = JSON.parse(currentBattle.ask)[0]
 					answerRange.selectNode(sentence.firstChild)
-					answerRange.setStart(sentence.firstChild, answers[0][0]);
-					answerRange.setEnd(sentence.firstChild, answers[0][1]);
+					answerRange.setStart(sentence.firstChild, askRange[0]);
+					answerRange.setEnd(sentence.firstChild, askRange[1]);
 					answerRange.insertNode(createElement({el: 'span', 
 						className: 'text-decoration-underline', textContent: answerRange.extractContents().textContent
 					}));
 				}
 				const arrangedSection = currentView.querySelector('.arranged-example-section');
 				let tempOption = '';
-				options = options.reduce((acc, curr, i, arr) => {
+				options = options/*.reduce((acc, curr, i, arr) => {
 					if(curr.length > 1) {
+						
 						const newAcc = (acc||[]).concat([ tempOption.length > 0 ? `${tempOption} ${curr}` : curr ]);
 						tempOption = '';
 						return newAcc;
@@ -1150,7 +1165,7 @@
 						}else return acc;
 					}
 					// 오답을 선택지에 추가하여 랜덤섞기
-				}, []).concat(examples).sort(() => Math.random() - 0.5);
+				}, []).concat(examples)*/.sort(() => Math.random() - 0.5);
 				options.forEach( option => {
 					contextChildren.push({ el: 'span', className: 'btn btn-outline-fico haptic-btn shadow-none', 
 						textContent: option.replace(/[,.!?]$/,''), onclick: throwSelect
@@ -1232,7 +1247,7 @@
 		bookMarkCommand = command
 		bookMarkCommand.regDate = new Date(command.regDate);
 		_memberId = command?.memberId||0;
-		if(_memberId == 0) _todaySolveLimit = 25;
+		if(!_memberId) _todaySolveLimit = 25;
 		_battleBookId = command.battleBookId;
 		_lastBattleId = command.lastBattleId;
 		if(progressNum != null) _progressNum = progressNum; // progressNum은 현재의 지나온 갯수
@@ -1261,88 +1276,92 @@
 		}
 
 		// 비회원일 경우 로컬에서 기록 탐색
-		if(_memberId == 0) {
+		if(!_memberId) {
+			$('#save-btn').addClass('opacity-50');
+			$(document).off('click', '#save-btn');
+			document.querySelector('.save-button-section').dataset.bsToggle = 'tooltip';
+			document.querySelector('.save-button-section').title = '배틀 보관 기능은 fico 회원에게 제공됩니다.';
+			$('.save-button-section').tooltip('hide');
 			if(typeof Cookies == 'undefined') {
 				await $.cachedScript('https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js');
 			}
-			const fmId = Cookies.get('FMID');
-			if(!fmId) location.replace('/craft/main');
-			else memberId56 = fmId;
+			memberId56 = Cookies.get('FMID');
 			
-			// idb(IndexedDB Wrapper Library) 호출
-			await $.cachedScript('https://cdn.jsdelivr.net/npm/idb@7/build/umd-with-async-ittr.js');
-			await $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
-			storeName = STORE_NAME_BOOKTYPE_MAP[_bookTypeStr] + ntoa(_battleBookId);
-			
-			stepCommand['age'] = parseInt(localStorage.getItem('FM_AGE'));
-			
-			document.querySelector('#save-btn').disabled = true;
-			_battleRecord = { correct: 0, incorrect: 0 };
-			
-			const databases = await indexedDB.databases();
-			databases.forEach(({name, version}) => (name == DB_NAME) && (version >= DB_VERSION) && (DB_VERSION = version))
-			idb.openDB(DB_NAME, DB_VERSION, {
-				async upgrade(db, oldVer, _, tx) {
-					const newstore = db.createObjectStore(storeName, { autoIncrement: true});
-					newstore.createIndex('bid', 'bid'); // 배틀 ID(base56)
-					newstore.createIndex('data', 'data'); // 실제 Battle
-					newstore.createIndex('solve', 'solve'); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
-					
-					if(oldVer == 1) { // 1버전엔 StepBattle만 있었음.
-						const oldstore = tx.objectStore('StepBattle');
-						const records = await oldstore.getAll();
-						records.sort((a, b) => {
-							return a.data.rnum - b.data.rnum;
+			if(memberId56) {
+				// idb(IndexedDB Wrapper Library) 호출
+				await $.cachedScript('https://cdn.jsdelivr.net/npm/idb@7/build/umd-with-async-ittr.js');
+				await $.cachedScript('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js');
+				storeName = STORE_NAME_BOOKTYPE_MAP[_bookTypeStr] + ntoa(_battleBookId);
+				
+				stepCommand['age'] = parseInt(localStorage.getItem('FM_AGE'));
+				
+				_battleRecord = { correct: 0, incorrect: 0 };
+				
+				const databases = await indexedDB.databases();
+				databases.forEach(({name, version}) => (name == DB_NAME) && (version >= DB_VERSION) && (DB_VERSION = version))
+				idb.openDB(DB_NAME, DB_VERSION, {
+					async upgrade(db, oldVer, _, tx) {
+						const newstore = db.createObjectStore(storeName, { autoIncrement: true});
+						newstore.createIndex('bid', 'bid'); // 배틀 ID(base56)
+						newstore.createIndex('data', 'data'); // 실제 Battle
+						newstore.createIndex('solve', 'solve'); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
+						
+						if(oldVer == 1) { // 1버전엔 StepBattle만 있었음.
+							const oldstore = tx.objectStore('StepBattle');
+							const records = await oldstore.getAll();
+							records.sort((a, b) => {
+								return a.data.rnum - b.data.rnum;
+							})
+							// 레코드를 변형하여 2버전으로 마이그레이션
+							for(const record of records) {
+								await newstore.add({...record, bid: ntoa(record.bid), data: battle2Bytes(record.data)});
+							}
+							db.deleteObjectStore('StepBattle')
+						}
+					}
+				}).then(async db => {
+					if(db.objectStoreNames.contains(storeName)) {
+						let lastRnum = 0;
+						let cursor = await db.transaction(storeName).store.openCursor();
+						_progressNum = 0;
+						while(cursor) {
+							const battle = bytes2Battle(cursor.value.data);
+							// 풀었던 배틀일 경우(solve 값이 "O" 혹은 "X", 안풀었을 경우 "")
+							if(/[OX]/.test(cursor.value.solve)) {
+								// 레코드(전적)에 합산
+								_battleRecord[cursor.value.solve == 'O' ? 'correct':'incorrect']++;
+								// 마지막으로 푼 배틀 찾아서 lastBattleId 할당하기
+								if(_bookTypeStr !== 'step') {
+									_lastBattleId = battle.bid;
+								}
+								else if(battle.rnum > lastRnum) {
+									lastRnum = battle.rnum;
+									_lastBattleId = battle.bid;
+								}
+								_progressNum++;
+							}else {
+								// 아직 풀지 않은 배틀은 이제 풀어야 할 배틀 풀에 저장
+								battlePool.push(battle);
+							}
+							cursor = await cursor.continue();
+						}
+						if(_bookTypeStr == 'step') battlePool.sort((a,b) => a.rnum - b.rnum);
+						initDatas(stepCommand.age);
+					}else {
+						db.close();
+						db = await idb.openDB(DB_NAME, ++DB_VERSION, {
+							upgrade(db) {
+								const newstore = db.createObjectStore(storeName, { autoIncrement: true});
+								newstore.createIndex('bid', 'bid'); // 배틀 ID(base56)
+								newstore.createIndex('data', 'data'); // 실제 Battle
+								newstore.createIndex('solve', 'solve'); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
+								
+								initDatas(stepCommand.age);
+							}
 						})
-						// 레코드를 변형하여 2버전으로 마이그레이션
-						for(const record of records) {
-							await newstore.add({...record, bid: ntoa(record.bid), data: battle2Bytes(record.data)});
-						}
-						db.deleteObjectStore('StepBattle')
 					}
-				}
-			}).then(async db => {
-				if(db.objectStoreNames.contains(storeName)) {
-					let lastRnum = 0;
-					let cursor = await db.transaction(storeName).store.openCursor();
-					_progressNum = 0;
-					while(cursor) {
-						const battle = bytes2Battle(cursor.value.data);
-						// 풀었던 배틀일 경우(solve 값이 "O" 혹은 "X", 안풀었을 경우 "")
-						if(/[OX]/.test(cursor.value.solve)) {
-							// 레코드(전적)에 합산
-							_battleRecord[cursor.value.solve == 'O' ? 'correct':'incorrect']++;
-							// 마지막으로 푼 배틀 찾아서 lastBattleId 할당하기
-							if(_bookTypeStr !== 'step') {
-								_lastBattleId = battle.bid;
-							}
-							else if(battle.rnum > lastRnum) {
-								lastRnum = battle.rnum;
-								_lastBattleId = battle.bid;
-							}
-							_progressNum++;
-						}else {
-							// 아직 풀지 않은 배틀은 이제 풀어야 할 배틀 풀에 저장
-							battlePool.push(battle);
-						}
-						cursor = await cursor.continue();
-					}
-					if(_bookTypeStr == 'step') battlePool.sort((a,b) => a.rnum - b.rnum);
-					initDatas(stepCommand.age);
-				}else {
-					db.close();
-					db = await idb.openDB(DB_NAME, ++DB_VERSION, {
-						upgrade(db) {
-							const newstore = db.createObjectStore(storeName, { autoIncrement: true});
-							newstore.createIndex('bid', 'bid'); // 배틀 ID(base56)
-							newstore.createIndex('data', 'data'); // 실제 Battle
-							newstore.createIndex('solve', 'solve'); // 풀이 결과; 맞음: O, 틀림: X, 기본값 없음
-							
-							initDatas(stepCommand.age);
-						}
-					})
-				}
-			})
+				})
+			}else initDatas(20);
 			
 			
 			/*req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -1617,7 +1636,7 @@
 				{"el":"button","class":"btn btn-fico",onclick: () => location.replace('/craft/main'),"textContent":"BattleCraft 학습목록으로 가기"}
 			]});
 			// 리뷰/오답/보관 풀기일 경우 현재 화면에서 다시풀기 가능. 무료회원은 그대로 종료. 다시 풀기 불가능.
-			if(bookMarkCommand.markType !== 'b' && _battleSize > 10) {
+			if(bookMarkCommand.markType !== 'b' && (SEARCH_PARAMS.get('completed') == 'true' || _battleSize > 10)) {
 				modalBody[1].children.push({"el":"button","class":"btn btn-outline-fico", 'data-bs-dismiss': 'modal',"textContent":"첫 배틀부터 다시 플레이", onclick: async () => {
 					isLastPageOfTheBook = false;
 					_lastBattleId = -1;
@@ -1746,10 +1765,15 @@
 		}else {
 			return new Promise(resolve => {
 				const bookProgress = document.querySelector('.progress-bar');
-				const bookPercent = (_progressNum * 100 / _battleSize).toFixed(1);
-				bookProgress.ariaValueNow = bookPercent;
-				bookProgress.textContent = `${bookPercent}%`;
-				bookProgress.style.width = `${bookPercent}%`;				
+				if(!_memberId && !memberId56) {
+					bookProgress.textContent = '비회원의 플레이는 기록되지 않습니다'
+					bookProgress.style.width = '100%';
+				}else {
+					const bookPercent = !_battleSize ? '0.0' : (_progressNum * 100 / _battleSize).toFixed(1);
+					bookProgress.ariaValueNow = bookPercent;
+					bookProgress.textContent = `${bookPercent}%`;
+					bookProgress.style.width = `${bookPercent}%`;				
+				}
 				resolve();
 			})
 		}
