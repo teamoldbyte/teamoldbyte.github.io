@@ -22,6 +22,7 @@
 	let _memberId;
 	const GRAMMARID_ORDERING = 880000;
 	const BATTLE_TYPE_SELECTOR = 'data-battle-type';
+	const NOCOMMENT = '(코멘트 없음)';
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
@@ -850,7 +851,7 @@
 		]))
 		
 		
-		const categorySelect = maker.closest('.add-battle-section').querySelector('.battle-category-section select')
+		const categorySelect = maker.closest('.add-battle-section')?.querySelector('.battle-category-section select')
 		if([5,6,7].includes(battleType)) {
 			// 5유형의 배틀은 '어순'을 기본 문법 카테고리로 선택
 			//categorySelect.value = GRAMMARID_ORDERING;
@@ -1207,45 +1208,82 @@
 	@param battle battle정보를 담은 JSONObject
 	 */
 	function previewBattle(eng, battle) {
-		const { battleId, battleType, ask, askTag, diffLevel, categoryId, sentenceId, grammarTitle, comment, source } = battle;
+		const { battleId, battleType, ask, askTag, diffLevel, categoryId, memberId, engLength, sentenceId, grammarTitle, comment, source } = battle;
 		const preview = {
-			el: 'div', 'data-id': battle.battleId, className: 'battle-preview-one m-1 ms-5 bg-light border border-2 px-2', children: [
+			el: 'div', 'data-id': battleId, className: 'battle-preview-one m-1 ms-5 bg-light border border-2 px-2', children: [
 			{ el: 'div', className: 'row', children: [
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '질문:'},
-					{el: 'span', textContent: combineAsk(parseInt(battle.battleType), battle.askTag)}
+					{el: 'span', textContent: combineAsk(parseInt(battleType), askTag)}
 				]},
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '난이도:'},
-					{el: 'span', textContent: battle.diffLevel}
+					{el: 'span', textContent: diffLevel}
 				]},
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '문법:'},
-					{el: 'span', textContent: battle.grammarTitle || '(미입력)'}
+					{el: 'span', textContent: grammarTitle || '(미입력)'}
 				]},
 				{el: 'div', className: 'col-auto', children: [
 					{el: 'label', className: 'fw-bold me-2', textContent: '출처:'},
-					{el: 'span', textContent: battle.source || '(출처없음)'}
+					{el: 'span', textContent: source || '(출처없음)'}
 				]}
 			]},
 			{ el: 'div', className: 'battle-context pb-3', 
 				children: createBattleContext(eng, battle)
 			},
-			{ el: 'div', className: 'row pb-3', children: [
+			{ el: 'div', className: 'row pb-3 comment-section', children: [
 				{el: 'label', className: 'col-auto fw-bold me-2', textContent: '코멘트'},
-				{el: 'span', className: 'col desc text-truncate', role: 'button', innerHTML: battle.comment || '(코멘트없음)', onclick: function() {
-					$(this).add($(this).siblings('.desc')).toggle();
+				{el: 'span', className: 'col-8 comment short text-truncate', role: 'button', innerHTML: comment || NOCOMMENT, onclick: function() {
+					$(this).add($(this).siblings('.comment')).toggle();
 				}},
-				{el: 'div', className: 'col desc ws-breakspaces', role: 'button', style: 'display: none;', innerHTML: battle.comment || '(코멘트없음)', onclick: function() {
-					$(this).add($(this).siblings('.desc')).toggle();
+				{el: 'div', className: 'col comment long ws-breakspaces', role: 'button', style: 'display: none;', innerHTML: comment || NOCOMMENT, onclick: function() {
+					$(this).add($(this).siblings('.comment')).toggle();
 				}}
-			]}
+			]
+			// 코멘트 수정 영역
+			.concat(_memberId == memberId ? [
+				{ el: 'button', className: 'js-open-edit-battle-comment col-auto btn btn-fico', textContent: '수정', onclick: function() {
+					$(this).siblings('.edit-comment-section').add(this).toggle();
+					$(this).siblings('.comment').hide();
+					const content = $(this).siblings('.comment').html() == NOCOMMENT ? '' : $(this).siblings('.comment').html();
+					openSummernote($(this).siblings('.edit-comment-section').find('textarea').val(content))
+				}},
+				{ el: 'div', className: 'edit-comment-section', style: 'display: none;', children: [
+					{ el: 'textarea', maxLength: 1500},
+					{ el: 'div', class: 'btn-group btn-set float-end mt-0 mt-sm-2', children: [
+						{ el: 'button', class: 'btn btn-sm btn-outline-fico', textContent: '취소', onclick: function() {
+							$(this).closest('.edit-comment-section').hide()
+							.closest('.comment-section').find('.comment.long').show();
+							$(this).closest('.comment-section').find('.js-open-edit-battle-comment').show();
+						}},
+						{ el: 'button', class: 'btn btn-sm btn-fico', textContent: '수정', onclick: function() {
+							const content = $(this).closest('.edit-comment-section').children('textarea').val().trim();
+							$.ajax({
+								url: '/craft/battle/edit/comment',
+								type: 'post',
+								contentType: 'application/json',
+								data: JSON.stringify({battleId, comment: content}),
+								success: () => {
+									alertModal('코멘트를 수정했습니다.', () => {
+										$(this).closest('.edit-comment-section').hide()
+										.closest('.comment-section').find('.comment').html(content || NOCOMMENT).eq(1).show();
+										$(this).closest('.comment-section').find('.js-open-edit-battle-comment').show();
+										
+									})
+								}, error: () => {
+									alertModal('코멘트 수정에 실패했습니다.');
+								}
+							})
+						}}
+					]}
+				]}
+			]:[])}
 		]};
-		if(_memberId == battle.memberId)
+		if(_memberId == memberId)
 			preview.children.push({el: 'div', class: 'position-relative', children: [
 				{el: 'button', className: 'btn btn-sm btn-fico js-delete-battle', textContent: '삭제'}
-				]
-			})
+			]})
 		return preview;
 	}
 	
@@ -1513,5 +1551,5 @@
 		return battleTypeInfos[parseInt(battleType) - 1];
 	}
 	
-	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, getAsks, previewBattle, combineAsk, createAskOptions, createBattleContext, calcDiffSpecific, findPositions });
+	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, appendToolbar,  getAsks, previewBattle, combineAsk, createAskOptions, createBattleContext, calcDiffSpecific, findPositions });
 })(jQuery, window, document);
