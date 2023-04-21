@@ -427,19 +427,19 @@ async function pageinit(memberId, memberRoleType) {
 			"class":"modal fade","tabIndex":0,"children":[
 				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 					{"el":"div","class":"modal-content","children":[
-						{"el":"div","class":"modal-header","children":[
-							{"el":"h5","class":"modal-title","textContent":"※플레이하기 전에※"},
-							{"el":"button","class":"btn-close","data-bs-dismiss":"modal","aria-label":"Close"}
+						{"el":"div","class":"modal-header bg-fc-purple py-1 px-3","children":[
+							{"el":"h5","class":"modal-title","textContent":"이용 안내"},
+							{"el":"button","class":"btn fas fa-times text-light p-0","data-bs-dismiss":"modal","aria-label":"Close"}
 						]},
 						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":"가입을 하면 <b>전적</b> 및 <b>진행 기록</b>이 활성화되어<br> 배틀을 이어서 풀 수 있습니다.<br>가입 후 플레이하시겠습니까?"},
+							{"el":"div","class":"text-section mb-3 text-center text-dark","innerHTML":"<span class='app-name-text'>fico</span> 이용자 <b class='text-fc-red'>가입</b>시 테스트 <b>진행기록</b>과 <b>전적 정보</b>가 <b>저장</b>되어 다음에도 로그인없이 배틀을 <b>이어서 이용</b>할 수 있습니다."},
 							{ "el": "div", className: 'col text-center', children: [
-								{"el":"button","class":"btn btn-fico w-100","innerHTML": "<b>예</b><br><span class='fs-7'>간편가입</span>", onclick: () => {
+								{"el":"button","class":"btn btn-fico w-100","innerHTML": "<b>예</b><br><span class='fs-7'>(이용자 간편가입)</span>", onclick: () => {
 									location.assign(`/membership/free?destPage=${destPage}`);
 								}}
 							]},
 							{ "el": "div", className: 'col text-center', children: [
-								{"el":"button","class":"btn btn-outline-fico w-100", "innerHTML": "<b>아니오</b><br><span class='fs-7'>가입 없이 진행</span>", onclick: () => {
+								{"el":"button","class":"btn btn-outline-fico w-100", "innerHTML": "<b>아니오</b><br><span class='fs-7'>(가입없이 진행)</span>", onclick: () => {
 									wanderingBooks.push(targetBook);
 									localStorage.setItem('wanderingBooks', JSON.stringify(wanderingBooks));
 									location.assign(destPage);
