@@ -1247,7 +1247,7 @@ u {
 	#battle-8 .original-text{
 		left: auto!important;
 		right: 0!important;
-		top: -2.125rem!important;
+		top: -3.125rem!important;
 	}
 }
 /* 선택한 답변 표시 */
@@ -1912,6 +1912,20 @@ u {
 	color: #ffffff;
 	margin-bottom: 2rem;
 }
+#battle-5 .arranged-example-section,
+#battle-6 .arranged-example-section,
+#battle-7 .arranged-example-section{
+	padding: 0;
+}
+#battle-5 .arranged-example-section .full-sentence,
+#battle-6 .arranged-example-section .full-sentence,
+#battle-7 .arranged-example-section .full-sentence{
+	padding: 1rem;
+	background: #4e578396;
+	backdrop-filter: blur( 4px );
+	-webkit-backdrop-filter: blur( 4px );
+	border: 1px solid rgba(255,255,255,.05);
+}
 .arranged-example-section .btn-outline-fico {
 	height: auto;
 	font-size: 1.125rem;
@@ -2083,3 +2097,28 @@ u {
 		left: 1rem;
 	}
 }
+
+/**********************************************************
+ *				battlebook_index.html  
+ **********************************************************/
+ .battlebook-index-section .title-section .title-text{
+	font-size: 1.1rem;
+	font-family: Roboto,'Nunito Sans','Open Sans', 'Nanum Gothic';
+	color: #303672;
+	margin-bottom: 1.5rem;
+ }
+ .battlebook-index-section .title-section .sub-title{
+	font-size: 1rem;
+ }
+ .battlebook-index-section .title-section .sub-title .red-text{
+	color: #b01a2c;
+ }
+ .battlebook-index-section .title-section .sub-title .text{
+	color: #303672;
+ }
+
+ .battlebook-index-section .book-list-section{
+	box-shadow: rgb(185 185 185) 3px 1px 6px 0 inset,rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
+	padding: 40px;
+	border-radius: 5px;
+ }
