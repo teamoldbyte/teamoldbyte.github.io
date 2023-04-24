@@ -14,7 +14,7 @@
 					},
 					{
 						"el": "div",
-						"className": "existing-battles-section col-auto"
+						"className": "existing-battles-section col"
 					}
 				]
 			},
