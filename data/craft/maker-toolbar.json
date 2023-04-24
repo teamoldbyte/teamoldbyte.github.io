@@ -9,12 +9,12 @@
 				"children": [
 					{
 						"el": "label",
-						"className": "col-auto lh-1 ps-3 my-auto text-fc-purple fw-bold",
+						"className": "col-1 lh-2 ps-3 my-auto text-fc-purple fw-bold",
 						"textContent": "기존 등록 배틀 조회"
 					},
 					{
 						"el": "div",
-						"className": "existing-battles-section col"
+						"className": "existing-battles-section col-11"
 					}
 				]
 			},
