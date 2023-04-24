@@ -6,7 +6,143 @@ async function pageinit(battlePage) {
 	const battleListContainer = document.querySelector('#battleListDiv tbody');
 	const battlePaginationContainer = document.querySelector('#battlePagination');
 	const battleTypeTitles = ['#1(성분)','#2(수식어)','#3(택일/2)','#4(틀린/n)','#5(영작)','#6(빈칸)','#7(해석)','#8(토익)'];
-	displayBattleList(battlePage);
+	displayBattleList(battlePage, 'pageForm');
+	
+	if(!$.fn.autocomplete) {
+		document.head.append(createElement(
+				{el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'}
+		));
+		$.ajax({url: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', dataType: 'script', cache: true});
+		
+	}
+	
+	/**
+	 * 배틀 검색
+	 */
+	let workBookTitles = {}, writerAliases = {}, allAskTags = {}, rankList = [];
+	$(document).on('change', '#searchTypeSelect', function() {
+		const $inputSection = $(`.search-input-section.${this.value}`);
+		switch(this.value) {
+			case 'battleBookTitle':
+				if(!$inputSection.find('select').children().length) {
+					$.getJSON('/adminxyz/craft/battle/search/form/booklist', list => {
+						$inputSection.find('select').append(createElement(Array.from(list, ({name, longValue}) => {
+							return {el: 'option', textContent: name, value: longValue}
+						})))
+					})
+				}
+				break;
+			case 'workBookTitle':
+				if(!$inputSection.find('input').autocomplete('instance')) {
+					$inputSection.find('input').autocomplete({
+						minLength: 2, delay: 50, source: function(req, res) {
+							const term = req.term && req.term.trim();
+							if(term in workBookTitles) {
+								res(workBookTitles[term]);
+								return;
+							}
+							$.getJSON(`/craft/battle/workbook/search/${term}`, function(data) {
+								workBookTitles[term] = data.sort();
+								res(data);
+							}).fail(() => {
+								workBookTitles[term] = [];
+								res([]);
+							})
+						}
+					})
+				}
+				break;
+			case 'writer': 
+				if(!$inputSection.find('input').autocomplete('instance')) {
+					$inputSection.find('input').autocomplete({
+						minLength: 1, delay: 50, source: function(req, res) {
+							const term = req.term && req.term.trim();
+							if(term in writerAliases) {
+								res(writerAliases[term]);
+								return;
+							}
+							$.getJSON(`/craft/battle/alias/search/${term}`, function(data) {
+								writerAliases[term] = data.sort();
+								res(data);
+							}).fail(() => {
+								writerAliases[term] = [];
+								res([]);
+							})
+						}, select: function(_event, ui) {
+							const [_all, alias, mid] = ui.item.value.match(/(.+) : (\d+)$/);
+							$inputSection.find('.selected-writer').attr('data-mid', mid).text(alias);
+							$(this).val('').next('span').show();
+						}
+					})
+				}
+				break;
+			case 'askTag': {
+				if(!$inputSection.find('input').autocomplete('instance')) {
+					$.getJSON('/adminxyz/craft/battle/search/form/taglist', list => {
+						allAskTags = list.sort();
+						$inputSection.find('input').autocomplete({
+							minLength: 0, delay: 50, source: allAskTags
+						})
+					});
+					$inputSection.find('input').on('click', function() {
+						$(this).autocomplete('search');
+					})
+				}
+				break;
+			}
+			case 'grammarTitle': {
+				if(!$inputSection.find('select').children().length) {
+					$.getJSON('/grammar/category/list', list => {
+						$inputSection.find('select').append(createElement(Array.from(list, c => {
+							return { el:'option', value: c.cid, textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
+						})))
+					})
+				}
+				break;
+			}
+			case 'engLevel': {
+				if(!rankList.length) {
+					$.getJSON('https://static.findsvoc.com/data/craft/rank-list.json', list => {
+						list.forEach(el => {
+							if(!rankList.includes(el.battleLevel))
+								rankList.push(el.battleLevel);
+						});
+						$inputSection.find('select').append(createElement(Array.from(rankList, rank => {
+							return { el: 'option', value: rank, children: [ rank ]};
+						})))
+					})
+				}
+				break;
+			}
+			default: break;
+		}
+		$(`.search-input-section.${this.value}`).show().siblings('.search-input-section').hide();
+	})
+	.on('submit', '#searchBattleForm', function(e) {
+		const command = Object.fromEntries(new FormData(this).entries());
+		e.preventDefault();
+		const $inputSection = $(this).find(`.search-input-section.${command.searchType}`);
+		switch(command.searchType) {
+			case 'battleBookTitle': case 'grammarTitle': case 'engLevel': {
+				command.keyword = $inputSection.find('select').val();
+				break;
+			}
+			case 'engLength': {
+				command.keyword = Array.from($inputSection.find('input').get(), input => input.value).join('~');
+				break;
+			}
+			case 'writer': {
+				command.keyword = $inputSection.find('.selected-writer').attr('data-mid');
+				break;
+			}
+			default: {
+				command.keyword = $inputSection.find('input').val().trim();
+				break;
+			}
+		}
+		$.getJSON(this.action, command, (battleList) => displayBattleList(battleList, 'searchBattleForm'))
+		.fail(() => alertModal('배틀 검색 오류 발생'));
+	})
 	
 	
 	/**
@@ -14,22 +150,24 @@ async function pageinit(battlePage) {
 	 */
 	$(document).on('click','.thlink[data-value]', function() {
 		const sortName = this.dataset.value;
-		const $hiddenSortName = $('#searchFormHidden_list #sortName');
-		const $direction = $('#searchFormHidden_list #asc');
+		const searchFormId = battleListContainer.dataset.searchForm;
+		const $hiddenSortName = $(`#${searchFormId} #sortName`);
+		const $direction = $(`#${searchFormId} #asc`);
 		if(sortName == $hiddenSortName.val()) {
 			// 정렬방향을 반대로 변경한다.
 			$direction.val($direction.val() != 'true');
 		}else {
 			$hiddenSortName.val(this.dataset.value);
 		}
-		$('#pageForm').submit();
+		$(`#${searchFormId}`).submit();
 	});
 	
 	
 	// 페이지 번호를 누르면 해당 페이지로 이동
 	$(document).on('click','.page-link', function() {
-		$('#searchFormHidden_list #page').val(parseInt(this.dataset.pagenum));
-		$('#pageForm').submit();
+		const searchFormId = battlePaginationContainer.dataset.searchForm;
+		$(`#${searchFormId} #page`).val(parseInt(this.dataset.pagenum));
+		$(`#${searchFormId}`).submit();
 	})
 	
 	// 새 배틀목록 조회(ajax)
@@ -39,7 +177,7 @@ async function pageinit(battlePage) {
 			url: '/adminxyz/craft/battle/page',
 			data: $(this).serialize(),
 			success: function(page) {
-				displayBattleList(page);
+				displayBattleList(page, 'pageForm');
 			}, 
 			error: function() {
 				aler('배틀 목록 조회에 실패했습니다.');
@@ -300,13 +438,13 @@ async function pageinit(battlePage) {
 	/** 조회된 배틀을 DOM 목록 생성하여 표시하고 페이지네이션 갱신
 	 */
 	
-	function displayBattleList(page) {
+	function displayBattleList(page, searchFormId) {
 		// 선택한 타이틀을 제외한 나머지의 sortMark를 보이지 않도록 한다.
 		$('#battleListDiv .sortMark').hide();
-		const currentSortName = $('#searchFormHidden_list #sortName').val();
+		const currentSortName = $(`#${searchFormId} #sortName`).val();
 		const $currSortMark = $(`.thlink[data-value="${currentSortName}"]+.sortMark`);
 		if($currSortMark.length > 0) {
-			$currSortMark.html($('#searchFormHidden_list #asc').val() == 'false' ? '▼' : '▲').show();
+			$currSortMark.html($(`#${searchFormId} #asc`).val() == 'false' ? '▼' : '▲').show();
 		}		
 		
 		const totalPages = page?.totalPages,
@@ -315,11 +453,12 @@ async function pageinit(battlePage) {
 			currBlock = Math.floor((currPage - 1) / blockLength) + 1,
 			startPage = (currBlock - 1) * blockLength + 1,
 			endPage = (startPage + blockLength <= totalPages) ? (startPage + blockLength - 1) : totalPages;
-		battleListContainer.replaceChildren(createElement(Array.from(page.content, battle => {
+		battleListContainer.dataset.searchForm = searchFormId;
+		battleListContainer.replaceChildren(createElement(Array.from(page.content, (battle, i) => {
 			return { el: 'tr', children: [
-				{ el: 'td', className: 'data-rnum', textContent: battle.rnum },
+				{ el: 'td', className: 'data-rnum', textContent: page?.totalElements - page?.number * page?.size - i },
 				{ el: 'td', className: 'data-bid text-center', textContent: battle.bid, 'data-battleid': battle.bid },
-				{ el: 'td', className: 'data-type text-center', textContent: battleTypeTitles[battle.battleType-1] },
+				{ el: 'td', className: 'data-type text-start', textContent: battleTypeTitles[battle.battleType-1] },
 				{ el: 'td', className: 'data-englevel text-center', textContent: battle.engLevel },
 				{ el: 'td', className: 'data-gramtitle text-center', textContent: battle.grammarTitle },
 				{ el: 'td', className: 'data-englength text-center', textContent: battle.engLength },
@@ -351,6 +490,7 @@ async function pageinit(battlePage) {
 				{ el: 'a', className: 'page-link', 'aria-hidden': true, 'data-pagenum': endPage + 1, innerHTML: '&raquo;'}
 			]});		
 		}
+		battlePaginationContainer.dataset.searchForm = searchFormId;
 		battlePaginationContainer.replaceChildren(createElement(pageNavs));			
 	}
 	
