@@ -2,6 +2,7 @@
  * @author LGM
  */
 function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCount) {
+	const workbookRegDate = new Date($('.workbook-info-section .reg-date').text());
 	$('#loadingModal').modal('hide');
 	// 모바일 툴팁 (워크북 타입)
 	if(document.querySelector('.type-tooltip')) {
@@ -413,9 +414,8 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		// [피드백 목록, 피코쌤노트요청 목록 추가 조회]----------------------------------
 		$(document).on('click', '.feedback-list .page-item, .note-request-list .page-item', function() {
 			const content = this.closest('.pagination-section').dataset.content;
-			const workbookId56 = ntoa(workbookId);
 			const pageNum = this.dataset.pagenum;
-			$.getJSON(`/workbook/${content}/list/${workbookId56}`, { pageNum }, page => content == 'feedback' ? feedbackPageRefresh(page) : ssamnoteRequestPageRefresh(page));
+			$.getJSON(`/workbook/${content}/list/${workbookId}`, { pageNum }, page => content == 'feedback' ? feedbackPageRefresh(page) : ssamnoteRequestPageRefresh(page));
 		})
 		
 		// [피드백 블럭을 누르면 펼치기/접기]------------------------------------------
@@ -478,12 +478,13 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		}
 		function feedbackPageRefresh(page) {
 			const contentJSONs = Array.from(page.content, item => {
+				const feedbackRegDate = new Date(item.regDate);
 				return { el: 'div', className: 'feedback-unit row g-0', role: 'button', title: '펼쳐보기/접기', children: [
-					{ el: 'div', className: 'feedback-text-block col-8 col-xl-10 row g-0 m-auto', children: [
+					{ el: 'div', className: 'feedback-text-block col-12 col-lg-10 row g-0 m-auto', children: [
 						{ el: 'span', className: 'feedback-text text-truncate', 'data-org': item.content , textContent: item.content.replace(/\n.+/g, '') }
 					]},
-					{ el: 'div', className: 'col-2 m-auto text-center', children: [
-						{ el: 'span', className: 'reg-date', textContent: new Date(item.regDate).format('yyyy-MM-dd') }
+					{ el: 'div', className: 'regDate-section col-6 col-lg-2', children: [
+						{ el: 'span', className: 'reg-date', textContent: (new Date(Math.max(workbookRegDate, feedbackRegDate))).format('yyyy-MM-dd') }
 					]}
 				]};
 			})
