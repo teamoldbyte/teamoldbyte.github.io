@@ -1659,7 +1659,7 @@
 				{el: 'label', className: 'col-1 fw-bold me-2', textContent: '코멘트'},
 				{el: 'div', className: 'col-10 position-relative', children: [
 					{el: 'span', className: 'comment short text-truncate', role: 'button', 
-						style: 'display: block', textContent: comment || NOCOMMENT, onclick: function() {
+						style: 'display: block', textContent: $('<div></div>').html(comment || NOCOMMENT).text(), onclick: function() {
 						$(this).add($(this).siblings('.comment')).toggle();
 					}},
 					{el: 'div', className: 'comment long ws-breakspaces', role: 'button', style: 'display: none;', innerHTML: comment || NOCOMMENT, onclick: function() {
