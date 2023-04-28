@@ -57,6 +57,11 @@ function pageinit(fullUsed){
 		}
 		const text = $textarea.val().trim().quoteNormalize().replace(/[A-Za-z0-9]/, l => l.toUpperCase());
 		
+		if(text.length < 8 || !text.includes(' ') || !/[a-z]{2,}/.test(text)) {
+			alertModal('최소 8자 이상의 영어 문장 형식만 분석됩니다.', () => $textarea[0].focus());
+			return;
+		}
+		
 		$textarea.val(text);
 		/*if(!(/^["']?[A-Z0-9]+/.test(text) && new RegExp('[\.\?\!]["\']?$').test(text))) {
 			alert('대/소문자, 구두점 등을 확인해 주세요.');
