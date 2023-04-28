@@ -2049,6 +2049,7 @@ u {
 	margin-bottom: 0.5rem;
 	padding-bottom: 0.5rem;
 	cursor: pointer;
+	display: flex;
 }
 .list-battle-section .battle-block::before{
 	content : "";
@@ -2081,6 +2082,7 @@ u {
 	padding: 0 0.25rem;
 	font-size: 0.75rem;
 	line-height: 1.25rem;
+	height: 100%;
 }
 .list-battle-section .battle-block .eng{
 	/* text-shadow: 0px 0px 2px #000; */
@@ -2097,28 +2099,3 @@ u {
 		left: 1rem;
 	}
 }
-
-/**********************************************************
- *				battlebook_index.html  
- **********************************************************/
- .battlebook-index-section .title-section .title-text{
-	font-size: 1.1rem;
-	font-family: Roboto,'Nunito Sans','Open Sans', 'Nanum Gothic';
-	color: #303672;
-	margin-bottom: 1.5rem;
- }
- .battlebook-index-section .title-section .sub-title{
-	font-size: 1rem;
- }
- .battlebook-index-section .title-section .sub-title .red-text{
-	color: #b01a2c;
- }
- .battlebook-index-section .title-section .sub-title .text{
-	color: #303672;
- }
-
- .battlebook-index-section .book-list-section{
-	box-shadow: rgb(185 185 185) 3px 1px 6px 0 inset,rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
-	padding: 40px;
-	border-radius: 5px;
- }
