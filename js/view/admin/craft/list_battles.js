@@ -6,7 +6,7 @@ async function pageinit(battlePage) {
 	const battleListContainer = document.querySelector('#battleListDiv tbody');
 	const battlePaginationContainer = document.querySelector('#battlePagination');
 	const battleTypeTitles = ['#1(성분)','#2(수식어)','#3(택일/2)','#4(틀린/n)','#5(영작)','#6(빈칸)','#7(해석)','#8(토익)'];
-	displayBattleList(battlePage, 'pageForm');
+	//displayBattleList(battlePage, 'pageForm');
 	
 	if(!$.fn.autocomplete) {
 		document.head.append(createElement(
@@ -20,13 +20,20 @@ async function pageinit(battlePage) {
 	 * 배틀 검색
 	 */
 	let workBookTitles = {}, writerAliases = {}, allAskTags = {}, rankList = [];
-	$(document).on('change', '#searchTypeSelect', function() {
+	$(document)
+	.on('show.bs.collapse hide.bs.collapse', '#searchBattleDiv', function(e) {
+		const $btn = $('.searchIcon[data-bs-target="#searchBattleDiv"]');
+		$btn.toggleClass('fa-search-minus fa-search-plus')
+	})
+	.on('change', '#searchTypeSelect', function() {
 		const $inputSection = $(`.search-input-section.${this.value}`);
+		$('#searchBtn').toggle(/eng|workBookTitle|writer|askTag/.test(this.value));
 		switch(this.value) {
 			case 'battleBookTitle':
 				if(!$inputSection.find('select').children().length) {
 					$.getJSON('/adminxyz/craft/battle/search/form/booklist', list => {
-						$inputSection.find('select').append(createElement(Array.from(list, ({name, longValue}) => {
+						const sorted = list.sort();
+						$inputSection.find('select').append(createElement(Array.from(sorted, ({name, longValue}) => {
 							return {el: 'option', textContent: name, value: longValue}
 						})))
 					})
@@ -48,8 +55,18 @@ async function pageinit(battlePage) {
 								workBookTitles[term] = [];
 								res([]);
 							})
+						}, select: function(event,ui) {
+							event.target.value = ui.item.value;
+							$('#searchBattleForm').submit();
 						}
 					})
+				}
+				break;
+			case 'battleType': 
+				if($inputSection.find('select').children().length == 0) {
+					$inputSection.find('select').append(createElement(Array.from(battleTypeTitles, (title,i) => {
+						return {el: 'option', value: i + 1, textContent: title }
+					})))
 				}
 				break;
 			case 'writer': 
@@ -72,6 +89,7 @@ async function pageinit(battlePage) {
 							const [_all, alias, mid] = ui.item.value.match(/(.+) : (\d+)$/);
 							$inputSection.find('.selected-writer').attr('data-mid', mid).text(alias);
 							$(this).val('').next('span').show();
+							$('#searchBattleForm').submit()
 						}
 					})
 				}
@@ -81,7 +99,11 @@ async function pageinit(battlePage) {
 					$.getJSON('/adminxyz/craft/battle/search/form/taglist', list => {
 						allAskTags = list.sort();
 						$inputSection.find('input').autocomplete({
-							minLength: 0, delay: 50, source: allAskTags
+							minLength: 0, delay: 50, source: allAskTags,
+							select: function(event,ui) {
+								event.target.value = ui.item.value;
+								$('#searchBattleForm').submit();
+							}
 						})
 					});
 					$inputSection.find('input').on('click', function() {
@@ -114,16 +136,23 @@ async function pageinit(battlePage) {
 				}
 				break;
 			}
+			case 'comment': {
+				$('#searchBattleForm').submit();
+				break;
+			}
 			default: break;
 		}
 		$(`.search-input-section.${this.value}`).show().siblings('.search-input-section').hide();
+	})
+	.on('change', '.search-input-section select', function() {
+		$('#searchBattleForm').submit();
 	})
 	.on('submit', '#searchBattleForm', function(e) {
 		const command = Object.fromEntries(new FormData(this).entries());
 		e.preventDefault();
 		const $inputSection = $(this).find(`.search-input-section.${command.searchType}`);
 		switch(command.searchType) {
-			case 'battleBookTitle': case 'grammarTitle': case 'engLevel': {
+			case 'battleBookTitle': case 'grammarTitle': case 'engLevel': case 'battleType': {
 				command.keyword = $inputSection.find('select').val();
 				break;
 			}
@@ -136,7 +165,7 @@ async function pageinit(battlePage) {
 				break;
 			}
 			default: {
-				command.keyword = $inputSection.find('input').val().trim();
+				command.keyword = $inputSection.find('input').val()?.trim();
 				break;
 			}
 		}
@@ -189,12 +218,20 @@ async function pageinit(battlePage) {
 	$(document).on('click', '.js-open-detail', function() {
 		const sentenceId = this.dataset.sentenceid;
 		const eng = this.textContent
+		
+		const thisRow = this.closest('tr');
+		const $detailSection = $('#battleDetailSection');
+		if($detailSection.is('.show') && $detailSection.data('battleCommand')?.battleId == parseInt(thisRow.querySelector('.data-bid').dataset.battleid)) {
+			$detailSection.collapse('hide');
+			return;
+		}
+		
 		bootstrap.Tab.getOrCreateInstance(document.querySelector('#viewAskDetail')).show();
 		
-		if($('#battleDetailSection').is('.show')) {
-			window.scrollTo(0,document.getElementById('battleDetailSection').offsetTop);
+		if($detailSection.is('.show')) {
+			window.scrollTo(0,$detailSection[0].offsetTop);
 		}
-		$('#battleDetailSection').collapse('show');
+		$(thisRow).after($detailSection.collapse('show'));
 		
 		$('#editBattle').prop('disabled', true);
 		
@@ -309,95 +346,95 @@ async function pageinit(battlePage) {
 		}).fail(() => alert('배틀을 삭제하지 못 했습니다.'))
 	})
 	
-	document.getElementById('battleDetailSection').appendChild(createElement([
-		{ "el": "nav", "children": [
-			{ "el": "div", "class": "nav nav-tabs col-auto", "role": "tablist", "children": [
-				{ "el": "button", id: 'viewAskDetail', "class": "nav-link", "type": "button", "data-bs-toggle": "pill",
-					"role": "tab", "aria-controls": "nav-ask", "aria-selected": "true",
-					"data-bs-target": "#battleDetailSection .ask-detail-section", "children": [
-					{ "el": "span", "class": "material-icons-outlined fs-16px align-text-bottom", "textContent": "inventory_2" },
-					{ "el": "span", "class": "tab-title", "textContent": "문제 상세보기" }
-				]},
-				{ "el": "button", id: 'viewDescDetail', "class": "nav-link", "type": "button", "data-bs-toggle": "pill",
-					"role": "tab", "aria-controls": "nav-explain", "aria-selected": "false",
-					"data-bs-target": "#battleDetailSection .explain-detail-section", "children": [
-					{ "el": "span", "class": "material-icons-outlined fs-16px align-text-bottom", "textContent": "inventory_2" },
-					{ "el": "span", "class": "tab-title", "textContent": "해설 상세보기" }
-				]}
-			]}
-		]},
-		{ "el": "div", "class": "contents-section tab-content mt-3", "children": [
-			{ "el": "div", "class": "ask-detail-section tab-pane fade", "role": "tabpanel", "aria-labelledby": "nav-ask-tab", "children": [
-				{ el: 'div', className: 'battleTopInfo row', children: [
-					{ el: 'div', className: 'col-2 row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '종류' },
-						{ el: 'select', className: 'form-select col battle-type', children: 
-							Array.from(['1','2','3','4','5','6','7','8'], n => {return {el: 'option', value: n, textContent: battleTypeTitles[n-1]}}) 
-						}
+	document.getElementById('battleDetailSection').querySelector('td').appendChild(createElement([
+			{ "el": "nav", "children": [
+				{ "el": "div", "class": "nav nav-tabs col-auto", "role": "tablist", "children": [
+					{ "el": "button", id: 'viewAskDetail', "class": "nav-link", "type": "button", "data-bs-toggle": "pill",
+						"role": "tab", "aria-controls": "nav-ask", "aria-selected": "true",
+						"data-bs-target": "#battleDetailSection .ask-detail-section", "children": [
+						{ "el": "span", "class": "material-icons-outlined fs-16px align-text-bottom", "textContent": "inventory_2" },
+						{ "el": "span", "class": "tab-title", "textContent": "문제 상세보기" }
 					]},
-					{ el: 'div', className: 'col-5 row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '질문' },
-						{ el: 'select', className: 'form-select col battle-ask'}
-					]},
-					{ el: 'div', className: 'col-auto row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도' },
-						{ el: 'select', className: 'form-select col battle-diffLevel', children: Array.from([['쉬움','A'],['보통','B'],['어려움','C']], ([textContent, value]) => {
-							return { el: 'option', value, textContent }}) 
-						}
-					]},
-					{ el: 'div', className: 'col-auto row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '계급' },
-						{ el: 'span', className: 'col battle-engLevel my-auto'}
+					{ "el": "button", id: 'viewDescDetail', "class": "nav-link", "type": "button", "data-bs-toggle": "pill",
+						"role": "tab", "aria-controls": "nav-explain", "aria-selected": "false",
+						"data-bs-target": "#battleDetailSection .explain-detail-section", "children": [
+						{ "el": "span", "class": "material-icons-outlined fs-16px align-text-bottom", "textContent": "inventory_2" },
+						{ "el": "span", "class": "tab-title", "textContent": "해설 상세보기" }
 					]}
-				]},
-				{ el: 'div', className: 'col-12 row', children: [
-					{ el: 'div', className: 'col-auto invisible', textContent: '본문'},
-					{ el: 'div', className: 'col battle-context my-3 p-3 border rounded'}
-				]},
-				{ el: 'div', className: 'battleSubInfo col-12 row', children: [
-					{ el: 'div', className: 'col-4 row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '출처' },
-						{ el: 'input', type: 'text', className: 'form-control col battle-source' }
-					]},
-					{ el: 'div', className: 'col-4 row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '문법' },
-						{ el: 'select', className: 'form-select col battle-category'}
-					]},
-					{ el: 'div', className: 'col row', children: [
-						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '태그' },
-						{ el: 'input', type: 'text', className: 'form-control col battle-askTag' }
-					]}
-				] },
-				{ el: 'div', className: 'battleComment col-12 row mt-3', children: [
-					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해설' },
-					{ el: 'textarea', className: 'form-control col battle-comment', rows: 10 }
-				]},
-				{ el: 'div', className: 'battleEditBtns mt-3 position-relative text-center', children: [
-					{ el: 'button', type: 'button', id: 'deleteBattle', className: 'btn btn-outline-fico col-auto', children: [
-						{ el: 'i', className: 'fas fa-trash-alt me-1'}, '삭제'
-					]},
-					{ el: 'button', type: 'button', id: 'editBattle', className: 'btn btn-outline-fico col-auto', disabled: true, children: [
-						{ el: 'i', className: 'far fa-file-alt'},
-						{ el: 'i', className: 'fas fa-pen fa-xs', style: 'left: -8px; top: 5px; position: relative;'}, '수정'
-					]},
-					{ el: 'button', type: 'button', id: 'viewNextBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-right fs-3 float-end', 'data-bs-title': '다음 배틀', 'data-bs-toggle': 'tooltip'},
-					{ el: 'button', type: 'button', id: 'viewPrevBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-left fs-3 float-end', 'data-bs-title': '이전 배틀', 'data-bs-toggle': 'tooltip'}
 				]}
 			]},
-			{ "el": "div", "class": "explain-detail-section tab-pane fade", "role": "tabpanel", "aria-labelledby": "nav-explain-tab", "children": [
-				{ el: 'div', className: 'my-3 py-3 row', children: [
-					{ el: 'label', className: 'col-auto lh-1 mt-3 text-fc-purple fw-bold', textContent: '분석' },
-					{ el: 'div', className: 'svocInfo position-relative col'}
+			{ "el": "div", "class": "contents-section tab-content mt-3", "children": [
+				{ "el": "div", "class": "ask-detail-section tab-pane fade", "role": "tabpanel", "aria-labelledby": "nav-ask-tab", "children": [
+					{ el: 'div', className: 'battleTopInfo row', children: [
+						{ el: 'div', className: 'col-2 row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '종류' },
+							{ el: 'select', className: 'form-select col battle-type', children: 
+								Array.from(['1','2','3','4','5','6','7','8'], n => {return {el: 'option', value: n, textContent: battleTypeTitles[n-1]}}) 
+							}
+						]},
+						{ el: 'div', className: 'col-5 row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '질문' },
+							{ el: 'select', className: 'form-select col battle-ask'}
+						]},
+						{ el: 'div', className: 'col-auto row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도' },
+							{ el: 'select', className: 'form-select col battle-diffLevel', children: Array.from([['쉬움','A'],['보통','B'],['어려움','C']], ([textContent, value]) => {
+								return { el: 'option', value, textContent }}) 
+							}
+						]},
+						{ el: 'div', className: 'col-auto row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '계급' },
+							{ el: 'span', className: 'col battle-engLevel my-auto'}
+						]}
+					]},
+					{ el: 'div', className: 'col-12 row', children: [
+						{ el: 'div', className: 'col-auto invisible', textContent: '본문'},
+						{ el: 'div', className: 'col battle-context my-3 p-3 border rounded'}
+					]},
+					{ el: 'div', className: 'battleSubInfo col-12 row', children: [
+						{ el: 'div', className: 'col-4 row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '출처' },
+							{ el: 'input', type: 'text', className: 'form-control col battle-source', maxLength: 100 }
+						]},
+						{ el: 'div', className: 'col-4 row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '문법' },
+							{ el: 'select', className: 'form-select col battle-category'}
+						]},
+						{ el: 'div', className: 'col row', children: [
+							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '태그' },
+							{ el: 'input', type: 'text', className: 'form-control col battle-askTag', maxLength: 100 }
+						]}
+					] },
+					{ el: 'div', className: 'battleComment col-12 row mt-3', children: [
+						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해설' },
+						{ el: 'textarea', className: 'form-control col battle-comment', rows: 10, maxLength: 1500 }
+					]},
+					{ el: 'div', className: 'battleEditBtns mt-3 position-relative text-center', children: [
+						{ el: 'button', type: 'button', id: 'deleteBattle', className: 'btn btn-outline-fico col-auto', children: [
+							{ el: 'i', className: 'fas fa-trash-alt me-1'}, '삭제'
+						]},
+						{ el: 'button', type: 'button', id: 'editBattle', className: 'btn btn-outline-fico col-auto', disabled: true, children: [
+							{ el: 'i', className: 'far fa-file-alt'},
+							{ el: 'i', className: 'fas fa-pen fa-xs', style: 'left: -8px; top: 5px; position: relative;'}, '수정'
+						]},
+						/*{ el: 'button', type: 'button', id: 'viewNextBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-right fs-3 float-end', 'data-bs-title': '다음 배틀', 'data-bs-toggle': 'tooltip'},
+						{ el: 'button', type: 'button', id: 'viewPrevBattle', className: 'btn btn-md btn-outline-fico col-auto fas fa-angle-left fs-3 float-end', 'data-bs-title': '이전 배틀', 'data-bs-toggle': 'tooltip'}*/
+					]}
 				]},
-				{ el: 'div', className: 'row', children: [
-					{ el: 'label', className: 'col-auto lh-1 text-fc-purple fw-bold', textContent: '해석' },
-					{ el: 'div', className: 'korInfo text-fc-red col' }
-				]},
-				{ el: 'div', className: 'mt-3 row', children: [
-					{ el: 'label', className: 'col-auto lh-1 text-fc-purple fw-bold', textContent: '단어' },
-					{ el: 'div', className: 'wordInfo word-section col'}
+				{ "el": "div", "class": "explain-detail-section tab-pane fade", "role": "tabpanel", "aria-labelledby": "nav-explain-tab", "children": [
+					{ el: 'div', className: 'my-3 py-3 row', children: [
+						{ el: 'label', className: 'col-auto lh-1 mt-3 text-fc-purple fw-bold', textContent: '분석' },
+						{ el: 'div', className: 'svocInfo position-relative col'}
+					]},
+					{ el: 'div', className: 'row', children: [
+						{ el: 'label', className: 'col-auto lh-1 text-fc-purple fw-bold', textContent: '해석' },
+						{ el: 'div', className: 'korInfo text-fc-red col' }
+					]},
+					{ el: 'div', className: 'mt-3 row', children: [
+						{ el: 'label', className: 'col-auto lh-1 text-fc-purple fw-bold', textContent: '단어' },
+						{ el: 'div', className: 'wordInfo word-section col'}
+					]}
 				]}
-			]}
 		]}
 	]));
 	
@@ -439,6 +476,9 @@ async function pageinit(battlePage) {
 	 */
 	
 	function displayBattleList(page, searchFormId) {
+		// 배틀 상세보기는 따로 옮기기
+		$('#battleDetailContainer').append($('#battleDetailSection'));
+		
 		// 선택한 타이틀을 제외한 나머지의 sortMark를 보이지 않도록 한다.
 		$('#battleListDiv .sortMark').hide();
 		const currentSortName = $(`#${searchFormId} #sortName`).val();
@@ -458,7 +498,6 @@ async function pageinit(battlePage) {
 			return { el: 'tr', children: [
 				{ el: 'td', className: 'data-rnum', textContent: page?.totalElements - page?.number * page?.size - i },
 				{ el: 'td', className: 'data-bid text-center', textContent: battle.bid, 'data-battleid': battle.bid },
-				{ el: 'td', className: 'data-type text-start', textContent: battleTypeTitles[battle.battleType-1] },
 				{ el: 'td', className: 'data-englevel text-center', textContent: battle.engLevel },
 				{ el: 'td', className: 'data-gramtitle text-center', textContent: battle.grammarTitle },
 				{ el: 'td', className: 'data-englength text-center', textContent: battle.engLength },
@@ -466,6 +505,7 @@ async function pageinit(battlePage) {
 					onclick: () => updateBattleDetailSection(battle), children: [
 						{ el: 'a', style: { display: 'inline-block', width: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}, textContent: battle.eng }
 				]},
+				{ el: 'td', className: 'data-type text-start ps-3', textContent: battleTypeTitles[battle.battleType-1] },
 				{ el: 'td', className: 'data-asktag text-center', textContent: battle.askTag },
 				{ el: 'td', className: 'data-source text-center', textContent: battle.source },
 				{ el: 'td', className: 'data-regdate text-center', textContent: new Date(battle.regDate).format('yyyy-MM-dd') }
@@ -523,7 +563,7 @@ async function pageinit(battlePage) {
 		askDetailSection.querySelector('.battle-source').dataset.org = battle.source;
 		askDetailSection.querySelector('.battle-source').value = battle.source;
 		// 본문
-		askDetailSection.querySelector('.battle-context').replaceChildren(createElement(craft?.createBattleContext(battle.eng, battle)));
+		askDetailSection.querySelector('.battle-context').replaceChildren(createElement(craft?.createRangedSentenceBlock(battle.eng, battle)));
 		// 난이도
 		askDetailSection.querySelector('.battle-diffLevel').dataset.org = battle.diffLevel;
 		askDetailSection.querySelector('.battle-diffLevel').value = battle.diffLevel;
@@ -551,9 +591,9 @@ async function pageinit(battlePage) {
 			currRow = document.querySelector(`.data-bid[data-battleid="${battle.bid}"]`).closest('tr');
 		currRow.className = 'bg-info';
 		$(currRow).siblings().removeClass('bg-info')
-		prevBattleBtn.disabled = $(currRow).prev().length == 0;
-		nextBattleBtn.disabled = $(currRow).next().length == 0;
-		prevBattleBtn.onclick = () => $(currRow).prev()?.find('.js-open-detail')?.trigger('click');
-		nextBattleBtn.onclick = () => $(currRow).next()?.find('.js-open-detail')?.trigger('click');		
+//		prevBattleBtn.disabled = $(currRow).prev().length == 0;
+//		nextBattleBtn.disabled = $(currRow).next().length == 0;
+//		prevBattleBtn.onclick = () => $(currRow).prev()?.find('.js-open-detail')?.trigger('click');
+//		nextBattleBtn.onclick = () => $(currRow).next()?.find('.js-open-detail')?.trigger('click');		
 	}
 }
