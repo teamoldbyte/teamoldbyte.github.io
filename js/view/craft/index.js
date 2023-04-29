@@ -251,10 +251,12 @@ async function pageinit(memberId, memberRoleType) {
 	
 	// 
 	// battle-book-list의 collapse 이벤트를 적용한 직후에 collapse 이벤트 임의 발생
-	const referrerPath = new URL(document.referrer).pathname;
-	if(['A','S','M'].includes(memberRoleType) && /^\/craft\/battle\//.test(referrerPath) && !/^\/craft\/battle\/step\/b/.test(referrerPath)) {
-		$('.battle-book-list.subscription').collapse('show');
-	} 
+	if(document.referrer) {
+		const referrerPath = new URL(document.referrer).pathname;
+		if(['A','S','M'].includes(memberRoleType) && /^\/craft\/battle\//.test(referrerPath) && !/^\/craft\/battle\/step\/b/.test(referrerPath)) {
+			$('.battle-book-list.subscription').collapse('show');
+		} 
+	}
 	
 	function createBookDOMList(bookList, listType) {
 		return createElement(Array.from(bookList, 
