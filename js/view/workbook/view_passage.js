@@ -90,10 +90,11 @@
 					]}
 				]}
 			]},
-			{ el: 'div', className: 'col-12 personacon-section text-end mt-0 mt-md-1 text-secondary', children: [
-				{ el: 'div', className: 'personacon-alias alias d-inline fst-normal' }
+			{ el: 'div', className: 'col-12 row g-0 personacon-section text-end mt-0 mt-md-1 text-secondary', children: [
+				{ el: 'div', className: 'personacon-alias alias col-auto ms-auto fst-normal lh-sm' },
+				{ el: 'div', className: 'updatedate col-auto ms-1 text-secondary text-xs lh-base' }
 			]},
-			{ el: 'div', className: 'text-end', children: [
+			{ el: 'div', className: 'note-mdf-btns-section text-end', children: [
 				{ el: 'div', className: 'note-mdf-btns btn-group', children: [
 					{ el: 'button', type: 'button', 
 						className: 'js-edit-note-open login-required btn',
@@ -106,8 +107,7 @@
 							{ el: 'span', class: 'material-icons fs-5', textContent: 'delete'}
 						]
 					}
-				]},
-                { el: 'div', className: 'updatedate col-auto ms-auto p-0 mt-0 mt-md-1 mb-1 mb-md-0 text-secondary text-xs' }
+				]}
 			]}
 		]
 	};
