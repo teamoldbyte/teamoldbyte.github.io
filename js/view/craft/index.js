@@ -251,11 +251,8 @@ async function pageinit(memberId, memberRoleType) {
 	
 	// 
 	// battle-book-list의 collapse 이벤트를 적용한 직후에 collapse 이벤트 임의 발생
-	if(document.referrer) {
-		const referrerPath = new URL(document.referrer).pathname;
-		if(['A','S','M'].includes(memberRoleType) && /^\/craft\/battle\//.test(referrerPath) && !/^\/craft\/battle\/step\/b/.test(referrerPath)) {
-			$('.battle-book-list.subscription').collapse('show');
-		} 
+	if(!!memberId && ['A','S','M'].includes(memberRoleType) && sessionStorage.getItem('subscriptionBattleOpened') == 'true') {
+		$('.battle-book-list.subscription').collapse('show');
 	}
 	
 	function createBookDOMList(bookList, listType) {
@@ -355,8 +352,16 @@ async function pageinit(memberId, memberRoleType) {
 		}
 	})
 	$('.battlebook-overview-section, .battle-book-list').on('shown.bs.collapse', function(e) {
+		let listBookType = this.className.match(/subscription|theme|grammar/);
+		// 개인별 학습 펼침 여부를 저장
+		if(listBookType == 'subscription') sessionStorage.setItem('subscriptionBattleOpened', 'true');
 		e.stopPropagation();
 		this.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+	}).on('hide.bs.collapse', function() {
+		let listBookType = this.className.match(/subscription|theme|grammar/);
+		// 개인별 학습 펼침 여부를 저장
+		if(listBookType == 'subscription') sessionStorage.setItem('subscriptionBattleOpened', 'false');
+		
 	})
 	
 	// 배틀 구독 혹은 플레이
