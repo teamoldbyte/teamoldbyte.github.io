@@ -53,7 +53,10 @@
                 // 탭 키 입력 시 고정길이 공백 입력이 아닌 진짜 탭 문자 적용(css로 white-space:pre를 적용해야 함.) 
                 'summernote.keydown': function(_we,e) {
 					if(e.code == 'Tab' && !e.shiftKey) {
-						$(this).summernote('pasteHTML','&#9;');
+						const range = getSelection().getRangeAt(0);
+						range.deleteContents();
+						range.insertNode(document.createTextNode('	'));
+						range.collapse(false)
 						e.preventDefault();
 					}
 				}
