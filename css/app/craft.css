@@ -323,11 +323,11 @@ u {
 	width: 250px;
 	height: 250px;
 	border-radius: 50%;
-	background: var(--white);
+	background: radial-gradient(#B5692C 28%, #F7C57D 47%, #B5692C 98%);
 	left: 50%;
 	transform: translateX(-50%);
 	top: 0.5rem;
-	box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+	box-shadow: rgb(204, 219, 232, 0.5) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.4) -3px -3px 6px 1px inset;
 }
 .personal-info-block .rank-icon {
 	position: absolute;
@@ -361,6 +361,7 @@ u {
 	top: -30px;
 	left: -14px;
 	width: 50px;
+	color: #fff;
 }
 .rank-section .record-stat{
 	padding-top: calc(60px + 0.5rem);
@@ -371,6 +372,7 @@ u {
 	font-weight: 600;
 	margin-bottom: 0.25rem;
 	margin-top: 0.25rem;
+	color: #66483e;
 }
 .rank-section .record{
 	position: absolute;
@@ -401,9 +403,9 @@ u {
 	height: 200px; /* full circle! */
 	border-radius: 50%;
 	box-sizing: border-box;
-	border: 15px solid #d8d9e9;     /* half gray, */
-	border-bottom-color: var(--fc-purple);  /* half azure */
-	border-right-color: var(--fc-purple);
+	border: 15px solid #ffebba;     /* half gray, */
+	border-bottom-color: #66483e;  /* half azure */
+	border-right-color: #66483e;
 }
 .winning-rate-cover .needle{
 	width: 10px;
