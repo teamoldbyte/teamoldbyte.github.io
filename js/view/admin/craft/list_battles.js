@@ -221,7 +221,7 @@ async function pageinit() {
 		
 		const thisRow = this.closest('tr');
 		const $detailSection = $('#battleDetailSection');
-		if($detailSection.is('.show') && $detailSection.data('battleCommand')?.battleId == parseInt(thisRow.querySelector('.data-bid').dataset.battleid)) {
+		if($detailSection.is('.show') && $detailSection.is($(thisRow).next())) {
 			$detailSection.collapse('hide');
 			return;
 		}
@@ -229,7 +229,7 @@ async function pageinit() {
 		bootstrap.Tab.getOrCreateInstance(document.querySelector('#viewAskDetail')).show();
 		
 		if($detailSection.is('.show')) {
-			window.scrollTo(0,$detailSection[0].offsetTop);
+			$detailSection[0].scrollIntoView({ behavior: 'instant', block: 'nearest'})
 		}
 		$(thisRow).after($detailSection.collapse('show'));
 		
@@ -538,7 +538,6 @@ async function pageinit() {
 	 */
 	function updateBattleDetailSection(battle) {
 		const askDetailSection = document.querySelector('#battleDetailSection .ask-detail-section');
-				
 		$('#battleDetailSection').data('battleCommand', Object.assign({}, battle, {battleId: battle.bid, diffSpecificLevel: battle.engLevel}));
 		// 종류
 		askDetailSection.querySelector('.battle-type').value = battle.battleType;
