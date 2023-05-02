@@ -1,7 +1,7 @@
 /** /admin/craft/list_battles.html
 @author LGM
  */
-async function pageinit(battlePage) {
+async function pageinit() {
 	
 	const battleListContainer = document.querySelector('#battleListDiv tbody');
 	const battlePaginationContainer = document.querySelector('#battlePagination');
@@ -364,7 +364,7 @@ async function pageinit(battlePage) {
 				]}
 			]},
 			{ "el": "div", "class": "contents-section tab-content mt-3", "children": [
-				{ "el": "div", "class": "ask-detail-section tab-pane fade", "role": "tabpanel", "aria-labelledby": "nav-ask-tab", "children": [
+				{ "el": "div", "class": "ask-detail-section tab-pane fade row m-auto", "role": "tabpanel", "aria-labelledby": "nav-ask-tab", "children": [
 					{ el: 'div', className: 'battleTopInfo row', children: [
 						{ el: 'div', className: 'col-2 row', children: [
 							{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '종류' },
@@ -405,7 +405,7 @@ async function pageinit(battlePage) {
 							{ el: 'input', type: 'text', className: 'form-control col battle-askTag', maxLength: 100 }
 						]}
 					] },
-					{ el: 'div', className: 'battleComment col-12 row mt-3', children: [
+					{ el: 'div', className: 'battleComment col-12 mt-3', children: [
 						{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해설' },
 						{ el: 'textarea', className: 'form-control col battle-comment', rows: 10, maxLength: 1500 }
 					]},
@@ -577,7 +577,7 @@ async function pageinit(battlePage) {
 		askDetailSection.querySelector('.battle-comment').dataset.org = battle.comment;
 		askDetailSection.querySelector('.battle-comment').value = battle.comment;
 		$(askDetailSection.querySelector('.battle-comment')).summernote('reset');
-		$(askDetailSection.querySelector('.battle-comment')).summernote('pasteHTML', battle.comment);
+		$(askDetailSection.querySelector('.battle-comment')).summernote('code', battle.comment);
 		
 		// 삭제, 수정버튼에 배틀아이디 할당
 		askDetailSection.querySelector('#deleteBattle').dataset.battleid = battle.bid;
