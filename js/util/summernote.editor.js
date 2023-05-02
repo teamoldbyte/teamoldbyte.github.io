@@ -71,13 +71,16 @@
 	}
 	async function openSummernote($input) {
 		if (typeof $.summernote == 'undefined') {
-			$('head').append('<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">');
+			// css 파일 로드
+			document.head.appendChild(createElement([{
+				el: 'link', rel: 'stylesheet', type: 'text/css',
+				href: 'https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css'
+			},{ el: 'link', rel: 'stylesheet', type: 'text/css',
+				href: 'https://static.findsvoc.com/css/public/summernote.custom.min.css'
+			}]))
 			await $.cachedScript('https://cdn.jsdelivr.net/combine/npm/summernote@0.8.18/dist/summernote-lite.min.js,npm/summernote@0.8.18/lang/summernote-ko-KR.min.js');
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
 			/*await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');*/
-			const customstyle = document.createElement('style');
-			customstyle.innerHTML = '.note-editor.note-frame {-webkit-user-select: initial;user-select: initial;}.note-toolbar .dropdown-toggle::after{display:none;} .note-editable{font-family: "HCRDotum";white-space: break-spaces;tab-size: 4}@media(min-width: 576px){.note-editable{background:repeating-linear-gradient(transparent,transparent 10px, #fff 10px, #fff 20px), linear-gradient(to right, transparent calc(294px - 1px), #bbb 294px, transparent calc(294px + 1px));}.note-editable::before{content: "모바일 경계선";position: absolute;color: #bbb;font-size: 5px;left: 294px;top: 0;transform: translateX(-50%);}}.note-editable::after{position:absolute;right: 20px;top: 0;content:attr(data-char-count);font-size: 5px}.note-editable.note-overlimit::after{color: #f00}';
-			document.head.append(customstyle);
 		}
 		$input.summernote(Object.assign(options, {
 			callbacks: {
