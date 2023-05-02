@@ -12,7 +12,8 @@
 	
 	const options = {
 			tabDisable: true,
-			tabSize: 5,
+			tabSize: 4,
+			minHeight: 200,
 			colorButton: { foreColor: '#FF0000', backColor: '#FFFF00' },
 			toolbar: [ ['style', ['style']],
 				['font', ['bold', 'italic', 'underline', 'clear']],
