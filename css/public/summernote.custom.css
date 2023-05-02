@@ -1,0 +1,52 @@
+.note-editor.note-frame {
+  -webkit-user-select: initial;
+  user-select: initial;
+}
+.note-toolbar .dropdown-toggle::after{
+  display:none;
+}
+/* 써머노트 에디터 안에서의 탭문자 간격 */
+.note-editable{
+  font-family: "HCRDotum";
+  white-space: break-spaces;
+  tab-size: 4
+}
+
+@media(min-width: 576px){
+  /** 모바일에서 줄이 바뀔 수 있는 부분을 경계선을 그어 알려줌.
+  * 기준: 갤럭시노트20 기준으로 뷰포트 가로길이는 384, 배틀 플레이어 양쪽 마진은 32, 패딩은 16. 384 - 32 - 16 = 336
+  * 피코 내에서 써머노트 에디터 안에선 기본 글자크기가 14px, 써머노트 에디터로 작성된 컨텐츠가 배틀 플레이어에서 보일 땐 기본 글자 크기가 16px이다.
+  * 따라서 필요한 경계선은 336 * 14 / 16 = 294
+  */
+  .note-editable{
+    background: repeating-linear-gradient(transparent,transparent 10px, #fff 10px, #fff 20px), linear-gradient(to right, transparent calc(294px - 1px), #bbb 294px, transparent calc(294px + 1px));
+  }
+  /** 모바일 줄바꿈 경계선을 알려주는 라벨
+  */
+  .note-editable::before{
+    content: "모바일 경계선";
+    position: absolute;
+    color: #bbb;
+    font-size: 5px;
+    left: 294px;
+    top: 0;
+    transform: translateX(-50%);
+  }
+}
+/* 현재 입력한 글자수를 pseudo element로 표현 */
+.note-editable::after{
+  position:absolute;
+  right: 20px;
+  top: 0;
+  content:attr(data-char-count);
+  font-size: 5px;
+}
+/* 글자수 제한 초과 시 빨간 글자로 경고 표시*/
+.note-editable.note-overlimit::after{
+  color: #f00
+}
+/* 써머노트의 코드보기 영역은 글자가 희고 배경이 검은데, 잘 안보이니 뒤바꾼다. */
+.note-editor.note-airframe .note-editing-area .note-codable, .note-editor.note-frame .note-editing-area .note-codable {
+  color: #000;
+  background-color: #fff;
+}
