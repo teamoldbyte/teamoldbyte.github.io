@@ -323,11 +323,11 @@ u {
 	width: 250px;
 	height: 250px;
 	border-radius: 50%;
-	background: var(--white);
+	background: top/contain repeat url(https://static.findsvoc.com/images/app/craft/scatter/scatter-3.png), radial-gradient(#B5692C 28%, #F7C57D 47%, #B5692C 98%);
 	left: 50%;
 	transform: translateX(-50%);
 	top: 0.5rem;
-	box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+	box-shadow:rgb(0 0 0 / 50%) 3px 3px 6px 0px, rgb(0 0 0 / 40%) -3px -3px 6px 1px;
 }
 .personal-info-block .rank-icon {
 	position: absolute;
@@ -338,7 +338,9 @@ u {
 }
 .personal-info-block .rank-icon object,
 .personal-info-block .rank-icon img{
-	background-color: #eee;
+	/* background-color: #eee; */
+	 /* background-color: #4a4007; */
+	 background-color: #33324c;
 	border-radius: 50%;
 	width: 100px;
 }
@@ -361,6 +363,8 @@ u {
 	top: -30px;
 	left: -14px;
 	width: 50px;
+	color: #630000;
+	font-weight: 600;
 }
 .rank-section .record-stat{
 	padding-top: calc(60px + 0.5rem);
@@ -371,6 +375,8 @@ u {
 	font-weight: 600;
 	margin-bottom: 0.25rem;
 	margin-top: 0.25rem;
+	color: #ffebba !important;
+	text-shadow: 1px 1px #630000;
 }
 .rank-section .record{
 	position: absolute;
@@ -378,6 +384,8 @@ u {
 	left: 50%;
 	transform: translateX(-50%);
 	bottom: 0rem;
+	color: #630000 !important;
+	font-weight: 600;
 }
 /* 승률 퍼센트 바 */
 .craft-index-section .winning-rate-cover{
@@ -401,9 +409,9 @@ u {
 	height: 200px; /* full circle! */
 	border-radius: 50%;
 	box-sizing: border-box;
-	border: 15px solid #d8d9e9;     /* half gray, */
-	border-bottom-color: var(--fc-purple);  /* half azure */
-	border-right-color: var(--fc-purple);
+	border: 15px solid #ffebba;     /* half gray, */
+	border-bottom-color: #66483e;  /* half azure */
+	border-right-color: #66483e;
 }
 .winning-rate-cover .needle{
 	width: 10px;
