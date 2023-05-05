@@ -3,8 +3,15 @@
  *					폰트 
  **********************************************************/
 body{
-	font-family: 'NanumBarunGothic';
+	font-family: 'Gill Sans', 'HCRDotum';
 	font-size: 14px;
+}
+
+h3{
+	font-size: 1.2rem;
+	font-weight: 600;
+	font-family: 'Nunito Sans', 'NanumSquare','나눔바른고딕';
+	margin: 1rem 0 0.5rem;
 }
 
 /**********************************************************
@@ -49,3 +56,12 @@ body{
 	color: #1A1A34;
 	font-size: 13px;
 }
+
+/**********************************************************
+ *					테이블
+ **********************************************************/
+ table th{
+	background-color: #140162!important;
+    font-size: 13.5px;
+    line-height: 2.2rem;
+ }
