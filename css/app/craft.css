@@ -1201,6 +1201,8 @@ u {
 .battle-book-list .description .under-text{
 	font-size: 0.8rem;
 	color: #b91c1c;
+	margin-top: 1rem;
+	display: block;
 }
 @media (max-width: 576px){
 	.battle-book-list.subscription .book-cover .book .circle,
