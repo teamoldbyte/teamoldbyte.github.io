@@ -344,7 +344,7 @@ async function pageinit(memberId, memberRoleType) {
 				$overviewSection.find('.sub-btn')
 					.toggleClass('bg-secondary', (memberId == 0 && openType != 'P' || memberId == 0 && completed == 'true') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
 					.prop('disabled', (memberId == 0 && openType != 'P' || memberId == 0 && completed == 'true') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
-					.html(memberId == 0 ? openType == 'P'? completed == 'true' ? '플레이 완료' : '<i class="fas fa-play"></i> 바로 플레이' :'회원 전용' 
+					.html(memberId == 0 ? openType == 'P'? completed == 'true' ? '플레이 완료' : '<i class="fas fa-play me-3"></i>바로 플레이' :'회원 전용' 
 						: !!sub ? '구독중' : (memberRoleType == 'U') ? '구독 불가 (멤버십 만료)' : '구독');
 			})
 			.fail(() => alertModal('배틀북 정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
