@@ -225,18 +225,23 @@ async function pageinit(memberId, memberRoleType) {
 		let listBookType = this.className.match(/subscription|theme|grammar/);
 		if(listBookType) listBookType = listBookType[0];
 		else return;
+		
 		const bookListEl = this.querySelector('.book-list-container');
 		if(bookListEl == null) return;
+		const paginationEl = bookListEl.nextElementSibling?.querySelector('.swiper-pagination');
 		$.ajax({
 			url: `/craft/battlebook/${listBookType}/list`,
 			success: bookList => {
-				if(!Array.prototype.isPrototypeOf(bookList)) {
-					alertModal('올바른 데이터를 받지 못했습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
+				if(!bookList || !bookList?.pageable) {
+					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
 					return;
 				}
 				this.setAttribute('initialized', true);
-				if(!bookList || bookList.length == 0) return;
+				if(!bookList || bookList?.content?.length == 0) return;
+				bookListEl.querySelectorAll('.book')?.forEach(b => b.remove());
 				bookListEl.appendChild(createBookDOMList(bookList, listBookType));
+				paginationEl?.querySelectorAll('.page-item')?.forEach(p => p.remove());
+				paginationEl?.appendChild(createElement(getPaginations(bookList)));
 			},
 			
 			error: (xhr) => {
@@ -247,7 +252,38 @@ async function pageinit(memberId, memberRoleType) {
 				}
 			}
 		})
-	});
+	}).on('click', '.page-item', function() {
+		if(this.classList.contains('swiper-pagination-bullet-active')) return;
+		const paginationEl = this.closest('.pagination-section');
+		const bookType = paginationEl.dataset.content;
+		const pageNum = this.dataset.pagenum;
+		
+		const bookListEl = paginationEl.previousElementSibling;
+		if(bookListEl == null) return;
+		const pageItemContainer = bookListEl.nextElementSibling?.querySelector('.swiper-pagination');
+		$.ajax({
+			url: `/craft/battlebook/${bookType}/list`,
+			data: { pageNum },
+			success: bookList => {
+				if(!bookList || !bookList?.pageable) {
+					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
+					return;
+				}
+				bookListEl.querySelectorAll('.book')?.forEach(b => b.remove());
+				bookListEl.appendChild(createBookDOMList(bookList, bookType));
+				pageItemContainer?.querySelectorAll('.page-item')?.forEach(p => p.remove());
+				pageItemContainer?.appendChild(createElement(getPaginations(bookList)));
+			},
+			
+			error: (xhr) => {
+				if(xhr.status == 401) {
+					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
+				}else {
+					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
+				}
+			}
+		})
+	})
 	
 	// 
 	// battle-book-list의 collapse 이벤트를 적용한 직후에 collapse 이벤트 임의 발생
@@ -256,7 +292,7 @@ async function pageinit(memberId, memberRoleType) {
 	}
 	
 	function createBookDOMList(bookList, listType) {
-		return createElement(Array.from(bookList, 
+		return createElement(Array.from(bookList?.content, 
 				({battleBookId, bbid, title, bookType, description, imagePath, completed, price, openType},i) => {
 					const titleText = { el: 'span', className: 'title-text', textContent: title };
 					const bookCoverClass = `book-cover${!!imagePath?'':' default'}`;
@@ -301,6 +337,35 @@ async function pageinit(memberId, memberRoleType) {
 						]
 					};
 			}))
+	}
+	
+	/**
+	 * 조회한 목록으로 페이지네이션 정보를 표시
+	 */
+	function getPaginations(page) {
+		const totalPages = page.totalPages,	// 전체 페이지 수
+			currPage = page.number + 1,		// 현재 페이지(1부터)
+			blockLength = 10,
+			currBlock = Math.ceil(currPage / blockLength),	// 현재 페이지리스트 뭉치 번호(1부터)
+			startPage = (currBlock - 1) * blockLength + 1,				// 페이지리스트 첫번째 번호(1부터)
+			endPage = (startPage + blockLength <= totalPages) ? (startPage + blockLength - 1) : totalPages; // 페이지리스트 마지막 번호
+		
+		const pages = [];
+		for(let i = startPage; i <= endPage; i++) {
+			pages.push({
+				el: 'span', className: `page-item swiper-pagination-bullet${currPage==i?' swiper-pagination-bullet-active':''}`,
+				'data-pagenum': i
+			})
+		}
+		if(startPage > blockLength)
+			pages.unshift({
+				el: 'span', className: 'page-item', role: 'button', 'data-pagenum': startPage - 1 , innerHTML: '&laquo;'
+			})
+		if(endPage < totalPages) 
+			pages.push({
+				el: 'span', className: 'page-item', role: 'button', 'data-pagenum': endPage + 1, innerHTML: '&raquo;'
+			})
+		return pages;
 	}
 	
 	// 주제별 배틀북 개요 펼치기
@@ -467,6 +532,7 @@ async function pageinit(memberId, memberRoleType) {
 		));
 		$(modal).modal('show');
 	}
+
 	
 	// 승률 표시
 	function calcWinningRate() {
