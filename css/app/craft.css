@@ -1198,9 +1198,9 @@ u {
 	transform: translate(-50%, -50%);
 }
 
-.battle-book-list.step .description .under-text{
+.battle-book-list .description .under-text{
 	font-size: 0.8rem;
-	color: #a91461;
+	color: #b91c1c;
 }
 @media (max-width: 576px){
 	.battle-book-list.subscription .book-cover .book .circle,
