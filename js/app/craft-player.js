@@ -573,11 +573,11 @@
 				loginExpiredModal();
 			}else {
 				// (ajax) 배틀 채점 정보 전송 ! 배틀북 내의 가장 나중 배틀보다 이전의 배틀을 풀었을 땐 전송하지 않는다.
-				if(!!_memberId || !!memberId56) {
-					$.ajax({
-						url: '/craft/battle/evaluation/add',
-						type: 'GET', contentType: 'application/json', data: command,
-						success: async() => { 
+				$.ajax({
+					url: '/craft/battle/evaluation/add',
+					type: 'GET', contentType: 'application/json', data: command,
+					success: async() => { 
+						if(!!_memberId || !!memberId56) {
 							if(correct) { 
 								_battleRecord.correct++;
 							}
@@ -623,18 +623,16 @@
 								$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
 								//solveAllsOfBook();
 							}
-						},
-						error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
-						complete: (_x,s) => {
-							if(s == 'parsererror') loginExpiredModal();
+						}else {
+							moveSolveBtn(true);
+							if(_progressNum != null) _progressNum++;
 						}
-					})
-					
-				}else { // 방문자는 배틀 평가 없이 곧바로 다음 문제 호출
-					moveSolveBtn(true);
-					if(_progressNum != null) _progressNum++;
-					
-				}
+					},
+					error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
+					complete: (_x,s) => {
+						if(s == 'parsererror') loginExpiredModal();
+					}
+				})
 			}
 		});
 	})
