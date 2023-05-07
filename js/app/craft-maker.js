@@ -1916,7 +1916,6 @@
 				const rightStr = eng.substring(end);
 				if(leftStr) contextChildren.push(leftStr);
 				contextChildren.push(
-					leftStr,
 					{ el: 'span', className: 'pick-right', textContent: targetStr },
 					rightStr
 				);				
