@@ -3,8 +3,11 @@
  */
 function pageinit(sentenceList, memberId) {
 	$('#loadingModal').modal('hide');
-	const passageId = Number(sessionStorage.getItem('editingPassageId')||sessionStorage.getItem('passageId')),
-		workbookId = Number(sessionStorage.getItem('workbookId'));
+	const passageId = Number(sessionStorage.getItem('editingPassageId')||sessionStorage.getItem('passageId'));
+	let workbookId56;
+	if(document.referrer) {
+		workbookId56 = new URL(document.referrer).pathname?.match(/\/mybook\/edit\/(\w+)/)?.[1];
+	}
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
 	const MAX_SENTENCE_LENGTH = 500;
@@ -110,20 +113,21 @@ function pageinit(sentenceList, memberId) {
 
 	// [지문 추가하기로 이동]
 	$('#addPassageBtn').click(() =>
-		location.assign(`/workbook/passage/add/${ntoa(workbookId)}`)
+		location.assign(`/workbook/passage/add/${workbookId56}`)
 	);
 	// [지문 상세보기로 이동]
 	$('#viewPassageBtn').click(() =>
-		location.assign(`/workbook/passage/${ntoa(workbookId)}/${ntoa(passageId)}`)
+		location.assign(`/workbook/passage/${workbookId56}/${ntoa(passageId)}`)
 	);
 	// [워크북 편집 홈으로 이동]
 	$('#editWorkbookBtn').click(() =>
-		location.assign(`/workbook/mybook/edit/${ntoa(workbookId)}`)
+		location.assign(`/workbook/mybook/edit/${workbookId56}`)
 	);
 
 	// [문장 순서 이동]------------------------------------------------------------
 	$(LIST_SENTENCE_SELECTOR)
 		.sortable({
+			containment: 'parent',
 			axis: 'y',
 			items: `>${ONE_SENTENCE_SELECTOR}`,
 			handle: '.js-move-sentence',
