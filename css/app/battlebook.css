@@ -44,7 +44,7 @@
 	height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 7rem) / 5) * 1.5);
 	max-height: calc(((((1400px)/2) - 10rem - 5rem) / 5) * 1.5);
  }
- @media(min-width: 1400px){
+ @media(min-width: 1960px){
 	.battlebook-index-section .book-list-section .book-cover{
 		/* width: 6.125rem; */
 		/* width : calc((((100vw - 120px - 6rem) / 2 ) / 5) - 2.607rem); */
@@ -59,7 +59,7 @@
 		width: 100%;
 		/* width: calc((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5); */
 		/* height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 7rem) / 5) * 1.5); */
-		height: 150%;
+		/* height: 150%; */
 		max-height: calc(((((1400px)/2) - 10rem - 5rem) / 5) * 1.5);
 		/* height: auto; */
 	}
