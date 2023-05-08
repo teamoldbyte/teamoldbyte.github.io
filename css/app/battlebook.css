@@ -35,27 +35,43 @@
 	/* 5권에 맞도록 + 패딩값 */
  }
  .battlebook-index-section .book-list-section .book-unit{
-	margin-right: 0.5rem;
+	/* margin-right: 0.5rem; */
 	margin-bottom: 0.5rem;
  }
  .battlebook-index-section .book-list-section .book-cover{
-	/* width: 6.125rem; */
-	/* width : calc((((100vw - 120px - 6rem) / 2 ) / 5) - 2.607rem); */
-	/* width : calc(100% / 5); */
-
-/*  for text
-	max-width: calc((((1400px)/2) - 10rem - 2.5rem) / 5);
-	width: calc((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5);
-	height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5) * 1.5); */
-
 	max-width: calc((((1400px)/2) - 10rem - 5rem) / 5);
 	width: calc((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5);
-	height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5) * 1.5);
+	height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 7rem) / 5) * 1.5);
+	max-height: calc(((((1400px)/2) - 10rem - 5rem) / 5) * 1.5);
+ }
+ @media(min-width: 1400px){
+	.battlebook-index-section .book-list-section .book-cover{
+		/* width: 6.125rem; */
+		/* width : calc((((100vw - 120px - 6rem) / 2 ) / 5) - 2.607rem); */
+		/* width : calc(100% / 5); */
+
+	/*  for text
+		max-width: calc((((1400px)/2) - 10rem - 2.5rem) / 5);
+		width: calc((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5);
+		height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5) * 1.5); */
+
+		max-width: calc((((1400px)/2) - 10rem - 5rem) / 5);
+		width: 100%;
+		/* width: calc((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5); */
+		/* height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 7rem) / 5) * 1.5); */
+		height: 150%;
+		max-height: calc(((((1400px)/2) - 10rem - 5rem) / 5) * 1.5);
+		/* height: auto; */
+	}
+ }
+ .battlebook-index-section .book-list-section .book-cover img{
+	height: -webkit-fill-available;
  }
 /* 북커버 뒤쪽 배경색 */ 
 .battlebook-index-section .book-list-section .book-cover-bg{
 	padding: 0.7rem;
 	background: linear-gradient(to bottom, #e5e3ed 70%, #546177);
+	display: inline-block;
 }
  .battlebook-index-section .book-list-section .book-title-section{
 	 text-align: center;
@@ -64,8 +80,9 @@
 	 /* max-width: calc((((1400px)/2) - 2.5rem) / 5);
 	 width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5) + 1.4rem); */
 
+	 width: 100%;
 	 max-width: calc((((1400px)/2) - 5rem) / 5);
-	 width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5) + 1.4rem);
+	 /* width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5) + 1.4rem); */
 
 	 overflow: hidden;
 	text-overflow: ellipsis;
@@ -78,13 +95,16 @@
 	}
 	.battlebook-index-section .book-list-section .book-cover{
 		max-width: none;
-		width: calc(((100vw - 20px - 7rem) / 5) - 2.125rem);
+		/* width: calc(((100vw - 20px - 7rem) / 5) - 2.125rem); */
+		width: 100%;
 		height: calc((((100vw - 20px - 7rem) / 5) - 2.125rem) * 1.5);
 	 }
 
 	 .battlebook-index-section .book-list-section .book-title-section{
 		max-width: none;
-		width : calc((((100vw - 20px - 7rem) / 5) - 2.125rem) + 1.4rem);
+		/* width : calc((((100vw - 20px - 7rem) / 5) - 2.125rem) + 1.4rem); */
+		/* width: 100%; */
+		width: calc(100px + 1.5rem);
 	 }
  }
  @media(max-width: 576px) {
@@ -94,6 +114,7 @@
 	.battlebook-index-section .book-list-section .book-cover{
 		width: calc(((100vw - 1rem) / 3) - 2.25rem);
 		height: calc((((100vw - 1rem) / 3) - 2.25rem) * 1.5);
+		max-height: -webkit-fill-available;
 	 }
 
 	 .battlebook-index-section .book-list-section .book-title-section{
@@ -103,6 +124,7 @@
 
  .battlebook-index-section .book-list-section .book-title-text{
 	color: black;
+	font-weight: bold;
 }
 /* 배틀북 안내 영역 */
 .battlebook-index-section .battlebook-info-text-section{
@@ -145,10 +167,11 @@
 /* 배틀북 조회 버튼 */
 .battlebook-index-section .ssam-book-list .list-battlebook-btn{
 	display: block;
-	margin-top: 1rem;
-	border: none;
+	margin-bottom: 1rem;
+	width: 100%;
+	/* border: none;
 	background-color: transparent;
-	padding: 0;
+	padding: 0; */
 }
 @media(max-width: 576px) {
 	.battlebook-index-section .ssam-book-list .list-battlebook-btn{
@@ -162,11 +185,14 @@
 
 
 /* 등록 빈칸 */
-.battlebook-index-section .book-list-section .book-unit.blank .book-cover{
+.battlebook-index-section .book-unit.blank .book-cover{
 	border: 3px dashed #d9d9d9;
 	box-shadow: none;
+	width: 10rem;
+	height: 15rem;
+	position: relative;
 }
-.battlebook-index-section .book-list-section .book-unit.blank .book-cover::before{
+.battlebook-index-section .book-unit.blank .book-cover::before{
 	font-family: "Font Awesome 5 Free";
 	content: "\f055";
 	font-size: 3rem;
@@ -177,10 +203,10 @@
 	top: 50%;
 	transform: translate(-50%, -50%);
 }
-.battlebook-index-section .book-list-section .book-unit.blank .book-cover img{
+.battlebook-index-section .book-unit.blank .book-cover img{
 	background-color: transparent;
 }
-.battlebook-index-section .book-list-section .book-unit.blank .book-cover img:hover{
+.battlebook-index-section .book-unit.blank .book-cover img:hover{
 	transform: none;
 }
 
