@@ -561,10 +561,10 @@ u {
 /**********************************************************
  *			white-space
  **********************************************************/
-.ws-breakspaces, .ws-breakspaces * {
+ .ws-breakspaces, .ws-breakspaces * {
 	white-space: break-spaces;
 	tab-size: 4;
-}
+ }
 /**********************************************************
  *			부트스트랩 tooltip 
  **********************************************************/
@@ -703,7 +703,7 @@ u {
 /* 깜빡임 애니메이션(TTS플레이 아이콘, 모바일 툴팁 등) */
 .blink-2{
 	-webkit-animation:blink-2 .9s infinite both;
-	animation:blink-2 .9s infinite both
+	animation:blink-2 .9s infinite both;
 }
 @-webkit-keyframes blink-2{
 	0%{opacity:1}50%{opacity:.2}100%{opacity:1}
