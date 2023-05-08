@@ -27,7 +27,9 @@ async function pageinit() {
 	})
 	.on('change', '#searchTypeSelect', function() {
 		const $inputSection = $(`.search-input-section.${this.value}`);
-		$('#searchBtn').toggle(/eng|workBookTitle|writer|askTag/.test(this.value));
+		const needsSearchBtn = /eng|workBookTitle|writer|askTag/.test(this.value);
+		$('#searchBtn').toggle(needsSearchBtn);
+		$('#refreshBtn').toggle(!needsSearchBtn);
 		switch(this.value) {
 			case 'battleBookTitle':
 				if(!$inputSection.find('select').children().length) {
