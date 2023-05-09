@@ -37,7 +37,8 @@ async function pageinit() {
 						const sorted = list.sort();
 						$inputSection.find('select').append(createElement(Array.from(sorted, ({name, longValue}) => {
 							return {el: 'option', textContent: name, value: longValue}
-						})))
+						})));
+						$inputSection.find('.battlebook-id').text($inputSection.find('select').val());
 					})
 				}
 				break;
@@ -133,7 +134,7 @@ async function pageinit() {
 						});
 						$inputSection.find('select').append(createElement(Array.from(rankList, rank => {
 							return { el: 'option', value: rank, children: [ rank ]};
-						})))
+						})));
 					})
 				}
 				break;
@@ -147,7 +148,15 @@ async function pageinit() {
 		$(`.search-input-section.${this.value}`).show().siblings('.search-input-section').hide();
 	})
 	.on('change', '.search-input-section select', function() {
+		if(this.closest('.battleBookTitle')) {
+			$(this).closest('.search-input-section').find('.battlebook-id').text(this.value);
+		}
 		$('#searchBattleForm').submit();
+	})
+	.on('click', '.js-copy-battlebookid', function() {
+		navigator?.clipboard?.writeText($('.battlebook-id').text());
+		$(this).popover('show');
+		setTimeout(() => $(this).popover('hide'), 1500);
 	})
 	.on('submit', '#searchBattleForm', function(e) {
 		const command = Object.fromEntries(new FormData(this).entries());
@@ -590,8 +599,8 @@ async function pageinit() {
 		const prevBattleBtn = document.getElementById('viewPrevBattle'),
 			nextBattleBtn = document.getElementById('viewNextBattle'),
 			currRow = document.querySelector(`.data-bid[data-battleid="${battle.bid}"]`).closest('tr');
-		currRow.className = 'bg-info';
-		$(currRow).siblings().removeClass('bg-info')
+		$(currRow).addClass('bg-violet-200')
+			.siblings().removeClass('bg-violet-200');
 //		prevBattleBtn.disabled = $(currRow).prev().length == 0;
 //		nextBattleBtn.disabled = $(currRow).next().length == 0;
 //		prevBattleBtn.onclick = () => $(currRow).prev()?.find('.js-open-detail')?.trigger('click');
