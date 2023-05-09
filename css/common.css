@@ -414,6 +414,9 @@ a:hover {
 	color: #5c68b6 !important;
 }
 
+.text-violet-200{
+	color: #dedefe!important;
+}
 
 .text-fico{
 	color: #585174!important;
@@ -510,6 +513,10 @@ a:hover {
 .bg-indigo-100{
 	background-color: rgb(224, 231, 255) !important;
 }
+
+.text-violet-200{
+	background-color: #dedefe!important;
+}
 /**********************************************************
  *			border 
  **********************************************************/
@@ -561,7 +568,7 @@ u {
 /**********************************************************
  *			white-space
  **********************************************************/
- .ws-breakspaces, .ws-breakspaces * {
+.ws-breakspaces, .ws-breakspaces * {
 	white-space: break-spaces;
 	tab-size: 4;
  }
@@ -569,7 +576,7 @@ u {
  *			부트스트랩 tooltip 
  **********************************************************/
 .tooltip-inner{
-	background-color: #1b1f40;;
+	background-color: #1b1f40;
 }
 /* 화살표 4가지 */
 .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before, .bs-tooltip-top .tooltip-arrow::before{
