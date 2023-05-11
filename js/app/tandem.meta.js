@@ -633,7 +633,10 @@
 	@param domain gramMeta 추출이 이루어지는 도메인(워크북, 피코쌤, ...)
 	 */
 	function saveGramMetaFromDOM(sentenceId, div, svocUpdate, domain) {
-		const gramMeta = gramMetaStrFromDOM(div);
+		let gramMeta = gramMetaStrFromDOM(div);
+		// MYSQL 검색을 위해 특정 키워드들은 + 기호를 접두사로 붙인다.
+		gramMeta = gramMeta.replace(/(\bFORM_\w*|\bNCLS\w*|\bADVCLS\w*|\bPCLS\w*|\bCCLS\w*|\bACLS\w*)/g,'+$1');
+		
 		$.ajax({
 			url: `/${domain}/sentence/grammeta/edit`,
 			type: 'POST',
