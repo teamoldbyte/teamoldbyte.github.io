@@ -574,11 +574,6 @@ async function pageinit() {
 		askDetailSection.querySelector('.battle-source').value = battle.source;
 		// 본문
 		const contextChildren = craft?.createRangedSentenceBlock(battle.eng, battle);
-		if(contextChildren.length > 1) {
-			for(let i = contextChildren.length - 1; i > 0; i--) {
-				contextChildren.splice(i, 0, ' ')
-			}
-		}
 		askDetailSection.querySelector('.battle-context').replaceChildren(createElement(contextChildren));
 		// 난이도
 		askDetailSection.querySelector('.battle-diffLevel').dataset.org = battle.diffLevel;
