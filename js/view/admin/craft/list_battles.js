@@ -400,7 +400,7 @@ async function pageinit() {
 					]},
 					{ el: 'div', className: 'col-12 row', children: [
 						{ el: 'div', className: 'col-auto invisible', textContent: '본문'},
-						{ el: 'div', className: 'col battle-context my-3 p-3 border rounded'}
+						{ el: 'div', className: 'col battle-context my-3 p-3 border rounded ws-breakspaces'}
 					]},
 					{ el: 'div', className: 'battleSubInfo col-12 row', children: [
 						{ el: 'div', className: 'col-4 row', children: [
@@ -573,7 +573,13 @@ async function pageinit() {
 		askDetailSection.querySelector('.battle-source').dataset.org = battle.source;
 		askDetailSection.querySelector('.battle-source').value = battle.source;
 		// 본문
-		askDetailSection.querySelector('.battle-context').replaceChildren(createElement(craft?.createRangedSentenceBlock(battle.eng, battle)));
+		const contextChildren = craft?.createRangedSentenceBlock(battle.eng, battle);
+		if(contextChildren.length > 1) {
+			for(let i = contextChildren.length - 1; i > 0; i--) {
+				contextChildren.splice(i, 0, ' ')
+			}
+		}
+		askDetailSection.querySelector('.battle-context').replaceChildren(createElement(contextChildren));
 		// 난이도
 		askDetailSection.querySelector('.battle-diffLevel').dataset.org = battle.diffLevel;
 		askDetailSection.querySelector('.battle-diffLevel').value = battle.diffLevel;
