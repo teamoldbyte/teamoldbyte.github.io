@@ -1727,7 +1727,7 @@
 		const contextChildren = [];
 		const { battleType, ask } = battle;
 
-		const getOffsetStr = (start, _end) => eng.substring(offsetPos, start);
+		const getOffsetStr = (start, end) => eng.substring(start, end);
 
 		const getAnswerClass = (start, end) => {
 			const answer = answers.find(a => a[0] == start && a[1] == end);
@@ -1806,7 +1806,7 @@
 			 */
 				const [[answer_start, answer_end], _answerText, wrongText] = answers;
 				examples.sort(sortByPosition).forEach(([start, end], j, arr) => {
-					const leftStr = getOffsetStr(start, end);
+					const leftStr = getOffsetStr(offsetPos, start);
 					if(leftStr) contextChildren.push(leftStr);
 					const span = {
 						el: 'span',
@@ -1831,7 +1831,7 @@
 				example = [[보기1start,보기1end],[보기2start,보기2end],...]
 			 */
 			 	examples.sort(sortByPosition).forEach(([start, end], j, arr) => {
-					const leftStr = getOffsetStr(start, end);
+					const leftStr = getOffsetStr(offsetPos, start);
 					if(leftStr) contextChildren.push(leftStr);
 					contextChildren.push({
 						el: 'span',
@@ -1851,7 +1851,7 @@
 				example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트],...]
 			 */	
 			 	examples.sort((a,b) => a[0][0] - b[0][0]).forEach(([[start, end], _text], j, arr) => {
-					const leftStr = getOffsetStr(start, end);
+					const leftStr = getOffsetStr(offsetPos, start);
 					if(leftStr) contextChildren.push(leftStr);
 					contextChildren.push({
 						el: 'span',
@@ -1871,7 +1871,7 @@
 				example = [추가 단어1, 추가 단어2, ...](추가 단어를 입력했을 경우)
 			 */	
 				const [start, end] = JSON.parse(ask)[0];
-				const leftStr = eng.substring(offsetPos, start);
+				const leftStr = getOffsetStr(offsetPos, start);
 				const targetStr = eng.substring(start, end);
 				const rightStr = eng.substring(end);
 				if(leftStr) contextChildren.push(leftStr);
@@ -1911,7 +1911,7 @@
 				answer = [정답텍스트]
 			*/
 				const [start, end] = examples[0];
-				const leftStr = eng.substring(offsetPos, start);
+				const leftStr = getOffsetStr(offsetPos, start);
 				const targetStr = eng.substring(start, end);
 				const rightStr = eng.substring(end);
 				if(leftStr) contextChildren.push(leftStr);
