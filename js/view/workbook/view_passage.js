@@ -1173,10 +1173,13 @@
 	 */
 	.on('show.bs.collapse', '.related-list', function() {
 		if(this.matches('.loaded,.loading')) return;
-		let $fingerSection = $(this).addClass('loading').empty();
+		let $fingerSection = $(this).addClass('loading position-relative')
+		$fingerSection.append('<i class="position-relative start-50 fas fa-3x fa-spinner fa-pulse translate-middle-x"></i>');
+		$fingerSection.find('.empty-list').hide();
 		const sentenceId = $(this).closest('.one-sentence-unit-section').data('sentenceId');
 		$.getJSON(`/workbook/search/finger/${ntoa(sentenceId)}`, (fingerList) => {
 			if(fingerList != null && fingerList.length > 0) {
+				$fingerSection.empty();
 				const fingerListLen = fingerList.length;
 				
 				for(let j = 0; j < fingerListLen; j++) {
@@ -1185,10 +1188,15 @@
 					$fingerBlock.data('sentenceId', finger.sentenceId)
 								.find('.sentence-text').text(finger.eng);
 				}
+			}else {
+				$fingerSection.find('.empty-list').show();
+				$fingerSection.find('.fa-spinnner').remove();
 			}
 			$(this).removeClass('loading').addClass('loaded');
 		}).fail(() => {
 			alertModal('인덱스 핑거 조회에 실패했습니다.');
+			$fingerSection.find('.empty-list').show();
+			$fingerSection.find('.fa-spinnner').remove();
 			$(this).removeClass('loading').addClass('loaded');
 		});
 	})
