@@ -1234,6 +1234,38 @@ u {
 .exit-modal{
 	color: #000000;
 }
+/* 가이드 문구의 기본 색 */
+#battle-2 .mod-guide-text {
+	color: #ED9954;
+}
+/* 가이드 문구에 수식/피수식이 지정되면 애니메이션 동작 */
+#battle-2 .mod-guide-text.text-modifier, #battle-2 .mod-guide-text.text-modificand {
+	animation-name: battle2-blink;
+	animation-duration: 200ms;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+/* 수식어 글자색 */
+#battle-2 .text-modifier {
+	--modi-color: #03b4d0;
+	color: var(--modi-color);
+}
+/* 피수식어 글자색 */
+#battle-2 .text-modificand {
+	--modi-color: #ED9954;
+	color: var(--modi-color);
+}
+@keyframes battle2-blink {
+	0% {
+		color: #fff;
+	}
+	50% {
+		color: var(--modi-color);
+	}
+	100% {
+		color: #fff;
+	}
+}
 #battle-4 .eng .example{
 	text-decoration: underline;
 }
