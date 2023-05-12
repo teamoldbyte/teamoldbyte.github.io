@@ -5,6 +5,7 @@
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
+	
 	const SEARCH_PARAMS = new URLSearchParams(location.search);
 	const CLICK_SOUND = 'https://static.findsvoc.com/sound/popdrop.mp3',
 		NEXT_SOUND = 'https://static.findsvoc.com/sound/page-flip.mp3',
@@ -846,36 +847,23 @@
 			}
 			case '2' : {
 			
-				const modGuideText = createElement({el: 'span', class: 'mod-guide-text', style: { color: 'transparent'}});
+				const modGuideText = createElement({el: 'span', class: 'mod-guide-text'});
 				// 질문 표시
 				if(currentBattle.ask.includes('모든')) {
 					ask.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'}를 모두 선택하세요.`;
 					modGuideText.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'} 선택`;
+					$(modGuideText).addClass(currentBattle.ask.includes('피수식')?'text-modificand':'text-modifier');
 				}else if(currentBattle.ask.match(/의 수식|의 피수식/)) {
 					ask.textContent = `${currentBattle.ask}어를 선택하세요.`;
 					modGuideText.textContent = `${currentBattle.ask.includes('피수식')?'피수식어':'수식어'} 선택`;
+					$(modGuideText).addClass(currentBattle.ask.includes('피수식')?'text-modificand':'text-modifier');
 				}else {
 					ask.textContent = `[${currentBattle.ask}] 수식어와 피수식어를 선택하세요.`;
 					modGuideText.textContent = '수식어 선택' // 항상 수식어부터 선택하도록.
+					$(modGuideText).addClass('text-modifier');
 				}
 				
-				let guideBlinkAnim;
-				anime({
-					targets: modGuideText,
-					begin: () => currentView.querySelector('.ask-section').appendChild(modGuideText),
-					width: [0, '70vw'],
-					delay: 1000,
-					duration: 500,
-					complete: () => {
-						modGuideText.style.color = '#ffb266';
-						guideBlinkAnim = anime({
-							targets: modGuideText,
-							color: ['#ffffff', '#ffb266','#ffffff', '#ffb266','#ffffff', '#ffb266'],
-							easing: 'linear',
-							loop: true
-						})
-					}
-				})
+				currentView.querySelector('.ask-section').appendChild(modGuideText);
 				simpleAsk.textContent = ask.textContent;
 				// 본문 표시
 			 	const [ modifiers, modificands ] = answers;
@@ -887,6 +875,7 @@
 						(selectHistory.splice(searchedIndex, 1))[0].classList.remove('selected');
 						
 						// 선택 해제 시 수식어-피수식어 쌍을 선택하는 문제에서는 선택 같이 해제되도록.
+						// 다시 수식어부터 선택해야 함.
 						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							const pairNum = Math.floor(searchedIndex / 2) * 2 + (1 - searchedIndex % 2);
 							const indexToDelete = pairNum > searchedIndex ? searchedIndex : (searchedIndex - 1);
@@ -895,10 +884,12 @@
 								(selectHistory.splice(indexToDelete, 1))[0].classList.remove('selected');
 							}
 							
-							modGuideText.textContent = '수식어 선택';
-							guideBlinkAnim?.play();
+							modGuideText.textContent = selectHistory.length % 2 ? '피수식어 선택' : '수식어 선택';
+							$(modGuideText).addClass('text-modifier').removeClass('text-modificand');
 						}else if(selectHistory.length == 0) {
-							guideBlinkAnim?.play();
+							const findingModificand = currentBattle.ask.includes('피수식');
+							$(modGuideText).toggleClass('text-modifier', !findingModificand);
+							$(modGuideText).toggleClass('text-modificand', findingModificand);
 						}
 					// 선택 추가
 					}else {
@@ -906,10 +897,11 @@
 						selectHistory.push(this);
 						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							modGuideText.textContent = `${['수식어','피수식어'][selectHistory.length % 2]} 선택`;
-							guideBlinkAnim?.play();
+							const findingModificand = selectHistory.length % 2 == 1;
+							$(modGuideText).toggleClass('text-modifier', !findingModificand);
+							$(modGuideText).toggleClass('text-modificand', findingModificand);
 						}else {
-							guideBlinkAnim?.pause();
-							modGuideText.style.color = '#ffb266';
+							
 						}
 					}
 					moveSolveBtn(selectHistory.length == 0);
