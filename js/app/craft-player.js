@@ -872,7 +872,7 @@
 					if(this.matches('.selected')) {
 						const searchedIndex = selectHistory.indexOf(this);
 						
-						(selectHistory.splice(searchedIndex, 1))[0].classList.remove('selected');
+						(selectHistory.splice(searchedIndex, 1))[0].classList.remove('selected', 'text-modifier', 'text-modificand');
 						
 						// 선택 해제 시 수식어-피수식어 쌍을 선택하는 문제에서는 선택 같이 해제되도록.
 						// 다시 수식어부터 선택해야 함.
@@ -898,10 +898,12 @@
 						if(currentBattle.ask.match(/모든|의 수식|의 피수식/) == null) {
 							modGuideText.textContent = `${['수식어','피수식어'][selectHistory.length % 2]} 선택`;
 							const findingModificand = selectHistory.length % 2 == 1;
+							this.classList.add(findingModificand ? 'text-modifier' : 'text-modificand');
 							$(modGuideText).toggleClass('text-modifier', !findingModificand);
 							$(modGuideText).toggleClass('text-modificand', findingModificand);
 						}else {
-							
+							const findingModificand = currentBattle.ask.includes('피수식');
+							this.classList.add(findingModificand ? 'text-modificand' : 'text-modifier');
 						}
 					}
 					moveSolveBtn(selectHistory.length == 0);
