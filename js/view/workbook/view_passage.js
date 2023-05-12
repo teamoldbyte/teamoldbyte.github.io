@@ -845,28 +845,6 @@
 				$sectionClone.find('.nav-link[data-type="word-list"]').tab('show');
 		}
 		
-		// 6. 유사 문장 표시 
-		if(!isMobile) {
-			const fingerList = sentence.fingerList;
-			if(fingerList != null && fingerList.length > 0) {
-				let $fingerSection = $sectionClone.find('.related-list').empty();
-				const fingerListLen = fingerList.length;
-				   
-				/*$fingerSection.append(createElement({
-					el: 'div', className: 'title-section position-relative', children: [
-						{ el: 'span', className: 'sub-title', textContent: '현재 문장과 유사한 구조를 가지거나 보충 학습할 수 있는 예문들을 추천합니다.' }
-					]
-				}));*/
-				
-				for(let j = 0; j < fingerListLen; j++) {
-					const finger = fingerList[j], $fingerBlock = $(createElement(fingerSectionJson));
-					$fingerSection.append($fingerBlock);
-					$fingerBlock.data('sentenceId', finger.sentenceId)
-								.find('.sentence-text').text(finger.eng);
-				}
-			}
-		}
-		
 	}
 	// 모바일용 인터페이스 정의
 	if(isMobile) {
@@ -1189,6 +1167,30 @@
 				$noteSection.toggleClass('loading loaded');
 			}			
 		}
+	})
+	/** 
+	 * 인덱스 핑거리스트는 문장별로 한 번씩 서버를 조회
+	 */
+	.on('show.bs.collapse', '.related-list', function() {
+		if(this.matches('.loaded,.loading')) return;
+		let $fingerSection = $(this).addClass('loading').empty();
+		const sentenceId = $(this).closest('.one-sentence-unit-section').data('sentenceId');
+		$.getJSON(`/workbook/search/finger/${ntoa(sentenceId)}`, (fingerList) => {
+			if(fingerList != null && fingerList.length > 0) {
+				const fingerListLen = fingerList.length;
+				
+				for(let j = 0; j < fingerListLen; j++) {
+					const finger = fingerList[j], $fingerBlock = $(createElement(fingerSectionJson));
+					$fingerSection.append($fingerBlock);
+					$fingerBlock.data('sentenceId', finger.sentenceId)
+								.find('.sentence-text').text(finger.eng);
+				}
+			}
+			$(this).removeClass('loading').addClass('loaded');
+		}).fail(() => {
+			alertModal('인덱스 핑거 조회에 실패했습니다.');
+			$(this).removeClass('loading').addClass('loaded');
+		});
 	})
 	.on('shown.bs.collapse', '.svoc-section', function() {
 		tandem.correctMarkLine(this.querySelector('.semantics-result'));
