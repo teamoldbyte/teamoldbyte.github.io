@@ -1174,7 +1174,7 @@
 	.on('show.bs.collapse', '.related-list', function() {
 		if(this.matches('.loaded,.loading')) return;
 		let $fingerSection = $(this).addClass('loading position-relative')
-		$fingerSection.append('<i class="position-relative start-50 fas fa-3x fa-spinner fa-pulse translate-middle-x"></i>');
+		$fingerSection.append('<i class="w-100 text-center fa-2x fas fa-spin fa-circle-notch text-fc-purple"></i>');
 		$fingerSection.find('.empty-list').hide();
 		const sentenceId = $(this).closest('.one-sentence-unit-section').data('sentenceId');
 		$.getJSON(`/workbook/search/finger/${ntoa(sentenceId)}`, (fingerList) => {
