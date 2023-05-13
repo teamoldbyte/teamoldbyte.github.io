@@ -411,15 +411,15 @@
 					sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));
 				}
 				// 지문 추가에서 왔을 경우 모든 수정 관련 버튼 표시
-				if(passageIdList.length < 30) $('#addPassageBtn').show();
+				if(passageIdList.length >= 30) $('#addPassageBtn').remove();
 			}else if(referrerPath.includes('/workbook/mybook/edit')) {
 				// 워크북 수정, 지문 수정에서 왔을 경우 '지문추가'버튼 빼고 표시
 				$('#addPassageBtn').remove();
 			}
 		} catch (error) {
-			$('#addPassageBtn, #editPassageBtn, #editWorkbookBtn').remove();
+			$('#addPassageBtn').remove();
 		}
-	}
+	}else $('#addPassageBtn').remove();
 	
 
 /* ------------------------------- 지문 관련 ---------------------------------- */
