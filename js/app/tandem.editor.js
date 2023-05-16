@@ -7,9 +7,10 @@
 		49:'[value="s"]',
 		50:'[value="v"]',
 		51:'[value="o"]',
-		52:'[value="c"]',
-		53:'[value="oc"]',
-		54:'[value="a"]',
+		52:'[value="po"]',
+		53:'[value="c"]',
+		54:'[value="oc"]',
+		55:'[value="a"]',
 		81:'[value="tor"]',
 		87:'[value="ptc"]',
 		69:'[value="ger"]',
@@ -732,7 +733,7 @@
 		// [구문분석 div에 .edit-svoc 클래스 추가 후 편집 툴바와 힌트 메세지 표시]
 		this.wrap($('<div class="edit-svoc" tabindex="0"></div>'))
 			.before($(`<span class="svoc-editor-badge badge fs-6 rounded-pill">${forNew ? 'New' : 'Edit'}</span>`))
-			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 p-1 pb-0 bg-white rounded-pill pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
+			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 p-1 pb-0 rounded-pill pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
 			.before($svocEditor)
 			.after($svocEditorHint);
 		$('.edit-svoc').focus();
@@ -828,17 +829,17 @@
 	 * 선택 영역에 지정한 성분의 태그로 감싼다.
 	 */
 	function applyRoles(selection, role) {
-		const rcomments = {s : 'S', v : 'V', o : 'O', 
+		const rcomments = {s : 'S', v : 'V', o : 'O', po : 'prep.o.',
 						c : 'C', oc : 'o.c.', m : 'M', a : 'A'},
 			  gcomments = {a: '부사적 보충어', tor : 'to부정사', ger : '동명사', ptc : '분사'};
 		const range = selection.getRangeAt(0);
 		const el = document.createElement('span');
 		el.className = 'sem ' + role;
 		
-		// rcomment 기본값 적용
+		// rcomment 기본값 적용 (예전엔 rcomment가 S가 아니라 Subj였으므로, 짧은 버전은 rcomment를 따로 지정했음)
 		if(rcomments[role] != null) {
 			el.dataset.rc = rcomments[role];
-			el.dataset.rcMin = rcomments[role].substring(0, role == 'oc' ? 4 : 1);
+			el.dataset.rcMin = rcomments[role];
 		}
 		// gcomment 기본값 적용
 		if(gcomments[role] != null) el.dataset.gc = gcomments[role];
@@ -865,7 +866,7 @@
 		refreshDOMs(container);
 	}
 	
-	const rcomments = {s:'S', o:'O',c:'C', oc:'o.c.', m:'M', a:'A'},
+	const rcomments = {s:'S', o:'O', po: 'prep.o.', c:'C', oc:'o.c.', m:'M', a:'A'},
 		  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
 					acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절'};
 	/**
