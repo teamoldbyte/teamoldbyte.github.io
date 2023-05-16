@@ -101,21 +101,42 @@
                                  tandem_basic_layout.html
  -----------------------------------------------------------------------------*/
 .tandem-layout-section{
-    background-color: rgb(254, 255, 255);
+    /* background-color: rgb(254, 255, 255); */
 	overflow-x: hidden;
+	background-color: var(--slate);
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 10px;
+	min-height: 600px;
+	max-width: calc(100% - 100px);
+	min-width: 1250px;
+	margin: 3rem auto;
 }
 .tandem-layout-content-section {
 	height: 100%; 
-    padding: 50px;
-	background-color: #f9d37a;
+    /* padding: 50px; */
+	/* background-color: #f9d37a; */
+	/* max-width: 1200px; */
+	width:1250px;
+	margin: auto;
+	margin-bottom: 3rem;
+	padding: 0.5rem;
 }
 .version-section{
     height: 30px;
 }
+@media (man-width: 1400px){
+	.tandem-layout-section{
+		max-width: 1350px;
+	}
+}
 @media (max-width: 991px){
+	.tandem-layout-section{
+		margin-top: 0;
+		min-width: 100%;
+	}
     .tandem-layout-content-section {
         min-height: 100vh;
-        padding: 0.5rem;
+        width: 100%;
     }
 }
 @media (max-width: 576px){
@@ -142,14 +163,8 @@
 	left: -2px;
 	color: #f9d37a;
 }
-.block-section{
-	padding: 3rem;
-	
-	background-color: var(--slate);
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	border-radius: 10px;
-	min-height: 600px;
-}
+
+
 .block-section:not(.block-section:first-child){
 	margin-top: 50px;
 }

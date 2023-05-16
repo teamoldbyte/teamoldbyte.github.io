@@ -81,17 +81,47 @@
     }
 }
 
+/* .block-section{
+	padding-top: 5rem!important;
+} */
+/* .tandem-layout-content-section > div:not(.swipe-intro, .modal, #modalDiv){
+	padding: 3rem;
+	padding-top: 8rem;
+	background-color: var(--slate);
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 10px;
+	min-height: 600px;
+} */
 .block-section{
-	padding-top: 8rem!important;
+	max-width: 1400px;
+	margin: auto;
 }
+@media (max-width: 767px){
+	/* .tandem-layout-content-section > div:not(.swipe-intro, .modal, #modalDiv){
+		padding: .5rem;
+		padding-top: 6rem;
+		margin-bottom: 20px;
+		border-radius: 0 0 10px 10px;
+	} */
+
+	.block-section {
+		padding-top: 0!important;
+	}
+}
+
 @media (max-width: 576px) {
-    .view-passage-section .block-section{
+
+	.view-passage-section .block-section{
 		padding-top: 6rem!important;
 		background: rgba(255,255,255,.1);
 		/* backdrop-filter: blur( 8px );
 		-webkit-backdrop-filter: blur( 8px ); */
 		border-radius: 10px;
 		border: 1px solid rgba(255,255,255,.05);
+	}
+
+	.add-workbook-section .block-section{
+		padding-top: 0rem!important;
 	}
 
 	/**/
@@ -231,16 +261,22 @@
  -----------------------------------------------------------------------------*/
 /* 워크북 메뉴 */
 .workbook-menu-section{
-	position: absolute;
-	top: 6rem;
-	right: 6rem;
-	width: calc(100% - 12rem);
-	padding: 0;
+	/* position: absolute; */
+	/* top: 6rem; */
+	/* right: 6rem; */
+	/* width: calc(100% - 12rem); */
+	/* padding: 0; */
 	/* background-color: #8f1a5a; */
 	/* border: 1.5px solid #585174; */
 	/* box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 1px inset; */
 	/* border-radius: 10px; */
 	z-index: 1000;
+
+	/* max-width: 1200px; */
+	max-width: 1250px;
+	margin: auto;
+	margin-top: 3rem;
+	padding: 0 0.5rem;
 }
 .workbook-menu-section a{
 	text-decoration: none;
@@ -368,7 +404,7 @@
 	.workbook-menu-section .indicator{
 		display: none;
 		position: absolute;
-		top: -38%;
+		top: -50%;
 		width: 70px;
 		height: 70px;
 		background: #d8d9e9;
@@ -493,21 +529,22 @@
 }
 @media (max-width: 991px) {
     .workbook-menu-section{
-		top: 3rem;
+		/* top: 3rem;
 		right: 3.5rem;
 		width: calc(100% - 7rem);
-		padding: 0;
+		padding: 0; */
 		z-index: 1000;
+		width: 100%;
 	}
 }
 @media (max-width: 768px) {
-    .workbook-menu-section{
+    /* .workbook-menu-section{
 		top: 2rem;
 		right: 3.5rem;
 		width: calc(100% - 7rem);
 		padding: 0;
 	}
-	
+	 */
 	.workbook-menu-section .dropdown-menu{
 		width: 100%;
 		border: none;
@@ -608,6 +645,7 @@
 		right: 0rem;
 		padding: 0;
 		width: 100%;
+		margin-top: 2rem;
 	}
 }
 
@@ -655,7 +693,9 @@
 	white-space: nowrap;
 	/* overflow-x: scroll; */
 	height: auto;
-	width: calc(100vw - 100px - 7rem);
+	max-width: 1400px;
+	/* width: calc(100vw - 100px - 7rem); */
+	width: 100%;
 	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
 	padding: 40px;
 	border-radius: 5px;
@@ -2283,6 +2323,7 @@
 	}
 
 	.view-passage-section{
+		padding: 0!important;
 		position: relative;
 		background-image: url(https://static.findsvoc.com/images/app/workbook/background/mobile_bg.png);
 
