@@ -1,12 +1,32 @@
+.fico-layout-section{
+	overflow-x: hidden;
+	background-color: var(--slate);
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 10px;
+	min-height: 600px;
+	max-width: calc(100% - 100px);
+	min-width: 1250px;
+	margin: 3rem auto;
+}
 .fico-layout-content-section {
 	height: 100%;
-	padding: 50px;
-	background-color: #f9d37a;
+	/* padding: 50px; */
+	/* background-color: #f9d37a; */
+	/* max-width: 1200px; */
+	width: 1250px;
+	margin: auto;
+	margin-bottom: 3rem;
+	padding: 0.5rem;
 }
 @media (max-width: 991px){
+	.fico-layout-section{
+		margin-top: 0;
+		min-width: 100%;
+	}
+
 	.fico-layout-content-section {
-		min-height: 100vh;
-		padding: .5rem;
+		/* min-height: 100vh; */
+		width: 100%;
 	}
 }
 @media (max-width: 767px){
@@ -18,14 +38,15 @@
 
 
 .fico-layout-content-section > div{
-	/* padding: 3rem; */
+	/* padding: 3rem;
 	padding: calc(3rem + 10px);
-	/* padding-top: 6rem; */
+	padding-top: 6rem; 
 	padding-top: calc(7rem + 55px);
 	background-color: var(--slate);
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 10px;
-	min-height: 600px;
+	min-height: 600px; */
+	position:relative;
 }
 
 .block-section{
@@ -36,14 +57,10 @@
 @media (max-width: 767px){
 	.fico-layout-content-section > div{
 		padding: .5rem;
-		padding-top: 6rem;
 		margin-bottom: 20px;
 		border-radius: 0 0 10px 10px;
 	}
 
-	.block-section {
-		
-	}
 }
 
 /**********************************************************
@@ -51,15 +68,12 @@
  **********************************************************/
 /* 워크북 메뉴 */ 
 .main-menu-section{
-	position: absolute;
-	/* top: 6rem; */
-	top: calc(3rem + 62.5px);
-	/* right: 6rem; */
-	left: calc(3rem + 50px);
-	/* width: calc(100% - 12rem); */
-	width: calc(100% - 6rem - 100px);
-	padding: 0;
 	z-index: 1000;
+	/* max-width: 1200px; */
+	max-width: 1250px;
+	margin: auto;
+	margin-top: 4rem;
+	padding: 0 0.5rem;
 }
 .main-menu-section a{
 	text-decoration: none;
@@ -149,21 +163,9 @@
 .main-menu-section #mobileDropdown.show{
 	display: none;
 }
-@media (max-width: 991px) {
-    .main-menu-section{
-		top: 3rem;
-		left: 3.5rem;
-		width: calc(100% - 7rem);
-		padding: 0;
-		z-index: 1000;
-	}
-}
-@media (max-width: 767px) {
+@media (max-width: 576px) {
 	.main-menu-section{
-		top: 2rem;
-		left: 0;
-		padding: 0 0.5rem;
-		width: 100%;
+		margin-top: 2rem;
 	}
 }
 .main-menu-section .dropdown-menu{
