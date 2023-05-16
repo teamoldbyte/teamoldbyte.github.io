@@ -2,9 +2,9 @@
  @author LGM
  */
 (function($, document, tandem) {
-	const TANDEM_TAGS = ['s', 'v', 'o', 'c', 'a', 'oc', 'm', 'rcm', 'tor', 'ger', 'ptc', 'conj',
+	const TANDEM_TAGS = ['s', 'v', 'o', 'po', 'c', 'a', 'oc', 'm', 'rcm', 'tor', 'ger', 'ptc', 'conj',
 		'phr', 'adjphr', 'advphr', 'ptcphr', 'cls', 'ncls', 'acls', 'advcls', 'ccls', 'pcls'];
-	const FORM_COMPONENT_ROLES = ['s', 'v', 'o', 'c', 'a', 'oc', 'm']; // 문장형식 요소들
+	const FORM_COMPONENT_ROLES = ['s', 'v', 'o', 'po', 'c', 'a', 'oc', 'm']; // 문장형식 요소들
 	const RELATIVE_PRONOUNS = ['who', 'whose', 'whom', 'which', 'that']; // 관계대명사
 	// 부사절 접속사
 	const ADV_CONJUNCTIONS = ['if', 'unless', 'when', 'while', 'until', 'before', 'after', 'because', 'since', 'though', 'although', 'even though', 'so that', 'such that', 'as if', 'as', 'where'];
@@ -209,7 +209,7 @@
 	}
 	// GramMeta에 없는 값은 소문자로 구별
 	const roleTable = {
-		s: 'SUBJ', v: 'VERB', o: 'OBJ', c: 'COMP', oc: 'OC', a: 'ADV', m: 'MODI',
+		s: 'SUBJ', v: 'VERB', o: 'OBJ', po: 'PO', c: 'COMP', oc: 'OC', a: 'ADV', m: 'MODI',
 		rcm: 'MODI', tor: 'TO', ger: 'GER', ptc: 'PTC', ap: 'AP', pp: 'PP', conj: 'conj', phr: 'PREP',
 		adjphr: 'adjphr', advphr: 'advphr', ptcphr: 'ptcphr', cls: 'CLAUSE',
 		ncls: 'NCLS', acls: 'ACLS', advcls: 'ADVCLS', ccls: 'CCLS', pcls: 'PCLS'
@@ -255,8 +255,16 @@
 		}
 		// 인식된 문장 형식을 set에 추가
 		// 중첩태그를 우선하기 위해 단순 문장 형식에는 depth를 1 늘인다.
-		if (formType != undefined && !hasKey(metaSet, 'name', formType))
+		if (formType != undefined && !hasKey(metaSet, 'name', formType)) {
+			// 전치사목적어는 특수구조이므로 먼저 추가
+			if(hasKey(semantics, 'role', 'po') && !hasKey(metaSet, 'name', 'FORM_ONE_PO')) {
+				metaSet.push({ depth: depth + 1, name: 'FORM_ONE_PO'});
+			}
+			
 			metaSet.push({ depth: depth + 1, name: formType });
+		}
+		
+			
 		// 2개의 태그가 중첩된 형태일 경우(pos 존재) GramMeta 이름에 이어붙인다.
 		// 문장형식 이름에도 이어붙인다.
 		const hasTypes = semantics.filter(sem => sem.pos != null);
@@ -265,9 +273,9 @@
 				role = roleTable[semantic.role];
 			let pos = roleTable[semantic.pos];
 			let twoMixed = `${pos}_${role}`;
-			if(semantic.rc == PREP_OBJ) {
+			/*if(semantic.rc == PREP_OBJ) {
 				twoMixed = 'VI_PREP';
-			}
+			}*/
 			
 			const threeMixed = formType ? `${formType}_${twoMixed}` : twoMixed; // ex: FORM_THREE_GER_OBJ
 
@@ -319,9 +327,16 @@
 			}
 			// 관계접속사를 가졌다면 ACLS_OO 형태의 GramMeta를 추가
 			else if (child.rp) {
-				const rpMeta = createMeta(`acls ${child.rp}`);
-				if (!hasKey(metaSet, 'name', rpMeta))
-					metaSet.push({ depth: depth + 1, name: rpMeta });
+				const rpRole = child.children?.find(ss => ss.text == child.rp)?.role;
+				if(!!rpRole) {
+					const rpRoleMeta = createMeta(`acls ${child.rp} ${roleTable[rpRole]}`)
+					if (!hasKey(metaSet, 'name', rpRoleMeta))
+						metaSet.push({ depth: depth + 1, name: rpRoleMeta });
+				}else {
+					const rpMeta = createMeta(`acls ${child.rp}`);
+					if (!hasKey(metaSet, 'name', rpMeta))
+						metaSet.push({ depth: depth + 1, name: rpMeta });
+				}
 			}
 			// 부사절접속사를 가졌다면 ADVCLS_OO 형태의 GramMeta를 추가
 			else if (child.adv) {
@@ -369,6 +384,7 @@
 	const gramMetaCodes = [
 		"FORM_ONE", // 41000, "1형식"
 		"FORM_ONE_ADV", // 42150, "1A형식"
+		"FORM_ONE_PO", // 42155, "-"
 		"FORM_TWO", // 42000, "2형식"
 		"FORM_TWO_NOUN_COMP", // 42100, "2형식_명사_주격보어"
 		"FORM_TWO_GER_COMP", // 42200, "2형식_동명사_주격보어", true
@@ -377,7 +393,7 @@
 		"FORM_TWO_PREP_COMP", // 4240, "2형식_전치사_주격보어", true
 		"FORM_TWO_NCLS_COMP", // 42500, "2형식_명사절_주격보어", true
 		"FORM_THREE", // 43000, "3형식"
-		"FORM_THREE_VI_PREP", // 43100, "3형식_전치사_목적어", true
+//		"FORM_THREE_VI_PREP", // 43100, "3형식_전치사_목적어", true
 		"FORM_THREE_NOUN_OBJ", // 43200, "3형식_명사_목적어", true
 		"FORM_THREE_GER_OBJ", // 43300, "3형식_동명사_목적어", true
 		"FORM_THREE_TO_OBJ", // 43500, "3형식_to부정사_목적어", true
@@ -408,10 +424,22 @@
 		"NCLS_COMP", // 31230, "명사절(보어)"
 		"ACLS", // 31300, "형용사절"
 		"ACLS_WHO", // 31310, "관계대명사(who)"
+		"ACLS_WHO_SUBJ", // 31310, "관계대명사(who)"
+		"ACLS_WHO_OBJ", // 31310, "관계대명사(who)"
+		"ACLS_WHO_COMP", // 31310, "관계대명사(who)"
 		"ACLS_WHOSE", // 3131?, "관계대명사(whose)"
 		"ACLS_WHOM", // 3131?, "관계대명사(whom)" 
+		"ACLS_WHOM_SUBJ", // 3131?, "관계대명사(whom)" 
+		"ACLS_WHOM_OBJ", // 3131?, "관계대명사(whom)" 
+		"ACLS_WHOM_COMP", // 3131?, "관계대명사(whom)" 
 		"ACLS_WHICH", // 31320, "관계대명사(which)"
+		"ACLS_WHICH_SUBJ", // 31320, "관계대명사(which)"
+		"ACLS_WHICH_OBJ", // 31320, "관계대명사(which)"
+		"ACLS_WHICH_COMP", // 31320, "관계대명사(which)"
 		"ACLS_THAT", // 31330, "관계대명사(that)"
+		"ACLS_THAT_SUBJ", // 31330, "관계대명사(that)"
+		"ACLS_THAT_OBJ", // 31330, "관계대명사(that)"
+		"ACLS_THAT_COMP", // 31330, "관계대명사(that)"
 		"ADVCLS", // 31400, "부사절"
 		"ADVCLS_IF", // 31410, "부사절(if)"
 		"ADVCLS_UNLESS", // 31411, "부사절(unless)"
@@ -619,11 +647,14 @@
 		"PHR_WITHIN", // 11420, "within"
 		"VERB_PHR" // 19000, "동사구"
 	]
-	const nonKeywords = ['SUBJ', 'VERB', 'OBJ', 'COMP', 'OC', 'ADV'];
+	const nonKeywords = ['SUBJ', 'VERB', 'OBJ', 'COMP', 'OC', 'ADV', 'PO'];
 	function gramMetaArr2Str(gramMetaArr) {
-		return gramMetaArr.filter(meta => gramMetaCodes.includes(meta.name) && !nonKeywords.includes(meta.name))
-			.sort((a, b) => a.depth - b.depth)
-			.map(meta => meta.name).join(' ');
+		return gramMetaArr.filter(meta => 
+			gramMetaCodes.includes(meta.name) 
+			&& !gramMetaArr.some( g => g.startsWith(`${meta.name}_`)) 
+			&& !nonKeywords.includes(meta.name))
+		.sort((a, b) => a.depth - b.depth)
+		.map(meta => meta.name).join(' ');
 	}
 	
 	/** div를 해석한 gramMeta 정보를 저장한다.
