@@ -1217,14 +1217,22 @@ u {
 }
 /* 배틀북 상세보기 */
 .battlebook-overview-section{
-	box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+	/* box-shadow: rgba(0,0,0,.06) 0 2px 4px 0 inset; */
+	width: calc(100% + 2rem);
+	max-width: 1250px;
+	position: relative;
+	margin: 0.5rem 0 1rem 0;
+	left: -1rem;
+	background-color: var(--slate);
 }
 .battlebook-overview-section .description{
 	overflow-wrap: break-word;
 	white-space: break-spaces;
 	text-align: left;
 }
-
+.battlebook-overview-section p{
+	margin-bottom: 0;
+}
 
 
 /**********************************************************
