@@ -673,10 +673,12 @@
 	line-height: 1.5;
 	height: 21rem;
 	width: 10rem;
-	margin: 0 20px;
+	/* margin: 0 20px; */
+	margin-right: 2rem;
 }
 .list-library-section .workbook-section .list-inline .book-unit:nth-child(2n-1){
-	margin-bottom: 40px;
+	/* margin-bottom: 40px; */
+	margin-bottom: 2rem;
 }
 .workbook-section .bookshelf-section .list-inline .book-unit{
 	height: 15rem;	
@@ -697,7 +699,8 @@
 	/* width: calc(100vw - 100px - 7rem); */
 	width: 100%;
 	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
-	padding: 40px;
+	/* padding: 40px; */
+	padding: 2rem;
 	border-radius: 5px;
 	font-family: 'HCRDotum';
 	font-size: 13px;
@@ -1216,7 +1219,8 @@
     height: auto;
 	max-width: calc(1250px - 1rem);
 	width: 100%;
-    padding: 40px;
+    /* padding: 40px; */
+	padding: 2rem;
     border-radius: 5px;
     font-family: 'HCRDotum';
     font-size: 13px;
