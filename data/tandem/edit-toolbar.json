@@ -1,69 +1,166 @@
 [
 	{
 		"type": "div",
-		"class": "col-auto d-inline",
+		"class": "row g-0 justify-content-between",
 		"children":
 		[
 			{
 				"type": "group",
-				"children":
-				[
+				"class": "btn-group col-auto d-block d-md-inline-flex",
+				"children": [
 					{
-						"type": "btn",
-						"mode": "role",
-						"title": "단축키: 1",
-						"html": "주어",
-						"value": "s"
+						"type": "group",
+						"children":
+						[
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 1",
+								"html": "주어",
+								"value": "s"
+							},
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 2",
+								"html": "동사",
+								"value": "v"
+							},
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 3",
+								"html": "목적어",
+								"value": "o"
+							},
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 4",
+								"html": "전치사 목적어",
+								"value": "po"
+							}
+						]
 					},
 					{
-						"type": "btn",
-						"mode": "role",
-						"title": "단축키: 2",
-						"html": "동사",
-						"value": "v"
-					},
-					{
-						"type": "btn",
-						"mode": "role",
-						"title": "단축키: 3",
-						"html": "목적어",
-						"value": "o"
+						"type": "group",
+						"children":
+						[
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 5",
+								"html": "보어",
+								"value": "c"
+							},
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 6",
+								"html": "목적보어",
+								"value": "oc"
+							},
+							{
+								"type": "btn",
+								"mode": "role",
+								"title": "단축키: 7",
+								"html": "(부)보충어",
+								"value": "a"
+							}					
+						]
 					}
 				]
 			},
 			{
 				"type": "group",
-				"children":
-				[
+				"class": "btn-group col-auto row g-0",
+				"children": [
 					{
-						"type": "btn",
-						"mode": "role",
-						"title": "단축키: 4",
-						"html": "보어",
-						"value": "c"
+						"type": "group",
+						"class": "btn-group col-auto gx-2",
+						"children":
+						[
+							{
+								"type": "btn",
+								"mode": "mod",
+								"title": "수식 (단축키: Z)",
+								"html": "<i class=\"fas fa-level-down-alt fa-flip-horizontal\"></i>",
+								"value": "mod"
+							},
+							{
+								"type": "btn",
+								"mode": "erasing",
+								"title": "지우기 (단축키: X)",
+								"html": "<i class=\"fas fa-eraser\"></i>",
+								"value": "erasing"
+							},
+							{
+								"type": "btn",
+								"mode": "comment",
+								"title": "문법 코멘트 (단축키: C)",
+								"html": "<i class=\"far fa-comment-dots\"></i>",
+								"value": "comment"
+							}
+						]
 					},
 					{
-						"type": "btn",
-						"mode": "role",
-						"title": "단축키: 5",
-						"html": "목적보어",
-						"value": "oc"
-					},
-					{
-						"type": "btn",
-						"mode": "role",
-						"title": "단축키: 6",
-						"html": "(부)보충어",
-						"value": "a"
-					}					
+						"type": "group",
+						"class": "btn-group col-auto row gx-2",
+						"children":
+						[
+							{
+								"type": "btn",
+								"mode": "undo",
+								"title": "실행취소 (단축키: Ctrl + Z)",
+								"html": "<i class=\"fas fa-undo-alt\"></i>",
+								"value": "undo"
+							},
+							{
+								"type": "btn",
+								"mode": "redo",
+								"title": "재실행 (단축키: Ctrl + Y)",
+								"html": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
+								"value": "redo"
+							},
+							{
+								"type": "group",
+								"children":
+								[
+									
+									{
+										"type": "btn",
+										"class": "btn btn-outline-fico col-auto btn-sm lh-1",
+										"title": "저장 (단축키: Ctrl + S)",
+										"value": "save",
+										"html": "<i class=\"fas fa-save fa-lg\"></i>"
+									}
+								]
+							},
+							{
+								"type": "div",
+								"class": "btn-group col-auto",
+								"children":
+								[
+									
+									{
+										"type": "btn",
+										"class": "btn btn-outline-danger col-auto btn-sm lh-1",
+										"title": "편집 초기화 후 닫기",
+										"value": "close",
+										"html": "<i class=\"fas fa-times fa-lg\"></i>"
+									}
+								]
+							}
+						]
+					}
+					
 				]
 			}
-			
 		]
 	},
 	{
 		"type": "div",
-		"class": "col-auto d-inline",
+		"class": "col-auto g-0 gy-2",
 		"children":
 		[
 			{
@@ -110,7 +207,7 @@
 	},
 	{
 		"type": "div",
-		"class": "col-auto d-inline",
+		"class": "col-auto g-2",
 		"children":
 		[
 			{
@@ -157,7 +254,7 @@
 	},
 	{
 		"type": "div",
-		"class": "col-auto d-inline",
+		"class": "col-auto g-2",
 		"children":
 		[
 			{
@@ -201,96 +298,6 @@
 				]
 			}
 		]
-	},
-	{
-		"type": "div",
-		"class": "col-auto d-inline",
-		"children":
-		[
-			{
-				"type": "group",
-				"children":
-				[
-					{
-						"type": "btn",
-						"mode": "mod",
-						"title": "수식 (단축키: Z)",
-						"html": "<i class=\"fas fa-level-down-alt fa-flip-horizontal\"></i>",
-						"value": "mod"
-					},
-					{
-						"type": "btn",
-						"mode": "erasing",
-						"title": "지우기 (단축키: X)",
-						"html": "<i class=\"fas fa-eraser\"></i>",
-						"value": "erasing"
-					},
-					{
-						"type": "btn",
-						"mode": "comment",
-						"title": "문법 코멘트 (단축키: C)",
-						"html": "<i class=\"far fa-comment-dots\"></i>",
-						"value": "comment"
-					}
-				]
-			}
-		]
-	},
-	{
-		"type": "div",
-		"class": "col-auto d-inline",
-		"children":
-		[	
-			{
-				"type": "group",
-				"children":
-				[
-					{
-						"type": "btn",
-						"mode": "undo",
-						"title": "실행취소 (단축키: Ctrl + Z)",
-						"html": "<i class=\"fas fa-undo-alt\"></i>",
-						"value": "undo"
-					},
-					{
-						"type": "btn",
-						"mode": "redo",
-						"title": "재실행 (단축키: Ctrl + Y)",
-						"html": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
-						"value": "redo"
-					}
-				]
-			}
-		]
-	},
-	
-	{
-		"type": "group",
-		"children":
-		[
-			
-			{
-				"type": "btn",
-				"class": "btn btn-outline-fico col-auto btn-sm lh-1",
-				"title": "저장 (단축키: Ctrl + S)",
-				"value": "save",
-				"html": "<i class=\"fas fa-save fa-lg\"></i>"
-			}
-		]
-	},
-	{
-		"type": "div",
-		"class": "btn-group col-auto ms-auto",
-		"children":
-		[
-			
-			{
-				"type": "btn",
-				"class": "btn btn-outline-danger col-auto btn-sm lh-1",
-				"title": "편집 초기화 후 닫기",
-				"value": "close",
-				"html": "<i class=\"fas fa-times fa-lg\"></i>"
-			}
-		]
 	}
+	
 ]
