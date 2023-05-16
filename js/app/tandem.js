@@ -83,6 +83,7 @@
 		"\u03A5": "\"O\"",
 		"\u03A6": "\"C\"",
 		"\u03A7": "\"OC\"",
+		"\u03A8": "\"PO\"",
 		"\u03A9": "\"M\"",
 		"\u03AA": "\"A\"",
 		//table.put("\"I\"", (char)0x00e1);
@@ -645,17 +646,17 @@
 		});
 		let pos = 0, prevNode;
 		const basisDistance = div.clientWidth / 2;
-		textNodes.forEach(function(n, i) {
-			let range = new Range();
+		textNodes.forEach((n, i) => {
+			let range = document.createRange();
 			range.selectNode(n);
 			const nodeFirstRect = range.getClientRects()[0];
 			// 이전 노드보다 왼쪽에 있거나 마지막 노드일 경우 line-end 추가.
-			if ((nodeFirstRect != null && nodeFirstRect.x < (pos - basisDistance))
+			if ((nodeFirstRect?.x ?? 0) < (pos - basisDistance)
     /* || (textNodes.length == i + 1) */) {
 				let endWrapper = div.ownerDocument.createElement('span');
 				endWrapper.className = 'sem line-end';
 				endWrapper.insertAdjacentHTML('afterbegin', '&#8203;\n');  // zeroWidthSpace
-				if (prevNode.data != null && prevNode.data.match(/[\S]/) != null) {
+				if (prevNode.data?.match(/\S/)) {
 					prevNode.replaceWith(prevNode, endWrapper);
 				} else {
 					prevNode.replaceWith(endWrapper, prevNode);
@@ -663,8 +664,9 @@
 			}
 			prevNode = n
 			range.selectNode(prevNode);
-			if (range.getClientRects().length > 0) {
-				const endRect = Array.from(range.getClientRects()).slice(-1)[0];
+			const endRects = range.getClientRects();
+			if (endRects.length > 0) {
+				const endRect = endRects[endRects.length - 1];
 				pos = endRect.x + endRect.width;
 			}
 		});
