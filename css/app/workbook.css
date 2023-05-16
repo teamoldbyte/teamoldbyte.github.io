@@ -693,7 +693,7 @@
 	white-space: nowrap;
 	/* overflow-x: scroll; */
 	height: auto;
-	max-width: 1400px;
+	max-width: calc(1250px - 1rem);
 	/* width: calc(100vw - 100px - 7rem); */
 	width: 100%;
 	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
@@ -745,7 +745,7 @@
 }
 @media (max-width: 991px) {
     .workbook-index-section .book-section {
-		width: calc(100vw - 7rem);
+		width: calc(100vw - 1rem);
 		border: none;
 		padding: 5px;
 	}
@@ -1214,7 +1214,8 @@
  -----------------------------------------------------------------------------*/
 .list-library-section .book-section {
     height: auto;
-	width: calc(100vw - 100px - 7rem);
+	max-width: calc(1250px - 1rem);
+	width: 100%;
     padding: 40px;
     border-radius: 5px;
     font-family: 'HCRDotum';
