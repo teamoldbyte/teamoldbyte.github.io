@@ -169,7 +169,7 @@
 		return btoa(ab2str(await deflateSvoc(encSvoc(JSON.stringify(svocList)))));
 	}
 	/* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
-	const markTypes = /\b(s|v|o|c|oc|a|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
+	const markTypes = /\b(s|v|o|po|c|oc|a|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
 	function svocDom2Arr(node, arr) {
 		svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 		arr = arr ? arr : [];
@@ -287,7 +287,7 @@
 	}
 
 	/** 문장 필수성분*/
-	const roleTypes = ['S', 'V', 'O', 'C', 'OC', 'A', 'M'];
+	const roleTypes = ['S', 'V', 'O', 'PO', 'C', 'OC', 'A', 'M'];
 	const markTypesNeedBrackets = ['CONJ', 'PHR', 'ADJPHR', 'ADVPHR', 'PTCPHR', 'CLS', 'ACLS', 'NCLS', 'ADVCLS', 'CCLS', 'PCLS'];
 	/**
 	svocList를 기반으로 한 DOM 생성
@@ -527,7 +527,7 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
-	const posClasses = ['.s', '.v', '.o', '.c', '.oc', '.a', '.m'];
+	const posClasses = ['.s', '.v', '.o', '.po', '.c', '.oc', '.a', '.m'];
 	function checkPOSDepth(element) {
 		const children = element.querySelectorAll('.sem');
 		let base = posClasses.some(cls => element.matches(cls)) ? 1 : 0;
@@ -774,7 +774,7 @@
 	 */
 	function splitInners(div) {
 		const inners = div.getElementsByClassName('sem inner'),
-			innerSvocRegex = /\b([svca]|oc)\b inner/;
+			innerSvocRegex = /\b([svca]|oc|po)\b inner/;
 		for (let i = 0, len = inners.length; i < len; i++) {
 			let one = inners[i];
 			if (one == null) continue;
@@ -812,7 +812,7 @@
 			}
 			// inner 내부에 inner는 없고, 바로 다음 element와 동일한 성분이면 묶어주기.
 			// 목적어-목적어는 제외.
-			else if (one.matches('.s,.v,.c,.oc,.a')) {
+			else if (one.matches('.s,.v,.c,.po,.oc,.a')) {
 				let next = one.nextSibling;
 				if (next != null) {
 					let nextToNext = next.nextSibling;
