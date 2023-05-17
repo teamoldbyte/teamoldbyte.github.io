@@ -651,7 +651,7 @@
 	function gramMetaArr2Str(gramMetaArr) {
 		return gramMetaArr.filter(meta => 
 			gramMetaCodes.includes(meta.name) 
-			&& !gramMetaArr.some(function(gm){ return gm.startsWith(`${meta.name}_`)}) 
+			&& !gramMetaArr.some(function(gm){ return gm?.name?.startsWith(`${meta.name}_`)}) 
 			&& !nonKeywords.includes(meta.name))
 		.sort((a, b) => a.depth - b.depth)
 		.map(meta => meta.name).join(' ');
