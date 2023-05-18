@@ -24,6 +24,11 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so auto-minify job can access it
       - uses: actions/checkout@v3
+      
+      - name: HTML/CSS/JS Minifier
+        uses: docker://devatherock/minify-js:1.0.3
+        with:
+          directory: 'data'      # Optional
 
       - name: Auto Minify
         uses: nizarmah/auto-minify@v2.1
