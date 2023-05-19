@@ -60,7 +60,7 @@
 			}
 			checkingPos += tempSentence.length + (i<len-1?1:0);
 		}
-		confirmModal('입력하신 문장이 다음과 같습니다.\n문장 수가 맞지 않다면 \'취소\'를 누르고 구두점을 추가해 주세요.\n\n'
+		confirmModal('입력된 텍스트는 아래 문장들로 구분됩니다.\n문장 구분이 잘못된 경우 \'취소\'를 누르고 구두점을 추가해 주세요.\n\n'
 			.concat(Array.from(sentences, (sentence, i) => `[${i+1}] ${sentence}`).join('\n')),
 			() => $('#textForm').submit());
 		
