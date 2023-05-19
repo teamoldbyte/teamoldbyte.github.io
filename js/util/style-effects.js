@@ -3,13 +3,12 @@
  */
 (function($,document,window,ScrollReveal) {
 	$(function(){
-		console.info('style effects ready')
 		// [activates Bootstrap tooltips] --------------------------------------
 		$('body').tooltip({
 			selector:'[data-toggle="tooltip"],[data-bs-toggle="tooltip"]', 
 			trigger:'hover'});
 		$(document).on('click', '[data-toggle="tooltip"], [data-bs-toggle="tooltip"]', function(){
-			$(this).tooltip('hide');
+			bootstrap?.Tooltip?.getInstance(this)?.hide();
 		}); 
 		/* [activates Scroll Reveals] --------------------------------------- */
 		ScrollReveal({duration: 1000, reset: false, viewOffset:{top:0,bottom:0},
@@ -115,7 +114,6 @@
 		interval: 폭죽이 터지는 시간 간격(ms)
 		count: 폭죽이 동시에 터지는 최대갯수
 		time: 폭죽효과가 유지되는 총 시간(ms)
-		boundary: 폭죽효과 표시 경계(부모요소 대비 %, px)
 	 */
 	function showFireworks(options) {
 		let canvasEl, render;
