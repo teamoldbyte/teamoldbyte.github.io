@@ -1,6 +1,7 @@
 @charset "UTF-8";
 .edit-svoc {
 	position: relative;
+	cursor: auto;
 	border-style: outset;
 	border-radius: 1rem;
 	padding-bottom: 10px;

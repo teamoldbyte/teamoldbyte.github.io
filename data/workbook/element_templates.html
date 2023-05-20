@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 
 <head>
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
+	<title>DOM 복사용 템플릿</title>
 </head>
 
 <body>
 	<div class="copy-block">
+		<!-- 로딩 아이콘(simple) -->
+		<i class="loading-icon w-auto offset-6 text-center fa-2x fas fa-spin fa-circle-notch text-fc-purple"></i>
+
+		<!-- svoc 한 블럭 -->
+		<div class="svoc-section row position-relative">
+			<div class="svoc-block col my-auto"></div>
+			<div class="svoc-mdf-btns btn-group px-2"><button data-seq=""
+					class="js-edit-svoc login-required btn p-0 pe-1" data-toggle="tooltip" title="분석 수정"><span
+						class="material-icons fs-5">edit_document</span></button><button data-seq=""
+					class="js-del-svoc login-required btn p-0 ps-1" data-toggle="tooltip" title="분석 삭제"><span
+						class="material-icons fs-5">delete</span></button></div>
+			<div class="writer-section col-4 col-md-1 mt-2 mt-xl-0 btn" data-bs-toggle="collapse">
+				<div class="personacon-alias alias"></div>
+			</div>
+		</div>
+
 		<!-- 문장 단어 리스트 컨테이너 -->
-		<div class="word-section collapse show">
+		<div class="word-section">
 			<div class="one-block">
 				<div class="empty-list note-text">해당 문장에서 fico AI가 설정한 난이도 이상의 단어를 찾지 못했습니다.</div>
 				<!-- 한 단어 블럭 -->
@@ -20,6 +36,28 @@
 						<span class="meaning"></span>
 					</span>
 				</span>
+			</div>
+		</div>
+
+		<!-- 인덱스 핑거 리스트 컨테이너 -->
+		<div class="related-list mb-0 position-relative">
+			<div class="empty-list one-block note-text">문장 성분의 구조가 간단하거나 잘못 분석된 문장에 대해서는 추가 학습 문장들이 검색되지 않을 수 있습니다.
+			</div>
+			<!-- 인덱스 핑거(하나) -->
+			<div class="finger-section one-block js-finger-detail bg-gray-700" role="button">
+				<div class="sentence-text-block d-flex">
+					<div class="rounded-icon my-auto me-2" tabindex="0" data-toggle="tooltip"
+						title="문장을 누르면 해석·분석이 열립니다">
+						<span class="btn rounded-pill toggle-eye my-auto disabled"><i class="far"></i> 해석·분석</span>
+					</div>
+					<div class="fold-icon-section ms-auto my-auto d-block d-md-none"><span
+							class="fold-icon text-3xl"></span></div>
+					<div class="sentence-text my-auto"></div>
+					<div class="fold-icon-section ms-auto my-auto d-none d-md-block"><span
+							class="fold-icon text-3xl"></span></div>
+				</div>
+				<div class="svoc-block" style="display: none;"></div>
+				<div class="trans-block mt-2" style="display: none;"></div>
 			</div>
 		</div>
 	</div>

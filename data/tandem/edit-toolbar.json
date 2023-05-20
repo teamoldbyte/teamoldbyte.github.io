@@ -21,6 +21,7 @@
 							},
 							{
 								"type": "btn",
+								"class": "btn btn-outline-dark col-auto btn-sm ms-1",
 								"mode": "role",
 								"title": "단축키: 2",
 								"html": "동사",
@@ -28,6 +29,7 @@
 							},
 							{
 								"type": "btn",
+								"class": "btn btn-outline-dark col-auto btn-sm ms-1",
 								"mode": "role",
 								"title": "단축키: 3",
 								"html": "목적어",
@@ -44,6 +46,7 @@
 					},
 					{
 						"type": "group",
+						"class": "btn-group col-auto ms-1",
 						"children":
 						[
 							{

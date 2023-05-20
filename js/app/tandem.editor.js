@@ -62,7 +62,7 @@
 					appendBtn(btns[i], $svocEditor);
 				}
 				$svocEditor.find('[data-toggle="tooltip"]').click(function(){
-					$(this).tooltip('hide');
+					bootstrap?.Tooltip?.getInstance(this)?.hide();
 				}).tooltip({trigger:'hover'});
 				const rem = parseFloat(getComputedStyle(document.body).fontSize);
 				//=============================================================/
@@ -765,7 +765,9 @@
 				$svocEditorHint.text('');
 				$(div).unwrap();
 				$svocEditor.find('[value="undo"], [value="redo"]').prop('disabled', true);
-				$svocEditor.find('button').removeClass('active').tooltip('hide');
+				$svocEditor.find('button').removeClass('active').each((_i,btn) => {
+					bootstrap?.Tooltip?.getInstance(btn)?.hide();
+				});
 				$('.js-edit-svoc,.js-del-svoc,.js-add-svoc').prop('disabled', false);
 				$('.svoc-editor-badge,.svoc-editor-emblem').remove();
 				$svocEditor.detach();
@@ -776,7 +778,9 @@
 	
 	function closeEditor($div) {
 		$svocEditor.find('[value="undo"], [value="redo"]').prop('disabled', true);
-		$svocEditor.find('button').removeClass('active').tooltip('hide');
+		$svocEditor.find('button').removeClass('active').each((_i,btn) => {
+			bootstrap?.Tooltip?.getInstance(btn)?.hide();
+		});
 
 		$div.unwrap();
 		undoList = []; redoList = [];
