@@ -602,8 +602,8 @@ u {
 }
 .my-book-type .book .button-section button{
 	background: rgb(255,255,255);
-	backdrop-filter: blur( 15px );
-	-webkit-backdrop-filter: blur( 15px );
+	/* backdrop-filter: blur( 15px );
+	-webkit-backdrop-filter: blur( 15px ); */
 	/* border-radius: 5px; */
 	border: 1px solid rgba(255,255,255,.05);
 	height: 60%;
@@ -2150,3 +2150,8 @@ u {
 		left: 1rem;
 	}
 }
+
+
+
+
+
