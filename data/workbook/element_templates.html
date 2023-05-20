@@ -14,14 +14,29 @@
 		<!-- svoc 한 블럭 -->
 		<div class="svoc-section row position-relative">
 			<div class="svoc-block col my-auto"></div>
-			<div class="svoc-mdf-btns btn-group px-2"><button data-seq=""
-					class="js-edit-svoc login-required btn p-0 pe-1" data-toggle="tooltip" title="분석 수정"><span
-						class="material-icons fs-5">edit_document</span></button><button data-seq=""
-					class="js-del-svoc login-required btn p-0 ps-1" data-toggle="tooltip" title="분석 삭제"><span
-						class="material-icons fs-5">delete</span></button></div>
+			<div class="svoc-mdf-btns btn-group px-2">
+				<button data-seq="" class="js-edit-svoc login-required btn p-0 pe-1" data-toggle="tooltip" title="분석 수정">
+					<span class="material-icons fs-5">edit_document</span>
+				</button>
+				<button data-seq="" class="js-del-svoc login-required btn p-0 ps-1" data-toggle="tooltip" title="분석 삭제">
+					<span class="material-icons fs-5">delete</span>
+				</button>
+			</div>
 			<div class="writer-section col-4 col-md-1 mt-2 mt-xl-0 btn" data-bs-toggle="collapse">
 				<div class="personacon-alias alias"></div>
 			</div>
+		</div>
+		
+		<!-- (모바일) svoc 수정 및 평가 버튼 -->
+		<div class="svoc-menu-section d-block d-md-none">
+			<button type="button" class="col-auto js-add-svoc btn add-btn login-required p-0 ms-1 ms-lg-2 mb-auto" data-toggle="tooltip"
+				title="구문분석 추가 등록">
+				<span class="material-icons fs-5">add_circle</span>
+			</button>
+			<button type="button" class="col-auto js-open-dashboard btn add-btn login-required p-0 ms-1 ms-lg-2 mb-auto" data-bs-toggle="collapse"
+				title="문장 평가">
+				<span class="material-icons fs-5">assignment_turned_in</span>
+			</button>
 		</div>
 
 		<!-- 문장 단어 리스트 컨테이너 -->
@@ -50,11 +65,13 @@
 						title="문장을 누르면 해석·분석이 열립니다">
 						<span class="btn rounded-pill toggle-eye my-auto disabled"><i class="far"></i> 해석·분석</span>
 					</div>
-					<div class="fold-icon-section ms-auto my-auto d-block d-md-none"><span
-							class="fold-icon text-3xl"></span></div>
+					<div class="fold-icon-section ms-auto my-auto d-block d-md-none">
+						<span class="fold-icon text-3xl"></span>
+					</div>
 					<div class="sentence-text my-auto"></div>
-					<div class="fold-icon-section ms-auto my-auto d-none d-md-block"><span
-							class="fold-icon text-3xl"></span></div>
+					<div class="fold-icon-section ms-auto my-auto d-none d-md-block">
+						<span class="fold-icon text-3xl"></span>
+					</div>
 				</div>
 				<div class="svoc-section row position-relative" style="display: none;">
 					<div class="svoc-block col"></div>
@@ -65,6 +82,41 @@
 					</div>			
 				</div>
 				<div class="trans-block mt-2" style="display: none;"></div>
+			</div>
+		</div>
+		
+		<!-- 노트 블럭 -->
+		<div class="note-block one-block row g-0">
+			<div class="note text-section">
+				<div class="note-text ws-breakspaces">노트 본문</div>
+				<div class="note-editor" style="display: none;"><textarea class="text-input col-12"></textarea>
+					<div class="form-check form-switch d-inline-block mx-1">
+						<label class="form-check-label text-sm" role="button">
+							<input type="checkbox" class="open-input form-check-input">회원들과 노트를 공유합니다.
+						</label>
+					</div>
+					<button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#note-modal">
+						<span class="material-icons-outlined fs-6">help_outline</span>
+					</button>
+					<div class="note-edit-btns btn-group btn-set float-end mt-0 mt-sm-2">
+						<button type="button" class="js-edit-note-cancel btn btn-sm btn-outline-fico">취소</button>
+						<button type="button" class="js-edit-note btn btn-sm btn-fico">확인</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 row g-0 personacon-section text-end mt-0 mt-md-1 text-secondary">
+				<div class="personacon-alias alias col-auto ms-auto fst-normal lh-sm"></div>
+				<div class="updatedate col-auto ms-1 text-secondary text-xs lh-base"></div>
+			</div>
+			<div class="note-mdf-btns-section text-end">
+				<div class="note-mdf-btns btn-group">
+					<button type="button" class="js-edit-note-open login-required btn" data-toggle="tooltip" title="노트 수정">
+						<span class="material-icons fs-5">edit_document</span>
+					</button>
+					<button type="button" class="js-delete-note login-required btn" data-toggle="tooltip" title="노트 삭제">
+						<span class="material-icons fs-5">delete</span>
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
