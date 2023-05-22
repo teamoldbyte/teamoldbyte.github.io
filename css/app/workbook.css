@@ -2332,11 +2332,7 @@
 	.view-passage-section{
 		padding: 0!important;
 		position: relative;
-		background-image: url(https://static.findsvoc.com/images/app/workbook/background/mobile_bg.png);
-
-		background-repeat: repeat;
-		background-position: initial;
-		background-size: auto;
+		
 		/* background-position-y: -30px; */
 		/* background-color: #121e34; */
 		/* min-height: 100vh; */
