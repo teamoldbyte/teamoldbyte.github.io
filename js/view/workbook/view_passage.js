@@ -1,193 +1,16 @@
 /** /workbook/view_passage.html
  @author LGM
  */
- function pageinit(memberId, memberAlias, memberImage, workbookId, ownerId, priorityId, passageId, sentenceList) {
+ async function pageinit(memberId, memberAlias, memberImage, memberRoleType, workbookId, ownerId, priorityId, passageId, sentenceList) {
 	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	const isMobile = window.visualViewport.width < 576;
 	const tts = new FicoTTS({initSuccessCallback: () => {
 		// 자동재생 조작 금지
 		//document.querySelector('#ttsSettings .form-switch').remove();
 	}});
+	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/data/workbook/element_templates.min.html', jQuery.noop, 'html'); 
+//	const WORKBOOK_ELEMENTS = await $.get('/data/workbook/element_templates.html', jQuery.noop, 'html'); 
 	
-	const svocMenuSectionJson = {
-		el: 'div', className: 'svoc-menu-section d-block d-md-none', children: [
-			{ el: 'button', type: 'button', className: 'col-auto js-add-svoc btn add-btn login-required p-0 ms-1 ms-lg-2 mb-auto',
-			'data-toggle': 'tooltip', title: '구문분석 추가 등록', children: [
-				{ el: 'span', className: 'material-icons fs-5', textContent: 'add_circle' }
-			]},
-			{ el: 'button', type: 'button', className: 'col-auto js-open-dashboard btn add-btn login-required p-0 ms-1 ms-lg-2 mb-auto',
-			'data-bs-toggle': 'collapse', title: '문장 평가', children: [
-				{ el: 'span', className: 'material-icons fs-5', textContent: 'assignment_turned_in' }
-			]}
-		]
-	};
-	
-	const svocSectionJson = {
-		el: 'div', className: 'svoc-section row position-relative', children: [
-			{ el: 'div', className: 'svoc-block col my-auto' },
-			{ el: 'div', className: 'svoc-mdf-btns btn-group px-2', children: [
-					{ el: 'button', 'data-seq': '', 
-						className: 'js-edit-svoc login-required btn p-0 pe-1',
-						'data-toggle': 'tooltip', title: '분석 수정', children: [
-							{ el: 'span', className: 'material-icons fs-5', textContent: 'edit_document'}
-						]
-					},
-					{ el: 'button', 'data-seq': '', 
-						className: 'js-del-svoc login-required btn p-0 ps-1',
-						'data-toggle': 'tooltip', title: '분석 삭제', children: [
-							{ el: 'span', className: 'material-icons fs-5', textContent: 'delete'}
-						]
-					}
-				]
-			},
-			{ el: 'div', className: 'writer-section col-4 col-md-1 mt-2 mt-xl-0 btn', 'data-bs-toggle': 'collapse' , children: [
-				{ el: 'div', className: 'personacon-alias alias' }
-			]}
-		]
-	};
-	const fingerSectionJson = {
-		el: 'div', className: 'finger-section one-block js-finger-detail bg-gray-700', role: 'button', children: [
-			{ el: 'div', className: 'sentence-text-block d-flex', children: [
-					{ el: 'div', className: 'rounded-icon my-auto me-2', tabIndex: '0', 'data-toggle': 'tooltip', title: '문장을 누르면 해석·분석이 열립니다', children: [
-							{ el: 'span', className: 'btn rounded-pill toggle-eye my-auto disabled', children: [
-								{ el: 'i', className: 'far'}, ' 해석·분석'
-							]}
-						]
-					},
-					{ el: 'div', className: 'fold-icon-section ms-auto my-auto d-block d-md-none', children: [
-							{ el: 'span', className: 'fold-icon text-3xl' }
-						]
-					},
-					{ el: 'div', className: 'sentence-text my-auto' },
-					{ el: 'div', className: 'fold-icon-section ms-auto my-auto d-none d-md-block', children: [
-							{ el: 'span', className: 'fold-icon text-3xl' }
-						]
-					}
-				]
-			},
-			{ el: 'div', className: 'svoc-block', style: 'display: none;' },
-			{ el: 'div', className: 'trans-block mt-2', style: 'display: none;' }
-		]
-	}
-	const noteSectionJson = {
-		el: 'div', className: 'note-block one-block row g-0', children: [
-			{ el: 'div', className: 'note text-section', children: [
-				{ el: 'div', className: 'note-text ws-breakspaces', textContent: '노트 본문' },
-				{ el: 'div', className: 'note-editor', style: 'display: none;', children: [
-					{ el: 'textarea', className: 'text-input col-12' },
-					{ el: 'div', className: 'form-check form-switch d-inline-block mx-1', children: [
-						{ el: 'label', className: 'form-check-label text-sm', role: 'button', children: [
-							{ el: 'input', type: 'checkbox', className: 'open-input form-check-input', checked: true },
-							'회원들과 노트를 공유합니다.'
-						]}
-					]},
-					{ el: 'button', type: 'button', className: 'btn p-0', 'data-bs-toggle': 'modal', 'data-bs-target': '#note-modal', children: [
-						{ el: 'span', className: 'material-icons-outlined fs-6', textContent: 'help_outline' }
-					]},
-					{ el: 'div', className: 'note-edit-btns btn-group btn-set float-end mt-0 mt-sm-2', children: [
-						{ el: 'button', type: 'button', className: 'js-edit-note-cancel btn btn-sm btn-outline-fico', textContent: '취소' },
-						{ el: 'button', type: 'button', className: 'js-edit-note btn btn-sm btn-fico', textContent: '확인' }
-					]}
-				]}
-			]},
-			{ el: 'div', className: 'col-12 row g-0 personacon-section text-end mt-0 mt-md-1 text-secondary', children: [
-				{ el: 'div', className: 'personacon-alias alias col-auto ms-auto fst-normal lh-sm' },
-				{ el: 'div', className: 'updatedate col-auto ms-1 text-secondary text-xs lh-base' }
-			]},
-			{ el: 'div', className: 'note-mdf-btns-section text-end', children: [
-				{ el: 'div', className: 'note-mdf-btns btn-group', children: [
-					{ el: 'button', type: 'button', 
-						className: 'js-edit-note-open login-required btn',
-						'data-toggle': 'tooltip', title: '노트 수정', children: [
-							{ el: 'span', class: 'material-icons fs-5', textContent: 'edit_document'}
-						]
-					},
-					{ el: 'button', type: 'button', 
-						className: 'js-delete-note login-required btn', 'data-toggle': 'tooltip', title: '노트 삭제', children: [
-							{ el: 'span', class: 'material-icons fs-5', textContent: 'delete'}
-						]
-					}
-				]}
-			]}
-		]
-	};
-	const transModifyBtnsJson = {
-		el: 'div', className: 'trans-mdf-btns', children: [
-			{ el: 'button', type: 'button', className: 'js-edit-trans-open login-required btn btn-sm py-0 pe-0 pt-0',
-				'data-toggle': 'tooltip', title: '해석 수정', children: [
-					{ el: 'span', className: 'material-icons fs-5', textContent: 'edit_document' }
-				]
-			},
-			{ el: 'button', type: 'button', className: 'js-del-trans login-required btn btn-sm py-0',
-				'data-toggle': 'tooltip', title: '해석 삭제', children: [
-					{ el: 'span', className: 'material-icons fs-5', textContent: 'delete' }
-				]
-			}
-		]
-	}
-	const transEditorJson = {
-		el: 'div', className: 'trans-editor mt-2', children: [
-			{ el: 'textarea', className: 'text-input form-control', placeholder: '나의 해석을 직접 등록할 수 있습니다.' },
-			{ el: 'div', className: 'trans-edit-btns btn-group my-2', children: [
-				{ el: 'button', type: 'button', className: 'js-edit-trans-cancel btn btn-sm btn-outline-fico', textContent: '취소' },
-				{ el: 'button', type: 'button', className: 'js-edit-trans login-required btn btn-sm btn-fico', textContent: '확인' }
-			]}
-		]
-	}
-	const aiLoadingIconJson = {
-		el: 'div', className: 'ailoading-icon position-relative overflow-hidden d-inline-block',
-		style: { width: '50px', height: '50px' }, children: [
-			{ el: 'lottie-player', className: 'position-absolute top-50 start-50 translate-middle',
-				src: 'https://assets1.lottiefiles.com/packages/lf20_iJX38w.json',
-				background: 'transparent', speed: '3', loop: true, autoplay: true, style: { width: '150px', height: '150px' }
-			}
-		]
-	}
-	document.querySelector('section').append(createElement([{
-		el: 'div', className: 'note-modal-section modal', tabIndex: '-1', id: 'note-modal', children: [
-			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
-				{ el: 'div', className: 'modal-content', children: [
-					{ el: 'div', className: 'modal-header', children: [
-						{ el: 'h5', className: 'modal-title col-10', textContent: 'Note 공개/비공개' },
-						{ el: 'button', type: 'button', className: 'btn-close', 'data-bs-dismiss': 'modal', ariaLabel: 'Close' }
-					]},
-					{ el: 'div', className: 'modal-body', children: [
-						{ el: 'p', children: [
-							'다른 회원들에게 작성한 노트를 ', { el: 'b', textContent: '공개할지 여부'}, '를 설정할 수 있습니다.', { el: 'br' },
-							{ el: 'b', textContent: '비공개'}, ' 노트는 ', {el: 'b', textContent: '개인적인 메모' }, ' 등으로 활용할 수 있으며', { el: 'br' },
-							{ el: 'b', textContent: '공개'}, ' 노트는 ', {el: 'b', textContent: '판매 목적' }, '의 워크북에서 활용할 수 있습니다.'
-						]},
-						{ el: 'p', children: [
-							'노트를 충분히 작성을 하면 ', { el: 'b', textContent: '워크북의 품질' }, '이 올라가게 되어 다른 회원들이 ', 
-							{ el: 'b', textContent: '구매할 확률' }, '이 높아집니다.'
-						]}
-					]}
-				]}
-			]}
-		]
-	},
-	{
-		el: 'div', className: 'check-modal-section modal fade', tabIndex: '-1', id: 'check-modal', children: [
-			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
-				{ el: 'div', className: 'modal-content border-0', children: [
-					{ el: 'div', className: 'modal-header bg-fc-purple', children: [
-						{ el: 'h5', className: 'modal-title text-white col-10', textContent: '평가 감사합니다.'},
-						{ el: 'button', type: 'button', className: 'btn-close', 'data-bs-dismiss': 'modal', ariaLabel: 'Close' }
-					]},
-					{ el: 'div', className: 'modal-body', children: [
-						{ el: 'p' }
-					]},
-					{ el: 'div', className: 'modal-footer justify-content-center', children: [
-						{ el: 'button', type: 'button', className: 'btn btn-outline-fico', 'data-bs-dismiss': 'modal', textContent: '취소' },
-						{ el: 'button', type: 'button', className: 'btn btn-fico status-submit', textContent: '제출' }
-					]
-					}
-				]}
-			]
-			
-			}
-		]
-	}]))
 /*
 
 <!-- 분석 평가 모달 영역 -->
@@ -696,18 +519,9 @@
 		})
 		
 		// 1. 원문 표시--------------------------------------------------------
-		$sectionClone.find('.origin-sentence').append(createElement(
-			[
-				{ el: 'span', className: 'numbering-text print-removed', textContent: (i + 1) },
-				{ el: 'span', className: 'sentence-text', textContent: sentence.text },
-				isMobile ? '' :
-				{ el: 'div', className: 'd-inline-block', children: [
-					{ el: 'button', type: 'button', className: 'btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play-sentence', 
-						'data-bs-toggle': 'tooltip', title: '재생/중지', 'data-playing': 'off', textContent: 'play_circle'
-					}
-				]}
-			]
-		))
+		$sectionClone.find('.origin-sentence').append($(WORKBOOK_ELEMENTS).children('.origin-sentence-container').clone(true).children())
+		.find('.numbering-text').text((i + 1)).next('.sentence-text').text(sentence.text)
+			
 		// 2. SVOC 표시------------------------------------------------
 		const text = sentence.text, svocList = sentence.svocList,
 			svocListLen = svocList?.length;
@@ -715,14 +529,13 @@
 		$sectionClone.find('.js-collapse-svoc').toggle((svocListLen > 1));
 
 		if(isMobile) {
-			$sectionClone.find('.result-semantic-section').append(createElement(svocMenuSectionJson))
+			$sectionClone.find('.result-semantic-section').append($(WORKBOOK_ELEMENTS).children('.svoc-menu-section').clone(true))
 						.find('.js-open-dashboard').attr('data-bs-target', `#sentence${i+1} .dashboard-section`);
 		}
 		
 		for(let j = 0; j < svocListLen; j++) {
-			
 			let svocTag = svocList[j];
-			const $svocBlock = $(createElement(svocSectionJson));
+			const $svocBlock = $(WORKBOOK_ELEMENTS).children('.svoc-section').clone(true);
 			$svocBlock.appendTo($sectionClone.find('.result-semantic-section'));
 			tandem.showSemanticAnalysis(text, svocTag.svocBytes, $svocBlock.find('.svoc-block'))
 			.then(div => {
@@ -792,7 +605,7 @@
 				}
 				$transBlock.find('.translation-text').text(korTrans.kor);
 				if(memberId == korTrans.memberId) {
-					$transBlock.append(createElement(transModifyBtnsJson));
+					$transBlock.append($(WORKBOOK_ELEMENTS).find('.trans-mdf-btns').clone(true));
 				}
 			}
 			// 모바일에서 각각의 해석 블럭에 접고 펼치기가 적용돼있는데, 기본으로 펼쳐두고 접힐 때는 맨 위에 하나 남기도록
@@ -1183,7 +996,10 @@
 				const fingerListLen = fingerList.length;
 				
 				for(let j = 0; j < fingerListLen; j++) {
-					const finger = fingerList[j], $fingerBlock = $(createElement(fingerSectionJson));
+					const finger = fingerList[j], $fingerBlock = $(WORKBOOK_ELEMENTS).find('.finger-section').clone(true);
+					if(!['A','S'].includes(memberRoleType)) {
+						$fingerBlock.find('.svoc-mdf-btns').remove();
+					}
 					$fingerSection.append($fingerBlock);
 					$fingerBlock.data('sentenceId', finger.sentenceId)
 								.find('.sentence-text').text(finger.eng);
@@ -1309,13 +1125,18 @@
 	// [분석 결과 추가/편집]--------------------------------------------------------
 	$(document).on('click', '.js-add-svoc, .js-edit-svoc', async function() {
 		let forNew = $(this).is('.js-add-svoc');
+		const isIndexFinger = !!this.closest('.js-finger-detail');
+		const sentenceId = parseInt(isIndexFinger 
+			? $(this).closest('.js-finger-detail').data('sentenceId') 
+			: $(this).closest('.one-sentence-unit-section').data('sentenceId'));
+		// 화면 내의 다른 '구문분석 추가' 버튼은 비활성화
 		$('.js-add-svoc').prop('disabled', true);
 		
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		let $semantics = null;
-		if(forNew) {
+		if(forNew && !isIndexFinger) {
 			// 분석 추가일 경우 최상위 분석을 복사한 폼을 생성
-			let $newSection = $(createElement(svocSectionJson)).addClass('new-svoc-form');
+			let $newSection = $(WORKBOOK_ELEMENTS).children('.svoc-section').clone(true).addClass('new-svoc-form');
 			
 			$newSection.find('.personacon-alias').text(memberAlias);
 			const $personacon = $('#hiddenDivs .member-personacon').clone(true);
@@ -1342,7 +1163,8 @@
 						.attr('data-seq', $semantics.attr('data-seq'));
 		}else {
 			// 분석 수정일 경우 현재 분석 폼에 에디터 적용
-			$semantics = $('.semantics-result[data-seq="' + this.dataset.seq + '"]');
+			//$semantics = $('.semantics-result[data-seq="' + this.dataset.seq + '"]');
+			$semantics = $(this).closest('.svoc-section').find('.semantics-result');
 			$(this).closest('.svoc-mdf-btns').hide();
 		}
 		
@@ -1354,7 +1176,6 @@
 		}, 500);
 		// 편집 저장 실행
 		function saveFunc(svocText) {
-			const sentenceId = Number($semantics.closest('.one-sentence-unit-section').data('sentenceId'));
 			const svocId = Number($semantics.data('svocId') || 0);
 			const svocCommand = {sentenceId, workbookId, passageId, ownerId, memberId, encSvocText: svocText};
 			
@@ -1367,7 +1188,8 @@
 			// gramMeta도 같이 저장(ajax)---------------------------------------
 			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'workbook');
 			// --------------------------------------------------------------
-			metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),resultStatusMap['S']);
+			if(!isIndexFinger)
+				metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),resultStatusMap['S']);
 		}
 		
 		// 편집 저장 콜백(신규 분석 표식 해제 및 svocId 할당. 분석 접기/펼치기 대상 재정의)
@@ -1379,6 +1201,7 @@
 				$semantics.closest('.svoc-section').nextAll('.svoc-section').collapse('show');
 			}
 			$semantics.closest('.svoc-section').find('.svoc-mdf-btns').show();
+			$('.js-add-svoc').prop('disabled', false);
 		}
 		
 		// 편집 취소(분석 조작 버튼 재활성화, 신규 추가폼 삭제)
@@ -1433,7 +1256,7 @@
 	}); */
 	
 	// [나의 해석 수정]------------------------------------------------------------
-	const $transEditor = $(createElement(transEditorJson));
+	const $transEditor = $('#hiddenDivs .trans-editor');
 	$(document).on('click', '.js-edit-trans-open', function(){
 		$transEditor.hide();
 		let $transBlock = $(this).closest('.ai-translation-block');
@@ -1481,7 +1304,7 @@
 				$newTrans.data('korTid', tid).find('.translation-text').text(kor);
 				$newTrans.addClass('user-trans');
 				$newTrans.find('.translator').text(' ' + memberAlias);
-				$newTrans.append(createElement(transModifyBtnsJson));
+				$newTrans.append($(WORKBOOK_ELEMENTS).find('.trans-mdf-btns').clone(true));
 				
 				$transSection.find('.ai-translation-section').prepend($newTrans);
 				$transSection.find('.add-btn').show(300);
@@ -1520,7 +1343,9 @@
 		}
 	})
 	// [인덱스 핑거 추가정보 열기/닫기]-------------------------------------------------
-	.on('click', '.js-finger-detail', async function() {
+	.on('click', '.js-finger-detail', async function(e) {
+		// 인덱스 핑거의 svoc 수정 버튼 혹은 수정 영역에서는 이벤트 취소
+		if(e.target.closest('.edit-svoc,.svoc-mdf-btns') || !e.target.closest('.js-finger-detail')) return;
 		const $fingerBlock = $(this);
 		const $btn = $fingerBlock.find('.toggle-eye');
 		const sentenceId = $fingerBlock.data('sentenceId');
@@ -1538,15 +1363,17 @@
 			$fingerBlock.toggleClass('bg-gray-700').find('.fold-icon')
 						.toggleClass('expanded',!$btn.is('.active'));
 			$btn.toggleClass('active disabled');
-			$fingerBlock.find('.sentence-text, .trans-block, .svoc-block').toggle(300);
+			$fingerBlock.find('.sentence-text, .trans-block, .svoc-section').toggle(300);
 		}
 		
 		// 불러온 구문분석과 해석을 표시.
 		async function viewFingerDetails(sentence) {
 			$fingerBlock.find('.sentence-text').hide();
 			
-			await tandem.showSemanticAnalysis(sentence.eng, sentence.svocBytes, $fingerBlock.find('.svoc-block').show());
-			
+			const $semantics = $(await tandem.showSemanticAnalysis(sentence.eng, sentence.svocBytes, $fingerBlock.find('.svoc-section').show().find('.svoc-block')));
+			if(!!sentence.svocId) {
+				$semantics.data('svocId', sentence.svocId);
+			}
 			$fingerBlock.removeClass('bg-gray-700').find('.trans-block').text(sentence.kor).show();
 			$fingerBlock.find('.fold-icon').addClass('expanded');
 			$btn.toggleClass('disabled active loading loaded');
@@ -2239,7 +2066,7 @@
 /* ------------------------------ Embed functions --------------------------- */
 	// 노트 정보를 DOM으로 생성
 	function createNoteDOM(note) {
-		const block = createElement(noteSectionJson);
+		const block = $(WORKBOOK_ELEMENTS).children('.note-block').clone(true)[0];
 		if(isMobile) block.querySelector('.note').classList.add('overflow-hidden');
 		block.dataset.noteId = note.noteId;
 		// 내용
