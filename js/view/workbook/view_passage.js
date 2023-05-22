@@ -673,7 +673,7 @@
 		let scrollDirectionPrev = 0;
 		let lastScrollTop = $('.view-passage-section')[0].scrollTop;
 		const $topMenu = $('.workbook-menu-section');
-		$('.view-passage-section').css('overflow','auto').css('height','100vh').on('scroll', function() {
+		$('.view-passage-section').css('height','100vh').on('scroll', function() {
 
 			
 			const scrollDirectionNow = this.scrollTop > lastScrollTop ? 1 : -1;

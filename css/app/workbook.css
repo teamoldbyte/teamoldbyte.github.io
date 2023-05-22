@@ -113,11 +113,12 @@
 
 	.view-passage-section .block-section{
 		padding-top: 6rem!important;
-		background: rgba(255,255,255,.1);
+		/* background: rgba(255,255,255,.1); */
+		background: transparent;
 		/* backdrop-filter: blur( 8px );
 		-webkit-backdrop-filter: blur( 8px ); */
-		border-radius: 10px;
-		border: 1px solid rgba(255,255,255,.05);
+		/* border-radius: 10px; */
+		/* border: 1px solid rgba(255,255,255,.05); */
 	}
 
 	.add-workbook-section .block-section{
@@ -641,11 +642,12 @@
 
 @media (max-width: 576px) {
     .workbook-menu-section{
-		top: 2rem;
+		/* top: 2rem; */
 		right: 0rem;
 		padding: 0;
 		width: 100%;
 		margin-top: 2rem;
+		position: relative;
 	}
 }
 
@@ -2344,7 +2346,7 @@
 		-webkit-backdrop-filter: blur( 35px ); */
 	}
 	.view-passage-section .block-section{
-		padding-top: 6rem!important;
+		padding-top: 0!important;
 		/* background: rgba(255,255,255,0.2); */
 		/* background-color: rgba(255,255,255,0.525); */
 		/* background: rgb(185 180 244 / 60%); 
