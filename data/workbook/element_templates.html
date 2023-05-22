@@ -11,6 +11,28 @@
 		<!-- 로딩 아이콘(simple) -->
 		<i class="loading-icon w-auto offset-6 text-center fa-2x fas fa-spin fa-circle-notch text-fc-purple"></i>
 
+		<!-- TTS버튼이 달린 영어원문 블럭 컨테이너(자식들만 사용)-->
+		<div class="origin-sentence-container">
+			<span class="numbering-text print-removed">번호</span>
+			<span class="sentence-text">원문</span>
+			<!-- 모바일에는 없앨 것 -->
+			<div class="d-none d-md-inline-block">
+				<button type="button" class="btn text-fc-purple ms-2 p-0 material-icons-outlined border-0 fs-3 js-tts-play-sentence"
+					data-bs-toggle="tooltip" title="재생/중지" data-playing="off">play_circle</button>
+			</div>
+		</div>
+		
+		<!-- 문장별로 추가되는 해석 수정 버튼 -->
+		<div class="trans-mdf-btns">
+			<button type="button" class="js-edit-trans-open login-required btn btn-sm py-0 pe-0 pt-0"
+				data-toggle="tooltip" title="해석 수정">
+				<span class="material-icons fs-5">edit_document</span>
+			</button>
+			<button type="button" class="js-del-trans login-required btn btn-sm py-0" data-toggle="tooltip" title="해석 삭제">
+				<span class="material-icons fs-5">delete</span>
+			</button>
+		</div>
+		
 		<!-- svoc 한 블럭 -->
 		<div class="svoc-section row position-relative">
 			<div class="svoc-block col my-auto"></div>
