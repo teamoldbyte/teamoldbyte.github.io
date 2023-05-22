@@ -1376,7 +1376,7 @@
 		child.appendChild(parent);
 	}
 
-	window['tandem'] = { showSemanticAnalysis, checkGCDepth, checkPOSDepth, svocText2Arr,
+	window['tandem'] = { showSemanticAnalysis, checkGCDepth, checkPOSDepth, svocText2Arr, svocArr2Text,
 						cleanSvocDOMs, correctMarkLine, createBasicDOMs, 
 						drawConnections, splitInners, getSvocBytes, 
 						trimTextContent, wrapWithBracket, swapParentAndChild };
