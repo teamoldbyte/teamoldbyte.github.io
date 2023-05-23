@@ -396,7 +396,9 @@ async function pageinit(memberId, alias, image) {
 		
 		// 편집 저장 콜백(svocId 할당. 분석 접기/펼치기 대상 재정의)
 		function successSave(newSvocId) {
-			$semantics.data('svocId', newSvocId);
+			if(typeof newSvocId == 'number') {
+				$semantics.data('svocId', newSvocId);
+			}
 			if(memberId) {
 				$semantics.data('memberId', memberId);
 			}
