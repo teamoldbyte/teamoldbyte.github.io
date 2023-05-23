@@ -89,10 +89,10 @@ async function pageinit(memberId, alias, image) {
 	.on('change', '.search-input-section select', function() {
 		$('#searchSentenceForm').submit();
 	})
-	.on('submit', '#searchSentenceForm', function(e) {
+	.on('submit', '#searchSentenceForm', function(e,data) {
 		const command = Object.fromEntries(new FormData(this).entries());
-		// 갱신이 아닌 경우 페이지 번호는 1로 고정
-		if(!e?.originalEvent?.submitter?.matches('#refreshBtn')) {
+		// 페이지 네비게이션도 아니고 갱신이 아닌 경우 페이지 번호는 1로 고정
+		if(data != 'pageNav' && !e?.originalEvent?.submitter?.matches('#refreshBtn')) {
 			command.page = 1;
 		}
 		e.preventDefault();
@@ -139,7 +139,7 @@ async function pageinit(memberId, alias, image) {
 		}else {
 			$hiddenSortName.val(this.dataset.value);
 		}
-		$(`#${searchFormId}`).submit();
+		$(`#${searchFormId}`).trigger('submit');
 	});
 	
 	
@@ -147,7 +147,7 @@ async function pageinit(memberId, alias, image) {
 	$(document).on('click','.page-link', function() {
 		const searchFormId = sentencePaginationContainer.dataset.searchForm;
 		$(`#${searchFormId} #page`).val(parseInt(this.dataset.pagenum));
-		$(`#${searchFormId}`).submit();
+		$(`#${searchFormId}`).trigger('submit','pageNav')
 	})
 	
 	// 새 센텐스목록 조회(ajax)
