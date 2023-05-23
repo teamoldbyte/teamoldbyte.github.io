@@ -196,7 +196,7 @@ async function pageinit(memberId, alias, image) {
 		
 		
 		
-		function displaySentenceInfo(sentenceInfo) {
+		async function displaySentenceInfo(sentenceInfo) {
 			const $detailSection = $('#sentenceDetailSection');
 			$detailSection[0].dataset.sentenceId = sentenceId;
 			
@@ -221,7 +221,12 @@ async function pageinit(memberId, alias, image) {
 						const profile = $detailSection.find('.writer-section .personacon-profile').addClass('profile-default')[0];
 						profile.style.background = 'var(--fc-logo-head) center/cover no-repeat';
 					}
+				});
+				// 구문분석 로우데이터 표시(탭)
+				tandem.svocText2Arr(svocTag.svocBytes).then(svocArr => {
+					$detailSection.find('[name="svoctext"]').val('').val(JSON.stringify(svocArr))
 				})
+				
 			}
 			// 해석 정보
 			$detailSection.find('.kor-info').empty().append(createElement(Array.from(sentenceInfo.korList, kor => {
@@ -302,6 +307,8 @@ async function pageinit(memberId, alias, image) {
 			case 'workbook':
 				break;
 			case 'battle':
+				break;
+			case 'svoctext':
 				break;
 			default: break;
 		}
@@ -398,8 +405,8 @@ async function pageinit(memberId, alias, image) {
 				if(alias) {
 					$('#sentenceDetailSection .writer-section .alias').text(alias);
 				}
-				$('#sentenceDetailSection .writer-section .personacon-profile').toggleClass('profile-default',!image)
-				.css('backgroundImage', `${!image? 'var(--fc-logo-head)':('url(/resource/profile/images/' + image + ')')} center/cover no-repeat`)
+				$('#sentenceDetailSection .svoc-info .writer-section .personacon-profile').toggleClass('profile-default',!image)
+				.css('backgroundImage', !image? 'var(--fc-logo-head)' : `url(/resource/profile/images/${image})`)
 			}
 			$semantics.closest('.svoc-section').find('.svoc-mdf-btns').show();
 		}
@@ -423,11 +430,45 @@ async function pageinit(memberId, alias, image) {
 			success: () => {
 				gramMetaCell.dataset.gramMeta = gramMeta;
 				metaCell.textContent = META_LONG['S'];
-				alertModal('GramMeta 정보를 수정했습니다.');
+				alertModal('gramMeta 정보를 수정했습니다.');
 			},
-			error: () => alertModal('GramMeta 정보 수정에 실패했습니다.')
+			error: () => alertModal('gramMeta 정보 수정에 실패했습니다.')
 		});
 	});
+	// svocText 수정
+	$('#editSvocText').on('click', async function() {
+		
+		let encSvocText;
+		try{
+			encSvocText = await tandem.svocArr2Text(JSON.parse($('[name="svoctext"]').val().trim()));
+		}catch(e) {
+			alertModal('입력값이 올바르지 않습니다.');
+			return;
+		}
+		const sentenceId = parseInt($(this).closest('tr')[0].dataset.sentenceId);
+		$.ajax({
+			url: '/adminxyz/sentence/svoctext/edit',
+			type: 'POST',
+			data: JSON.stringify({sentenceId, encSvocText}),
+			contentType: 'application/json',
+			success: (svocText) => {
+				$('[name="svoctext"]').val(svocText);
+				try{
+					tandem.svocArr2Text(JSON.parse(svocText)).then(svocBytes => {
+						tandem.showSemanticAnalysis($('.one-sentence-row.active>.data-eng').text(), svocBytes, $('#sentenceDetailSection .svoc-info>.svoc-block').empty());
+					})
+					
+				}catch(e){
+					alertModal('결과값이 올바르지 않습니다.');
+					return;
+				}
+				alertModal('svocBytes 정보를 수정했습니다.');
+			},
+			error: () => alertModal('svocBytes 정보 수정에 실패했습니다.')
+		});
+		
+	})
+	
 	// useful 수정
 	$('#editUseful').on('click', function() {
 		const valueCell = $('.one-sentence-row.active').find('.data-useful')[0];
