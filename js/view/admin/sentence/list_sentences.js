@@ -86,6 +86,26 @@ async function pageinit(memberId, alias, image) {
 		
 		$(`.search-input-section.${this.value}`).show().siblings('.search-input-section').hide();
 	})
+	// 범위형 입력값은 최소값과 최대값이 동기화돼서 움직이도록(최소값이 변하면 최대값은 무조건 최소값 이상으로.)
+	.on('change', '.search-input-section [type="number"],.search-input-section [type="date"]', function() {
+		const $inputPairs = $(this).closest('.search-input-section').find('input');
+		const isFrom = $inputPairs.index(this) == 0;
+		const $pairInput = $inputPairs.eq(1 - $inputPairs.index(this));
+
+		let fromValue = isFrom ? this.value : $pairInput.val();
+		let toValue = isFrom ? $pairInput.val() : this.value;
+		
+		if(this.type == 'number') {
+			fromValue = parseInt(fromValue)
+			toValue = parseInt(toValue)
+		}else {
+			fromValue = Date.parse(fromValue);
+			toValue = Date.parse(toValue);
+		}
+		if(fromValue > toValue) {
+			$pairInput.val(this.value);
+		}
+	})
 	.on('change', '.search-input-section select', function() {
 		$('#searchSentenceForm').submit();
 	})
