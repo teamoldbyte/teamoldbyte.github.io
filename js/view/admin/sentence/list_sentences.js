@@ -447,7 +447,8 @@ async function pageinit(memberId, alias, image) {
 			alertModal('입력값이 올바르지 않습니다.');
 			return;
 		}
-		const svocId = $('#sentenceDetailSection .svoc-info .semantics-result').data('svocId');
+		const jQdatas = $('#sentenceDetailSection .svoc-info .semantics-result').data();
+		const svocId = jQdatas.svocId;
 		$.ajax({
 			url: '/adminxyz/sentence/svoctext/edit',
 			type: 'POST',
@@ -457,7 +458,10 @@ async function pageinit(memberId, alias, image) {
 				$('[name="svoctext"]').val(svocText);
 				try{
 					tandem.svocArr2Text(JSON.parse(svocText)).then(svocBytes => {
-						tandem.showSemanticAnalysis($('.one-sentence-row.active>.data-eng').text(), svocBytes, $('#sentenceDetailSection .svoc-info>.svoc-block').empty());
+						tandem.showSemanticAnalysis($('.one-sentence-row.active>.data-eng').text(), svocBytes, $('#sentenceDetailSection .svoc-info>.svoc-block').empty())
+						.then(semanticsResult => {
+							$(semanticsResult).data(jQdatas)
+						});
 					})
 					
 				}catch(e){
