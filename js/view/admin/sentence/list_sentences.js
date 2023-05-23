@@ -445,11 +445,11 @@ async function pageinit(memberId, alias, image) {
 			alertModal('입력값이 올바르지 않습니다.');
 			return;
 		}
-		const sentenceId = parseInt($(this).closest('tr')[0].dataset.sentenceId);
+		const svocId = $('#sentenceDetailSection .svoc-info .semantics-result').data('svocId');
 		$.ajax({
 			url: '/adminxyz/sentence/svoctext/edit',
 			type: 'POST',
-			data: JSON.stringify({sentenceId, encSvocText}),
+			data: JSON.stringify({svocId, encSvocText}),
 			contentType: 'application/json',
 			success: (svocText) => {
 				$('[name="svoctext"]').val(svocText);
