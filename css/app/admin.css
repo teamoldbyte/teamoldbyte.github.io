@@ -65,6 +65,10 @@ table th{
     font-size: 13.5px;
     line-height: 2.2rem;
 }
+table td{
+    line-height: 2rem;
+}
+
 table tbody tr.active{
 	background-color: #dedefe;
 }
