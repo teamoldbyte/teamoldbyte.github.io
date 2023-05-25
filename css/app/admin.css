@@ -83,3 +83,13 @@ table tbody tr.active{
 	color: #140162;
  }
 
+
+
+/* */
+.finger-section.one-block{
+	position: relative;
+	border-radius: 10px;
+	padding: 10px;
+	margin-bottom: 5px;
+	min-height: 80px;
+}
