@@ -92,4 +92,5 @@ table tbody tr.active{
 	padding: 10px;
 	margin-bottom: 5px;
 	min-height: 80px;
+	background-color: var(--slate);
 }
