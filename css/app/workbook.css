@@ -2093,7 +2093,8 @@
 	/* right: 8%;
 	top: 25%; */
 	right: 1.5rem;
-	bottom: 0;
+	/* bottom: 0; */
+	top: 6rem;
 	border: 2px solid #e5e5e5;
 	border-radius: 5px;
 }
