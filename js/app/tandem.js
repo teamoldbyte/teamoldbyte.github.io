@@ -86,6 +86,10 @@
 		"\u03A8": "\"PO\"",
 		"\u03A9": "\"M\"",
 		"\u03AA": "\"A\"",
+		"\u03AB": "\"TO\"",
+		"\u03AC": "\"GO\"",
+		"\u03AD": "\"PTCO\"",
+		"\u03AE": "\"APPO\"",
 		//table.put("\"I\"", (char)0x00e1);
 
 		//markType 2 - 절 (키릴 문자)
@@ -108,16 +112,20 @@
 
 
 		//rcomment - 성분 (조지아 문자)
-		"\u10A0": "\"subj\"",
-		"\u10A1": "\"verb\"",
-		"\u10A2": "\"obj\"",
-		"\u10A3": "\"comp\"",
+		"\u10A0": "\"S\"",
+		"\u10A1": "\"V\"",
+		"\u10A2": "\"O\"",
+		"\u10A3": "\"C\"",
 		"\u10A4": "\"o.c\"",
 		"\u10A5": "\"prep.o.\"",
 		"\u10A6": "\"i.o.\"",
 		"\u10A7": "\"d.o.\"",
 		"\u10A8": "\"(의)s\"",
 		"\u10A9": "\"mod\"",
+		"\u10AA": "\"inf.o.\"",
+		"\u10AB": "\"ger.o.\"",
+		"\u10AC": "\"ptc.o.\"",
+		"\u10AD": "\"동격\"",
 
 
 		//gcomment - 절 (조지아 문자)
@@ -169,20 +177,22 @@
 		return btoa(ab2str(await deflateSvoc(encSvoc(JSON.stringify(svocList)))));
 	}
 	/* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
-	const markTypes = /\b(s|v|o|po|c|oc|a|m|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
+	const markTypes = /\b(s|v|o|po|to|go|ptco|c|oc|a|m|appo|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
 	function svocDom2Arr(node, arr) {
 		svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 		arr = arr ? arr : [];
+		/** 마킹태그를 조사할 Node 목록 */
 		const stack = [node];
 		while (stack.length > 0) {
 			const n = stack.pop();
-			// If the node is a 'semantics-result' node, add its children to the stack.
+			// node가 'semantics-result' 클래스(구문분석 블럭의 컨테이너)라면, node의 자식들을 순회하면서 stack에 추가.
 			if (n.classList != null && n.classList.contains('semantics-result')) {
 				for (let i = n.childNodes.length - 1; i >= 0; i--) {
 					stack.push(n.childNodes[i]);
 				}
-			// If the node is a 'SPAN' node and not a 'line-end' or 'brkt' node, process it for a semantic mark.
-			} else if (n.hasChildNodes() && n.nodeName == 'SPAN'
+			}
+			// 자식노드(최소 텍스트노드)를 가진 span 태그면서, 실질적 마킹태그를 갖는 태그들을 조사(수식선, 줄바꿈, 괄호 등은 제외) 
+			else if (n.hasChildNodes() && n.nodeName == 'SPAN'
 				&& !n.classList.contains('line-end') && !n.classList.contains('brkt')) {
 					
 				// Extract the semantic mark type from the node's class name.
@@ -205,9 +215,9 @@
 				for (let i = n.childNodes.length - 1; i >= 0; i--) {
 					stack.push(n.childNodes[i]);
 				}
-				
+			}
 			// If the node is a text node, update the position counter.
-			} else if (n.nodeType == 3) {
+			else if (n.nodeType == 3) {
 				svocDom2Arr.pos += n.textContent.replaceAll(/[\n\u200b]/gm, '').length;
 			}
 		}
@@ -287,7 +297,7 @@
 	}
 
 	/** 문장 필수성분*/
-	const roleTypes = ['S', 'V', 'O', 'PO', 'C', 'OC', 'A', 'M'];
+	const roleTypes = ['S', 'V', 'O', 'PO', 'TO', 'GO', 'PTCO', 'C', 'OC', 'A', 'M', 'APPO'];
 	const markTypesNeedBrackets = ['CONJ', 'PHR', 'ADJPHR', 'ADVPHR', 'PTCPHR', 'CLS', 'ACLS', 'NCLS', 'ADVCLS', 'CCLS', 'PCLS'];
 	/**
 	svocList를 기반으로 한 DOM 생성
@@ -373,10 +383,10 @@
 			let tag = svocList[i], second = svocList[i + 1];
 			// 시작/끝 위치가 동일한 두 태그가 있을 때
 			if (tag.start == second.start && tag.end == second.end) {
-				// 앞의 태그가 필수성분이고, 뒤의 태그가 그렇지 않으면 순서 바꿈 
+				// 앞의 태그가 성분이고, 뒤의 태그가 품사면 순서 바꿈 
 				if (roleTypes.indexOf(tag.markType) > -1 && roleTypes.indexOf(second.markType) == -1) {
 					svocList.splice(i, 2, second, tag);
-					// 앞뒤 태그 둘 다 필수성분이면 뒤의 태그 삭제
+					// 앞뒤 태그 둘 다 성분태그면 뒤의 태그 삭제
 				} else if (roleTypes.indexOf(tag.markType) > -1 && roleTypes.indexOf(second.markType) > -1) {
 					svocList.splice(i + 1, 1);
 				}
@@ -402,7 +412,7 @@
 		while (uniqTags[i] != null) {
 			const tag = uniqTags[i];
 			if (prior != null && tag.start == prior.start && tag.end == prior.end) {
-				// 성분태그의 rcomment,gcomment가 없거나 절이 등위절일 경우, 겹치는 성분 태그를 제거.
+				// 성분태그의 rcomment,gcomment가 없거나 등위절/병렬절과 겹치는 경우, 겹치는 성분 태그를 제거.
 				if (markTypesNeedBrackets.indexOf(prior.markType) > -1) {
 					if ((tag.rcomment == null && tag.gcomment == null)
 						|| (tag.markType != 'V' && ['CCLS', 'PCLS'].indexOf(prior.markType) > -1)) {
@@ -490,7 +500,8 @@
 					htmlTag += ` data-mfd="${semanticSequence}-${modificandIndex}"`;
 
 				if (tag.rcomment)
-					htmlTag += ` data-rc="${tag.rcomment.match(/\W/) ? tag.rcomment : tag.rcomment.substring(0, 1).toUpperCase()}"`;
+//					htmlTag += ` data-rc="${tag.rcomment.match(/\W/) ? tag.rcomment : tag.rcomment.substring(0, 1).toUpperCase()}"`;
+					htmlTag += ` data-rc="${tag.rcomment}"`; // 2023.05.23 기준 풀어쓴 형태의 rcomment는 없음.
 
 				if (tag.gcomment)
 					htmlTag += ` data-gc="${tag.gcomment}"`;
@@ -527,7 +538,7 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
-	const posClasses = ['.s', '.v', '.o', '.po', '.c', '.oc', '.a', '.m'];
+	const posClasses = ['.s', '.v', '.o', '.po', '.to', '.go', '.ptco', '.appo', '.c', '.oc', '.a', '.m'];
 	function checkPOSDepth(element) {
 		const children = element.querySelectorAll('.sem');
 		let base = posClasses.some(cls => element.matches(cls)) ? 1 : 0;
@@ -645,21 +656,19 @@
 			return v.nodeType == 3;
 		});
 		let pos = 0, prevNode;
-		const basisDistance = div.clientWidth / 2;
-		textNodes.forEach((n, i) => {
+		textNodes.forEach(n => {
 			let range = document.createRange();
 			range.selectNode(n);
 			const nodeFirstRect = range.getClientRects()[0];
-			// 이전 노드보다 왼쪽에 있거나 마지막 노드일 경우 line-end 추가.
-			if ((nodeFirstRect?.x ?? 0) < (pos - basisDistance)
-    /* || (textNodes.length == i + 1) */) {
+			// 이전 노드 끝보다 왼쪽에 시작하거나 마지막 노드일 경우 line-end 추가.
+			if (nodeFirstRect != null && nodeFirstRect.x < (pos - 5)) {
 				let endWrapper = div.ownerDocument.createElement('span');
 				endWrapper.className = 'sem line-end';
 				endWrapper.insertAdjacentHTML('afterbegin', '&#8203;\n');  // zeroWidthSpace
-				if (prevNode.data?.match(/\S/)) {
-					prevNode.replaceWith(prevNode, endWrapper);
+				if (prevNode?.data?.match(/\S/)) {
+					prevNode?.replaceWith(prevNode, endWrapper);
 				} else {
-					prevNode.replaceWith(endWrapper, prevNode);
+					prevNode?.replaceWith(endWrapper, prevNode);
 				}
 			}
 			prevNode = n
@@ -670,6 +679,8 @@
 				pos = endRect.x + endRect.width;
 			}
 		});
+		
+		
 		const lastEndWrapper = div.ownerDocument.createElement('span');
 		lastEndWrapper.className = 'sem line-end';
 		lastEndWrapper.insertAdjacentHTML('afterbegin', '&#8203;\n');  // zeroWidthSpace
