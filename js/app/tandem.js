@@ -932,7 +932,7 @@
 	 *
 	 * @param div 수식태그와 수식대상을 포함하는 부모 element(jQuery Object)
 	 */
-	function drawConnections(div) {
+	function drawConnections(div, settings) {
 		const lines = Array.from(div.querySelectorAll('.curved_arrow,.gc_line'));
 		lines.forEach( line => line.remove());
 		
@@ -943,8 +943,8 @@
 			ownerWindow = ownerDocument.defaultView,
 			scrolledDivLeft = ownerWindow.scrollX - divLeft,
 			scrolledDivTop = ownerWindow.scrollY - divTop;
-		let drawSettings1 = { lineWidth: rem / 8, size: rem / 3, strokeStyle: '#FFCC99', header: false },
-			drawSettings2 = { lineWidth: rem / 8, size: rem / 3, strokeStyle: '#FFCC99' };
+		let drawSettings1 = Object.assign({ lineWidth: rem / 8, size: rem / 3, strokeStyle: '#FFCC99', header: false }, settings),
+			drawSettings2 = Object.assign({ lineWidth: rem / 8, size: rem / 3, strokeStyle: '#FFCC99' }, settings);
 		let eachLineRects = [], currentLineTop = div.getClientRects()[0]?.top || 0;
 		
 		// 현재 각 줄의 상단위치, 하단 위치를 모은다.
