@@ -65,10 +65,10 @@
 	z-index: 100;
 }
 /* 헬로북인 경우 편집 아이콘 표시 안함 */
-.edit-workbook-form:disabled .plus-btn-cover::before {
+.edit-workbook-form.hello-book .plus-btn-cover::before {
 	display: none;
 }
-.edit-workbook-form:disabled{
+.edit-workbook-form.hello-book{
 	pointer-events: none;
 }
 
