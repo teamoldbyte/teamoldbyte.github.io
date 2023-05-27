@@ -633,6 +633,7 @@
 	 * 수식선의 높이 결정에 영향.
 	 */
 	function checkLineEnds(div) {
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 		$(div).find('.line-end').remove();
 
 		// 말단 텍스트 노드들을 선택
@@ -661,7 +662,7 @@
 			range.selectNode(n);
 			const nodeFirstRect = range.getClientRects()[0];
 			// 이전 노드 끝보다 왼쪽에 시작하거나 마지막 노드일 경우 line-end 추가.
-			if (nodeFirstRect != null && nodeFirstRect.x < (pos - 5)) {
+			if (nodeFirstRect != null && nodeFirstRect.x < (pos - 1*rem)) {
 				let endWrapper = div.ownerDocument.createElement('span');
 				endWrapper.className = 'sem line-end';
 				endWrapper.insertAdjacentHTML('afterbegin', '&#8203;\n');  // zeroWidthSpace
