@@ -2203,9 +2203,9 @@
 	.view-passage-section .result-section .one-sentence-unit-section:first-child{
 		border-top: none;
 	}
-	.view-passage-section .result-section .one-sentence-unit-section.active{
+	/* .view-passage-section .result-section .one-sentence-unit-section.active{
 		background-color: #f6f6f6;
-	}
+	} */
 	.view-passage-section .result-section .one-sentence-unit-section .origin-sentence-section{
 		padding: 0;
 		min-height: 4rem;
