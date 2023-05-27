@@ -64,6 +64,13 @@
 	opacity: 0.75;
 	z-index: 100;
 }
+/* 헬로북인 경우 편집 아이콘 표시 안함 */
+.edit-workbook-form:disabled .plus-btn-cover::before {
+	display: none;
+}
+.edit-workbook-form:disabled{
+	pointer-events: none;
+}
 
 @media (max-width: 991px) {
     .title-section .title-text{
