@@ -961,12 +961,12 @@
 		for (let i = 0, len = modifiers.length; i < len; i++) {
 			const modifier = modifiers[i];
 			// 수식어 자식들
-			const modifierChildNodes = getLeafNodes([modifier]);
+			const modifierChildNodes = getLeafNodes([modifier]).filter(node => node.textContent != '\u200b\n');
 			// 수식 대상
-			const modificand = div.querySelector('.sem.mfd-' + modifier.dataset.mfd);
+			const modificand = div.querySelector(`.sem.mfd-${modifier.dataset.mfd}`);
 			if (modificand == null) continue;
 
-			const modificandChildNodes = getLeafNodes([modificand]);
+			const modificandChildNodes = getLeafNodes([modificand]).filter(node => node.textContent != '\u200b\n');
 			const mdfChildLen = modifierChildNodes.length,
 				mdfdChildLen = modificandChildNodes.length;
 			let i_mb = 0, i_me = mdfChildLen - 1, i_tb = 0, i_te = mdfdChildLen - 1;
@@ -974,6 +974,7 @@
 				modEndNode = modifierChildNodes[i_me--],
 				targetBeginNode = modificandChildNodes[i_tb++],
 				targetEndNode = modificandChildNodes[i_te--];
+			
 			// 줄바꿈 기호가 수식 대상의 마지막 노드면, 그 앞 노드를 선택.
 			if (targetEndNode.parentElement.classList.contains('line-end')) {
 				targetEndNode = modificandChildNodes[i_te--];
@@ -993,9 +994,9 @@
 			}
 			// 수식어구와 수식 대상의 coordinates(top,left,right)
 			const modLeftCoord = getCoords(modBeginNode)[0],
-				modRightCoord = getCoords(modEndNode)[1],
+				modRightCoord = getCoords(modEndNode).slice(-1)[0],
 				targetLeftCoord = getCoords(targetBeginNode)[0],
-				targetRightCoord = getCoords(targetEndNode)[1];
+				targetRightCoord = getCoords(targetEndNode).slice(-1)[0];
 			if (!(modLeftCoord && modRightCoord && targetLeftCoord && targetRightCoord)) {
 				continue;
 			}
@@ -1067,7 +1068,6 @@
 					interLines.push(rect.bottom - div.getClientRects()[0].top - rem);
 				}
 			}
-
 			// 처음과 끝 사이의 거리에 따른 화살표 높이 계산
 			// distance: 수식어와 피수식어 사이의 거리(가로). 여러 줄이면 거쳐가는 줄의 길이까지 포함
 			const distance = last.left + 2 * rem / 3 - first.right
