@@ -2109,6 +2109,8 @@
 .view-passage-section .result-semantic-section .writer-section{
 	position: relative;
 	bottom: 0.5rem;
+	height: -webkit-fit-content;
+	height: fit-content;
 }
 
 /* */
