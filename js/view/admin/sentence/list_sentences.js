@@ -30,6 +30,7 @@ async function pageinit(memberId, alias, image) {
 	.on('change', '#searchTypeSelect', function() {
 		const $inputSection = $(`.search-input-section.${this.value}`);
 		const needsSearchBtn = !/metaStatus/.test(this.value);
+		const $currentTextInput = $('.search-input-section:visible :text');
 		$('#searchBtn').toggle(needsSearchBtn);
 		$('#refreshBtn').toggle(!needsSearchBtn);
 		switch(this.value) {
@@ -55,6 +56,10 @@ async function pageinit(memberId, alias, image) {
 						}
 					})
 				}
+				if($currentTextInput.length > 0) $inputSection.find('input').val($currentTextInput.val())
+				break;
+			case 'gramMeta':
+				if($currentTextInput.length > 0) $inputSection.find('input').val($currentTextInput.val())
 				break;
 			case 'writer': 
 				if(!$inputSection.find('input').autocomplete('instance')) {
@@ -80,11 +85,11 @@ async function pageinit(memberId, alias, image) {
 						}
 					})
 				}
+				if($currentTextInput.length > 0) $inputSection.find('input').val($currentTextInput.val())
 				break;
 			default: break;
 		}
-		
-		$(`.search-input-section.${this.value}`).show().siblings('.search-input-section').hide();
+		$inputSection.show().siblings('.search-input-section').hide();
 	})
 	// 범위형 입력값은 최소값과 최대값이 동기화돼서 움직이도록(최소값이 변하면 최대값은 무조건 최소값 이상으로.)
 	.on('change', '.search-input-section [type="number"],.search-input-section [type="date"]', function() {
