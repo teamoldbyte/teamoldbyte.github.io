@@ -47,7 +47,7 @@ function pageinit(workbookId, workbookCover, helloBook, isMyOwn, sampleCount, pa
 				if(helloBook) {
 					const regDate = new Date(passage.regDate);
 					$passage.find('.passage-title')
-						.text(regDate)
+						.text(regDate.format('yyyy-MM-dd(e)'))
 						.attr('title', regDate.format('yyyy-MM-dd(e)'));
 				}
 				$passage.find('.passage-title-section .title-input').val(title);
