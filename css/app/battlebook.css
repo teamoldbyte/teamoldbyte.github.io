@@ -18,6 +18,7 @@
  }
  .battlebook-index-section .title-section .sub-title{
 	font-size: 1rem;
+	font-family: Roboto,'Nunito Sans','Open Sans';
  }
  .battlebook-index-section .title-section .sub-title .red-text{
 	color: #b01a2c;
@@ -81,7 +82,8 @@
 	 width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5) + 1.4rem); */
 
 	 width: 100%;
-	 max-width: calc((((1400px)/2) - 5rem) / 5);
+	 /* max-width: calc((((1400px)/2) - 5rem) / 5); */
+	 max-width: calc((((1400px)/ 2) - 10rem - 5rem)/ 5 + 0.7rem);
 	 /* width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5) + 1.4rem); */
 
 	 overflow: hidden;
@@ -143,7 +145,7 @@
 /* fico ssam 영역 */
 .block-section.ssam-block{
 	padding-top: calc(3rem + 10px)!important;
-	margin-top: 0.5rem;
+	margin-top: 3rem;
 	min-height: 0;
 }
 .battlebook-index-section .ssam-book-list .title-text,
@@ -303,5 +305,29 @@
 	background-color: #198754;
 }
 /**********************************************************
- *				overview_battlebook.html  
+*				edit_battlebook.html   
+*				overview_battlebook.html  
  **********************************************************/
+/**/
+.overview-battlebook-section .battlebook-info-section,
+.edit-battlebook-section .battlebook-info-section{
+	background-color: var(--white);
+	border-radius: 5px;
+	padding: 20px;
+}
+ /* 배틀북 커버 영역 */
+.overview-battlebook-section .book-cover-section,
+.edit-battlebook-section .book-cover-section{
+	width: 10rem;
+	height: 15rem;
+}
+.overview-battlebook-section .text-section,
+.edit-battlebook-section .text-section{
+	padding: 0 20px;
+	height: fit-content;
+	height: -webkit-fit-content;
+}
+.overview-battlebook-section .text-section > div,
+.edit-battlebook-section .text-section > div{
+	margin-bottom: 1rem;
+}
