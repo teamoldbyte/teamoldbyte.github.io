@@ -331,3 +331,20 @@
 .edit-battlebook-section .text-section > div{
 	margin-bottom: 1rem;
 }
+@media (max-width: 576px) {
+	.overview-battlebook-section .battlebook-info-section,
+	.edit-battlebook-section .battlebook-info-section{
+		padding: 0.5rem;
+	}
+
+	.overview-battlebook-section .book-cover-section,
+	.edit-battlebook-section .book-cover-section{
+		margin:auto;
+		margin-bottom: 2rem;
+	}
+
+
+	.edit-battlebook-section .text-section{
+		padding: 0;
+	}
+}
