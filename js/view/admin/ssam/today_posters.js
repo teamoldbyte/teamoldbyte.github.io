@@ -53,7 +53,7 @@ function pageinit(memberId, memberAlias, memberImage){
 			{ el: 'div', className: 'col-auto ms-auto row mh-2rem', children: [
 				{ el: 'div', className: 'col-auto ms-auto me-1 note-mdf-btns btn-group', children: [
 					{ el: 'button', type: 'button', 
-						className: 'js-edit-note-open login-required btn border-color-bluegray border-2 border-end-0 rounded-start py-0 pe-0 text-bluegray-300',
+						className: 'js-edit-note-open login-required btn text-bluegray-300',
 						'data-toggle': 'tooltip', title: '노트 수정', children: [
 							{ el: 'span', className: 'far fa-file-alt' },
 							{ el: 'span', className: 'fas fa-pen fa-xs', style: {
@@ -62,7 +62,7 @@ function pageinit(memberId, memberAlias, memberImage){
 						]
 					},
 					{ el: 'button', type: 'button', 
-						className: 'js-delete-note login-required btn border-color-bluegray border-2 rounded-end py-0 fas fa-trash-alt text-bluegray-300',
+						className: 'js-delete-note login-required btn fas fa-trash-alt text-bluegray-300',
 						'data-toggle': 'tooltip', title: '노트 삭제'
 					}
 				]},
