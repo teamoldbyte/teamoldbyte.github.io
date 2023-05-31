@@ -204,6 +204,8 @@
 
 /* 주어(+ rcomment) 글자색 */
 .sem.s.inner, .sem.s.outer[data-rc]::before {color: #283593;}
+/* 의미상주어(+ rcomment) 글자색 */
+.sem.ss.inner, .sem.ss.outer[data-rc]::before {color: #283593;}
 /* 목적어(+ rcomment) 글자색 */
 .sem.o.inner, .sem.o.outer[data-rc]::before {color: #006379;}
 /* 전치사 목적어,부정사 목적어,동명사 목적어,분사 목적어(+ rcomment) 글자색 */
@@ -415,21 +417,21 @@
 	color: #2440a8;/* #24a8a8; */
 }
 /* 자신이 두 줄 이상에 걸쳐 있고, gcomment가 두 번째 줄의 시작에 위치할 때*/
-.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc]::after {
+.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc]::after {
 	left: calc(0.5rem + var(--indent))!important;
 	top: auto!important;
 	bottom: 1.55rem/*2.0rem*/;
 }
-.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="1"]::after {
+.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="1"]::after {
 	bottom: 2.4rem;
 }
-.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="2"]::after {
+.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="2"]::after {
 	bottom: 3.75rem;
 }
-.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="3"]::after {
+.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="3"]::after {
 	bottom: 5rem;
 }
-.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="4"]::after {
+.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="4"]::after {
 	bottom: 6.125rem;
 }
 .sem.rcm.odd[data-gc]::after {
@@ -474,22 +476,22 @@
 	.sem.outer[data-rc].odd::before {bottom:-1.25rem;}
 	.sem.outer .sem.inner.odd[data-rc]::before {bottom:-1.625rem;}
 	.sem[data-gc]::after, .sem.rcm[data-gc]::after {top:-.6rem; font-size:.7rem;font-family: 'NanumBarunGothic';}
-	.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc]::after {
+	.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc]::after {
 		bottom: 1.5rem;
 	}
-	.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="1"]::after {
+	.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="1"]::after {
 		bottom: 2.55rem;
 	}
-	.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="2"]::after {
+	.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="2"]::after {
 		bottom: 3.85rem;
 	}
-	.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="3"]::after {
+	.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="3"]::after {
 		bottom: 5.05rem;
 	}
-	.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="4"]::after {
+	.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="4"]::after {
 		bottom: 6.25rem;
 	}
-	.sem:not(.s,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="5"]::after {
+	.sem:not(.s,.ss,.v,.o,.po,.to,.go,.ptco,.c,.oc,.m,.a,.appo).odd[data-gc][data-lv="5"]::after {
 		bottom: 7.45rem;
 	}
 	.sem.rcm.odd[data-gc]::after {
@@ -527,6 +529,8 @@
 	}
 	/* 주어부 rcomment 배경색 */
 	.sem.s[data-rc]::before {background: #283593;}
+	/* 의미상주어부 rcomment 배경색 */
+	.sem.ss[data-rc]::before {background: #283593;}
 	/* 목적어부 rcomment 배경색 */
 	.sem.o[data-rc]::before {background: #006379;}
 	/* 전치사 목적어, 부정사 목적어, 동명사 목적어, 분사 목적어부 rcomment 배경색 */
