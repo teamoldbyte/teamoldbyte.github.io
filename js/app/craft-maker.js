@@ -1,7 +1,7 @@
 /** 텐덤을 기초로 한 크래프트 배틀 출제를 위한 모듈
  @author LGM
  */
-(function craftMaker($, window, document) {
+ (async function craftMaker($, window, document) {
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
@@ -15,20 +15,23 @@
 	let staticCraftPanel, craftToolbarGroup = {}, 
 		battleAsks = [], battleTypeInfos = [], battleBtns = [], 
 		// 캐싱 속성들
-		categories = [], battleBooksMap = { step : [{ bbid: 10000001, title: '단계별 배틀'}] },
+		categories = [], battleBooksMap = { step : [{ battleBookId: 10000001, title: '단계별 배틀'}] },
 		battlebook_selection, workbook_battleSource,
 		// 체크박스 그룹화를 위한 시퀀스값
 		chkbxSeq = 0;
-	let _memberId;
+	let _memberId, memberRole;
 	const GRAMMARID_ORDERING = 880000;
 	const BATTLE_TYPE_SELECTOR = 'data-battle-type';
 	const NOCOMMENT = '(코멘트 없음)';
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
-	$.getJSON('https://static.findsvoc.com/data/craft/maker-toolbar.json', json => {
+	const MAKER_TEMPLATES = await $.get('/data/craft/maker_templates.html', result => {
+		staticCraftPanel = $(result).find('.battle-section-panel')[0];
+	}, 'html')
+	
+	$.getJSON('/data/craft/maker-toolbar.json', json => {
 		craftToolbarGroup = json;
-		staticCraftPanel = createElement(json.craftPanel);
 		battleAsks = json.battleAsks;
 		battleTypeInfos = json.battleTypeInfos;
 		battleBtns = json.commonEditorBtns;
@@ -37,13 +40,13 @@
 		
 	let craftToolbar = createElement({
 		el: 'div', 
-		className: 'btn-toolbar row col-md-3',
+		className: 'btn-toolbar row gx-2',
 		role: 'toolbar'});
 	
 	//------------------------ [이벤트 할당] --------------------------------------
 	$(document)
 	// 배틀타입, 난이도, 문법 카테고리 클릭 시 해당하는 배틀 수를 조회한다.
-	.on('click', '.battle-type-section .btn, .battle-diffLevel-section .btn, .battle-category-section select', function() {
+	/*.on('click', '.battle-type-section .btn, .battle-diffLevel-section .btn, .battle-category-section select', function() {
 		let param = {};
 		const addSection = this.closest('.add-battle-section');
 		let counterSection = addSection.querySelector('.battles-counter-section');
@@ -96,33 +99,36 @@
 			if($.fn.bounce != undefined)
 				$(section).bounce();
 		}).fail(() => alertModal('배틀 갯수 조회에 실패했습니다.'));
+	})*/
+	.on('click', '.js-collapse-existing-battles', function() {
+		const $battleSection = $(this).closest('.battle-section-panel');
+		const $battleList = $battleSection.find('.existing-battles-section');
+		if($battleList.is('.collapsing')) return;
+		$battleList.collapse('toggle');
+		$(this).toggleClass('expanded');
 	})
+	// --------------------------- 등록 단계 #1 ----------------------------------
 	// 배틀북 북 타입 선택시 해당 배틀북 목록을 불러와 표시한다.
+	.on('shown.bs.collapse', '.battle-book-section', function() {
+		$(this).find('.select-book-type')[0].focus();
+		anime({
+		    targets: $(this).find('.select-book-type')[0],
+		    borderWidth: ['1px','5px','1px'],
+		    easing: 'linear',
+		    duration: 300,
+		    loop: 2
+		})
+	})
 	.on('change', '.select-book-type', function() {
 		const bookType = this.value;
 		const $battleSection = $(this).closest('.add-battle-section');
 		const $bookSelect = $battleSection.find('.select-book');
 		// 새 배틀북 생성
 		if(this.value == 'new') {
-			$.cachedScript('https://cdn.jsdelivr.net/npm/compressorjs/dist/compressor.min.js', {
-				success : () => Compressor.setDefaults({quality: 0.8, width: 210, height: 315, maxWidth: 210, maxHeight: 315, resize: 'cover'})
-			});
-			$battleSection.find('.battle-book-section,.add-book-section').collapse('toggle');
+			confirmModal('배틀북 등록 화면으로 이동합니다.', () => location.assign('/battlebook/add'));
+			this.value = null;
 			$bookSelect.empty();
-			this.value = '';
-			if(!$(this).data('bookPanelOpened')) {
-				const $addBookSection = $battleSection.find('.add-book-section');
-				openSummernote($addBookSection.find('.input-book-desc'));
-				const timeConstant = `_${new Date().getTime()}`;
-				$addBookSection.find('input[type="radio"]').each(function() {
-					this.name += timeConstant;
-					this.id += timeConstant;
-				});
-				$addBookSection.find('label[for]').each(function() {
-					this.htmlFor += timeConstant;
-				})
-				$(this).data('bookPanelOpened', true);
-			}
+			return;
 		}else {
 			if(battleBooksMap[bookType]) {
 				setBookList();
@@ -132,147 +138,335 @@
 					setBookList();
 				})
 			}
+			
 		}
 		function setBookList() {
 			$bookSelect[0].replaceChildren(createElement(Array.from(battleBooksMap[bookType], book => {
-				return { el: 'option', value: book.battleBookId, textContent: book.title || '제목 없음' }
+				return { el: 'option', value: book.battleBookId, textContent: book.title || '제목 없음', selected: false }
 			})))
-		}
-	})
-	.on('click', '.js-edit-battlebook-cover', function(e) {
-		$(this).find('.input-book-cover').trigger('click');
-	})
-	.on('click', '.input-book-cover', function(e) {
-		e.stopPropagation();
-	})
-	// [커버 이미지 변경]-----------------------------------------------------------
-	.on('change', '.input-book-cover', function(e) {
-		const $preview = $(this).closest('.add-book-section').find('.battlebook-cover-preview');
-		let file = e.target.files[0];
-		if (file == null) return false;
-		const reader = new FileReader();
-		reader.onload = function() {
-			$preview.css('background-image', `url(${this.result})`)
-					.css('opacity', '1');
-			URL.revokeObjectURL(reader.result);
-			$preview.siblings('.js-cancel-battlebook-cover').show();
-		}
-		new Compressor(file, {
-			success(result) {
-				reader.readAsDataURL(result);
-			},
-			error(err) {
-				reader.readAsDataURL(file);
-			}
-		});
-	})
-	// [커버 이미지 리셋]
-	.on('click', '.js-cancel-battlebook-cover', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		const $preview = $(this).closest('.add-book-section').find('.battlebook-cover-preview');
-		$preview.css('background-image', '')
-				.siblings('.input-book-cover').val(null)[0].checkValidity();
-		$(this).hide();
-	})	
-	.on('click', '.js-cancel-add-book', function() {
-		$(this).closest('.add-battle-section').find('.battle-book-section,.add-book-section').collapse('toggle');
-	})
-	.on('click', '.js-add-battlebook', function() {
-		const $addSection = $(this).closest('.add-book-section');
-		const fileInput = $addSection.find('.input-book-cover')[0];
-		const bookType = {T:'theme',G:'grammar'}[$addSection.find('.input-book-type:checked').val().toUpperCase()];
-		let command = new FormData($addSection[0]);
-		
-		if(!$addSection[0].checkValidity()) return;
-		const deleteList = [];
-		command.forEach((v, k) => {
-			if(k.match(/_\d+/)) {
-				command.append(k.replace(/_\d+/,''), v);
-				deleteList.push(k);
-			}
-		});
-		deleteList.forEach(k => command.delete(k));
-		command.append('ownerId', _memberId);
-		
-		command.delete('files');
-		if(!!fileInput.value) {
-			new Compressor(fileInput.files[0], {
-				success(result) {
-					command.delete('coverImage');
-					command.append('coverImage', result, result.name);
-					// 배틀북 등록(ajax)--
-					addBattleBook();
-					//-------------------
-				},
-				error(err) {
-					// 배틀북 등록(ajax)--
-					addBattleBook();
-					//-------------------
-				}
+			$bookSelect.val(null)[0].focus();
+			anime({
+			    targets: $bookSelect[0],
+			    borderWidth: ['1px','5px','1px'],
+			    easing: 'linear',
+			    duration: 300,
 			})
-			// 배틀북 등록(ajax)--
+		}
+	})
+	// 배틀북을 선택하면 다음 단계(배틀 타입 선택)로
+	.on('change', 'select.select-book ', function() {
+		if(!this.value) return;
+		const $battleSection = $(this).closest('.battle-section-panel');
+		const $bookSection = $(this).closest('.battle-book-section');
+		
+		$bookSection.one('hide.bs.collapse', function() {
+			$battleSection.find('.summary-book').collapse('show').find('.input-info').text(`${$('.select-book-type :selected').text()} > ${$('.select-book :selected').text()}`);
+		}).collapse('hide');
+		if($bookSection.data('prevOpenSection')) {
+			$bookSection.data('prevOpenSection').collapse('show');
 		}else {
-			command.delete('coverImage');
-			addBattleBook();
+			$battleSection.find('.battle-editor-section').collapse('show');
 		}
-		
-		function addBattleBook() {
-			$.ajax({
-				type: 'POST',
-				url: '/craft/battlebook/add',
-				data: command,
-				processData: false, contentType: false,
-				success: function(book) {
-					(alertModal||alert)('배틀북을 등록했습니다.');
-					// 등록한 배틀북을 배틀북 선택 목록에 추가
-					if(battleBooksMap[bookType])
-						battleBooksMap[bookType].push(Object.assign({battleBookId: book.bbid},book));
-					// 배틀북 생성 패널이 새로 만들어지도록.
-					
-					$addSection.closest('.add-battle-section').find(`.select-book-type`)
-						.val(bookType).trigger('change');
-					$addSection.add($addSection.prev()).collapse('toggle');
-					resetAddSection();
-				},
-				error: function() {
-					(alertModal||alert)('배틀북 등록에 실패했습니다.');
+	})
+	// 동일한 배틀북을 다시 선택했을 때에도 이벤트 동작하도록.
+	.on('click', 'select.select-book', function(e) {
+		if($(this).data('selecting')) {
+			$(this).data('selecting', false).trigger('change');
+		}else {$(this).data('selecting', true);}
+	})
+	.on('blur', 'select.select-book', function() {
+		$(this).data('selecting', false);
+	})
+	// --------------------------- 등록 단계 #2 ----------------------------------
+	// 배틀 타입 블럭에 마우스를 올리면 상세 설명이 보이도록 함 
+	.on('shown.bs.collapse', '.battle-editor-section', function() {
+		anime({
+			targets: this.querySelectorAll('.battle-type-block'),
+			scale: 1.1,
+			direction: 'alternate',
+			easing: 'linear',
+			duration: 150
+		})
+	})
+	.on('mouseenter', '.battle-type-block', function() {
+		const hoverBattleType = $(this).data('battle-type');
+		$('.battle-type-guide-block').hide();
+		$('.battle-type-guide-block.battle-type-' + hoverBattleType).show();
+	})
+	.on('mouseleave', '.battle-type-block', function() {
+		$('.battle-type-guide-block').hide();
+	})
+	.on('click', '.js-context-complete', function() {
+		const $battleSection = $(this).closest('.battle-section-panel');
+		const addSection = this.closest('.add-battle-section')
+		const battleContext = $(addSection).find('.battle-maker .battle-context')[0];
+		const battleType = $(addSection).find('.battle-type-block input:checked').val();
+		const ask = $(addSection).find('.ask-select').val().trim();
+		const command = { battleType };
+		// 배틀 유형별 example, answer 정보 구성.
+		switch(battleType) {
+			case '1': {
+											// [보기 위치1, 보기 위치2, ...]
+				const [examples, answers] = [findPositions(battleContext, '.answer, .option'),
+											// [정답 위치]
+											findPositions(battleContext, '.answer')];
+				if(answers.length == 0) {
+					alertModal('정답이 될 부분을 마우스로 드래그하여 지정하세요.');
+					return;
+				}else if(examples.length == answers.length) {
+					alertModal('정답이 아닌 부분들을 ‘보기 선택’ 버튼을 선택하여 마우스로 영역을 지정하세요. ');
+					return;
+				}
+				Object.assign(command, { example: JSON.stringify(examples), answer: JSON.stringify(answers)});
+				break;
+			}
+			case '2':
+				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
+				const modifiers = findPositions(battleContext, '.modifier'),
+					modificands = findPositions(battleContext, '.modificand');
+				if(ask.includes('모든 피수식')) {
+					if(modifiers.length > 0) {
+						alertModal('피수식어만 찾는 문제입니다. 수식어가 선택돼있습니다.');
+						return;
+					}else if(modificands.length == 0) {
+						alertModal('선택된 피수식어가 없습니다. 피수식어들을 마우스로 지정하세요.');
+						return;
+					}
+				}else if(ask.includes('모든 수식')) {
+					if(modificands.length > 0) {
+						alertModal('수식어만 찾는 문제입니다. 피수식어가 선택돼있습니다.');
+						return;
+					}else if(modifiers.length == 0) {
+						alertModal('선택된 수식어가 없습니다. 수식어들을 마우스로 지정하세요.');
+						return;
+					}
+				}else if(!ask.includes('모든') && (modifiers.length && modificands.length) == 0) {
+					alertModal('수식어,피수식어를 각각 마우스로 지정하세요.');
+					return;
+				}
+				command.answer = JSON.stringify([ modifiers, modificands ]);
+				break;
+			case '3': {
+				const blank = battleContext.querySelector('.pick-right');
+				if(!blank) {
+					alertModal('틀린 보기를 지정할 영역을 선택하세요.');
+					return;
+				}
+				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
+				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
+												blank.textContent.trim(), blank.dataset.wrong.trim() ]);
+				// [정답 텍스트]
+				command.answer = JSON.stringify([ blank.textContent.trim() ]);
+				break;
+			}
+			case '4': {
+				const wrong = battleContext.querySelector('.answer-wrong');
+				if(battleContext.querySelector('.option') == null) {
+					alertModal('문제가 없는 보기들을 추가해 주세요.');
+					return;					
+				}else if(!wrong) {
+					alertModal('틀린 보기를 지정할 영역을 선택하세요.');
+					return;
+				}
+				// [보기 위치1, 보기 위치2, ...]
+				command.example = JSON.stringify(findPositions(battleContext, '.option, .answer-wrong'));
+				// [정답 위치, 정답 텍스트, 오답 텍스트]
+				command.answer = JSON.stringify([ findPositions(battleContext, '.answer-wrong')[0], 
+												wrong.textContent.trim(), wrong.dataset.wrong.trim() ]);
+				break;
+			}
+			case '5':
+				if(!$(addSection).find('.select-kor').val()) {
+					alertModal('문제로 제시할 한국어 해석을 선택해 주세요.', () => $(addSection).find('.select-kor').focus());
+					return;
+				}
+				if(battleContext.querySelectorAll('.option').length == 0) {
+					alertModal('배치할 대상이 될 어휘들을 마우스로 지정해 주세요.');
+					return;
+				}
+				// 목록에서 선택한 해석id는 ask로
+				command.ask = addSection.querySelector('.select-kor').value;
+				command.kor = $(addSection).find('.select-kor :selected').text();
+				// [보기 위치1, 보기 위치2, ...]
+				command.example = JSON.stringify(findPositions(battleContext, '.option'));
+
+				break;
+			case '6': {
+				if(!$(addSection).find('.select-kor').val()) {
+					alertModal('문제로 제시할 한국어 해석을 선택해 주세요.', () => $(addSection).find('.select-kor').focus());
+					return;
+				}
+				if(battleContext.querySelector('.fill-right') == null) {
+					alertModal('영어 문장에서 빈 칸으로 만들 영역을 마우스로 지정하세요.');
+					return;					
+				}
+				const blank = battleContext.querySelectorAll('.fill-right');
+				// 목록에서 선택한 해석id는 ask로
+				command.ask = addSection.querySelector('.select-kor').value;
+				command.kor = $(addSection).find('.select-kor :selected').text();
+				// [빈칸 위치, 정답 텍스트]
+				command.example = JSON.stringify(Array.from(findPositions(battleContext, '.fill-right'), (pos,i) => {
+					return [pos, blank[i].textContent.trim()];
+				}));
+				break;
+			}
+			case '7': {
+				// 해석이 필요한 영역을 사용자가 따로 지정하지 않으면 문장 전체를 지정
+				if(battleContext.querySelectorAll('.option').length > 0) {
+					command.ask = JSON.stringify(findPositions(battleContext, '.option'))
+				}else {
+					command.ask = JSON.stringify([[ 0, battleContext.textContent.length ]]);
+				}
+				// [ 정답단어1, 정답단어2, ... ]
+				const answerInput = addSection.querySelector('.kor-answer');
+				if(!answerInput.value) {
+					alertModal('정답 해석을 입력해 주세요.', () => answerInput.focus());
+					return;
+				}
+				command.answer = JSON.stringify(addSection.querySelector('.kor-answer').value.trim().split(/\s*\/\s*/));
+				// [ 추가단어1, 추가단어2, ... ]
+				command.example = JSON.stringify(addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/));
+				
+				break;
+			}
+			case '8': {
+				const blank = battleContext.querySelector('.pick-right');
+				const extOptions = addSection.querySelector('.battle-opt-ext');
+				if(!blank) {
+					alertModal('문장에서 빈 칸으로 표시할 영역을 마우스로 지정하세요');
+					return;
+				}else if(!extOptions.value.trim().split(/\s*\/\s*/).join('')) {
+					alertModal('오답 보기로 추가할 어휘들을 입력해 주세요.', () => extOptions.focus());
+					return;
+				}
+				// [빈칸 위치, 정답 텍스트, [오답 텍스트1, 오답 텍스트2, ...]]
+				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
+												blank.textContent.trim(), extOptions.value.trim().split(/\s*\/\s*/) ]);
+				// [정답 텍스트]
+				command.answer = JSON.stringify([ blank.textContent.trim() ]);
+				break;
+			}
+			default: break;
+		}
+		const $contextSection = $(this).closest('.battle-editor-section'); 
+		$contextSection.data('command', command).one('hide.bs.collapse', function() {
+			const $selectedType = $(addSection).find('.battle-type-block input:checked');
+			$battleSection.find('.summary-type').collapse('show').find('.input-info').each((i, info) => {
+				// 첫 번째는 배틀 유형 표시
+				if(i == 0) $(info).text($selectedType.next('label').find('.type-text').text());
+				// 두 번째는 배틀 질문 표시
+				else if(i == 1) $(info).text($(addSection).find('.ask-select :selected').text());
+			})
+			const previewBlock = createElement(createPreviewBattleBlock(battleContext.textContent, command));
+			$battleSection.find('.summary-context').collapse('show').one('shown.bs.collapse', function() {
+				tandem.drawConnections(this.querySelector('.input-info'));
+			}).find('.input-info').empty().append(previewBlock);
+		}).collapse('hide')
+		if($contextSection.data('prevOpenSection')) {
+			$contextSection.data('prevOpenSection').collapse('show');
+		}else {
+			$(addSection).find('.battle-detail-section').collapse('show');
+		}
+	})
+	.on('click', '.js-detail-complete', function() {
+		const $categorySelect = $(this).closest('.battle-detail-section').find('.battle-category-section select');
+		if(!$categorySelect.val()) {
+			alertModal('출제할 문제가 속하는 문법 분류를 선택해 주세요.', () => $categorySelect.focus());
+			return;
+		}
+		const $addSection = $(this).closest('.add-battle-section');
+		const $detailSection = $(this).closest('.battle-detail-section');
+		$detailSection.one('hide.bs.collapse', function() {
+			$addSection.find('.summary-detail').collapse('show').find('.input-info').each((i,info) => {
+				switch(i) {
+					case 0:
+						const $commentWrapper = $('<div></div>').html($addSection.find('.battle-comment-section textarea.comment').val().trim());
+						$(info).text($commentWrapper.text());
+						break;
+					case 1:
+						$(info).text($categorySelect.find('option:selected').text());
+						break;
+					case 2:
+						$(info).text($addSection.find('.battle-askTag-section input:text').val().trim());
+						break;
+					default: break;
 				}
 			})
+		}).collapse('hide')
+		if($detailSection.data('prevOpenSection')) {
+			$detailSection.data('prevOpenSection').collapse('show');
+		}else {
+			$addSection.find('.battle-diffLevel-section').collapse('show');
 		}
 		
-		function resetAddSection() {
-			$addSection[0].reset();
-			$addSection.find('.input-book-type[value="T"]').prop('checked', true);
-			$addSection.find('.input-open-type[value="R"]').prop('checked', true);
-			$addSection.find('.input-book-price').val(0);
-			$addSection.find('.battlebook-cover-preview').css('background-image','');
-			$addSection.find('.input-book-desc').summernote('reset');
+	})
+	.on('shown.bs.collapse', '.battle-diffLevel-section', function() {
+		$(this).closest('.add-battle-section').find('.battle-level-select:checked').next().tooltip('show');
+		$(this).closest('.add-battle-section').find('.js-add-battle').show().bounce();
+	})
+	.on('hide.bs.collapse', '.battle-diffLevel-section', function() {
+		$(this).find('[data-bs-toggle="tooltip"]').each(function() {
+			bootstrap.Tooltip.getOrCreateInstance(this).hide();
+		})
+		$(this).closest('.add-battle-section').find('.js-add-battle').hide();
+	})
+	.on('click', '.js-open-edit', function() {
+		if(!this.closest('[class^="summary"]')) return;
+		const $addSection = $(this).closest('.add-battle-section');
+		const $currentOpenSection = $addSection.find('.phase.show');
+		const summary = this.closest('[class^="summary"]');
+		let sectionSelector;
+		switch(summary.className.match(/summary-(\w+)/)[1]) {
+			case 'book':
+				sectionSelector = '.battle-book-section';
+				break;
+			case 'type':
+				sectionSelector = '.battle-editor-section';
+				$addSection.find('.summary-context').collapse('hide');
+				break;
+			case 'context':
+				sectionSelector = '.battle-editor-section';
+				$addSection.find('.summary-type').collapse('hide');
+				break;
+			case 'detail':
+				sectionSelector = '.battle-detail-section';
+				break;
+			default: break;
 		}
+		$(summary).collapse('hide');
+		$addSection.find(sectionSelector).collapse('show').data('prevOpenSection',$currentOpenSection)
+		$currentOpenSection.collapse('hide')
 	})
 	// 배틀타입 선택시 에디터 종류를 변경한다.
-	.on('change', '.battle-type-section input[type=radio]', function() {
+	.on('change', '.battle-type-block input[type=radio]', function() {
 		const semanticResult = $(this).closest('.battle-section-panel').data('semantics');
 		
 		const makerContainer = this.closest('.add-battle-section').querySelector('.craft-maker-container');
 		
 		attachBattleMaker(makerContainer, semanticResult, parseInt(this.value));
+		anime && anime({
+			targets: this.closest('.add-battle-section').querySelector('.ask-select'),
+			scaleY: 1.5,
+			direction: 'alternate',
+			easing: 'linear',
+			duration: 150
+		})
 	})
 	// 에디터 메뉴의 질문(ask)을 선택하면 태그(tag) 프리셋값을 설정한다.
 	.on('change', '.ask-select', function() {
-		const addSection = this.closest('.add-battle-section');
+		const addSection = this.closest('.battle-section-panel');
 		const selected = this.querySelector('option:checked');
-		const tag = selected.dataset.tag;
+		const tag = selected?.dataset?.tag;
 		const tagInput = addSection.querySelector('.askTag');
 		if(tag) tagInput.value = tag;
 		else tagInput.value = '';
 		
 		
-		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
-		if(battleType == '2' && (selected.value.includes('의 피수식') || selected.value.includes('의 수식'))) {
+		const battleType = addSection.querySelector('.battle-type-block input:checked').value;
+		if(battleType == '2' && (selected?.value?.includes('의 피수식') || selected?.value?.includes('의 수식'))) {
 			const selector = selected.value.includes('의 피수식')? '피수식' : '수식';
 			const key = selected.value.replace(`의 ${selector}`,'');
-			const newKey = prompt(`???의 ${selector}어를 고르세요.\n???에 들어갈 단어를 입력하세요.`, key);
+			const newKey = prompt(`질문 : "???의 ${selector}어를 고르세요."\n???에 표시할 어휘를 입력하세요.`, key);
 			if(newKey != null && newKey.length > 0) {
 				selected.value = `${newKey}의 ${selector}`;
 				selected.innerHTML = `(지정)${newKey}의 ${selector}어를 선택하세요.`;
@@ -364,12 +558,12 @@
 		const battleContext = addSection.querySelector('.battle-context');
 		const categoryId = parseInt(addSection.querySelector('.battle-category-section select').value);
 		
-		const battleType = addSection.querySelector('.battle-type-section input:checked').value;
+		const battleType = addSection.querySelector('.battle-type-block input:checked').value;
 		const diffLevel = addSection.querySelector('.battle-diffLevel-section input:checked').value;
 		const ask = addSection.querySelector('.ask-select').value.trim();
 		const askTag = addSection.querySelector('.askTag').value.trim();
-		const comment = addSection.querySelector('.comment').value.trim();
-		const source = addSection.querySelector('.source').value.trim();
+		const comment = addSection.querySelector('textarea.comment').value.trim();
+		/*const source = addSection.querySelector('.source').value.trim();*/
 		const engLength = battleContext.textContent.trim().length;
 		
 		if(comment.length > 1500) {
@@ -377,139 +571,14 @@
 			return;
 		}
 		
-		const command = {
-			battleBookId, categoryId, battleType, ask, askTag, comment, source, diffLevel, engLength,
+		const command = Object.assign({
+			battleBookId, categoryId, battleType, ask, askTag, comment, source: workbook_battleSource, diffLevel, engLength,
 			sentenceId: $(battlePanel).data('sentenceId'),
 			memberId: _memberId,
 			example: '', answer: '',
 			diffSpecificLevel: calcDiffSpecific(diffLevel, engLength)
-		}
+		}, $(addSection).find('.battle-editor-section').data('command'));
 				
-		// 배틀 유형별 example, answer 정보 구성.
-		switch(battleType) {
-			case '1': {
-											// [보기 위치1, 보기 위치2, ...]
-				const [examples, answers] = [findPositions(battleContext, '.answer, .option'),
-											// [정답 위치]
-											findPositions(battleContext, '.answer')];
-				if(answers.length == 0) {
-					alertModal('문제로 만들 어구를 선택해 주세요.');
-					return;
-				}else if(examples.length == answers.length) {
-					alertModal('오답 보기를 선택해 주세요.');
-					return;
-				}
-				Object.assign(command, { example: JSON.stringify(examples), answer: JSON.stringify(answers)});
-				break;
-			}
-			case '2':
-				// [[수식어 위치1, 수식어 위치2, ...], [피수식어 위치1, 피수식어 위치2, ...], ...]
-				const modifiers = findPositions(battleContext, '.modifier'),
-					modificands = findPositions(battleContext, '.modificand');
-				if(ask.includes('모든 피수식') && (modifiers.length > 0 || modificands.length == 0)) {
-					alertModal('피수식어만 1개 이상 선택해 주세요.');
-					return;
-				}else if(ask.includes('모든 수식') && (modificands.length > 0 || modifiers.length == 0)) {
-					alertModal('수식어만 1개 이상 선택해 주세요.');
-					return;
-				}else if(!ask.includes('모든') && (modifiers.length && modificands.length) == 0) {
-					alertModal('수식어/피수식어를 1쌍 이상 선택해 주세요.');
-					return;
-				}
-				command.answer = JSON.stringify([ modifiers, modificands ]);
-				break;
-			case '3': {
-				const blank = battleContext.querySelector('.pick-right');
-				if(!blank) {
-					alertModal('문제로 만들 어구를 선택해 주세요.');
-					return;
-				}
-				// [빈칸 위치, 정답 텍스트, 오답 텍스트]
-				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
-												blank.textContent.trim(), blank.dataset.wrong.trim() ]);
-				// [정답 텍스트]
-				command.answer = JSON.stringify([ blank.textContent.trim() ]);
-				break;
-			}
-			case '4': {
-				const wrong = battleContext.querySelector('.answer-wrong');
-				if(battleContext.querySelector('.option') == null) {
-					alertModal('오답 보기를 선택해 주세요.');
-					return;					
-				}else if(!wrong) {
-					alertModal('문제로 만들 어구를 선택해 주세요.');
-					return;
-				}
-				// [보기 위치1, 보기 위치2, ...]
-				command.example = JSON.stringify(findPositions(battleContext, '.option, .answer-wrong'));
-				// [정답 위치, 정답 텍스트, 오답 텍스트]
-				command.answer = JSON.stringify([ findPositions(battleContext, '.answer-wrong')[0], 
-												wrong.textContent.trim(), wrong.dataset.wrong.trim() ]);
-				break;
-			}
-			case '5':
-				if(battleContext.querySelectorAll('.option').length == 0) {
-					alertModal('보기를 추가해 주세요.');
-					return;
-				}
-				// 목록에서 선택한 해석id는 ask로
-				command.ask = addSection.querySelector('.select-kor').value;
-				// [보기 위치1, 보기 위치2, ...]
-				command.example = JSON.stringify(findPositions(battleContext, '.option'));
-
-				break;
-			case '6': {
-				if(battleContext.querySelector('.fill-right') == null) {
-					alertModal('문제로 만들 어구를 선택해 주세요.');
-					return;					
-				}
-				const blank = battleContext.querySelectorAll('.fill-right');
-				// 목록에서 선택한 해석id는 ask로
-				command.ask = addSection.querySelector('.select-kor').value;
-				// [빈칸 위치, 정답 텍스트]
-				command.example = JSON.stringify(Array.from(findPositions(battleContext, '.fill-right'), (pos,i) => {
-					return [pos, blank[i].textContent.trim()];
-				}));
-				break;
-			}
-			case '7': {
-				if(battleContext.querySelectorAll('.option').length > 0) {
-					command.ask = JSON.stringify(findPositions(battleContext, '.option'))
-				}else {
-					command.ask = JSON.stringify([[0, engLength]]);
-				}
-				// [ 정답단어1, 정답단어2, ... ]
-				const answerInput = addSection.querySelector('.kor-answer');
-				if(!answerInput.value) {
-					alertModal('정답 해석을 입력해 주세요.', () => answerInput.focus());
-					return;
-				}
-				command.answer = JSON.stringify(addSection.querySelector('.kor-answer').value.trim().split(/\s*\/\s*/));
-				// [ 추가단어1, 추가단어2, ... ]
-				command.example = JSON.stringify(addSection.querySelector('.battle-opt-ext').value.trim().split(/\s*\/\s*/));
-				
-				break;
-			}
-			case '8': {
-				const blank = battleContext.querySelector('.pick-right');
-				const extOptions = addSection.querySelector('.battle-opt-ext');
-				if(!blank) {
-					alertModal('문제로 만들 어구를 선택해 주세요.');
-					return;
-				}else if(!extOptions.value.trim().split(/\s*\/\s*/).join('')) {
-					alertModal('오답 보기를 입력해 주세요.', () => extOptions.focus());
-					return;
-				}
-				// [빈칸 위치, 정답 텍스트, [오답 텍스트1, 오답 텍스트2, ...]]
-				command.example = JSON.stringify([ findPositions(battleContext, '.pick-right')[0], 
-												blank.textContent.trim(), extOptions.value.trim().split(/\s*\/\s*/) ]);
-				// [정답 텍스트]
-				command.answer = JSON.stringify([ blank.textContent.trim() ]);
-				break;
-			}
-			default: break;
-		}
-		
 		// (ajax) 배틀 등록
 		$.ajax({
 			url: '/craft/battle/add',
@@ -520,7 +589,7 @@
 				// 태그 캐시 갱신
 				pushToCache(askTag, cachedAskTags);
 				// 출처 캐시 갱신
-				pushToCache(source, cachedSources);
+				/*pushToCache(source, cachedSources);*/
 				// 카테고리-태그 갱신
 				cachedCateAskTagMap[categoryId] = askTag;
 				// 커스텀 해석 삭제
@@ -530,7 +599,7 @@
 				}
 				
 				if(!document.getElementById('craftResultModal')) {
-					document.body.appendChild(createElement(craftToolbarGroup.addResultModal));
+					document.body.appendChild($(MAKER_TEMPLATES).find('#craftResultModal').clone(true)[0]);
 				}
 				
 				$(addSection).find('textarea.comment').summernote('reset');
@@ -543,9 +612,9 @@
 				battlebook_selection = { type: addSection.querySelector('.select-book-type').value, bookId: battleBookId };
 				
 				// 워크북 내에서 등록한 경우 배틀 출처 기본값 지정.
-				if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
+				/*if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
 					workbook_battleSource = command.source;
-				}
+				}*/
 				
 				battleContext.replaceChildren(battleContext.textContent);
 				
@@ -618,11 +687,12 @@
 	})
 	/** 배틀 출제 패널을 컨테이너에 삽입
 	 */
-	async function openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList) {
+	async function openBattleMakerPanel(container, memberId, memberRoleType, sentenceId, semanticsDiv, transList) {
 		if(!$.fn.autocomplete) {
 			document.head.append(createElement(
 				[{el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'},
-				{el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/app/craft-maker.min.css'}]));
+//				{el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/app/craft-maker.min.css'}]));
+				{el: 'link', rel: 'stylesheet', href: '/css/app/craft-maker.css'}]));
 			// 배틀 태그(askTag)의 제시어 기능을 위해 jquery-ui 사용
 			// jquery-ui와 부트스트랩의 tooltip 함수 충돌 때문에 
 			// 부트스트랩 메소드를 임시 저장한 채로 jquery-ui모듈을 로드한 후 원상복구
@@ -630,7 +700,7 @@
 			$.cachedScript('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.js', {
 				success: () => {
 					$.fn.tooltip = _tooltip;
-					openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList);
+					openBattleMakerPanel(container, memberId, memberRoleType, sentenceId, semanticsDiv, transList);
 				}
 			});
 			return;
@@ -645,12 +715,19 @@
 				let elements = Array.from(categories, c => {
 					return { el:'option', value: c.cid, textContent: `${(c.parentCategory ? '└─ ':'')}${c.title}`};
 				})
+				elements.unshift({ el: 'option', value: '', textContent: '문제가 속하는 문법 분류를 선택해 주세요.', disabled: true, selected: true})
 				categorySection.append(createElement(elements));
-				openBattleMakerPanel(container, memberId, sentenceId, semanticsDiv, transList);
+				openBattleMakerPanel(container, memberId, memberRoleType, sentenceId, semanticsDiv, transList);
 			});
 			return;
 		}
 		_memberId = memberId;
+		memberRole = memberRoleType;
+		
+		// 관리자만 단계별 배틀북 선택 가능
+		if(!['A','S'].includes(memberRole)) {
+			staticCraftPanel.querySelector('.select-book-type option[value="step"]').remove();
+		}
 		// 영어 문장 추출하기
 		const sentenceEng = tandem.cleanSvocDOMs(semanticsDiv).innerText;
 		
@@ -661,9 +738,11 @@
 		}
 		if(!staticCraftPanel.querySelector('.battle-comment-section textarea.comment~.note-editor')) {
 			const $sentenceUnit = $(container).closest('.one-sentence-unit-section');
+			// 부모 문장 div가 있고, 문장노트가 등록돼 있다면 해당 내용을 배틀 코멘트로 미리 입력
 			if($sentenceUnit.length > 0 && $sentenceUnit.find('.note-list .note-text').length > 0) {
 				$(panelInstance).find('.battle-comment-section textarea.comment').val($sentenceUnit.find('.note-list .note-text').html());
 			}
+			// 배틀 코멘트에 써머노트 적용
 			await openSummernote($(panelInstance).find('.battle-comment-section textarea.comment').removeClass('d-inline'));
 		}
 		
@@ -721,12 +800,16 @@
 		})
 		
 		container.replaceChildren();
+		
+		$(panelInstance).find('.original-sentence').text(sentenceEng);
 		// 배틀 1 유형을 기본으로 에디터 지정
 		attachBattleMaker(panelInstance.querySelector('.craft-maker-container'), semanticsDiv, 1);
 		container.append(panelInstance);
 		
 		// 배틀 생성탭이 처음 나올 때 askTag값 임의 지정
-		$(panelInstance).find('.ask-select').trigger('change');
+//		$(panelInstance).find('.ask-select').trigger('change');
+		
+		$(panelInstance).find('.battle-category-section select').val('');
 		
 		// 배틀 태그(askTag)에 제시어 기능 적용
 		// 배틀 출처(source)에 제시어 기능 적용
@@ -750,20 +833,25 @@
 			})
 		})
 		if($('.workbook-title-section').length > 0) {
-			$(panelInstance).find('.source').val($('.workbook-title-section').text().trim()).prop('readOnly', true)
+			workbook_battleSource = $('.workbook-title-section').text().trim();
+			/*$(panelInstance).find('.source').val($('.workbook-title-section').text().trim()).prop('readOnly', true)*/
 		}
 		
+		// 기존에 선택해둔 배틀북이 있으면 똑같이 선택
 		if(battlebook_selection) {
 			panelInstance.querySelector('.select-book-type').value = battlebook_selection.type;
 			panelInstance.querySelector('select.select-book').replaceChildren(createElement(Array.from(battleBooksMap[battlebook_selection.type], book => {
 				return { el: 'option', value: book.battleBookId, textContent: book.title || '제목 없음' }
 			})))
 			panelInstance.querySelector('select.select-book').value = battlebook_selection.bookId;
+		}else {
+			panelInstance.querySelector('.select-book-type').value = '';
 		}
+		panelInstance.querySelector('.select-book-type').focus();
 		
-		if(workbook_battleSource) {
+		/*if(workbook_battleSource) {
 			panelInstance.querySelector('input.source').value = workbook_battleSource;
-		}
+		}*/
 	}
 	
 	
@@ -775,7 +863,7 @@
 	function attachBattleMaker(container, semanticsDiv, battleType) {
 		container.replaceChildren();
 		redoList = []; undoList = [];
-		const makerDiv = createElement({el: 'div', className: 'battle-maker row', tabIndex: 0})
+		const makerDiv = createElement({el: 'div', className: 'battle-maker row g-0', tabIndex: 0})
 		container.append(makerDiv);	
 		let asks = Array.from(battleTypeInfos)[battleType - 1];
 		// 1, 2 유형의 경우 대상 문장에 포함된 성분들 파악해서 질문 목록에서 우선표시
@@ -789,6 +877,13 @@
 				return b.recommended ? 0 : -1;
 			})*/
 		}
+		// 배틀 유형별 질문 표시
+		container.closest('.battle-section-panel').querySelector('.ask-select').replaceChildren(createElement(createAskOptions(battleType, asks)))
+		//makerDiv.prepend(createElement(createAskSelect(battleType, asks)));
+		if([1,2].includes(battleType)) {
+			const selectedAsk = makerDiv.closest('.battle-section-panel').querySelector('.ask-select');
+			$(selectedAsk).trigger('change');
+		}
 		// 배틀 유형별 툴바 표시
 		appendToolbar(battleType, makerDiv);
 		
@@ -796,20 +891,8 @@
 		const engLength = eng.length;
 		
 		// 난이도 선택지 추가
-		appendLevelSelects(engLength, makerDiv)
+		appendLevelSelects(engLength, $(container).closest('.battle-section-panel').find('.battle-diffLevel-section').empty()[0])
 		
-		// 문장 길이
-		makerDiv.appendChild(createElement([
-			{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '길이' },
-			{ el: 'span', className: 'col-auto my-auto eng-length', textContent: engLength }
-		]))
-		
-		// 배틀 유형별 질문 표시
-		makerDiv.prepend(createElement(createAskSelect(battleType, asks)));
-		if([1,2].includes(battleType)) {
-			const selectedAsk = makerDiv.closest('.add-battle-section').querySelector('.ask-select');
-			$(selectedAsk).trigger('change');
-		}
 				// 3,4,5 유형은 askTag을 먼저 비움
 		if([3,4,5].includes(battleType)) {
 			const categorySelect = makerDiv.closest('.add-battle-section')?.querySelector('.battle-category-section select')
@@ -818,31 +901,45 @@
 		// 수정 영역 표시
 		appendContext(eng, makerDiv);
 		makerDiv.querySelector('.battle-context').dataset.battleType = battleType;
+		
+		// 추가 입력 표시
+		appendSpecificInputs(battleType, makerDiv);
 	}
 	
 	/**
 	 * 난이도 선택지 추가
 	 */
 	function appendLevelSelects(engLength, maker) {
+		// 상단 타이틀 추가
+		maker.appendChild(createElement([
+			{ el: 'div', className: 'text-fc-purple fw-bold my-auto', textContent: 'Step 4) 난이도 선택' },
+			{ el: 'span', className: 'sub-title mt-0 mb-2 d-block', textContent: '문장의 길이와 fico score를 참조하여 출제한 문제의 적절한 난이도를 선택해주세요.'}
+		]))
+
 		const now = Date.now();
-		const levelBtns = {el: 'div', className: 'battle-diffLevel-section col-12 col-md-3 row',
-			children: [
-				{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '난이도'}
-			]
-		};
-		[{text: '쉬움', value: 'A'},{text: '보통', value: 'B'},{text: '어려움', value: 'C'}]
-		.forEach(function(level, i) {
-			const isTargetLevel = i == 2 && engLength > 150 || i == 1 && engLength <= 150 && engLength > 80 || i == 0;
-			levelBtns.children.push({el: 'input', type: 'radio', autocomplete: 'off',
+		appendClassifiedElement([
+			{
+				"el": "label", "className": "col-1 lh-1 my-auto text-fc-purple fw-bold", 
+				"textContent": "난이도" 
+			}
+		].concat(Array.from([{text: '쉬움', value: 'A'},{text: '보통', value: 'B'},{text: '어려움', value: 'C'}], (level,i) => {
+			const isTargetLevel = i == 2 && engLength > 150 || i == 1 && engLength <= 150 && engLength > 80 || i == 0 && engLength <= 80;
+			return [
+				{el: 'input', type: 'radio', autocomplete: 'off',
 				name: `btnRadioBattleLevel${now}`,
 				id: `btnRadioBattleLevel${now}${i}`,
 				className: 'btn-check battle-level-select', 
-				checked: isTargetLevel, value: level.value});
-			levelBtns.children.push({el: 'label', textContent: level.text, 'data-bs-toggle': isTargetLevel?'tooltip':'',
+				checked: isTargetLevel, value: level.value},
+				{el: 'label', textContent: level.text, 'data-bs-toggle': isTargetLevel?'tooltip':'',
 				htmlFor: `btnRadioBattleLevel${now}${i}`, 'data-bs-html': 'true', 'data-bs-title': '문장 길이로 시스템이 파악한<br>최소 난이도입니다.', 'data-bs-trigger': 'manual',
-				className: 'col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico'});
-		})
-		appendClassifiedElement(levelBtns, maker);	
+				className: `diff-btn col btn col-auto px-4 ms-1 rounded-pill btn-outline-fico${i==2?' me-auto':''}`}
+			]
+		})), maker);
+		// 문장 길이정보 추가
+		maker.appendChild(createElement([
+			{ el: 'label', className: 'col-1 lh-1 my-auto text-fc-purple fw-bold', textContent: '길이' },
+			{ el: 'span', className: 'col-auto my-auto eng-length me-auto', textContent: engLength }
+		]))
 	}
 	
 	/** 주어진 버튼 그룹을 툴바에 넣어서 에디터에 탑재
@@ -856,49 +953,35 @@
 		}
 		maker.prepend(craftToolbar.cloneNode(true));
 		maker.dataset.wrapper = maker.querySelector('.btn-toolbar input:checked')?.value || ''; 
+	}
+	
+	/**
+	 * 배틀 유형별로 추가되는 입력 정보들을 표시
+	 */
+	function appendSpecificInputs(battleType, maker) {
 		if([5,6,7].includes(battleType)) {
 			// 5유형의 배틀은 '어순'을 기본 문법 카테고리로 선택
 			//categorySelect.value = GRAMMARID_ORDERING;
 			//$(categorySelect).trigger('click');
 			// 5유형의 배틀은 해석을 선택하는 영역을 추가(ask로 지정됨)
-			maker.appendChild(createElement({
-				el: 'div', className: 'col-12 row mt-3',
-				children: [
-					{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '해석'},
-					{el: 'select', className: 'select-kor form-select d-inline-block col',
-					children: [{el: 'option', value: '', textContent: '해석을 선택해 주세요.', disabled: true, selected: true }]
-					.concat(Array.from($(maker).closest('.battle-section-panel').data('transList'), ({id, text}) => {
-						return {el: 'option', value: id, textContent: text.trim(), 'data-trans': text.trim(), selected: false }
-					}))}
-				]
-			}));
+			const $ext = $(MAKER_TEMPLATES).find('.craft-editor-ext-kor-select').clone(true);
+			$ext.find('.select-kor').append(createElement(
+				Array.from($(maker).closest('.battle-section-panel').data('transList'), ({id, text}) => {
+					return {el: 'option', value: id, textContent: text.trim(), 'data-trans': text.trim(), selected: false }
+				}))
+			)
+			$(maker).append($ext);
 		}
 		if(battleType == 7) {
-			maker.appendChild(createElement({
-				el: 'div', className: 'col-12 row mt-3',
-				children: [
-					{el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '정답'},
-					{el: 'input', type: 'text', className: 'kor-answer form-control d-inline-block col', 'data-bs-toggle': 'tooltip', 
-						placeholder: '문장 혹은 문장의 일부에 대한 정답 해석을 선택하거나 직접 입력해 주세요. / 기호로 구분하여 보기에 표시됩니다. 예) 우리에게 불가능한/문장은/없습니다.', 
-						title: '문장 혹은 문장의 일부에 대한 정답 해석을 선택하거나 직접 입력해 주세요. / 기호로 구분하여 보기에 표시됩니다. 예) 우리에게 불가능한/문장은/없습니다.', 
-						'data-bs-template': '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner w-max-100"></div></div>'}
-				]
-			}));
-			
+			$(maker).append($(MAKER_TEMPLATES).find('.craft-editor-ext-kor-input').clone(true));
 		}
 		if([7,8].includes(battleType)) {
-			const optMsg = `오답 보기로 추가할 단어나 구들을 입력해 주세요. / 기호로 구분됩니다. 예) ${battleType === 7 ? '우리가/우리를' : 'we/us'}`;
-			maker.appendChild(createElement({
-				el: 'div', className: 'col-12 row mt-3', children: [
-					{ el: 'label', className: 'col-auto lh-1 my-auto text-fc-purple fw-bold', textContent: '오답'},
-					{ el: 'input', 
-						type: 'text', 
-						className: 'battle-opt-ext form-control col lh-1 my-auto', 
-						title: optMsg, 'data-bs-toggle': 'tooltip', 'data-bs-template': '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner w-max-100"></div></div>',
-						placeholder: optMsg}
-				]
-			}))
-		}
+			const $ext = $(MAKER_TEMPLATES).find('.craft-editor-ext-wrong-input').clone(true);
+			const exampleMsg = ` 예) ${battleType === 7 ? '우리가/우리를' : 'we/us'}`;
+			$ext.find('.battle-opt-ext').attr('title', $ext.find('.battle-opt-ext').attr('title') + exampleMsg)
+				.attr('title', $ext.find('.battle-opt-ext').attr('title') + exampleMsg);
+			$(maker).append($ext)
+		}		
 	}
 	/** 주어진 질문 목록을 에디터에 설정
 	@param battleType 배틀 유형 1,2,3,4,5
@@ -965,8 +1048,8 @@
 	 */
 	function appendContext(eng, maker, battle) {
 		appendClassifiedElement({
-			el: 'div', className: 'row pe-2', children: [
-				{el: 'label', className: 'col-auto lh-1 my-auto text-white fw-bold', textContent: '본문'},
+			el: 'div', className: 'row g-0', children: [
+				//{el: 'label', className: 'col-auto lh-1 my-auto text-white fw-bold', textContent: '본문'},
 				{el: 'div', className: 'battle-context fs-5 bg-white mt-3 px-2 col form-control',
 					children: battle ? createRangedSentenceBlock(eng, battle) : eng, onmouseup: () => wrapText(maker)}
 			]}, maker);
@@ -1088,7 +1171,7 @@
 		}
 		
 		
-		// 해당 구간에 대한 오답이 없을 때 롤백한다.
+		// 3,4,7유형은 프롬프트에서 오답 텍스트를 입력하지 않으면 롤백한다.
 		if([3,4,7].includes(battleType) && wrapperClass.match(/pick-right|answer-wrong/)) {
 			const wrong = prompt(`${wrapper.textContent}의 오답을 입력하세요.`);
 			if(wrong) {
@@ -1130,7 +1213,7 @@
 		},
 		{// 배틀 상세 정보
 			el: 'div', id: `existingBattleView${randId}`,
-			className: 'battle-preview fade collapse',
+			className: 'battle-preview fade collapse show',
 			children: battlePreviews
 		}];
 	}
@@ -1144,7 +1227,7 @@
 		modifyJson(json, v => {
 			// div에 클래스명이 없을 경우 버튼그룹으로 적용
 			if(!v.className && v.el == 'div')
-				v.className = 'btn-group col-auto';
+				v.className = 'btn-group col-8';
 			// 체크박스는 아니지만 title이 있다면 툴팁으로 적용
 			else if(v.title && v.type != 'checkbox') {
 				v['data-toggle'] = 'tooltip';
@@ -1720,9 +1803,12 @@
 		return preview;
 	}
 	
+	/**
+	 * 에디터용 본문 블럭 JSON 생성(DOM화 하려면 createElement() 필요)
+	 */
 	function createRangedSentenceBlock(eng, battle) {
-		const answers = JSON.parse(battle.answer||"[]");
-		const examples = JSON.parse(battle.example||"[]");
+		const answers = !!battle.answer ? typeof battle.answer == 'string' ? JSON.parse(battle.answer) : battle.answer : [];
+		const examples = !!battle.example ? typeof battle.example == 'string' ? JSON.parse(battle.example) : battle.example : [];
 		let offsetPos = 0;
 		const contextChildren = [];
 		const { battleType, ask } = battle;
@@ -1749,7 +1835,7 @@
 					contextChildren.push({
 						el: 'span',
 						className: getAnswerClass(start, end), 
-						textContent: eng.substring(start, end)
+						textContent: getOffsetStr(start, end)
 					});
 					if(j == arr.length - 1 && end < eng.length) {
 						contextChildren.push(eng.substring(end));
@@ -1773,7 +1859,7 @@
 					contextChildren.push({
 						el: 'span',
 						className: className, 
-						textContent: eng.substring(start,end)
+						textContent: getOffsetStr(start,end)
 					});
 					if(j == arr.length - 1 && end < eng.length) {
 						contextChildren.push(eng.substring(end));
@@ -1793,7 +1879,7 @@
 					el: 'span',
 					className: 'pick-right',
 					'data-wrong': wrongText,
-					textContent: eng.substring(start, end)
+					textContent: getOffsetStr(start, end)
 				});				
 				if(end < eng.length)
 					contextChildren.push(eng.substring(end));
@@ -1811,7 +1897,7 @@
 					const span = {
 						el: 'span',
 						className: getAnswerClass(start, end), 
-						textContent: eng.substring(start, end)
+						textContent: getOffsetStr(start, end)
 					};
 					if(answer_start == start && answer_end == end) {
 						span.className = 'answer-wrong';
@@ -1836,7 +1922,7 @@
 					contextChildren.push({
 						el: 'span',
 						className: 'option', 
-						textContent: eng.substring(start, end)
+						textContent: getOffsetStr(start, end)
 					});
 					if(j == arr.length - 1 && end < eng.length) {
 						contextChildren.push(eng.substring(end));
@@ -1856,7 +1942,7 @@
 					contextChildren.push({
 						el: 'span',
 						className: 'fill-right',
-						textContent: eng.substring(start, end)
+						textContent: getOffsetStr(start, end)
 					});				
 					if(j == arr.length - 1 && end < eng.length)
 						contextChildren.push(eng.substring(end));	
@@ -1872,7 +1958,7 @@
 			 */	
 				const [start, end] = JSON.parse(ask)[0];
 				const leftStr = getOffsetStr(offsetPos, start);
-				const targetStr = eng.substring(start, end);
+				const targetStr = getOffsetStr(start, end);
 				const rightStr = eng.substring(end);
 				if(leftStr) contextChildren.push(leftStr);
 				contextChildren.push(
@@ -1912,7 +1998,7 @@
 			*/
 				const [start, end] = examples[0];
 				const leftStr = getOffsetStr(offsetPos, start);
-				const targetStr = eng.substring(start, end);
+				const targetStr = getOffsetStr(start, end);
 				const rightStr = eng.substring(end);
 				if(leftStr) contextChildren.push(leftStr);
 				contextChildren.push(
@@ -1924,6 +2010,226 @@
 			default: break;
 		}
 		return contextChildren;		
+	}
+	
+	/**
+	 * 실제 클라이언트 화면과 유사하게 배틀 미리보기 JSON 생성
+	 */
+	function createPreviewBattleBlock(eng, battle) {
+		const answers = !!battle.answer ? typeof battle.answer == 'string' ? JSON.parse(battle.answer) : battle.answer : [];
+		const examples = !!battle.example ? typeof battle.example == 'string' ? JSON.parse(battle.example) : battle.example : [];
+		let offsetPos = 0;
+		const contextChildren = [];
+		const { battleType, ask, kor } = battle;
+
+		const getOffsetStr = (start, end) => eng.substring(start, end);
+
+		const getAnswerClass = (start, end) => {
+			const answer = answers.find(a => a[0] == start && a[1] == end);
+			return answer ? 'answer' : 'option';
+		};
+
+		const getAnswerWrongData = (start, end) => {
+			const answer = answers.find(a => a[0] == start && a[1] == end);
+			return answer ? { 'data-wrong': answer[2] } : {};
+		};		
+		switch(battleType) {
+			case '1': {
+			/* 성분 찾기. 
+				example = [[보기1start,보기1end],[보기2start,보기2end],...]
+				answer = [[정답1start,정답1end],[정답2start,정답2end],...]
+			*/ 
+				examples.sort(sortByPosition).forEach(([start, end], j, arr) => {
+					contextChildren.push(getOffsetStr(offsetPos, start));
+					contextChildren.push({
+						el: 'span',
+						className: getAnswerClass(start, end), 
+						textContent: getOffsetStr(start, end)
+					});
+					if(j == arr.length - 1 && end < eng.length) {
+						contextChildren.push(eng.substring(end));
+					}
+					offsetPos = end;
+				});
+				break;
+			}
+			case '2': {
+			/* 수식어 찾기.
+				answer = [[[수식어start,수식어end],[수식어start,수식어end],...],[[피수식어start,피수식어end],[피수식어start,피수식어end],...]]
+			 */
+			 	const [ modifiers, modificands ] = answers;
+			 	// options = [[start,end,class],[start,end,class],...]
+			 	const options = [
+					 ...modifiers.map((modifier,j) => [...modifier, 'modifier', j]),
+					 ...modificands.map((modificand, j) => [...modificand, `sem modificand mfd-${j}`]),
+				 ]
+				options.sort(sortByPosition).forEach(([start, end, className, targetMfd], j, arr) => {
+					contextChildren.push(getOffsetStr(offsetPos, start));
+					contextChildren.push({
+						el: 'span',
+						className: className, 
+						textContent: getOffsetStr(start,end),
+						dataset: typeof targetMfd == 'number' ? { mfd: targetMfd }: ''
+					});
+					if(j == arr.length - 1 && end < eng.length) {
+						contextChildren.push(eng.substring(end));
+					}
+					offsetPos = end;
+				});
+				break;
+			}
+			case '3': {
+			/* 맞는 어법 찾기.
+				example = [[대상start,대상end],정답텍스트,오답텍스트]
+				answer = [정답텍스트]
+			*/
+				const [[start, end], correctText, wrongText] = examples;
+				contextChildren.push(getOffsetStr(offsetPos, start));
+				contextChildren.push('[ ');
+				contextChildren.push({
+					el: 'span',
+					class: 'text-decoration-underline',
+					textContent: correctText
+				});				
+				contextChildren.push(`/${wrongText} ]`);
+				if(end < eng.length)
+					contextChildren.push(eng.substring(end));
+				break;
+			}
+			case '4': {
+			/* 틀린 어법 찾기.
+				example = [[보기1start,보기1end],[보기2start,보기2end],...]
+				answer = [[정답start,정답end],정답텍스트,오답텍스트]
+			 */
+				const [[answer_start, answer_end], _answerText, wrongText] = answers;
+				examples.sort(sortByPosition).forEach(([start, end], j, arr) => {
+					const leftStr = getOffsetStr(offsetPos, start);
+					if(leftStr) contextChildren.push(leftStr);
+					const span = {
+						el: 'span',
+						className: getAnswerClass(start, end), 
+						textContent: getOffsetStr(start, end)
+					};
+					if(answer_start == start && answer_end == end) {
+						span.className = 'text-danger answer';
+						span.textContent = wrongText;
+					}
+					contextChildren.push(span);
+					if(j == arr.length - 1 && end < eng.length) {
+						contextChildren.push(eng.substring(end));
+					}
+					offsetPos = end;
+				});
+				break;
+			}
+			case '5': {
+			/* 배열하기.
+				ask = 해석 아이디(선택한 해석일 경우)
+				example = [[보기1start,보기1end],[보기2start,보기2end],...]
+			 */
+				contextChildren.push({
+					el: 'span', class: 'text-fc-red me-2', textContent: kor
+				})
+				contextChildren.push({ el: 'br'});
+			 	examples.sort(sortByPosition).forEach(([start, end], j, arr) => {
+					const leftStr = getOffsetStr(offsetPos, start);
+					if(leftStr) contextChildren.push(leftStr);
+					contextChildren.push({
+						el: 'span',
+						className: 'text-decoration-underline', 
+						innerHTML: getOffsetStr(start, end).replaceAll(/./g,'&nbsp;')
+					});
+					if(j == arr.length - 1 && end < eng.length) {
+						contextChildren.push(eng.substring(end));
+					}
+					offsetPos = end;
+				});
+				contextChildren.push({ el: 'br'});
+				contextChildren.push({ el: 'label', textContent: '보기:', class: 'fw-bold'});
+				examples.sort(sortByPosition).forEach(([start, end]) => {
+					contextChildren.push({
+						el: 'span',
+						class: 'ms-2',
+						textContent: `[${getOffsetStr(start, end)}]`
+					});
+				});
+				break;
+			}
+			case '6': {
+			/** 빈칸 채우기
+				ask = 해석 아이디(선택한 해석일 경우)
+				example = [[[대상start,대상end],정답텍스트],[[대상start,대상end],정답텍스트],...]
+			 */	
+				contextChildren.push({
+					el: 'span', class: 'text-fc-red me-2', textContent: kor
+				})
+				contextChildren.push({ el: 'br'});
+			 	examples.sort((a,b) => a[0][0] - b[0][0]).forEach(([[start, end], _text], j, arr) => {
+					const leftStr = getOffsetStr(offsetPos, start);
+					if(leftStr) contextChildren.push(leftStr);
+					const correctStr = getOffsetStr(start, end);
+					contextChildren.push({
+						el: 'span',
+						className: 'text-decoration-underline',
+						innerHTML: correctStr.charAt(0) + correctStr.substring(1).replaceAll(/./g,'&nbsp;')
+					});				
+					if(j == arr.length - 1 && end < eng.length)
+						contextChildren.push(eng.substring(end));	
+					offsetPos = end;	 	
+				});
+				break;
+			}
+			case '7': {
+			/** 해석 배열하기
+				ask = 해석 위치
+				answer = [정답 단어1, 정답 단어2, ...]
+				example = [추가 단어1, 추가 단어2, ...](추가 단어를 입력했을 경우)
+			 */	
+				const [start, end] = JSON.parse(ask)[0];
+				const leftStr = getOffsetStr(offsetPos, start);
+				const targetStr = getOffsetStr(start, end);
+				const rightStr = eng.substring(end);
+				contextChildren.push({
+					el: 'span', class: 'text-fc-red', children:[
+						leftStr, { el: 'span', class: 'text-decoration-underline', textContent: targetStr }, rightStr
+					]
+				})
+				contextChildren.push({ el: 'br'});
+				contextChildren.push({ el: 'label', textContent: '보기:', class: 'fw-bold'});
+				answers.concat(examples).forEach(ko => {
+					if(ko.length > 0)
+					contextChildren.push({
+						el: 'span', class: `ms-2${answers.includes(ko)?' text-danger':''}`, textContent: `[${ko}]`
+					})
+				})
+				break;
+			}
+			case '8': {
+			/* 맞는 어법 찾기.
+				example = [[대상start,대상end],정답텍스트,[오답텍스트1,오답텍스트2,..]]
+				answer = [정답텍스트]
+			*/
+				const [start, end] = examples[0];
+				const leftStr = getOffsetStr(offsetPos, start);
+				const targetStr = getOffsetStr(start, end);
+				const rightStr = eng.substring(end);
+				if(leftStr) contextChildren.push(leftStr);
+				contextChildren.push(
+					{ el: 'span', className: 'text-decoration-underline', innerHTML: targetStr.replaceAll(/./g,'&nbsp;') },
+					rightStr
+				);
+				contextChildren.push({ el: 'br'});
+				contextChildren.push({ el: 'label', textContent: '보기:', class: 'fw-bold'});
+				answers.concat(examples[2]).forEach(en => {
+					contextChildren.push({
+						el: 'span', class: `ms-2${answers.includes(en)?' text-danger':''}`, textContent: `[${en}]`
+					})
+				})
+				break;
+			}
+			default: break;
+		}
+		return contextChildren;				
 	}
 	
 	// 컨텍스트의 html을 통째로 보관
