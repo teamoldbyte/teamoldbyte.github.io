@@ -26,11 +26,11 @@
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
-	const MAKER_TEMPLATES = await $.get('/data/craft/maker_templates.html', result => {
+	const MAKER_TEMPLATES = await $.get('https://static.findsvoc.com/data/craft/maker_templates.html', result => {
 		staticCraftPanel = $(result).find('.battle-section-panel')[0];
 	}, 'html')
 	
-	$.getJSON('/data/craft/maker-toolbar.json', json => {
+	$.getJSON('https://static.findsvoc.com/data/craft/maker-toolbar.json', json => {
 		craftToolbarGroup = json;
 		battleAsks = json.battleAsks;
 		battleTypeInfos = json.battleTypeInfos;
@@ -691,8 +691,8 @@
 		if(!$.fn.autocomplete) {
 			document.head.append(createElement(
 				[{el: 'link', rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.13.1/jquery-ui.min.css'},
-//				{el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/app/craft-maker.min.css'}]));
-				{el: 'link', rel: 'stylesheet', href: '/css/app/craft-maker.css'}]));
+				{el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/app/craft-maker.min.css'}]));
+				// {el: 'link', rel: 'stylesheet', href: '/css/app/craft-maker.css'}]));
 			// 배틀 태그(askTag)의 제시어 기능을 위해 jquery-ui 사용
 			// jquery-ui와 부트스트랩의 tooltip 함수 충돌 때문에 
 			// 부트스트랩 메소드를 임시 저장한 채로 jquery-ui모듈을 로드한 후 원상복구
