@@ -9,12 +9,21 @@
 				"children": [
 					{
 						"el": "label",
-						"className": "col-1 lh-2 ps-3 my-auto text-fc-purple fw-bold",
-						"textContent": "기존 등록 배틀 조회"
+						"className": "col-12 lh-2 ps-3 text-fc-purple fw-bold",
+						"textContent": "기존 배틀",
+						"children": [
+							{
+								"el": "span",
+								"role": "button",
+								"data-bs-toggle": "tooltip",
+								"title": "배틀 목록 전체 접기/펼치기",
+								"class": "js-collapse-existing-battles fold-icon text-xl align-middle expanded"
+							}
+						]
 					},
 					{
 						"el": "div",
-						"className": "existing-battles-section col-11"
+						"className": "existing-battles-section col collapse show"
 					}
 				]
 			},
@@ -24,305 +33,189 @@
 				"children": [
 					{
 						"el": "div",
-						"className": "battle-book-section p-3 bg-white row mx-0 mb-3 rounded-5 collapse show",
+						"className": "input-summary-section",
 						"children": [
 							{
-								"el": "label",
-								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold",
-								"textContent": "배틀북 선택"
-							},
-							{
-								"el": "label",
-								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold opacity-50",
-								"textContent": "북 타입"
-							},
-							{
-								"el": "select",
-								"className": "select-book-type form-select d-inline-block w-auto col-auto",
+								"el": "div",
+								"className": "summary-book row g-0 block",
+								"style": { "display": "none" },
 								"children": [
-									{ "el": "option", "value": "", "disabled": true, "textContent": "배틀북을 선택하세요" },
-									{ "el": "option", "value": "step", "textContent": "단계", "selected": true },
-									{ "el": "option", "value": "grammar", "textContent": "문법" },
-									{ "el": "option", "value": "theme", "textContent": "테마" },
-									{ "el": "option", "value": "new", "textContent": "새로운 배틀북 생성" }
+									{ 
+										"el": "label",
+										"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+										"textContent": "배틀북"
+									},
+									{
+										"el": "span",
+										"class": "col-auto input-info"
+									},
+									{
+										"el": "span",
+										"role": "button",
+										"class": "js-open-edit fas fa-backspace col-auto my-auto"
+									}
 								]
 							},
 							{
-								"el": "label",
-								"className": "col-auto lh-1 my-auto text-fc-purple fw-bold opacity-50",
-								"textContent": "배틀북"
+								"el": "div",
+								"className": "summary-type row g-0 block",
+								"style": { "display": "none" },
+								"children": [
+									{ 
+										"el": "label",
+										"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+										"textContent": "배틀 타입"
+									},
+									{
+										"el": "span",
+										"class": "col-auto input-info"
+									},
+									{ 
+										"el": "label",
+										"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+										"textContent": "상세 타입"
+									},
+									{
+										"el": "span",
+										"class": "col-auto input-info"
+									},
+									{
+										"el": "span",
+										"role": "button",
+										"class": "js-open-edit fas fa-backspace col-auto my-auto"
+									}
+								]
 							},
 							{
-								"el": "select",
-								"className": "select-book form-select d-inline-block w-auto col", "children": [
-									{ "el" : "option",  "textContent": "단계별 배틀", "value": "10000001" }
+								"el": "div",
+								"className": "summary-context row g-0 block",
+								"style": { "display": "none" },
+								"children": [
+									{ 
+										"el": "label",
+										"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+										"textContent": "본문"
+									},
+									{
+										"el": "div",
+										"class": "col-auto input-info battle-context"
+									},
+									{
+										"el": "span",
+										"role": "button",
+										"class": "js-open-edit fas fa-backspace col-auto my-auto"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "summary-detail row g-0 block",
+								"style": { "display": "none" },
+								"children": [
+									{ 
+										"el": "label",
+										"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+										"textContent": "해설"
+									},
+									{
+										"el": "span",
+										"class": "col input-info comment short text-truncate"
+									},
+									{
+										"el": "div",
+										"class": "row",
+										"children": [
+											{ 
+												"el": "label",
+												"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "문법"
+											},
+											{
+												"el": "span",
+												"class": "col-auto input-info"
+											},
+											{ 
+												"el": "label",
+												"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+												"textContent": "태그"
+											},
+											{
+												"el": "span",
+												"class": "col-auto input-info"
+											},
+											{
+												"el": "span",
+												"role": "button",
+												"class": "js-open-edit fas fa-backspace col-auto my-auto"
+											}
+										]
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "summary-difflevel row g-0 block",
+								"style": { "display": "none" },
+								"children": [
+									{ 
+										"el": "label",
+										"class": "col-auto lh-1 my-auto text-fc-purple fw-bold",
+										"textContent": "난이도"
+									},
+									{
+										"el": "span",
+										"class": "col-auto input-info"
+									},
+									{
+										"el": "span",
+										"role": "button",
+										"class": "js-open-edit fas fa-backspace col-auto my-auto"
+									}
 								]
 							}
 						]
 					},
 					{
-						"el": "form",
-						"className": "add-book-section position-relative p-3 bg-white row mx-0 mb-3 rounded-5 collapse border",
+						"el": "div",
+						"className": "battle-book-section row mx-0 mb-3 collapse show",
 						"children": [
 							{
 								"el": "label",
-								"className": "col-md-1 lh-1 ps-0 my-auto text-fc-purple fw-bold",
-								"textContent": "배틀북 생성"
+								"className": "col-12 lh-1 my-auto text-fc-purple fw-bold",
+								"textContent": "Step 1) 배틀북 선택"
 							},
 							{
-								"el": "button",
-								"type": "button",
-								"className": "js-cancel-add-book position-absolute btn p-3 col-auto top-0 end-0 fas fa-times"
+								"el": "span",
+								"className": "sub-title",
+								"textContent": "배틀을 추가할 배틀북을 선택하세요."
 							},
 							{
 								"el": "div",
-								"className": "col-md-11 row",
+								"className": "col-12",
 								"children": [
 									{
-										"el": "div",
-										"className": "col-md-4",
+										"el": "label",
+										"className": "col-1 lh-1 ps-0 text-end pe-3 my-auto text-fc-purple fw-bold",
+										"textContent": "북 타입"
+									},
+									{
+										"el": "select",
+										"className": "select-book-type form-select d-inline-block w-25",
 										"children": [
-											{
-												"el": "div",
-												"className": "row",
-												"children": [
-													{ 
-														"el": "label", 
-														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
-														"textContent": "타이틀"
-													},
-													{
-														"el": "input",
-														"type": "text",
-														"maxLength": 100,
-														"name": "title",
-														"required": true,
-														"className": "input-book-title form-control col-auto d-inline-block w-auto"
-													}
-												]
-											},
-											{
-												"el": "div",
-												"className": "row mt-3",
-												"children": [
-													{ 
-														"el": "label", 
-														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
-														"textContent": "북타입"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookTypeT",
-														"name": "bookType",
-														"className": "input-book-type btn-check",
-														"checked": true,
-														"value": "T"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookTypeT",
-														"textContent": "테마"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookTypeG",
-														"name": "bookType",
-														"className": "input-book-type btn-check",
-														"value": "G"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookTypeG",
-														"textContent": "문법"
-													}
-												]
-											},
-											{
-												"el": "div",
-												"className": "row mt-3",
-												"children": [
-													{ 
-														"el": "label", 
-														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
-														"textContent": "공개타입"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookOpenTypeT",
-														"name": "openType",
-														"className": "input-open-type btn-check",
-														"value": "P"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookOpenTypeP",
-														"textContent": "전체"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookOpenTypeT",
-														"name": "openType",
-														"className": "input-open-type btn-check",
-														"value": "T"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookOpenTypeT",
-														"textContent": "그룹"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookOpenTypeR",
-														"name": "openType",
-														"className": "input-open-type btn-check",
-														"checked": true,
-														"value": "R"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookOpenTypeR",
-														"textContent": "개인"
-													}
-												]
-											},
-											{
-												"el": "div",
-												"className": "row mt-3",
-												"children": [
-													{ 
-														"el": "label", 
-														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
-														"textContent": "정렬순서"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookOrderSortI",
-														"name": "orderSort",
-														"className": "input-open-type btn-check",
-														"checked": true,
-														"value": "i"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookOrderSortI",
-														"textContent": "등록순"
-													},
-													{
-														"el": "input",
-														"type": "radio",
-														"id": "inputBookOrderSortR",
-														"name": "orderSort",
-														"className": "input-open-type btn-check",
-														"value": "r"
-													},
-													{
-														"el": "label",
-														"className": "btn btn-outline-fico col-auto lh-1 my-auto rounded-pill",
-														"htmlFor": "inputBookOrderSortR",
-														"textContent": "난이도+길이순"
-													}
-												]
-											},
-											{
-												"el": "div",
-												"className": "row mt-3",
-												"children": [
-													{ 
-														"el": "label", 
-														"className": "col-md-3 lh-1 my-auto text-fc-purple fw-bold", 
-														"textContent": "가격"
-													},
-													{
-														"el": "input",
-														"type": "number",
-														"name": "price",
-														"value": "0",
-														"min": "0",
-														"max": "1000000",
-														"className": "input-book-price form-control col-auto d-inline-block w-auto"
-													}
-												]
-											}
+											{ "el": "option", "value": "", "textContent": "배틀북을 선택하세요", "selected": true, "disabled": true, "hidden": true},
+											{ "el": "option", "value": "step", "textContent": "단계" },
+											{ "el": "option", "value": "grammar", "textContent": "문법" },
+											{ "el": "option", "value": "theme", "textContent": "테마" }
 										]
 									},
 									{
-										"el": "div",
-										"className": "col-md-2",
-										"children": [
-											{ 
-												"el": "label", 
-												"className": "lh-1 my-auto text-fc-purple fw-bold", 
-												"textContent": "북커버"
-											},
-											{
-												"el": "div",
-												"className": "js-edit-battlebook-cover position-relative",
-												"role": "button",
-												"style": "width:10rem;height:15rem;",
-												"children": [
-													{
-														"el": "img",
-														"className": "battlebook-cover-preview personacon-profile profile-default w-100 h-100"
-													},
-													{
-														"el": "input",
-														"type": "file",
-														"name": "coverImage",
-														"className": "input-book-cover d-none"
-													},
-													{
-														"el": "div",
-														"className": "position-absolute top-50 start-50 translate-middle fa-3x opacity-50 fas fa-plus-circle"
-													},
-													{
-														"el": "button",
-														"type": "button",
-														"className": "js-cancel-battlebook-cover btn btn-secondary fas fa-times position-absolute top-0 end-0",
-														"style": "display: none;"
-													}
-												]
-											}
-										]
+										"el": "label",
+										"className": "col-2 lh-1 text-end pe-3 my-auto text-fc-purple fw-bold",
+										"textContent": "배틀북"
 									},
 									{
-										"el": "div",
-										"children": [
-											{ 
-												"el": "label", 
-												"className": "lh-1 my-2 text-fc-purple fw-bold", 
-												"textContent": "설명"
-											},
-											{
-												"el": "textarea",
-												"type": "text",
-												"maxLength": 1000,
-												"name": "description",
-												"className": "input-book-desc form-control col"
-											}
-										]
-									},
-									{
-										"el": "div",
-										"className": "mt-3",
-										"children": [
-											{
-												"el": "button",
-												"type": "button",
-												"className": "js-add-battlebook btn btn-fico",
-												"textContent": "배틀북 등록"
-											}
+										"el": "select",
+										"className": "select-book form-select d-inline-block w-50", "children": [
 										]
 									}
 								]
@@ -331,135 +224,545 @@
 					},
 					{
 						"el": "div",
-						"className": "battle-type-section p-3 bg-white row mx-0 mb-3 rounded-5 g-3",
+						"className": "battle-type-section phase-2 row g-0 mx-0 mb-3 collapse",
 						"data-radio": "btnradioBattletype",
 						"children": [
 							{
-								"el": "label",
-								"className": "col-auto lh-1 ps-0 my-auto text-fc-purple fw-bold",
-								"textContent": "배틀 타입 선택"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 1,
-								"checked": "checked"
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "1. 성분 찾기"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 2
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "2. 수식어 찾기"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 3
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "3. 맞는 어법 찾기(양자택일)"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 4
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "4. 틀린 어법 찾기"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 5
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "5. 영어 어순 배치"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 6
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "6. 빈 칸 채우기"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 7
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "7. 한글 해석하기"
-							},
-							{
-								"el": "input",
-								"type": "radio",
-								"className": "btn-check",
-								"autocomplete": "off",
-								"value": 8
-							},
-							{
-								"el": "label",
-								"className": "btn rounded-pill btn-outline-fico col-auto mx-1",
-								"textContent": "8. 맞는 어법 찾기(n지선다)"
-							}
-							
-						]
-					},
-					{
-						"el": "div",
-						"className": "add-detail-battle-section p-3 bg-white rounded-5",
-						"children": [
-							{
 								"el": "div",
-								"className": "battle-editor-section pb-3",
+								"className": "row g-0 mb-4 d-none",
 								"children": [
 									{
-										"el": "div",
-										"className": "craft-maker-container"
+										"el": "label",
+										"className": "col-12 lh-1 my-auto text-fc-purple fw-bold mb-1",
+										"textContent": "영어 문장"
+									},
+									{
+										"el": "span",
+										"className": "col original-sentence d-inline"
 									}
 								]
 							},
 							{
 								"el": "div",
-								"className": "row pb-3",
+								"className": "battle-type-list-section row g-2 mb-3",
+								"children": [
+									{
+										"el": "label",
+										"className": "col-12 lh-1 ps-0 my-auto text-fc-purple fw-bold ",
+										"textContent": "Step 2) 배틀 타입 및 질문 선택"
+									},
+									{
+										"el": "span",
+										"className": "sub-title mt-1 mb-2",
+										"textContent": "원하는 형태의 배틀 타입과 질문을 선택하세요. 타입별 설명에 따라 정답, 보기 등을 드래그하여 문제를 생성하세요."
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-1 col-3",
+										"data-battle-type": "1", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 1,
+												"checked": "checked"
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>1. 성분 찾기</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "<span class='example'>I</span> am Gina"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-2 col-3",
+										"data-battle-type": "2", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 2
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>2. 수식어 찾기</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "<span class='example-1'>someone</span> <span class='example-2'>following</span>"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-3 col-3",
+										"data-battle-type": "3", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 3
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>3. 맞는 어법 찾기(양자택일)</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "[<span>are</span> / <span>was</span>]"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-4 col-3",
+										"data-battle-type": "4", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 4
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>4. 틀린 어법</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "She <span>enjoy</span> cooking."
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-5 col-3",
+										"data-battle-type": "5", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 5
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>5. 영어 어순 배치</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "<span class='example'>father</span> <span class='example'>my</span>"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-6 col-3",
+										"data-battle-type": "6", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 6
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>6. 빈 칸 채우기</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "I <u>c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u> do it."
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-7 col-3",
+										"data-battle-type": "7", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 7
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>7. 한글 해석하기</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "<span class='example'>식물학자</span> <span class='example'>채식주의자</span>"
+													}
+												]
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-block battle-type-8 col-3",
+										"data-battle-type": "8", 
+										"children": [
+											{
+												"el": "input",
+												"type": "radio",
+												"className": "btn-check",
+												"autocomplete": "off",
+												"value": 8
+											},
+											{
+												"el": "label",
+												"className": "btn btn-outline-fico col-12",
+												"innerHTML": "<span class='type-text'>8. 맞는 어법 찾기(n지선다)</span>",
+												"children": [
+													{
+														"el": "div",
+														"className": "battle-type-example",
+														"innerHTML": "<span class='example'>took</span> <span class='example'>taking</span> <span class='example'>will take</span>"
+													}
+												]
+											}
+										]
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "battle-type-guide-block-list",
 								"children": [
 									{
 										"el": "div",
-										"className": "battle-category-section col-12 col-md-3 row",
+										"className" : "battle-type-guide-block battle-type-1",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 1</span> 문장 성분 찾기"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 주어진 문장에서 수식어를 제외한 문장의 성분을 찾는 문제입니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "<span>I</span> <span>am</span> <span>Gina</span>"
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. 질문 목록에서 찾아야 할 문장 성분을 선택하세요.</span><span class='step'>2. ’정답 선택’ 버튼이 활성화된 상태에서 찾아야 할 성분 부분을 마우스로 지정하세요. 해당 영역이 [정답]으로 선택됩니다.</span><span class='step'>3. 정답이 아닌 부분들은 ‘보기 선택’ 버튼을 선택하여 마우스로 영역을 지정하세요. 하나 이상의 보기를 지정하려면 여러 번 반복하세요.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-2",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 2</span> 수식어 찾기"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 영어 문장 안에서 수식어 혹은 피수식어를 찾는 문제입니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "She saw <span>someone</span> <span>following</span> her."
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. ‘수식어 선택’ 혹은 ‘피수식어 선택’ 버튼을 클릭하고 영어 문장에 해당 영역을 각각 마우스로 영역을 지정하세요. 선택한 버튼에 따라 ‘수식어’ 혹은 ‘피수식어’ 지정됩니다. <span class='sub text-fc-red'>수식어/피수식어 선택 버튼이 변경되었는지 체크해 주세요.</span></span><span class='step'>2. ‘수식어’ 혹은 ‘피수식어’만 찾도록 문제를 출제할 수도 있습니다.</span><span class='step'>3. 모든 수식어를 찾도록 출제할 수도 있습니다. 이때는 정답이 되는 부분들만 마우스로 영역을 지정하세요.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-3",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 3</span> 맞는 어법 찾기(양자택일)"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 영어 문장에서 틀린 보기 하나를 추가 지정하여 맞는 보기를 찾는 문제입니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "How [<span>are</span> / <span>was</span> ] you?"
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. 틀린 보기를 지정할 영역을 선택하세요.</span><span class='step'>2. 오답이 될 보기를 입력하세요.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-4",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 4</span> 틀린 어법 찾기"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 문장에서 틀린 부분을 찾는 문제입니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "She <span>enjoy</span> cooking."
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. ‘정답 선택’ 버튼을 활성화한 후 틀린 보기로 대체할 부분을 마우스로 영역을 지정하세요.</span><span class='step'>2. ‘틀린 보기’를 입력하면 입력된 단어로 문제 문장에서 바뀝니다.</span><span class='step'>3. ‘보기 선택’ 버튼을 클릭한 후 문제가 없는 보기들을 필요한 만큼 지정하세요.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-5",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 5</span> 영어 어순 배치"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 우리말 해석을 제시하고 영어 문장으로 바꾸는 문제입니다. 영어 문장 구성에 필요한 어휘들을 미리 제공하고 어휘들을 배치하여 영어 문장을 완성합니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "\"청소는 오전 10시부터 오후 3시까지 진행됩니다.\"<br>[will take] [from 10 am] [to 3 pm] [the cleaning]"
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. 해석 목록에서 문제로 출제 시 보이게 될 적당한 해석 하나를 선택하세요.<span class='sub'>적당한 해석이 없을 경우 해당 문장이 있는 워크북에서 사용자 해석을 추가한 후 작업해 주세요.</span></span><span class='step'>2. 주어진 영어 문장에서 배치될 어휘들을 마우스로 지정하세요. 필요한 만큼 지정할 수 있으며 지정된 어휘들은 순서가 임의적으로 바뀌면서 보기로 출제됩니다.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-6",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 6</span> 빈칸 영작하기"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 한글 해석에 적절한 영어 문장의 어휘를 선택하는 문제입니다. 하나 이상의 적절한 단어들이 존재할 수 있기 때문에 선택할 어휘의 첫 글자를 미리 표시합니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "\"저 새들을 봐!\"<br>Look at <u>t&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</u> birds!"
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. 해석 목록에서 문제로 출제될 해석 하나를 선택하세요.(적당한 해석이 없을 경우 해당 문장이 있는 워크북에서 사용자 해석을 추가한 후 작업해 주세요.)</span><span class='step'>2. 영어 문장에서 빈칸으로 만들 영역을 마우스로 지정하세요.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-7",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 7</span> 한글 해석하기"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 주어진 영어 문장 해석에 필요한 우리말 단어들을 선택하여 해석하는 문제입니다. 문장 전체 해석과 특정 부분 해석 모두 가능합니다."
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "\"She is a vegetarian.\"<br>[입니다] [식물학자] [그녀는] [채식주의자] [참석자]"
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. 해석 목록에서 문제로 출제될 해석 하나를 선택하세요.<span class='sub'>적당한 해석이 없을 경우 해당 문장이 있는 워크북에서 사용자 해석을 추가한 후 작업해 주세요.</span></span><span class='step'>2. 선택한 해석을 참조하여 보기로 표시될 한글 해석 어휘들을 입력하세요. 각각의 어휘들을 슬래시(/)로 구분하면 해당 어휘들을 보기로 만들 수 있습니다.<span class='sub'>ex) 그녀는/채식주의자/입니다</span></span><span class='step'>3. 부분 해석에 대한 문제를 출제하려면 영어 문장에서 해석이 필요한 영역을 지정하세요. 2번과 동일하게 보기로 표시될 한글 해석 어휘들을 슬래시로 구분하여 입력하세요.</span><span class='step'>4. 오답 입력란에 오답 보기들을 슬래시(/)로 구분하여 입력하세요.<span class='sub'>ex) 식물학자/참석자</span></span><span class='step'>5. 입력된 모든 보기들은 자동으로 순서들이 섞여서 화면에 표시가 될 것입니다.</span>"
+											}
+										]
+									},
+									{
+										"el": "div",
+										"className" : "battle-type-guide-block battle-type-8",
+										"children": [
+											{
+												"el": "div",
+												"className": "title",
+												"innerHTML": "<span class='type-title'>배틀 타입 8</span> 맞는 어법 찾기(n지선다)"
+											},
+											{
+												"el": "div",
+												"className": "rough-guide-text",
+												"textContent": "이 유형은 배틀 타입 3의 문제를 변형하여 하나 이상의 틀린 보기를 지정할 수 있는 유형입니다. (참고로 이 유형은 토익 파트 5 문제 구조와 동일합니다.)"
+											},
+											{
+												"el": "div",
+												"className": "sample-section",
+												"innerHTML": "The students <u>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</u> the final exam next Friday.<br>[took] [taking] [has taken] [will take]"
+											},
+											{
+												"el": "div",
+												"className": "detailed-guide-text",
+												"innerHTML": "<span class='step'>1. 질문 목록에서 적절한 문법 분류를 선택하세요.<span class='sub'>토익 파트 5문제가 아니라면 생략할 수 있습니다.</span></span><span class='step'>2. 영어 문장에서 질문할 부분을 마우스로 영역을 지정하세요.</span><span class='step'>3. 오답 보기로 추가할 어휘들을 슬래시(/)로 구분하여 지정하세요.</span><span class='step'>4. 마우스 영역으로 지정한 부분(정답)과 오답으로 추가된 부분들이 문제의 보기로 구성될 것입니다.<span class='sub text-fc-red'>주의 : 오답 보기에 정답 보기를 입력하지 마세요)</span></span>"
+											}
+										]
+									}
+								]
+							},
+							{
+								"el": "div", 
+								"className": "row g-0",
+								"children": [
+									{	"el": "label", "textContent": "질문", 
+										"className": "col-12 lh-1 mb-2 my-auto text-fc-purple fw-bold"
+									},
+									{
+										"el": "select", 
+										"className": "form-select ask-select col"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "text-center mt-4",
+								"children": [
+									{
+										"el": "button",
+										"className": "js-type-select-complete btn btn-fico w-25",
+										"textContent": "다음"
+									}
+								]
+							}
+						]
+					},
+					{
+						"el": "div",
+						"className": "battle-editor-section pb-3 collapse",
+						"children": [
+							{
+								"el": "div",
+								"className": "craft-maker-container"
+							},
+							{
+								"el": "div",
+								"className": "mt-3 text-center",
+								"children": [
+									{
+										"el": "button",
+										"type": "button",
+										"className": "js-context-complete btn btn-fico w-25",
+										"textContent": "다음"
+									}
+								]
+							}
+						]
+					},
+					{
+						"el": "div",
+						"className": "battle-detail-section collapse",
+						"children": [
+							{
+								"el": "div",
+								"className": "battle-comment-section mb-4",
+								"children": [
+									{
+										"el": "label",
+										"className": "col-auto text-fc-purple fw-bold mb-2",
+										"textContent": "Step 3) 해설 및 문법, 태그 입력"
+									},
+									{
+										"el": "span",
+										"className": "sub-title mt-1 mb-2 d-block",
+										"textContent": "워크북에서 작성한 문장 노트가 있다면 해당 내용을 배틀의 해설로 가져옵니다. 문장 노트를 바탕으로 배틀의 해설을 덧붙여 작성해보세요."
+									},
+									{
+										"el": "textarea",
+										"className": "comment form-control d-inline col h-auto",
+										"maxLength": 1500,
+										"rows": "10",
+										"placeholder": "문제에 대한 한 줄 코멘트, 참조 링크 등"
+									}
+								]
+							},
+							{
+								"el": "div",
+								"className": "row",
+								"children": [
+									{
+										"el": "div",
+										"className": "battle-category-section col-6 row",
 										"children": [
 											{
 												"el": "label",
@@ -474,7 +777,7 @@
 									},
 									{
 										"el": "div",
-										"className": "battle-askTag-section col-12 ms-md-4 col-md-3 row",
+										"className": "battle-askTag-section col-6 row",
 										"children": [
 											{
 												"el": "label",
@@ -489,56 +792,39 @@
 												"placeholder": "ex) 목적어(부), 관계사(카테고리명)"
 											}
 										]
-									},
-									{
-										"el": "div",
-										"className": "battle-source-section col ms-md-4 row me-md-2",
-										"children": [
-											{
-												"el": "label",
-												"className": "col-auto lh-1 my-auto text-fc-purple fw-bold",
-												"textContent": "출처"
-											},
-											{
-												"el": "input",
-												"type": "text",
-												"maxLength": 100,
-												"className": "source form-control d-inline col",
-												"placeholder": "ex) OOO 워크북, 2022년 6월 고3 모의고사 등"
-											}
-										]
 									}
 								]
 							},
 							{
 								"el": "div",
-								"className": "battle-comment-section pb-3 row me-md-2",
-								"children": [
-									{
-										"el": "label",
-										"className": "col-auto text-fc-purple fw-bold",
-										"textContent": "해설"
-									},
-									{
-										"el": "textarea",
-										"className": "comment form-control d-inline col h-auto",
-										"maxLength": 1500,
-										"rows": "10",
-										"placeholder": "문제에 대한 한 줄 코멘트, 참조 링크 등"
-									}
-								]
-							},
-							{
-								"el": "div",
-								"className": "button-section text-center",
+								"className": "mt-4 text-center",
 								"children": [
 									{
 										"el": "button",
 										"type": "button",
-										"className": "js-add-battle btn btn-fico btn-lg",
-										"textContent": "등록"
+										"className": "js-detail-complete btn btn-fico w-25",
+										"textContent": "다음"
 									}
 								]
+							}
+							
+						]
+					},
+					{
+						"el": "div", "className": "battle-diffLevel-section col-12 row g-0 collapse",
+						"children": [
+						]
+					},
+					{
+						"el": "div",
+						"className": "button-section text-center",
+						"children": [
+							{
+								"el": "button",
+								"type": "button",
+								"style": { "display": "none" },
+								"className": "js-add-battle btn btn-fico btn-lg",
+								"textContent": "완료"
 							}
 						]
 					}
@@ -918,13 +1204,13 @@
 	"commonEditorBtns": [
 		{
 			"el": "div",
-			"className": "col-auto d-inline",
+			"className": "col-4 d-inline",
 			"children":
 			[	
 				{
 					"el": "button",
 					"title": "실행취소 (단축키: Ctrl + Z)",
-					"className": "btn btn-outline-fico col-auto",
+					"className": "btn btn-outline-fico col-6",
 					"innerHTML": "<i class=\"fas fa-undo-alt\"></i>",
 					"disabled": "disabled",
 					"value": "undo"
@@ -932,7 +1218,7 @@
 				{
 					"el": "button",
 					"title": "재실행 (단축키: Ctrl + Y)",
-					"className": "btn btn-outline-fico col-auto",
+					"className": "btn btn-outline-fico col-6",
 					"innerHTML": "<i class=\"fas fa-undo-alt fa-flip-horizontal\"></i>",
 					"disabled": "disabled",
 					"value": "redo"
@@ -1028,14 +1314,14 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "정답 선택",
-				"innerHTML": "정답",
+				"innerHTML": "정답으로 만들 영역을 아래 문장에서 선택하세요.",
 				"value": "answer"
 			},
 			{
 				"el": "input",
 				"type": "checkbox",
 				"title": "보기 선택",
-				"innerHTML": "보기",
+				"innerHTML": "보기로 만들 영역을 아래 문장에서 선택하세요.",
 				"value": "option"
 			}
 		]
@@ -1048,7 +1334,7 @@
 				"el": "input",
 				"type": "checkbox",
 				"title": "수식어 선택",
-				"innerHTML": "수식어",
+				"innerHTML": "수식어를 아래 문장에서 드래그하여 선택하세요.",
 				"value": "modifier"
 			},
 			{
@@ -1056,7 +1342,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "피수식어 선택",
-				"innerHTML": "피수식어",
+				"innerHTML": "피수식어를 아래 문장에서 드래그하여 선택하세요.",
 				"value": "modificand"
 			}
 		]
@@ -1070,7 +1356,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "빈칸 선택",
-				"innerHTML": "빈칸 선택",
+				"innerHTML": "양자택일을 할 영역을 아래 문장에서 선택하세요.",
 				"value": "pick-right"
 			}
 		]
@@ -1084,14 +1370,14 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "정답 선택",
-				"innerHTML": "정답",
+				"innerHTML": "문제로 출제할 영역을 아래 문장에서 드래그하여 선택하세요.",
 				"value": "answer-wrong"
 			},
 			{
 				"el": "input",
 				"type": "checkbox",
 				"title": "보기 선택",
-				"innerHTML": "보기",
+				"innerHTML": "보기를 아래 문장에서 선택하세요.",
 				"value": "option"
 			}
 		]
@@ -1105,7 +1391,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "보기 선택",
-				"innerHTML": "보기",
+				"innerHTML": "선택지로 만들 보기들을 아래 문장에서 선택하세요.",
 				"value": "option"
 			}
 		]
@@ -1119,7 +1405,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "빈칸 선택",
-				"innerHTML": "빈칸 선택",
+				"innerHTML": "빈칸으로 만들 영역을 아래 문장에서 선택하세요.",
 				"value": "fill-right"
 			}
 		]
@@ -1133,7 +1419,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "해석구간 선택",
-				"innerHTML": "해석구간(미선택시 전체)",
+				"innerHTML": "문제로 낼 해석 구간(미선택시 전체)을 아래 문장에서 선택하세요.",
 				"value": "option"
 			}
 		]		
@@ -1147,7 +1433,7 @@
 				"type": "checkbox",
 				"checked": "checked",
 				"title": "빈칸 선택",
-				"innerHTML": "빈칸 선택",
+				"innerHTML": "빈칸으로 만들 영역을 아래 문장에서 선택하세요.",
 				"value": "pick-right"
 			}
 		]

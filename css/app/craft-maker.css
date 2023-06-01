@@ -82,3 +82,167 @@
 	font-size: 1rem;
 	white-space: break-spaces;
 }
+
+
+
+/**********************************************************
+ *				summary 영역 
+ **********************************************************/
+ .add-craft-section .input-summary-section .block{
+	/* background-color: #fff; */
+	padding: 1rem;
+	/* padding-bottom: 2rem; */
+	/* border: 1px solid #d5d5d5; */
+	border-bottom: none;
+	border-radius: 0.75rem 0.75rem 0 0;
+	position: relative;
+ }
+
+.add-craft-section .input-summary-section .summary-book{
+	background-color: rgb(255, 248, 232);
+}
+.add-craft-section .input-summary-section .summary-type{
+	background-color: rgb(254, 241, 211);
+}
+.add-craft-section .input-summary-section .summary-context{
+	background-color: rgb(255, 235, 190);
+}
+.add-craft-section .input-summary-section .summary-detail{
+	background-color: rgb(255, 230, 175);
+}
+.add-craft-section .battle-diffLevel-section{
+	background-color: rgb(255, 223, 152);
+}
+
+.add-craft-section .input-summary-section .block label{
+	margin-right: 0.5rem;
+	margin-left: 3rem;
+}
+.add-craft-section .input-summary-section .block label:first-child{
+	margin-left: 0;
+}
+.add-craft-section .input-summary-section .block .js-open-edit{
+	margin-left: 0.5rem;
+	position: absolute;
+	right: 1rem;
+	color: #f97316;
+	font-size: 1.25rem;
+}
+ /* .add-craft-section .battle-type-section,
+ .add-craft-section .battle-editor-section,
+ .add-craft-section .battle-detail-section,
+ .add-craft-section .battle-diffLevel-section{
+	border-top: 1px solid #d5d5d5;
+ } */
+
+/**********************************************************
+ *				배틀 북 선택 영역 
+ **********************************************************/
+ .add-craft-section .battle-book-section select{
+	height: -webkit-fit-content;
+	height: fit-content;
+	margin: auto;
+ }
+
+/**********************************************************
+ *				배틀 타입 영역 
+ **********************************************************/
+.add-craft-section .battle-editor-section .battle-type-block .battle-type-example{
+	margin-top: 0.5rem;
+	width: 100%;
+	color: #019c9e;
+	padding: 1rem 0 0.5rem 0;
+	font-family: 'Dubai', 'LINESeedKR';
+}
+.add-craft-section .battle-editor-section .battle-type-block:hover .battle-type-example,
+.add-craft-section .battle-editor-section .battle-type-block .btn-check:checked+.btn-outline-fico .battle-type-example{
+	color: #fff;
+} 
+.add-craft-section .battle-editor-section .battle-type-block.battle-type-1 .example{
+	text-decoration: underline;
+	text-underline-offset:0.25rem;
+}
+.add-craft-section .battle-editor-section .battle-type-block.battle-type-5 .example,
+.add-craft-section .battle-editor-section .battle-type-block.battle-type-7 .example,
+.add-craft-section .battle-editor-section .battle-type-block.battle-type-8 .example{
+	border: 1px solid #019c9e;
+	border-radius: 0.25rem;
+	padding: 0 0.25rem;
+}
+
+.add-craft-section .battle-editor-section .btn-outline-fico:hover{
+	/* background-color: #5c68b6; */
+	background-color: var(--bs-gray);
+}
+
+
+/**********************************************************
+ *				배틀 타입별 안내 
+ **********************************************************/
+.add-craft-section .battle-type-guide-block-list {
+	position: relative;
+	width: 100%;
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-guide-block{
+	display: none;
+	background-color: #fff;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	border-radius: 0.5rem;
+	background: url(https://static.findsvoc.com/images/app/craft/subtle_dots.png);
+	box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-block:hover .battle-type-guide-block{
+	display: block;
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-guide-block .title{
+	margin-bottom: 1.5rem;
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-guide-block .type-title{
+	font-weight: bold;
+	color: var(--fc-purple);
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-guide-block .sample-section{
+	border: 1px solid #ddd;
+	padding: 0.5rem;
+	margin: 0.75rem 0;
+	border-radius: 0.25rem;
+	background-color: #fff;
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-guide-block .detailed-guide-text .step{
+	display: block;
+	margin-bottom: 0.25rem;
+}
+.add-craft-section .battle-type-guide-block-list .battle-type-guide-block .detailed-guide-text .step .sub{
+	display: block;
+	margin-left: 1rem;
+	font-size: 0.8rem;
+	color: gray;
+ }
+
+
+/**********************************************************
+ *				배틀 문제 생성 영역 
+ **********************************************************/
+ .add-craft-section .battle-book-section,
+ .add-craft-section .battle-type-section,
+ .add-craft-section .battle-editor-section,
+ .add-craft-section .battle-detail-section,
+ .add-craft-section .battle-diffLevel-section{
+	border-top: 1.5px solid #ddd;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	min-height: 10rem;
+	background-color: #fff;
+}
+
+
+/**********************************************************
+ *				배틀 난이도 선택 영역 
+ **********************************************************/
+.add-craft-section .battle-diffLevel-section .diff-btn{
+	height: -webkit-fit-content;
+	height: fit-content;
+	margin: auto 0;
+}
