@@ -28,7 +28,7 @@ jobs:
       - name: HTML/CSS/JS Minifier
         uses: docker://devatherock/minify-js:1.0.3
         with:
-          directory: 'data,fragment'      # Optional
+          directory: 'fragment'      # Optional
 
       - name: Auto Minify
         uses: nizarmah/auto-minify@v2.1
