@@ -2,386 +2,14 @@
  @author LGM
  */
 (function($, document, tandem) {
-	const TANDEM_TAGS = ['s', 'v', 'o', 'po', 'c', 'a', 'oc', 'm', 'rcm', 'tor', 'ger', 'ptc', 'conj',
-		'phr', 'adjphr', 'advphr', 'ptcphr', 'cls', 'ncls', 'acls', 'advcls', 'ccls', 'pcls'];
-	const FORM_COMPONENT_ROLES = ['s', 'v', 'o', 'po', 'c', 'a', 'oc', 'm']; // 문장형식 요소들
-	const RELATIVE_PRONOUNS = ['who', 'whose', 'whom', 'which', 'that']; // 관계대명사
-	// 부사절 접속사
-	const ADV_CONJUNCTIONS = ['if', 'unless', 'when', 'while', 'until', 'before', 'after', 'because', 'since', 'though', 'although', 'even though', 'so that', 'such that', 'as if', 'as', 'where'];
-	const CO_CONJUNCTIONS = ['for', 'beside', 'yet', 'nor'];	// 특수 등위접속사들
-	// 전치사
-	const PREPOSITIONS = ['aboard', 'about', 'above', 'according', 'across', 'after', 'against', 'ahead of', 'along with', 'alongside', 'along', 'amidst', 'amid', 'amongst', 'among', 'anti', 'apart from', 'around', 'as for', 'as per', 'as to', 'as well as', 'as of', 'aside', 'astride', 'as', 'atop', 'at', 'away from', 'barring', 'bar', 'because of', 'before', 'behind', 'below', 'beneath', 'besides', 'beside', 'between', 'beyond', 'but for', 'but', 'by means of', 'by', 'circa', 'close to', 'concerning', 'considering', 'contrary to', 'counting', 'cum', 'despite', 'depending on', 'down', 'due to', 'during', 'except for', 'excepting', 'except', 'excluding', 'following', 'forward of', 'for', 'from', 'further to', 'given', 'gone', 'in addition to', 'in between', 'in case of', 'in face of', 'in favour of', 'in front of', 'in lieu of', 'in spite of', 'in view of', 'into', 'including', 'inside', 'instead of', 'in', 'less', 'like', 'minus', 'near to', 'near', 'next to', 'notwithstanding', 'off', 'of', 'on account of', 'on behalf of', 'on board', 'on to', 'onto', 'on top of', 'on', 'opposite to', 'opposite', 'other than', 'out of', 'out', 'outside of', 'outside', 'over', 'owing to', 'past', 'pending', 'per', 'plus', 'preparatory to', 'prior to', 'pro', 're', 'regarding', 'regardless of', 'respecting', 'round', 'save', 'save for', 'saving', 'since', 'through', 'thru', 'throughout', 'till', 'together with', 'touching', 'toward', 'towards', 'to', 'than', 'thanks to', 'underneath', 'under', 'unlike', 'until', 'up against', 'up to', 'up until', 'upon', 'up', 'versus', 'via', 'with reference to', 'with regard to', 'without', 'within', 'with'];
-
-	const INDIRECT_OBJ = 'i.o.';
-	const DIRECT_OBJ = 'd.o.';
-	const ACTUAL_SUBJ = '(진)s';
-	const ACTUAL_OBJ = '(진)o';
-	const PREP_OBJ = 'prep.o.';
-	const SENSE_SUBJ = '(의)s';
-	const extraRolecomments = [ INDIRECT_OBJ, DIRECT_OBJ, ACTUAL_OBJ, ACTUAL_SUBJ, PREP_OBJ, SENSE_SUBJ ];
-
-	function gramMetaStrFromDOM(div) {
-		return gramMetaArr2Str(gramMetaFromSemantics(semanticsFromDOMs(div)));
-	}
-	/** DOM을 분석하여 문법 특징 파악
-	@param {Element} div .semantics-result 태그
-	@returns {Array<{
-		text: 문자열, 
-		role: 성분, 
-		pos: 성분의품사, 
-		children: 자식성분,
-		rc: 기타성분_성분코멘트,
-		cc: 등위절_접속사
-		prep: 전치사구_전치사,
-		rp: 형용사절_관계사,
-		adv: 부사절_접속사,
-		ptcmodi: 수식_현재분사OR과거분사_전치OR후치
-		
-	}>} semantics
-	 */
-	function semanticsFromDOMs(div) {
-
-		const cloneDiv = tandem.cleanSvocDOMs(div);
-		const children = cloneDiv.children;
-		let semantics = [];
-		for (let i = 0, len = children.length; i < len; i++) {
-			const child = children[i], grandChild = child.firstElementChild;
-			let oneRole;
-
-			// 한 문자열이 2개의 문법태그를 가질 경우
-			if (child.childElementCount > 0 && grandChild.textContent == child.textContent) {
-				let roleChild, posChild, pos;
-				// 필수성분 태그를 바깥으로, 품사 태그를 안쪽으로 재정렬
-				if (findClassIn(grandChild, FORM_COMPONENT_ROLES)) {
-					roleChild = grandChild; posChild = child;
-				} else {
-					roleChild = child; posChild = grandChild;
-				}
-				oneRole = findClassIn(roleChild, TANDEM_TAGS); 
-				pos = findClassIn(posChild, TANDEM_TAGS); 
-				
-				// 성분품사 파악 후 바깥 태그 제거
-				// 문법요소 목록에 추가하되, pos으로써 품사를 추가
-				if (oneRole) {
-					const sem = { role: oneRole, pos, text: grandChild.textContent, children: semanticsFromDOMs(grandChild) };
-					// 필수성분 외의 성분rcomment가 있으면 추가
-					Object.keys(roleChild.dataset).forEach( d => {
-						const rcomment = roleChild.dataset[d];
-						if(d == 'rc' && extraRolecomments.includes(rcomment)) {
-							sem[d] = rcomment;
-						}
-					});
-					switch(sem.pos) {
-						case 'phr':
-							const prep = findPrepKeyword(posChild);
-							if (prep) sem.prep = prep;
-							break;
-						case 'acls':
-							const rp = findRPKeyword(posChild);
-							if (rp) sem.rp = rp;
-							break;
-						case 'advcls':
-							const adv = findAdvKeyword(posChild);
-							if (adv) sem.adv = adv;
-							break;
-						case 'ptc':
-							const ptctense = tenseAppendedPtc(posChild);
-							if (ptctense) sem.pos = ptctense;
-							break;
-					}
-					semantics.push(sem);
-				}
-			}
-			// 한 문자열이 하나의 태그로만 이루어진 경우
-			else {
-				oneRole = findClassIn(child, TANDEM_TAGS);
-				if (oneRole) {
-					const sem = { role: oneRole, text: child.textContent, children: semanticsFromDOMs(child) };
-					// 필수성분 외의 성분rcomment가 있으면 추가
-					Object.keys(child.dataset).forEach( d => {
-						const rcomment = child.dataset[d];
-						if(d == 'rc' && extraRolecomments.includes(rcomment)) {
-							sem[d] = rcomment;
-						}
-					});					
-					switch(sem.role) {
-						case 'phr':
-							const prep = findPrepKeyword(child);
-							if (prep) sem.prep = prep;
-							break;
-						case 'ccls':
-							const cc = findCCKeyword(child);
-							if (cc) sem.cc = cc;
-							break;
-						case 'ptc':
-							const ptctense = tenseAppendedPtc(child);
-							if (ptctense) sem.role = ptctense;
-							break;
-						case 'rcm':
-							const ptcmodi = getPtcModi(child);
-							if (ptcmodi) sem.ptcmodi = ptcmodi;
-							break;
-					}
-					semantics.push(sem);
-				}
-			}
-		}
-		return semantics;
-	}
-	function findClassIn(element, classes) {
-		return classes.find(one => element.classList.contains(one));
-	}
-	function findRPKeyword(element, givenKey) {
-		let rpKeyword = null;
-		// 탐색할 관계대명사가 주어진 경우(부모 형용사절의 자식 형용사절에 대한 탐색)
-		if (givenKey != undefined) {
-			// 주어진 관계대명사를 갖고 있다면 true, 아니라면 false를 반환
-			return element.textContent.match(new RegExp(`\\b${givenKey}\\b`, 'gi')) != null;
-		}
-		for (let i = 0, len = RELATIVE_PRONOUNS.length; i < len; i++) {
-			const keyword = RELATIVE_PRONOUNS[i];
-			// 특정 관계대명사가 자식 형용사절이 아닌 자신만의 것이라면 관계대명사를 반환
-			// 'OO로 시작'이 아닌 'OO를 포함'이라는 식을 쓰는 이유는, 'most of whom'과 같은 형태가 있을 수 있기 때문 
-			if (element.textContent.match(new RegExp(`\\b${keyword}\\b`, 'gi'))?.length > Array.from(element.querySelectorAll('.acls')).filter(child => findRPKeyword(child, keyword)).length) {
-				rpKeyword = keyword;
-				break;
-			}
-		}
-		return rpKeyword;
-	}
-	function findAdvKeyword(element) {
-		let advKeyword = null;
-		for (let i = 0, len = ADV_CONJUNCTIONS.length; i < len; i++) {
-			const keyword = ADV_CONJUNCTIONS[i];
-			if (element.textContent.length > 0
-				&& element.textContent.toLowerCase().startsWith(keyword)) {
-				advKeyword = keyword;
-				break;
-			}
-		}
-		return advKeyword;
-	}
-	function findCCKeyword(element) {
-		let ccKeyword = null;
-		for (let i = 0, len = CO_CONJUNCTIONS.length; i < len; i++) {
-			const keyword = CO_CONJUNCTIONS[i];
-			// 특정 등위접속사가 자신의 앞에 있다면 반환.
-			// 일반적으로 등위접속사에 태그가 적용돼있지 않기 때문에, 자신의 바로 앞은 빈 칸, 그 앞이 등위접속사이다.
-			// .wholeText를 통해 인접 텍스트노드를 모두 읽기 때문에 ' and ' 같은 형태로 읽혀진다.
-			if (element.previousSibling != null &&
-				(new RegExp(`${keyword} $`, 'i')).test(element.previousSibling.wholeText)) {
-				ccKeyword = keyword;
-				break;
-			}
-		}
-		return ccKeyword;
-	}
-	function findPrepKeyword(element) {
-		let prepKeyword = null;
-		// 전치사구가 어떤 전치사를 시작으로 하고 있는지를 반환.
-		for (let i = 0, len = PREPOSITIONS.length; i < len; i++) {
-			const keyword = PREPOSITIONS[i];
-			if (element.textContent.length > 0
-				&& element.textContent.toLowerCase().startsWith(keyword)) {
-				prepKeyword = keyword;
-				break;
-			}
-		}
-		return prepKeyword;
-	}
-	/** 대상 태그가 현재분사면 'ap', 과거분사면 'pp' 반환
-	@param {Element} element 대상 태그
-	 */
-	function tenseAppendedPtc(element) {
-		return /^\w+ing\b/.test(element.textContent) ? 'ap' : 'pp';
-	}
-	/** 대상 태그의 수식어를 찾아서 분사일 경우 적절한 GramMeta값 반환
-	@param {Element} element 대상 태그
-	 */
-	function getPtcModi(element) {
-		const modifier = document.querySelector(`[data-mfd="${element.className.match(/mfd-(\d+-\d+)/)[1]}"]`);
-		if (modifier.classList.contains('ptc')) {
-			const ptctense = tenseAppendedPtc(modifier);
-			if (element.compareDocumentPosition(modifier) & 2) {
-				return `pre_${ptctense}`;
-			} else return `post_${ptctense}`;
-		} else return null;
-	}
-	// GramMeta에 없는 값은 소문자로 구별
-	const roleTable = {
-		s: 'SUBJ', v: 'VERB', o: 'OBJ', po: 'PO', c: 'COMP', oc: 'OC', a: 'ADV', m: 'MODI',
-		rcm: 'MODI', tor: 'TO', ger: 'GER', ptc: 'PTC', ap: 'AP', pp: 'PP', conj: 'conj', phr: 'PREP',
-		adjphr: 'adjphr', advphr: 'advphr', ptcphr: 'ptcphr', cls: 'CLAUSE',
-		ncls: 'NCLS', acls: 'ACLS', advcls: 'ADVCLS', ccls: 'CCLS', pcls: 'PCLS'
-	};
-	/** 주어진 배열에서 (keyName, keyValue)이 일치하는 쌍이 있는지 여부
-	@param {Array} arr 전체 배열
-	@param {String} keyName 키
-	@param {String} keyValue 값
-	 */
-	function hasKey(arr, keyName, keyValue) {
-		return arr.some(el => el[keyName] == keyValue);
-	}
-	/** GramMeta 양식에 맞춰 공백은 '_' 기호로, 소문자는 대문자로 변환
-	@param {String} name 대상 GramMeta문자열
-	 */
-	function createMeta(name) {
-		return name.toUpperCase().replaceAll(' ', '_');
-	}
 	/**
-	semantics 배열로부터 GramMeta 정보 생성
+	 * GramMetaCode
+	 * @description 한 문장에서 나올 수 있는 문법적 특성 메타문자열. 
+	 * 기본적으로는 이 목록에 없는 것들은 필터아웃되며,
+	 * 최종적으로 레코드로 등록시에는 '형식' 혹은 '절' 관련 메타문자는 앞에 '+' 기호를 붙이고,
+	 * 주절의 형식은 '+MAIN_' 문자열을 앞에 붙인다.
 	 */
-	function gramMetaFromSemantics(semantics, gramDepth) {
-		let formType, metaSet = [], depth = gramDepth || 1;
-		// oc가 있으면 5형식
-		if (hasKey(semantics, 'role', 'oc')) {
-			formType = 'FORM_FIVE';
-		}
-		// o가 2개 이상이면 4형식
-		else if (hasKey(semantics, 'rc', 'i.o.')) {
-			formType = 'FORM_FOUR';
-		}
-		// o가 1개 있으면 3형식
-		else if (hasKey(semantics, 'role', 'o')) {
-			formType = 'FORM_THREE';
-		}
-		// c가 있으면 2형식
-		else if (hasKey(semantics, 'role', 'c')) {
-			formType = 'FORM_TWO';
-		}
-		// 이외에 v가 있으면 1형식(a가 있으면 1a형식)
-		else if (hasKey(semantics, 'role', 'v')) {
-			formType = `FORM_ONE${hasKey(semantics, 'role', 'a') ? '_ADV' : ''}`;
-		}
-		// 인식된 문장 형식을 set에 추가
-		// 중첩태그를 우선하기 위해 단순 문장 형식에는 depth를 1 늘인다.
-		if (formType != undefined && !hasKey(metaSet, 'name', formType)) {
-			// 전치사목적어는 특수구조이므로 먼저 추가
-			if(hasKey(semantics, 'role', 'po') && !hasKey(metaSet, 'name', 'FORM_ONE_PO')) {
-				metaSet.push({ depth: depth + 1, name: 'FORM_ONE_PO'});
-			}
-			
-			metaSet.push({ depth: depth + 1, name: formType });
-		}
-		
-			
-		// 2개의 태그가 중첩된 형태일 경우(pos 존재) GramMeta 이름에 이어붙인다.
-		// 문장형식 이름에도 이어붙인다.
-		const hasTypes = semantics.filter(sem => sem.pos != null);
-		for (let i = 0, len = hasTypes.length; i < len; i++) {
-			const semantic = hasTypes[i],
-				role = roleTable[semantic.role];
-			let pos = roleTable[semantic.pos];
-			let twoMixed = `${pos}_${role}`;
-			/*if(semantic.rc == PREP_OBJ) {
-				twoMixed = 'VI_PREP';
-			}*/
-			
-			const threeMixed = formType ? `${formType}_${twoMixed}` : twoMixed; // ex: FORM_THREE_GER_OBJ
-
-			// 3항 태그를 우선 인식
-			if (!hasKey(metaSet, 'name', threeMixed))
-				metaSet.push({ depth, name: threeMixed });
-			// 다음으로 2항 태그 인식
-			if (!hasKey(metaSet, 'name', twoMixed))
-				metaSet.push({ depth, name: twoMixed });
-			
-			// 진주어나 진목적어가 있다변 태그 추가
-			if([ACTUAL_OBJ, ACTUAL_SUBJ].includes(semantic.rc)) {
-				metaSet.push({ depth, name: `${pos}_ACTUAL_${semantic.rc == ACTUAL_OBJ ? 'OBJ' : 'SUBJ'}` });
-				metaSet.push({ depth: depth + 1, name: `ACTUAL_${semantic.rc == ACTUAL_OBJ ? 'OBJ':'SUBJ'}`})
-			}
-			// 다음으로 품사와 성분을 인식(다항 태그보다는 후순위므로 depth 1증가)
-			if (!hasKey(metaSet, 'name', pos))
-				metaSet.push({ depth: depth + 1, name: pos });
-			if (!hasKey(metaSet, 'name', role))
-				metaSet.push({ depth: depth + 1, name: role });
-			// '절'이 있으면 태그 추가
-			if (pos.includes('CLS') && !hasKey(metaSet, 'name', 'CLAUSE')) {
-				metaSet.push({ depth: depth + 1, name: 'CLAUSE' });
-			}
-			// '분사'가 있으면 태그 추가
-			if (['AP', 'PP'].includes(pos) && !hasKey(metaSet, 'name', 'PTC')) {
-				metaSet.push({ depth: depth + 1, name: 'PTC' });
-			}
-			// '의미상 주어'가 있으면 태그 추가
-			if(semantic.rc == SENSE_SUBJ) 
-				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'})
-		}
-
-		// 전체 태그별 GramMeta 추가 후, 자식 태그를 다시 순회하며 반복
-		for (let i = 0, len = semantics.length; i < len; i++) {
-			const child = semantics[i], role = roleTable[child.role];
-
-			// 전치사를 가졌다면 PHR_OO_OO 형태의 GramMeta를 추가
-			if (child.prep) {
-				const prepMeta = createMeta(`phr ${child.prep}`);
-				if (!hasKey(metaSet, 'name', prepMeta))
-					metaSet.push({ depth: depth + 1, name: prepMeta });
-			}
-			// 등위접속사를 가졌다면 CCLS_OO 형태의 GramMeta를 추가
-			else if (child.cc) {
-				const ccMeta = createMeta(`ccls ${child.cc}`);
-				if (!hasKey(metaSet, 'name', ccMeta))
-					metaSet.push({ depth: depth + 1, name: ccMeta });
-			}
-			// 관계접속사를 가졌다면 ACLS_OO 형태의 GramMeta를 추가
-			else if (child.rp) {
-				const rpRole = child.children?.find(ss => ss.text == child.rp)?.role;
-				if(!!rpRole) {
-					const rpRoleMeta = createMeta(`acls ${child.rp} ${roleTable[rpRole]}`)
-					if (!hasKey(metaSet, 'name', rpRoleMeta))
-						metaSet.push({ depth: depth + 1, name: rpRoleMeta });
-				}else {
-					const rpMeta = createMeta(`acls ${child.rp}`);
-					if (!hasKey(metaSet, 'name', rpMeta))
-						metaSet.push({ depth: depth + 1, name: rpMeta });
-				}
-			}
-			// 부사절접속사를 가졌다면 ADVCLS_OO 형태의 GramMeta를 추가
-			else if (child.adv) {
-				const advMeta = createMeta(`advcls ${child.adv}`);
-				if (!hasKey(metaSet, 'name', advMeta))
-					metaSet.push({ depth: depth + 1, name: advMeta });
-			}
-			// 수식선을 가진 분사를 가졌다면 MODI_OO 형태의 GramMeta를 추가
-			if (child.ptcmodi) {
-				const modiMeta = createMeta(`modi ${child.ptcmodi}`);
-				if (!hasKey(metaSet, 'name', modiMeta))
-					metaSet.push({ depth: depth + 1, name: modiMeta });
-			}
-			if (!hasKey(metaSet, 'name', role))
-				metaSet.push({ depth: depth + 1, name: role });
-
-			// 분사를(AP,PP) 가졌다면 PTC를 GramMeta에 또 추가
-			if (['AP', 'PP'].includes(role) && !hasKey(metaSet, 'name', 'PTC')) {
-				metaSet.push({ depth: depth + 1, name: 'PTC' });
-			}
-			// 분사구문(PTCPHR)이 있으면 PTCPHR을 GramMeta에 추가
-			if(child.ptcphr) {
-				metaSet.push({ depth: depth + 1, name: 'PTCPHR'});
-			}
-			// 진주어나 진목적어가 있으면 태그 추가
-			if([ACTUAL_OBJ,ACTUAL_SUBJ].includes(child.rc))
-				metaSet.push({ depth: depth + 1, name: `ACTUAL_${child.rc == ACTUAL_OBJ ? 'OBJ':'SUBJ'}`})
-			// '의미상 주어'가 있으면 태그 추가
-			if(child.rc == SENSE_SUBJ) 
-				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'});
-
-			// 자식 태그들에 대해 다시 수행
-			if (child.children.length > 0) {
-				const childMetas = gramMetaFromSemantics(child.children, depth + 2);
-				for (let j = 0, len2 = childMetas.length; j < len2; j++) {
-					const childMeta = childMetas[j];
-					if (!hasKey(metaSet, 'name', childMeta.name))
-						metaSet.push({ depth: childMeta.depth, name: childMeta.name });
-				}
-			}
-		}
-		return metaSet;
-	}
-
-	const gramMetaCodes = [
+	const GRAMMETA_CODE_LIST = [
 		"FORM_ONE", // 41000, "1형식"
 		"FORM_ONE_ADV", // 42150, "1A형식"
 		"FORM_ONE_PO", // 42155, "-"
@@ -422,6 +50,36 @@
 		"NCLS_ACTUAL_OBJ", //31221, "명사절(진목적어)"		
 		"NCLS_OBJ", // 31220, "명사절(목적어)"
 		"NCLS_COMP", // 31230, "명사절(보어)"
+		"NCLS_TO_OBJ", // 2023.05.31 추가. 
+		"NCLS_GER_OBJ", // 2023.05.31 추가. 
+		"NCLS_PTC_OBJ", // 2023.05.31 추가. 
+		"NCLS_APPO", // 2023.05.31 추가. 
+		"NCLS_INTERR_SUBJ", // 2023.06.02 추가. 
+		"NCLS_INTERR_ACTUAL_SUBJ", // 2023.06.02 추가. 
+		"NCLS_INTERR_ACTUAL_OBJ", // 2023.06.02 추가. 
+		"NCLS_INTERR_OBJ", // 2023.06.02 추가. 
+		"NCLS_INTERR_COMP", // 2023.06.02 추가. 
+		"NCLS_INTERR_TO_OBJ", // 2023.06.02 추가. 
+		"NCLS_INTERR_GER_OBJ", // 2023.06.02 추가. 
+		"NCLS_INTERR_PTC_OBJ", // 2023.06.02 추가. 
+		"NCLS_NRP", // 2023.06.02 추가. 
+		"NCLS_NRP_SUBJ", // 2023.06.02 추가. 
+		"NCLS_NRP_ACTUAL_SUBJ", // 2023.06.02 추가. 
+		"NCLS_NRP_ACTUAL_OBJ", // 2023.06.02 추가. 
+		"NCLS_NRP_OBJ", // 2023.06.02 추가. 
+		"NCLS_NRP_COMP", // 2023.06.02 추가. 
+		"NCLS_NRP_TO_OBJ", // 2023.06.02 추가. 
+		"NCLS_NRP_GER_OBJ", // 2023.06.02 추가. 
+		"NCLS_NRP_PTC_OBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC", // 2023.06.02 추가. 
+		"NCLS_NCLC_SUBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC_ACTUAL_SUBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC_ACTUAL_OBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC_OBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC_COMP", // 2023.06.02 추가. 
+		"NCLS_NCLC_TO_OBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC_GER_OBJ", // 2023.06.02 추가. 
+		"NCLS_NCLC_PTC_OBJ", // 2023.06.02 추가. 
 		"ACLS", // 31300, "형용사절"
 		"ACLS_WHO", // 31310, "관계대명사(who)"
 		"ACLS_WHO_SUBJ", // 31310, "관계대명사(who)"
@@ -432,14 +90,17 @@
 		"ACLS_WHOM_SUBJ", // 3131?, "관계대명사(whom)" 
 		"ACLS_WHOM_OBJ", // 3131?, "관계대명사(whom)" 
 		"ACLS_WHOM_COMP", // 3131?, "관계대명사(whom)" 
+		"ACLS_WHOM_PO", // 2023.05.30 추가; 관계사가 전치사 목적어인 경우가 which만 있을리 없다. 
 		"ACLS_WHICH", // 31320, "관계대명사(which)"
 		"ACLS_WHICH_SUBJ", // 31320, "관계대명사(which)"
 		"ACLS_WHICH_OBJ", // 31320, "관계대명사(which)"
 		"ACLS_WHICH_COMP", // 31320, "관계대명사(which)"
+		"ACLS_WHICH_PO", // 2023.05.23 추가
 		"ACLS_THAT", // 31330, "관계대명사(that)"
 		"ACLS_THAT_SUBJ", // 31330, "관계대명사(that)"
 		"ACLS_THAT_OBJ", // 31330, "관계대명사(that)"
 		"ACLS_THAT_COMP", // 31330, "관계대명사(that)"
+		"ACLS_THAT_PO", // 2023.05.30 추가; 관계사가 전치사 목적어인 경우가 which만 있을리 없다. 
 		"ADVCLS", // 31400, "부사절"
 		"ADVCLS_IF", // 31410, "부사절(if)"
 		"ADVCLS_UNLESS", // 31411, "부사절(unless)"
@@ -488,10 +149,14 @@
 		"MODI_POST_AP", // 1820, "현재분사(후치수식)"
 		"MODI_PRE_AP", // 1825, "현재분사(전치수식)"
 		"MODI_POST_PP", // 1830, "과거분사(후치수식)"
+		"MODI_POST_TO", // 2023.05.31 추가.
+		"MODI_POST_PREP", // 2023.05.31 추가.
+		"MODI_PRE_ADJ", // 2023.05.31 추가.
 		"INTERR", // 3000, "의문사"
 		"INTERR_SUBJ", // 3100, "의문사(주어)"
 		"INTERR_OBJ", // 3200, "의문사(목적어)"
 		"INTERR_COMP", // 3300, "의문사(보어)"
+		"PREP_ADJ", // 2023.05.31 추가.
 		"PREP_ADVBIAL", // 5100, "전치사구(보어)"
 		"PREP_OBJ_ADVBIAL", // 5200, "전치사구(목적격 보어)"
 		"PHR", // 10000, "전치사구"
@@ -647,14 +312,442 @@
 		"PHR_WITHIN", // 11420, "within"
 		"VERB_PHR" // 19000, "동사구"
 	]
-	const nonKeywords = ['SUBJ', 'VERB', 'OBJ', 'COMP', 'OC', 'ADV', 'PO'];
+	const TANDEM_TAGS = ['s', 'ss', 'v', 'o', 'po', 'c', 'a', 'oc', 'm', 'rcm', 'tor', 'to', 'ger', 'go', 'ptc', 'ptco', 'appo', 'conj',
+		'phr', 'adjphr', 'advphr', 'ptcphr', 'cls', 'ncls', 'acls', 'advcls', 'ccls', 'pcls'];
+	const FORM_COMPONENT_ROLES = ['s', 'v', 'o', 'po', 'c', 'a', 'oc', 'm', 'to', 'go', 'ptco', 'appo']; // 문장형식 성분들
+	const RELATIVE_PRONOUNS = ['who', 'whose', 'whom', 'which', 'that']; // 관계대명사
+	// 부사절 접속사
+	const ADV_CONJUNCTIONS = ['if', 'unless', 'when', 'while', 'until', 'before', 'after', 'because', 'since', 'though', 'although', 'even though', 'so that', 'such that', 'as if', 'as', 'where'];
+	const CO_CONJUNCTIONS = ['for', 'beside', 'yet', 'nor'];	// 특수 등위접속사들
+	// 전치사
+	const PREPOSITIONS = ['aboard', 'about', 'above', 'according', 'across', 'after', 'against', 'ahead of', 'along with', 'alongside', 'along', 'amidst', 'amid', 'amongst', 'among', 'anti', 'apart from', 'around', 'as for', 'as per', 'as to', 'as well as', 'as of', 'aside', 'astride', 'as', 'atop', 'at', 'away from', 'barring', 'bar', 'because of', 'before', 'behind', 'below', 'beneath', 'besides', 'beside', 'between', 'beyond', 'but for', 'but', 'by means of', 'by', 'circa', 'close to', 'concerning', 'considering', 'contrary to', 'counting', 'cum', 'despite', 'depending on', 'down', 'due to', 'during', 'except for', 'excepting', 'except', 'excluding', 'following', 'forward of', 'for', 'from', 'further to', 'given', 'gone', 'in addition to', 'in between', 'in case of', 'in face of', 'in favour of', 'in front of', 'in lieu of', 'in spite of', 'in view of', 'into', 'including', 'inside', 'instead of', 'in', 'less', 'like', 'minus', 'near to', 'near', 'next to', 'notwithstanding', 'off', 'of', 'on account of', 'on behalf of', 'on board', 'on to', 'onto', 'on top of', 'on', 'opposite to', 'opposite', 'other than', 'out of', 'out', 'outside of', 'outside', 'over', 'owing to', 'past', 'pending', 'per', 'plus', 'preparatory to', 'prior to', 'pro', 're', 'regarding', 'regardless of', 'respecting', 'round', 'save', 'save for', 'saving', 'since', 'through', 'thru', 'throughout', 'till', 'together with', 'touching', 'toward', 'towards', 'to', 'than', 'thanks to', 'underneath', 'under', 'unlike', 'until', 'up against', 'up to', 'up until', 'upon', 'up', 'versus', 'via', 'with reference to', 'with regard to', 'without', 'within', 'with'];
+
+	const INDIRECT_OBJ = 'i.o.';
+	const DIRECT_OBJ = 'd.o.';
+	const ACTUAL_SUBJ = '(진)s';
+	const ACTUAL_OBJ = '(진)o';
+	const PREP_OBJ = '(전)o';	// 2023.05.31 길다싶은 rcomment는 모두 이와 같은 형태로 통일.
+	const SENSE_SUBJ = '(의)s';
+	const extraRolecomments = [ INDIRECT_OBJ, DIRECT_OBJ, ACTUAL_OBJ, ACTUAL_SUBJ, PREP_OBJ, SENSE_SUBJ ];
+
+	function gramMetaStrFromDOM(div) {
+		return gramMetaArr2Str(gramMetaFromSemantics(semanticsFromDOMs(div)));
+	}
+	/** DOM을 분석하여 문법 특징 파악
+	@param {Element} div .semantics-result 태그
+	@returns {Array<{
+		text: 문자열, 
+		role: 성분, 
+		pos: 성분의품사, 
+		children: 자식성분,
+		rc: 기타성분_성분코멘트,
+		cc: 등위절_접속사
+		prep: 전치사구_전치사,
+		rp: 형용사절_관계사,
+		adv: 부사절_접속사,
+		modi: 수식_전치/후치_분사/부정사/형용사구
+		
+	}>} semantics
+	 */
+	function semanticsFromDOMs(div) {
+
+		const cloneDiv = tandem.cleanSvocDOMs(div);
+		const children = cloneDiv.children;
+		let semantics = [];
+		for (let i = 0, len = children.length; i < len; i++) {
+			const child = children[i], grandChild = child.firstElementChild;
+			let oneRole;
+
+			// 한 문자열이 2개의 문법태그를 가질 경우
+			if (child.childElementCount > 0 && grandChild.textContent == child.textContent) {
+				let roleChild, posChild, pos;
+				// 필수성분 태그를 바깥으로, 품사 태그를 안쪽으로 재정렬
+				if (findClassIn(grandChild, FORM_COMPONENT_ROLES)) {
+					roleChild = grandChild; posChild = child;
+				} else {
+					roleChild = child; posChild = grandChild;
+				}
+				oneRole = findClassIn(roleChild, TANDEM_TAGS); 
+				pos = findClassIn(posChild, TANDEM_TAGS); 
+				
+				// 성분품사 파악 후 바깥 태그 제거
+				// 문법요소 목록에 추가하되, pos으로써 품사를 추가
+				if (oneRole) {
+					const sem = { role: oneRole, pos, text: grandChild.textContent, children: semanticsFromDOMs(grandChild) };
+					// 필수성분 외의 성분rcomment가 있으면 추가
+					Object.keys(roleChild.dataset).forEach( d => {
+						const rcomment = roleChild.dataset[d];
+						if(d == 'rc' && extraRolecomments.includes(rcomment)) {
+							sem[d] = rcomment;
+						}
+					});
+					switch(sem.pos) {
+						case 'phr':
+							const prep = findPrepKeyword(posChild);
+							if (prep) sem.prep = prep;
+							break;
+						case 'acls':
+							const rp = findRPKeyword(posChild);
+							if (rp) sem.rp = rp;
+							break;
+						case 'advcls':
+							const adv = findAdvKeyword(posChild);
+							if (adv) sem.adv = adv;
+							break;
+						case 'ptc':
+							const ptctense = tenseAppendedPtc(posChild);
+							if (ptctense) sem.pos = ptctense;
+							break;
+					}
+					semantics.push(sem);
+				}
+			}
+			// 한 문자열이 하나의 태그로만 이루어진 경우
+			else {
+				oneRole = findClassIn(child, TANDEM_TAGS);
+				if (oneRole) {
+					const sem = { role: oneRole, text: child.textContent, children: semanticsFromDOMs(child) };
+					// 필수성분 외의 성분rcomment가 있으면 추가
+					Object.keys(child.dataset).forEach( d => {
+						const rcomment = child.dataset[d];
+						if(d == 'rc' && extraRolecomments.includes(rcomment)) {
+							sem[d] = rcomment;
+						}
+					});					
+					switch(sem.role) {
+						case 'phr': case 'adjphr':
+							const prep = findPrepKeyword(child);
+							if (prep) sem.prep = prep;
+							break;
+						case 'ccls':
+							const cc = findCCKeyword(child);
+							if (cc) sem.cc = cc;
+							break;
+						case 'ptc':
+							const ptctense = tenseAppendedPtc(child);
+							if (ptctense) sem.role = ptctense;
+							break;
+						case 'rcm':
+							const modi = getModiKeyword(child);
+							if (modi) sem.modi = modi;
+							break;
+					}
+					semantics.push(sem);
+				}
+			}
+		}
+		return semantics;
+	}
+	function findClassIn(element, classes) {
+		return classes.find(one => element.classList.contains(one));
+	}
+	/**
+	 * Find Relative Pronouns
+	 * 주어진 관계절의 관계대명사를 찾아서 반환한다.
+	 */
+	function findRPKeyword(element, givenKey) {
+		let rpKeyword = null;
+		// 탐색할 관계대명사가 주어진 경우(부모 형용사절의 자식 형용사절에 대한 탐색)
+		if (givenKey != undefined) {
+			// 주어진 관계대명사를 갖고 있다면 true, 아니라면 false를 반환
+			return element.textContent.match(new RegExp(`\\b${givenKey}\\b`, 'gi')) != null;
+		}
+		for (let i = 0, len = RELATIVE_PRONOUNS.length; i < len; i++) {
+			const keyword = RELATIVE_PRONOUNS[i];
+			// 특정 관계대명사가 자식 형용사절이 아닌 자신만의 것이라면 관계대명사를 반환
+			// 'OO로 시작'이 아닌 'OO를 포함'이라는 식을 쓰는 이유는, 'most of whom'과 같은 형태가 있을 수 있기 때문 
+			if (element.textContent.match(new RegExp(`\\b${keyword}\\b`, 'gi'))?.length 
+			> Array.from(element.querySelectorAll('.acls')).filter(child => findRPKeyword(child, keyword)).length) {
+				rpKeyword = keyword;
+				break;
+			}
+		}
+		return rpKeyword;
+	}
+	/**
+	 * Find Adverbial Conjunctions
+	 * 주어진 부사절의 접속사를 찾아서 반환한다.
+	 */
+	function findAdvKeyword(element) {
+		let advKeyword = null;
+		for (let i = 0, len = ADV_CONJUNCTIONS.length; i < len; i++) {
+			const keyword = ADV_CONJUNCTIONS[i];
+			if (element.textContent.length > 0
+				&& element.textContent.toLowerCase().startsWith(keyword)) {
+				advKeyword = keyword;
+				break;
+			}
+		}
+		return advKeyword;
+	}
+	/**
+	 * 주어진 요소의 등위접속사를 찾아서 반환
+	 */
+	function findCCKeyword(element) {
+		let ccKeyword = null;
+		for (let i = 0, len = CO_CONJUNCTIONS.length; i < len; i++) {
+			const keyword = CO_CONJUNCTIONS[i];
+			// 특정 등위접속사가 자신의 앞에 있다면 반환.
+			// 일반적으로 등위접속사에 태그가 적용돼있지 않기 때문에, 자신의 바로 앞은 빈 칸, 그 앞이 등위접속사이다.
+			// .wholeText를 통해 인접 텍스트노드를 모두 읽기 때문에 ' and ' 같은 형태로 읽혀진다.
+			if (element.previousSibling != null &&
+				(new RegExp(`${keyword} $`, 'i')).test(element.previousSibling.wholeText)) {
+				ccKeyword = keyword;
+				break;
+			}
+		}
+		return ccKeyword;
+	}
+	/**
+	 * 주어진 전치사구가 어떤 전치사를 시작으로 하고 있는지를 반환.
+	 */
+	function findPrepKeyword(element) {
+		let prepKeyword = null;
+		for (let i = 0, len = PREPOSITIONS.length; i < len; i++) {
+			const keyword = PREPOSITIONS[i];
+			if (element.textContent.length > 0
+				&& element.textContent.toLowerCase().startsWith(`${keyword} `)) {
+				prepKeyword = keyword;
+				break;
+			}
+		}
+		return prepKeyword;
+	}
+	/** 대상 태그가 현재분사면 'ap', 과거분사면 'pp' 반환
+	@param {Element} element 대상 태그
+	 */
+	function tenseAppendedPtc(element) {
+		return /^\w+ing\b/.test(element.textContent) ? 'ap' : 'pp';
+	}
+	/** 대상 태그의 수식어를 찾아서 적절한 GramMeta값 반환
+	@param {Element} element 대상 태그
+	 */
+	function getModiKeyword(element) {
+		const modifier = document.querySelector(`[data-mfd="${element.className.match(/mfd-(\d+-\d+)/)[1]}"]`);
+		const modifierWrapper = modifier.closest('.ptc,.adjphr,.tor');
+		const modifierType = modifierWrapper?.className?.match(/ptc|adjphr|tor/)?.[0];
+		let modiPOS;
+		switch(modifierType) {
+			case 'adjphr':
+				const prep = findPrepKeyword(modifierWrapper);
+				if(prep) modiPOS = 'prep'; // MODI_POST_PREP
+				else modiPOS = 'adj'
+				break;
+			case 'tor':
+				modiPOS = 'to';	// MODI_POST_TO
+				break;
+			case 'ptc':
+				modiPOS = tenseAppendedPtc(modifierWrapper); // MODI_POST_PP, MODI_POST_AP, MODI_PRE_AP
+				break;
+			default:
+				break;
+		}
+		if(modiPOS) return `${(element.compareDocumentPosition(modifier) & Node.DOCUMENT_POSITION_PRECEDING)?'pre':'post'}_${modiPOS}`;
+		else return null;
+	}
+	// GramMeta에 없는 값은 소문자로 구별
+	const roleTable = {
+		s: 'SUBJ', v: 'VERB', o: 'OBJ', po: 'PO', c: 'COMP', oc: 'OC', a: 'ADV', m: 'MODI',
+		rcm: 'MODI', tor: 'TO', to: 'TO_OBJ', ger: 'GER', go: 'GER_OBJ', ptc: 'PTC', ptco: 'PTC_OBJ', appo: 'APPO', ap: 'AP', pp: 'PP', conj: 'conj', phr: 'PREP',
+		adjphr: 'adjphr', advphr: 'advphr', ptcphr: 'ptcphr', cls: 'CLAUSE',
+		ncls: 'NCLS', acls: 'ACLS', advcls: 'ADVCLS', ccls: 'CCLS', pcls: 'PCLS'
+	};
+	/** 주어진 배열에서 (keyName, keyValue)이 일치하는 쌍이 있는지 여부
+	@param {Array} arr 전체 배열
+	@param {String} keyName 키
+	@param {String} keyValue 값
+	 */
+	function hasKey(arr, keyName, keyValue) {
+		return arr.some(el => el[keyName] == keyValue);
+	}
+	/** GramMeta 양식에 맞춰 공백은 '_' 기호로, 소문자는 대문자로 변환
+	@param {String} name 대상 GramMeta문자열
+	 */
+	function createMeta(name) {
+		return name.toUpperCase().replaceAll(' ', '_');
+	}
+	/**
+	semantics 배열로부터 GramMeta 정보 생성
+	 */
+	function gramMetaFromSemantics(semantics, gramDepth) {
+		let formType, metaSet = [], depth = gramDepth || 1;
+		// 동사를 갖고 있어야 형식이 지정됨(to부정사/동명사/분사는 동사로 표시하지 않으므로 형식을 갖지 않는다.)
+		if(!metaSet.some(m => m.startsWith('FORM'))) {
+			// oc가 있으면 5형식
+			if (hasKey(semantics, 'role', 'oc')) {
+				formType = 'FORM_FIVE';
+			}
+			// o가 2개 이상이면 4형식
+			else if (hasKey(semantics, 'rc', 'i.o.')) {
+				formType = 'FORM_FOUR';
+			}
+			// o가 1개 있으면 3형식
+			else if (hasKey(semantics, 'role', 'o')) {
+				formType = 'FORM_THREE';
+			}
+			// c가 있으면 2형식
+			else if (hasKey(semantics, 'role', 'c')) {
+				formType = 'FORM_TWO';
+			}
+			// 이외에 v가 있으면 1형식(a가 있으면 1a형식)
+			else if (hasKey(semantics, 'role', 'v')) {
+				formType = `FORM_ONE${hasKey(semantics, 'role', 'a') ? '_ADV' : ''}`;
+			}
+			// 인식된 문장 형식을 set에 추가
+			// 중첩태그를 우선하기 위해 단순 문장 형식에는 depth를 1 늘인다.
+			if (formType != undefined && !hasKey(metaSet, 'name', formType)) {
+				// 전치사목적어는 특수구조이므로 먼저 추가
+				if(hasKey(semantics, 'role', 'po') && !hasKey(metaSet, 'name', 'FORM_ONE_PO')) {
+					metaSet.push({ depth: depth + 1, name: 'FORM_ONE_PO'});
+				}
+				
+				metaSet.push({ depth: depth + 1, name: formType });
+			}
+		}
+		
+		// 2개의 태그가 중첩된 형태일 경우(pos 존재) GramMeta 이름에 이어붙인다.
+		// 문장형식 이름에도 이어붙인다.
+		const hasTypes = semantics.filter(sem => sem.pos != null);
+		for (let i = 0, len = hasTypes.length; i < len; i++) {
+			const semantic = hasTypes[i],
+				role = roleTable[semantic.role];
+			let pos = roleTable[semantic.pos];
+			let twoMixed = `${pos}_${role}`;
+			/*if(semantic.rc == PREP_OBJ) {
+				twoMixed = 'VI_PREP';
+			}*/
+			
+			const threeMixed = formType ? `${formType}_${twoMixed}` : twoMixed; // ex: FORM_THREE_GER_OBJ
+
+			// 3항 태그를 우선 인식
+			if (!hasKey(metaSet, 'name', threeMixed))
+				metaSet.push({ depth, name: threeMixed });
+			// 다음으로 2항 태그 인식
+			if (!hasKey(metaSet, 'name', twoMixed))
+				metaSet.push({ depth, name: twoMixed });
+			
+			// 진주어나 진목적어가 있다변 태그 추가
+			if([ACTUAL_OBJ, ACTUAL_SUBJ].includes(semantic.rc)) {
+				metaSet.push({ depth, name: `${pos}_ACTUAL_${semantic.rc == ACTUAL_OBJ ? 'OBJ' : 'SUBJ'}` });
+				metaSet.push({ depth: depth + 1, name: `ACTUAL_${semantic.rc == ACTUAL_OBJ ? 'OBJ':'SUBJ'}`})
+			}
+			// 다음으로 품사와 성분을 인식(다항 태그보다는 후순위므로 depth 1증가)
+			if (!hasKey(metaSet, 'name', pos))
+				metaSet.push({ depth: depth + 1, name: pos });
+			if (!hasKey(metaSet, 'name', role))
+				metaSet.push({ depth: depth + 1, name: role });
+			// '절'이 있으면 태그 추가
+			if (pos.includes('CLS') && !hasKey(metaSet, 'name', 'CLAUSE')) {
+				metaSet.push({ depth: depth + 1, name: 'CLAUSE' });
+			}
+			// '분사'가 있으면 태그 추가
+			if (['AP', 'PP'].includes(pos) && !hasKey(metaSet, 'name', 'PTC')) {
+				metaSet.push({ depth: depth + 1, name: 'PTC' });
+			}
+			// '의미상 주어'가 있으면 태그 추가
+			if(semantic.rc == SENSE_SUBJ) 
+				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'})
+		}
+
+		// 전체 태그별 GramMeta 추가 후, 자식 태그를 다시 순회하며 반복
+		for (let i = 0, len = semantics.length; i < len; i++) {
+			const child = semantics[i], role = roleTable[child.role];
+
+			// 전치사를 가졌다면 PHR_OO_OO 형태의 GramMeta를 추가
+			if (child.prep) {
+				if(child.role == 'adjphr') {
+					const prepAdjMeta = createMeta('prep adj')
+					if (!hasKey(metaSet, 'name', prepAdjMeta))
+						metaSet.push({ depth: depth + 1, name: prepAdjMeta });
+				}
+				
+				const prepMeta = createMeta(`phr ${child.prep}`);
+				if (!hasKey(metaSet, 'name', prepMeta))
+					metaSet.push({ depth: depth + 1, name: prepMeta });
+			}
+			// 등위접속사를 가졌다면 CCLS_OO 형태의 GramMeta를 추가
+			else if (child.cc) {
+				const ccMeta = createMeta(`ccls ${child.cc}`);
+				if (!hasKey(metaSet, 'name', ccMeta))
+					metaSet.push({ depth: depth + 1, name: ccMeta });
+			}
+			// 관계접속사를 가졌다면 ACLS_OO 형태의 GramMeta를 추가
+			else if (child.rp) {
+				const rpRole = child.children?.find(ss => ss.text == child.rp)?.role;
+				if(!!rpRole) {
+					const rpRoleMeta = createMeta(`acls ${child.rp} ${roleTable[rpRole]}`)
+					if (!hasKey(metaSet, 'name', rpRoleMeta))
+						metaSet.push({ depth: depth + 1, name: rpRoleMeta });
+				}else {
+					const rpMeta = createMeta(`acls ${child.rp}`);
+					if (!hasKey(metaSet, 'name', rpMeta))
+						metaSet.push({ depth: depth + 1, name: rpMeta });
+				}
+			}
+			// 부사절접속사를 가졌다면 ADVCLS_OO 형태의 GramMeta를 추가
+			else if (child.adv) {
+				const advMeta = createMeta(`advcls ${child.adv}`);
+				if (!hasKey(metaSet, 'name', advMeta))
+					metaSet.push({ depth: depth + 1, name: advMeta });
+			}
+			// 수식선을 가진 요소를 가졌다면 MODI_OO 형태의 GramMeta를 추가
+			if (child.modi) {
+				const modiMeta = createMeta(`modi ${child.modi}`);
+				if (!hasKey(metaSet, 'name', modiMeta))
+					metaSet.push({ depth: depth + 1, name: modiMeta });
+			}
+			if (!hasKey(metaSet, 'name', role))
+				metaSet.push({ depth: depth + 1, name: role });
+
+			// 분사를(AP,PP) 가졌다면 PTC를 GramMeta에 또 추가
+			if (['AP', 'PP'].includes(role) && !hasKey(metaSet, 'name', 'PTC')) {
+				metaSet.push({ depth: depth + 1, name: 'PTC' });
+			}
+			// 분사구문(PTCPHR)이 있으면 PTCPHR을 GramMeta에 추가
+			if(child.ptcphr) {
+				metaSet.push({ depth: depth + 1, name: 'PTCPHR'});
+			}
+			// 진주어나 진목적어가 있으면 태그 추가
+			if([ACTUAL_OBJ,ACTUAL_SUBJ].includes(child.rc))
+				metaSet.push({ depth: depth + 1, name: `ACTUAL_${child.rc == ACTUAL_OBJ ? 'OBJ':'SUBJ'}`})
+			// '의미상 주어'가 있으면 태그 추가
+			if(child.rc == SENSE_SUBJ) 
+				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'});
+
+			// 자식 태그들에 대해 다시 수행
+			if (child.children.length > 0) {
+				const childMetas = gramMetaFromSemantics(child.children, depth + 2);
+				for (let j = 0, len2 = childMetas.length; j < len2; j++) {
+					const childMeta = childMetas[j];
+					if (!hasKey(metaSet, 'name', childMeta.name))
+						metaSet.push({ depth: childMeta.depth, name: childMeta.name });
+				}
+			}
+		}
+		return metaSet;
+	}
+
 	function gramMetaArr2Str(gramMetaArr) {
-		return gramMetaArr.filter(meta => 
-			gramMetaCodes.includes(meta.name) 
-			&& !gramMetaArr.some(function(gm){ return gm?.name?.startsWith(`${meta.name}_`)}) 
-			&& !nonKeywords.includes(meta.name))
-		.sort((a, b) => a.depth - b.depth)
-		.map(meta => meta.name).join(' ');
+		const filtered = gramMetaArr
+			.filter(meta => GRAMMETA_CODE_LIST.includes(meta.name))
+			.filter((meta,_i,arr) => !arr.some(gm => gm?.name?.startsWith(`${meta.name}_`)))
+			.map(meta => meta.name);
+		const filtered2 = [];
+		filtered.forEach(meta => {
+			if(!filtered2.includes(meta)) {
+				if(meta.startsWith('FORM') && !filtered2.some(m => m.startsWith('+MAIN_'))) {
+					filtered2.push(`+MAIN_${meta}`);
+				}else filtered2.push(meta);
+			}
+		})
+		return filtered2.sort((s1, s2) => {
+				// 1순위: 길이순 정렬. 2순위: 알파벳순 정렬
+				let result = s2.length - s1.length;
+				if (result === 0) {
+					return s1.localeCompare(s2);
+				}
+				return result;
+			}).join(' ');
 	}
 	
 	/** div를 해석한 gramMeta 정보를 저장한다.
