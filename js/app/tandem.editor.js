@@ -1,28 +1,41 @@
+/**
+ * @version 2.0
+ */
 (function($, document, tandem) {
 	let undoList = [], redoList = []; // 편집 내역
 	
-	let $svocEditor, $svocEditorHint;
-	
+	let $svocEditor, $svocEditorHint, $svocEditorBadge, $svocEditorEmblem,
+		$nclsComboBox, $nclsComboBox2, $torComboBox, $gerComboBox, $ptcComboBox, $editCommentBox;
 	const keyset = {
 		49:'[value="s"]',
-		50:'[value="v"]',
-		51:'[value="o"]',
-		52:'[value="po"]',
-		53:'[value="c"]',
-		54:'[value="oc"]',
-		55:'[value="a"]',
+		50:'[value="rs"]',
+		51:'[value="ss"]',
+		52:'[value="v"]',
+		53:'[value="o"]',
+		54:'[value="io"]',
+		55:'[value="do"]',
+		56:'[value="ro"]',
+		57:'[value="po"]',
+		48:'[value="c"]',
+		189:'[value="oc"]',
+		187:'[value="a"]',
 		81:'[value="tor"]',
-		87:'[value="ptc"]',
+		87:'[value="to"]',
 		69:'[value="ger"]',
-		82:'[value="conj"]',
+		82:'[value="go"]',
+		84:'[value="ptc"]',
+		89:'[value="ptco"]',
+		85:'[value="ptcphr"]',
 		65:'[value="phr"]',
-		83:'[value="adjphr"]',
-		68:'[value="advphr"]',
-		70:'[value="ptcphr"]',
-		84:'[value="ccls"]',
-		89:'[value="ncls"]',
-		71:'[value="acls"]',
-		72:'[value="advcls"]',
+		83:'[value="advphr"]',
+		68:'[value="adjphr"]',
+		70:'[value="conj"]',
+		71:'[value="ccls"]',
+		72:'[value="pcls"]',
+		74:'[value="ncls"]',
+		75:'[value="acls"]',
+		76:'[value="advcls"]',
+		186:'[value="pcl"]',
 		90:'[value="mod"]',
 		88:'[value="erasing"]',
 		67:'[value="comment"]',
@@ -34,6 +47,22 @@
 	let modifier, currX = 0, currY = 0;
 	
 	let settings = {};
+	const pseudoMarkTypes = {
+		rs: 's', io: 'o', do: 'o', ro: 'o'
+	}
+	const rcomments = {
+		s : 'S', rs: '(진)s', ss: '(의)s', v : 'V', o : 'O', io: 'i.o.', do: 'd.o.', po : '(전)o', ro: '(진)o', 
+		to: '(부)o', go: '(동)o', ptco: '(분)o', appo: '동격', 
+		c : 'C', oc : 'o.c.', m : 'M', a : 'A'};
+	const gcomments = {
+		a: '부사적 보충어', ss: '의미상 주어', tor : 'to부정사', ger : '동명사', ptc : '분사', 
+		to: 'to부정사 목적어', go: '동명사 목적어', ptco: '분사 목적어', appo: '동격 =>',
+		ncls:{
+			s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절',
+			po: '전치사 목적어절', to: 'to부정사 목적어절', go: '동명사 목적어절', ptco: '분사 목적어절', appo: '동격 =>',
+			interr: '의문사절 접속사', nrp: '명사적 관계사', nclc: ''
+		},
+		acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절',pcls:'병렬절',pcl:'삽입절'};
 	/**
 	 * SVOC 편집기 표시. 
 		저장함수 function(svocEncText)와 취소함수 function()를 인자로 받음
@@ -56,12 +85,15 @@
 				editorCss.innerHTML = cssResult;
 				document.head.append(editorCss);
 			});
-			await $.getJSON('https://static.findsvoc.com/data/tandem/edit-toolbar.json', (btns) => {
-				$svocEditor = $('<div id="js-edit-toolbar" class="svoc-toolbar row g-2 btn-toolbar" role="toolbar"></div>');
-				for(let i = 0, btnsLen = btns.length; i < btnsLen; i++) {
-					appendBtn(btns[i], $svocEditor);
-				}
-				$svocEditor.find('[data-toggle="tooltip"]').click(function(){
+			await $.get('https://static.findsvoc.com/fragment/tandem/editor_template.min.html', (result) => {
+				$svocEditor = $(result).find('#js-edit-toolbar');
+				$nclsComboBox = $(result).find('.cls-role-menu');
+				$nclsComboBox2 = $(result).find('.cls-conj-menu');
+				$torComboBox = $(result).find('.tor-role-menu');
+				$gerComboBox = $(result).find('.ger-role-menu');
+				$ptcComboBox = $(result).find('.ptc-role-menu');
+				$editCommentBox = $(result).find('.edit-comment');
+				$svocEditor.find('[data-bs-toggle="tooltip"]').click(function(){
 					bootstrap?.Tooltip?.getInstance(this)?.hide();
 				}).tooltip({trigger:'hover'});
 				const rem = parseFloat(getComputedStyle(document.body).fontSize);
@@ -380,6 +412,101 @@
 						$svocEditorHint.empty();
 					}
 				})
+				// ============================================================/
+				//					명사절 성분 지정							   /
+				.on('click', '.cls-role-menu button', function() {
+					const role = this.value;
+					const innerElement = createElement({
+						el: 'span', class: `sem ${pseudoMarkTypes[role]??role}`
+					})
+					if(rcomments[role]) innerElement.dataset.rc = rcomments[role];
+					const range = $nclsComboBox.data('range'); 
+					try {
+						range.surroundContents(innerElement);
+					} catch (er) {
+						innerElement.appendChild(range.extractContents());
+						range.insertNode(innerElement);
+					}
+					const outerElement = createElement({
+						el: 'span', class: 'sem ncls', dataset: { gc: gcomments.ncls[role] }
+					});
+					$(innerElement).wrap(outerElement);
+					
+					$nclsComboBox.data('range', null).detach();
+					refreshDOMs(innerElement.closest('.semantics-result'));
+					
+					if(role == 'appo') {
+						range.detach();
+						getSelection().removeAllRanges();
+						$(innerElement).parent().addClass('comment-target').trigger('click');
+						$('.edit-comment :text').val('동격 => ');
+					}else {
+						const rangeRect = range.getClientRects()[0];
+						$(document.body).append($nclsComboBox2
+						.css('top', `${scrollY + rangeRect.top + rangeRect.height}px`)
+						.css('left', `${scrollX + rangeRect.left}px`)
+						.data('range', $(innerElement).parent('.ncls')));						
+							
+						$nclsComboBox2.find('button[value="nclc"]').prop('checked', true);
+					}
+					
+				})// 				명사절 접속사 지정
+				.on('click', '.cls-conj-menu button', function() {
+					const conj = this.value;
+					const $clause = $nclsComboBox2.data('range'); 
+					$clause.attr('data-gc', gcomments.ncls[conj] );
+					
+					getSelection().removeAllRanges();
+					$nclsComboBox2.data('range', null).detach();
+					refreshDOMs($clause.closest('.semantics-result')[0]);
+				})
+				//-------------------------------------------------------------/
+				//					부정사,동명사,분사 성분 지정							   /
+				.on('click', '.tor-role-menu button,.ger-role-menu button,.ptc-role-menu button', function() {
+					const role = this.value;
+					const wrapper = this.closest('.tor-role-menu,.ger-role-menu,.ptc-role-menu').className.match(/(\w+)-role-menu/)[1] // 콤보박스 종류 파악
+					const $comboBox = {tor:$torComboBox,ger:$gerComboBox,ptc:$ptcComboBox}[wrapper];
+					const innerElement = createElement({
+						el: 'span', class: `sem ${pseudoMarkTypes[role]??role}`
+					})
+					if(rcomments[role]) innerElement.dataset.rc = rcomments[role];
+					if(['adjphr','advphr'].includes(role) && gcomments[role]) innerElement.dataset.gc = gcomments[role];
+					const range = $comboBox.data('range'); 
+					try {
+						range.surroundContents(innerElement);
+					} catch (er) {
+						innerElement.appendChild(range.extractContents());
+						range.insertNode(innerElement);
+					}
+					const outerElement = createElement({
+						el: 'span', class: `sem ${wrapper}`, dataset: { gc: gcomments[wrapper] }
+					});
+					if(['adjphr','advphr'].includes(role)) {	
+						// 괄호를 가진 형용사구,부사구는 바깥으로
+						$(innerElement).wrapInner(outerElement);
+					}else {
+						$(innerElement).wrap(outerElement);
+					}
+					
+					range.detach();
+					getSelection().removeAllRanges();
+					$comboBox.data('range', null).detach();
+					refreshDOMs(innerElement.closest('.semantics-result'));
+				})
+				.on('mouseup', function(e) {
+					// 명사절, to부정사, 분사 역할 지정 박스를 벗어나면 박스를 떼낸다.
+					if($nclsComboBox.is(':visible') && !e.target.closest('.cls-role-menu')
+					|| $nclsComboBox2.is(':visible') && !e.target.closest('.cls-conj-menu')
+					|| $torComboBox.is(':visible') && !e.target.closest('.tor-role-menu')
+					|| $ptcComboBox.is(':visible') && !e.target.closest('.ptc-role-menu')) {
+						getSelection().removeAllRanges();
+						$nclsComboBox.data('range', null).detach();
+						$nclsComboBox2.data('range', null).detach();
+						$torComboBox.data('range', null).detach();
+						$ptcComboBox.data('range', null).detach();
+					}
+				})
+				
 				// =========================================================== /
 				//						코멘트 수정							   /
 				.on('click', '.edit-svoc:not([data-mode="erasing"]):not([data-mode="mod"]):not([data-mode="comment"]) .sem', function(e){
@@ -416,26 +543,17 @@
 					   		if(Math.min(y1,y2,y) != y && Math.max(y1,y2,y) != y
 					   		&& Math.min(x1,x2,x) != x && Math.max(x1,x2,x) != x){
 								e.stopPropagation();
-					   			var editText = document.createElement('div');
-					   			editText.className = 'edit-comment text-end';
-					   			editText.style.position = 'absolute';
-					   			editText.insertAdjacentHTML('afterbegin',
-						   			'<form class="btn-group"><input class="form-control" type="text"' +
-						   			`placeholder="↵" value="${target.dataset[type.data]}"/>` +
-						   			'<div class="btn-group ms-1">' +
-						   			'<button class="btn btn-sm btn-fico" type="submit">확인</button>' +
-						   			'<button class="btn btn-sm btn-outline-fico" type="button">취소</button>' +
-						   			'</div></form>');
-					   			document.body.appendChild(editText);
-					   			editText.style.top = `${scrollY + Math.max(y1,y2)}px`;
-					   			editText.style.left = `${scrollX + Math.min(x1,x2)}px`;
-					   			if(type.data == 'gc'){
-					   				editText.style.top = `${scrollY + Math.min(y1,y2) - editText.offsetHeight - 10}px`;
-					   			}
-					   			editText.firstChild.firstChild.focus();
+					   			const $editText = $editCommentBox.clone(false);
+					   			$editText.find('input:text').val(target.dataset[type.data]);
+					   			document.body.appendChild($editText[0]);
+					   			$editText.css('top', (type.data == 'gc') 
+					   				? `${scrollY + Math.max(y1,y2)}px`
+					   				: `${scrollY + Math.min(y1,y2) - $editText.height() - 10}px`)
+					   				.css('left', `${scrollX + Math.min(x1,x2)}px`)
+					   				.find('input:text')[0].focus();
 								$(document).on('mousedown', editCommentMenu);
 								
-					   			$(editText).find('form').on('submit',function(ee){
+					   			$editText.find('form').on('submit',function(ee){
 					   				ee.preventDefault();
 					   				pushEditHistory(target.closest('.semantics-result'));
 					   				var text = $(this).find('input').val().trim();
@@ -443,19 +561,19 @@
 					   				if(text.length == 0) delete target.dataset[type.data];
 					   				else target.dataset[type.data] = text;
 									$(document).off('mousedown', editCommentMenu);
-									$(editText).remove();
+									$editText.remove();
 									tandem.checkGCDepth(target.closest('.semantics-result'));
 									$('.edit-svoc').focus();
 					   			});
-					   			$(editText).find('button:eq(1)').on('click',function(){
+					   			$editText.find('button:eq(1)').on('click',function(){
 									$(document).off('mousedown', editCommentMenu);
-									$(editText).remove();
+									$editText.remove();
 									$('.edit-svoc').focus();		   				
 					   			});
 								function editCommentMenu(e1){
-									if((editText.compareDocumentPosition(e1.target) & 16) != 16){
+									if(($editText[0].compareDocumentPosition(e1.target) & 16) != 16){
 										$(document).off('mousedown', editCommentMenu);
-										$(editText).remove();
+										$editText.remove();
 										$('.edit-svoc').focus();
 									}
 								}
@@ -655,22 +773,15 @@
 			   					+ toLeft * pseudoHpos,
 			   			x2 = x1 + toLeft * pseudoWidth;
 					
-		   			const editText = document.createElement('div');
-		   			editText.className = 'edit-comment text-end';
-		   			editText.style.position = 'absolute';
-		   			editText.style.top = `${scrollY + Math.max(y1,y2)}px`;
-		   			editText.style.left = `${scrollX + Math.min(x1,x2)}px`;
-		   			editText.insertAdjacentHTML('afterbegin','<form class="btn-group">' +
-		   				'<input class="form-control" type="text" placeholder="↵"/>' +
-		   				'<div class="btn-group ms-1"><button class="btn btn-sm btn-fico" type="submit">확인</button>' +
-		   				'<button class="btn btn-sm btn-outline-fico" type="button">취소</button></div></form>');
-		   			document.body.appendChild(editText);
-	   				editText.style.top = scrollY + Math.min(y1,y2) 
-		   							- editText.offsetHeight - 10 + 'px';
-		   			editText.firstChild.firstChild.focus();
+		   			const $editText = $editCommentBox.clone(false);
+		   			document.body.appendChild($editText[0]);
+		   			$editText.find('input:text').val(target.dataset.gc??'');
+		   			$editText.css('top', `${scrollY + Math.max(y1,y2)}px`)
+		   				.css('left', `${scrollX + Math.min(x1,x2)}px`)
+						.find('input:text')[0].focus();
 					$(document).on('mousedown', editCommentMenu);
 					
-		   			$(editText).find('form').on('submit',function(e1){
+		   			$editText.find('form').on('submit',function(e1){
 		   				e1.preventDefault();
 						target.classList.remove('comment-target');
 						if(container.closest('[data-mode="comment"]')){
@@ -682,25 +793,25 @@
 		   				if(text.length == 0) delete target.dataset.gc;
 		   				else target.dataset.gc = text;
 						$(document).off('mousedown', editCommentMenu);
-						$(editText).remove();
+						$editText.remove();
 						tandem.checkGCDepth(target.closest('.semantics-result'));
 						$('.edit-svoc').focus();
 						container.closest('.edit-svoc').removeAttribute('data-mode');
 						$svocEditor.find('[data-mode="comment"].active').removeClass('active');
 						$svocEditorHint.empty();
 		   			});
-		   			$(editText).find('button:eq(1)').on('click',function(){
+		   			$editText.find('button:eq(1)').on('click',function(){
 						$(document).off('mousedown', editCommentMenu);
-						$(editText).remove();
+						$editText.remove();
 						gCommentCreateHintOn();
 						$('.edit-svoc').focus();		   				
 		   			});
 		   			
 		   			
 					function editCommentMenu(e1){
-						if((editText.compareDocumentPosition(e1.target) & 16) != 16){
+						if(($editText[0].compareDocumentPosition(e1.target) & 16) != 16){
 							$(document).off('mousedown', editCommentMenu);
-							$(editText).remove();
+							$editText.remove();
 							$('.edit-svoc').focus();
 							gCommentCreateHintOn();
 						}
@@ -723,17 +834,19 @@
 					$(document).off('mouseover', '[data-mode="comment"] .semantics-result .sem')
 							.off('mouseout', '[data-mode="comment"] .semantics-result *');
 				}
-			});
+				$svocEditorHint = $(result).find('.semantic-edit-guide-msg');
+				$svocEditorBadge = $(result).find('.svoc-editor-badge');
+				$svocEditorEmblem = $(result).find('.svoc-editor-emblem');
+			}, 'html');
 		}
 		
-		// [편집 힌트 메세지 최초 1회 정의]
-		if(typeof $svocEditorHint == 'undefined'){
-			$svocEditorHint = $('<div class="semantic-edit-guide-msg mx-auto"></div>');
-		}
 		// [구문분석 div에 .edit-svoc 클래스 추가 후 편집 툴바와 힌트 메세지 표시]
+		const $badge = $svocEditorBadge.clone();
+		$badge.text(forNew ? 'New' : 'Edit');
+		
 		this.wrap($('<div class="edit-svoc" tabindex="0"></div>'))
-			.before($(`<span class="svoc-editor-badge badge fs-6 rounded-pill">${forNew ? 'New' : 'Edit'}</span>`))
-			.before($('<span class="svoc-editor-emblem position-absolute end-0 me-2 p-1 pb-0 rounded-pill pe-none">『 <b class="app-name-text">fico </b><b class="text-fc-red" style="font-size:.9rem;">SVOC Editor</b>™』</span>'))
+			.before($badge)
+			.before($svocEditorEmblem)
 			.before($svocEditor)
 			.after($svocEditorHint);
 		$('.edit-svoc').focus();
@@ -788,35 +901,7 @@
 		$svocEditor.detach();
 		$svocEditorHint.detach();
 		settings.cancelCallback();			
-	} 
-	// 편집 툴바에 버튼 추가(Embed)
-	function appendBtn(btn, parent) {
-		let element, className;
-		switch(btn.type) {
-			case "group":
-				className = 'btn-group col-auto';
-			case "div":
-				className = btn.class? btn.class : className;
-				element = document.createElement('div');
-				break;
-			default:
-				className = btn.class? btn.class : 'btn btn-outline-dark col-auto btn-sm';
-				element = document.createElement('button');
-				element.dataset.toggle = 'tooltip';
-				element.dataset.placement = 'bottom';
-				element.dataset.mode = btn.mode;
-				element.title = btn.title;
-				element.value = btn.value;
-				element.innerHTML = btn.html;
-		}
-		element.className = className;
-		parent.append(element);
-		if(btn.children) {
-			for(let i = 0, len = btn.children.length; i < len; i++) {
-				appendBtn(btn.children[i], $(element));
-			}
-		}
-	}		
+	}	
 	
 	/**
 	 * 편집 내역 저장
@@ -831,14 +916,13 @@
 
 	/**
 	 * 선택 영역에 지정한 성분의 태그로 감싼다.
+	 * @param selection 블록선택한 텍스트 영역
+	 * @param role 적용할 성분(실제 성분과 오롯이 일치하진 않음. 예: ss = 마크타입 S/rcomment '(의)s')
 	 */
 	function applyRoles(selection, role) {
-		const rcomments = {s : 'S', v : 'V', o : 'O', po : 'prep.o.',
-						c : 'C', oc : 'o.c.', m : 'M', a : 'A'},
-			  gcomments = {a: '부사적 보충어', tor : 'to부정사', ger : '동명사', ptc : '분사'};
 		const range = selection.getRangeAt(0);
 		const el = document.createElement('span');
-		el.className = 'sem ' + role;
+		el.className = 'sem ' + (pseudoMarkTypes[role]??role);
 		
 		// rcomment 기본값 적용 (예전엔 rcomment가 S가 아니라 Subj였으므로, 짧은 버전은 rcomment를 따로 지정했음)
 		if(rcomments[role] != null) {
@@ -846,7 +930,7 @@
 			el.dataset.rcMin = rcomments[role];
 		}
 		// gcomment 기본값 적용
-		if(gcomments[role] != null) el.dataset.gc = gcomments[role];
+		if(typeof gcomments[role] == 'string') el.dataset.gc = gcomments[role];
 		// 선택 영역이 온전히 노드를 감쌀 경우 지정된 태그로 감싸고
 		// 노드를 양분할 경우 갈리는 영역 각각을 태그로 감싼다.
 		try {
@@ -870,9 +954,7 @@
 		refreshDOMs(container);
 	}
 	
-	const rcomments = {s:'S', o:'O', po: 'prep.o.', c:'C', oc:'o.c.', m:'M', a:'A'},
-		  gcomments = {ncls:{s:'주어절',o:'목적어절',c:'보어절',oc:'목적보어절',m:'관계절'},
-					acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절'};
+	
 	/**
 	 * 선택 영역을 괄호로 감싼 후 성분 태그까지 겹쳐서 추가한다.
 	 */
@@ -880,53 +962,16 @@
 		const range = selection.getRangeAt(0);
 		const container = (range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer).closest('.semantics-result');
 		switch (wrapper) {
-		case 'ncls':
-			const assistant = document.createElement('div');
-			assistant.className = 'cls-role-menu';
-			assistant.style.position = 'absolute';
+		case 'ncls': case 'tor': case 'ger': case 'ptc': {
 			const rangeRect = range.getClientRects()[0];
-			assistant.style.top = `${scrollY + rangeRect.top + rangeRect.height}px`;
-			assistant.style.left = `${scrollX + rangeRect.left}px`;
-			const buttonsHTML = ['s','o','c','oc'].map(value => `<button class="cls-role-btn" value="${value}">${value}</button>`)
-			assistant.insertAdjacentHTML('afterbegin', buttonsHTML);
-			document.body.appendChild(assistant);
-			let once = false;
-			$(document).on('click', function exitClsRoleMenu(e){
-				if(once){
-					// 성분 지정 메뉴 영역 내부 클릭
-					if((assistant.compareDocumentPosition(e.target) & 16) == 16){
-						var el1 = document.createElement('span');
-						el1.className = `sem ${e.target.value}`;
-						if(rcomments[e.target.value] != null) 
-							el1.dataset.rc = rcomments[e.target.value];
-						try {
-							range.surroundContents(el1);
-						} catch (er) {
-							el1.appendChild(range.extractContents());
-							range.insertNode(el1);
-						}
-						var el2 = document.createElement('span');
-						el2.className = `sem ${wrapper}`;
-						el2.dataset.gc = gcomments[wrapper][e.target.value];
-						try {
-							range.surroundContents(el2);
-						} catch (er) {
-							el2.appendChild(range.extractContents());
-							range.insertNode(el2);
-						}
-						range.detach();
-						selection.removeAllRanges();
-						
-						refreshDOMs(container);
-					}
-					$(document).off('click', exitClsRoleMenu);
-					$(assistant).remove();
-				}else{
-					once = true;
-				}
-			});
+			
+			$(document.body).append({ncls: $nclsComboBox, tor: $torComboBox, ger: $gerComboBox, ptc: $ptcComboBox }[wrapper]
+				.css('top', `${scrollY + rangeRect.top + rangeRect.height}px`)
+				.css('left', `${scrollX + rangeRect.left}px`)
+				.data('range', range));
 			break;
-		case 'acls': case 'advcls':
+		}
+		case 'acls': case 'advcls': case 'pcl':
 			const el = document.createElement('span');
 			el.className = 'sem m';
 			el.dataset.rc = rcomments['m'];
@@ -942,7 +987,7 @@
 			range.selectNode(el);
 		default:
 			const el2 = document.createElement('span');
-			el2.classList.add('sem', wrapper);
+			el2.classList.add('sem', wrapper=='pcl'?'advcls':wrapper);
 			if(gcomments[wrapper]) el2.dataset.gc = gcomments[wrapper];
 			try {
 				range.surroundContents(el2);
@@ -961,7 +1006,6 @@
 			}
 			
 			refreshDOMs(container);
-			
 			break;
 		}
 	}
