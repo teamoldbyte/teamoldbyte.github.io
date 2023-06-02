@@ -26,7 +26,7 @@
 	let undoList = [], redoList = []; // 편집 내역
 	
 	// 크래프트 데이터 초기화(메뉴 구성 및 출제 유형별 정보)
-	const MAKER_TEMPLATES = await $.get('https://static.findsvoc.com/data/craft/maker_templates.html', result => {
+	const MAKER_TEMPLATES = await $.get('https://static.findsvoc.com/fragment/craft/maker_templates.min.html', result => {
 		staticCraftPanel = $(result).find('.battle-section-panel')[0];
 	}, 'html')
 	
