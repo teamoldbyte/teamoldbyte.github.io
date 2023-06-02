@@ -78,10 +78,37 @@
 /* 편집 버튼들 스타일 */
 .svoc-toolbar button{
 	font-family: 'NanumBarunGothic';
-	font-weight: 600;
+	font-weight: 400;
 	font-size: 0.75rem;
+	min-width: 4rem;
+	height: 2.5rem;
+	color:inherit;
 	background: #fff;
 	border-color: #ddd!important;
+}
+.svoc-toolbar button:hover,.svoc-toolbar button.active{
+	mix-blend-mode: darken;
+	transform: scale(1.1);
+	color:inherit;
+}
+.navigation-btns button:hover, .navigation-btns button.active {
+	color:white;
+}
+.svoc-btn-marktext {
+	display: block;
+	font-style: italic;
+	transform: scale(0.75) translateY(-30%);
+}
+.navigation-btns button {
+	min-width: auto;
+	min-height: auto;
+	line-height: 1;
+}
+@media (min-width: 992px) {
+	.navigation-btns {
+		position: absolute;
+		right: 0.25rem;
+	}
 }
 .svoc-toolbar [disabled] {
 	opacity: 0.5;
@@ -94,7 +121,7 @@
 	cursor: text;
 }
 
-.cls-role-menu,.edit-comment {
+.cls-role-menu,.cls-conj-menu,.edit-comment, .tor-role-menu, .ger-role-menu, .ptc-role-menu {
 	margin: 5px 0;
 	z-index: 5;
 }
