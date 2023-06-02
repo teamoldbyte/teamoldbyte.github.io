@@ -7,8 +7,8 @@
 		// 자동재생 조작 금지
 		//document.querySelector('#ttsSettings .form-switch').remove();
 	}});
-	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/data/workbook/element_templates.min.html', jQuery.noop, 'html'); 
-//	const WORKBOOK_ELEMENTS = await $.get('/data/workbook/element_templates.html', jQuery.noop, 'html'); 
+	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/fragment/workbook/element_templates.min.html', jQuery.noop, 'html'); 
+//	const WORKBOOK_ELEMENTS = await $.get('/fragment/workbook/element_templates.html', jQuery.noop, 'html'); 
 	
 /*
 
@@ -755,6 +755,7 @@
 		}
 	})
 	$(window).on('resize', function() {
+		// 휴대폰 세로 사이즈가 아닐 경우
 		if(!devSize.isPhone()) {
 			slideResizeObserver.disconnect();
 			//swiper.slideTo(0, 0)
@@ -2093,6 +2094,7 @@
 		if(this.querySelector('.battle-section-panel') == null) {
 			craft.openBattleMakerPanel(this,
 				memberId,
+				memberRoleType,
 				$sentenceSection.data('sentenceId'), 
 				$sentenceSection.find('.semantics-result')[0],
 				translations);
