@@ -15,8 +15,8 @@ async function pageinit(memberId, alias, image) {
 		
 	}
 	
-	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/data/workbook/element_templates.min.html', jQuery.noop, 'html');
-//	const WORKBOOK_ELEMENTS = await $.get('/data/workbook/element_templates.html', jQuery.noop, 'html');
+	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/fragment/workbook/element_templates.min.html', jQuery.noop, 'html');
+//	const WORKBOOK_ELEMENTS = await $.get('/fragment/workbook/element_templates.html', jQuery.noop, 'html');
 	
 	/**
 	 * 센텐스 검색
