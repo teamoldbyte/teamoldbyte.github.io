@@ -494,15 +494,17 @@
 					refreshDOMs(innerElement.closest('.semantics-result'));
 				})
 				.on('mouseup', function(e) {
-					// 명사절, to부정사, 분사 역할 지정 박스를 벗어나면 박스를 떼낸다.
+					// 명사절, to부정사, 동명사, 분사 역할 지정 박스를 벗어나면 박스를 떼낸다.
 					if($nclsComboBox.is(':visible') && !e.target.closest('.cls-role-menu')
 					|| $nclsComboBox2.is(':visible') && !e.target.closest('.cls-conj-menu')
 					|| $torComboBox.is(':visible') && !e.target.closest('.tor-role-menu')
+					|| $gerComboBox.is(':visible') && !e.target.closest('.ger-role-menu')
 					|| $ptcComboBox.is(':visible') && !e.target.closest('.ptc-role-menu')) {
 						getSelection().removeAllRanges();
 						$nclsComboBox.data('range', null).detach();
 						$nclsComboBox2.data('range', null).detach();
 						$torComboBox.data('range', null).detach();
+						$gerComboBox.data('range', null).detach();
 						$ptcComboBox.data('range', null).detach();
 					}
 				})
