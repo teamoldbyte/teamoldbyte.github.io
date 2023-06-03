@@ -526,7 +526,7 @@
 	 */
 	function getModiKeyword(element) {
 		const modifier = document.querySelector(`[data-mfd="${element.className.match(/mfd-(\d+-\d+)/)[1]}"]`);
-		const modifierWrapper = modifier.closest('.ptc,.adjphr,.tor');
+		const modifierWrapper = modifier?.closest('.ptc,.adjphr,.tor');
 		const modifierType = modifierWrapper?.className?.match(/ptc|adjphr|tor/)?.[0];
 		let modiPOS;
 		switch(modifierType) {
