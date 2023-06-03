@@ -412,10 +412,12 @@ async function pageinit(memberId, alias, image) {
 			});
 			// --------------------------------
 			// gramMeta도 같이 저장(ajax)---------------------------------------
-			const gramMeta = window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'adminxyz');
-			if(sentenceType == 'searchResult') {
-				$('#sentenceDetailSection .gram-info :text').val(gramMeta);
-			}
+			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'adminxyz')
+			.then(gramMeta => {
+				if(sentenceType == 'searchResult') {
+					$('#sentenceDetailSection .gram-info :text').val(gramMeta);
+				}
+			})
 			// --------------------------------------------------------------
 		}
 		
