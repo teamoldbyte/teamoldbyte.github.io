@@ -761,13 +761,16 @@
 		// MYSQL 검색을 위해 특정 키워드들은 + 기호를 접두사로 붙인다.
 		gramMeta = gramMeta.replace(/(\bFORM_\w*|\bNCLS\w*|\bADVCLS\w*|\bPCLS\w*|\bCCLS\w*|\bACLS\w*)/g,'+$1');
 		
-		$.ajax({
-			url: `/${domain}/sentence/grammeta/edit`,
-			type: 'POST',
-			data: JSON.stringify({sentenceId, gramMeta, metaStatus: svocUpdate ? 'S' : 'U'}),
-			contentType: 'application/json'
-		});
-		return gramMeta;
+		return new Promise((resolve,reject) => {
+			$.ajax({
+				url: `/${domain}/sentence/grammeta/edit`,
+				type: 'POST',
+				data: JSON.stringify({sentenceId, gramMeta, metaStatus: svocUpdate ? 'S' : 'U'}),
+				contentType: 'application/json',
+				success: () => resolve(gramMeta),
+				error: reject
+			});
+		})
 	}
 	
 	/** 문장의 metaStatus를 S 또는 F로 저장한다.
