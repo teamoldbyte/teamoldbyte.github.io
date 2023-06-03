@@ -278,8 +278,10 @@
 	});
 		// [지문 타이틀 수정]-----------------------------------------------------------
 	$('.passage-title-block').on('click', '.display-block', function() {
-		if($(this).siblings('.edit-block').length > 0)
-			$(this).add($(this).siblings('.edit-block')).collapse('toggle');
+		const isShown = $(this).is('.show');
+		$('.passage-title-block .edit-block').collapse(isShown?'show':'hide');
+		$('.passage-title-block .display-block').collapse(isShown?'hide':'show');
+		if(isShown) $('.passage-title-block .title-input:visible')[0].focus();
 	}).on('click','.js-edit-ptitle', function() {
 		const titleSection = this.closest('.passage-title-block');
 		const passageTitle = $(titleSection).find('.title-input').val().trim();
@@ -293,13 +295,16 @@
 		editPassageTitle(command, () => {
 			alertModal('지문 제목이 수정되었습니다.');
 			$(titleSection).find('.edit-block').collapse('hide');
-			$(titleSection).find('.display-block').collapse('show').find('.passage-title-text').text(passageTitle||'제목 없음');
+			// PC,모바일 화면에서 수정사항 동시반영
+			$('.passage-title-block .display-block').collapse('show').find('.passage-title-text').text(passageTitle||'제목 없음');
+			$('.title-input').val(passageTitle||'');
+			
 		}, () => alertModal('지문 제목 수정 중 오류가 발생했습니다.'));
 		//-----------------------------------------------
 	}).on('click', '.js-cancel-ptitle', function() {
-		const titleSection = this.closest('.passage-title-block');
-		const $title = $(titleSection).find('.display-block').collapse('show').find('.passage-title-text');
-		$(titleSection).find('.edit-block').collapse('hide').find('.title-input').val($title.text());
+		const orgText = $('.passage-title-text').text();
+		$('.passage-title-block .edit-block').collapse('hide').find('.title-input').val(orgText);
+		$('.passage-title-block .display-block').collapse('show');
 	})
 	
 	// 지문의 노트/질문 토글 설정-----------------------------------------------------
@@ -719,7 +724,7 @@
 				$firstNote.collapse('show');
 				collapseNote($firstNote);
 				$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active');
-				if(tts.autoEnabled()) {
+				if(devSize.isPhone() && tts.autoEnabled()) {
 					if($('#loadingModal').is('.show')) {
 						$('#loadingModal').on('hidden.bs.modal', playFirst);
 					}else playFirst();
