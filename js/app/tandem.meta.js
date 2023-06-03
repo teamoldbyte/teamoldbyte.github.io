@@ -330,8 +330,10 @@
 	const SENSE_SUBJ = '(의)s';
 	const extraRolecomments = [ INDIRECT_OBJ, DIRECT_OBJ, ACTUAL_OBJ, ACTUAL_SUBJ, PREP_OBJ, SENSE_SUBJ ];
 
-	function gramMetaStrFromDOM(div) {
-		return gramMetaArr2Str(gramMetaFromSemantics(semanticsFromDOMs(div)));
+	function gramMetaStrFromDOM(div) {		
+		let gramMeta = gramMetaArr2Str(gramMetaFromSemantics(semanticsFromDOMs(div)));
+		// MYSQL 검색을 위해 특정 키워드들은 + 기호를 접두사로 붙인다.
+		return gramMeta.replace(/(\bFORM_\w*|\bNCLS\w*|\bADVCLS\w*|\bPCLS\w*|\bCCLS\w*|\bACLS\w*)/g,'+$1');
 	}
 	/** DOM을 분석하여 문법 특징 파악
 	@param {Element} div .semantics-result 태그
@@ -757,10 +759,7 @@
 	@param domain gramMeta 추출이 이루어지는 도메인(워크북, 피코쌤, ...)
 	 */
 	function saveGramMetaFromDOM(sentenceId, div, svocUpdate, domain) {
-		let gramMeta = gramMetaStrFromDOM(div);
-		// MYSQL 검색을 위해 특정 키워드들은 + 기호를 접두사로 붙인다.
-		gramMeta = gramMeta.replace(/(\bFORM_\w*|\bNCLS\w*|\bADVCLS\w*|\bPCLS\w*|\bCCLS\w*|\bACLS\w*)/g,'+$1');
-		
+		const gramMeta = gramMetaStrFromDOM(div);
 		return new Promise((resolve,reject) => {
 			$.ajax({
 				url: `/${domain}/sentence/grammeta/edit`,
