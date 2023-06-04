@@ -296,8 +296,8 @@
 
 	}
 
-	/** 문장 필수성분*/
-	const roleTypes = ['S', 'V', 'O', 'PO', 'TO', 'GO', 'PTCO', 'C', 'OC', 'A', 'M', 'APPO'];
+	/** 문장 성분*/
+	const roleTypes = ['S', 'SS', 'V', 'O', 'PO', 'TO', 'GO', 'PTCO', 'C', 'OC', 'A', 'M', 'APPO'];
 	const markTypesNeedBrackets = ['CONJ', 'PHR', 'ADJPHR', 'ADVPHR', 'PTCPHR', 'CLS', 'ACLS', 'NCLS', 'ADVCLS', 'CCLS', 'PCLS'];
 	/**
 	svocList를 기반으로 한 DOM 생성
@@ -538,7 +538,7 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
-	const posClasses = ['.s', '.v', '.o', '.po', '.to', '.go', '.ptco', '.appo', '.c', '.oc', '.a', '.m'];
+	const posClasses = ['.s', '.ss', '.v', '.o', '.po', '.to', '.go', '.ptco', '.appo', '.c', '.oc', '.a', '.m'];
 	function checkPOSDepth(element) {
 		const children = element.querySelectorAll('.sem');
 		let base = posClasses.some(cls => element.matches(cls)) ? 1 : 0;
