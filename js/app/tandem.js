@@ -57,16 +57,27 @@
 		 * (코멘트 수평정렬, 코멘트 수직정렬, 수식선, 줄 높이 자동 조절.)
 		 */
 		// 화면의 가로 사이즈 변경이 생기면 각 div마다 내부 내용을 다시 그린다.
-		let resizeTimer, currWidth = window.innerWidth;
-		window.addEventListener('resize', () => {
-			if (!$(div).is(':visible') || currWidth == window.innerWidth) return true;
-			clearTimeout(resizeTimer);
-			currWidth = window.innerWidth;
-			resizeTimer = setTimeout(() => requestAnimationFrame(() => correctMarkLine(div)), 100);
-		});
 		correctMarkLine(div);
 		return div;
 	}
+	let resizeTimer;
+	window.addEventListener('resize', () => {
+		clearTimeout(resizeTimer);
+		
+		const $semantics = $('.semantics-result:visible');
+		let i = 0, len = $semantics.length;
+		function prv() {
+			if(i < len) {
+				requestAnimationFrame(() => {
+					correctMarkLine($semantics[i++]);
+					prv();
+				})
+			}
+		}
+		resizeTimer = setTimeout(() => {
+			if(len > 0) prv();
+		}, 50);
+	});
 
 	const keywordTable = {
 		//속성 클래스 : Cherokee (그리스 문자)
