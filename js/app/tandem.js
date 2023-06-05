@@ -226,8 +226,9 @@
 
 	/* svoc문자열 인코딩(정적치환) */
 	function encSvoc(svoc) {
-		const regex = new RegExp(Object.keys(keywordTable).join('|'), 'g');
-		return svoc.replace(regex, (matched) => keywordTable[matched]);
+		const regex = new RegExp(Object.values(keywordTable).join('|'), 'g');
+		const reverseMap = Object.fromEntries(Array.from(Object.entries(keywordTable),([k,v]) => [v,k]))
+		return svoc.replace(regex, (matched) => reverseMap[matched]);
 	}
 
 	/* svoc문자열 디코딩(정적치환) */
