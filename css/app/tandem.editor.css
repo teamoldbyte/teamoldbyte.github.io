@@ -20,6 +20,8 @@
 /* 편집 상태에 들어간 분석은 왼쪽 들여쓰기 */
 .edit-svoc .semantics-result {
 	margin-left: 7px;
+	margin-top: 2rem;
+	margin-bottom: 2rem;
 }
 /* 삭제 모드시 마우스 커서 변환 */
 .shift .edit-svoc[data-mode="erasing"] {
