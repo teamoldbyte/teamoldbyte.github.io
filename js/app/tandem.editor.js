@@ -962,18 +962,50 @@
 	 */
 	function wrapBracket(selection, wrapper){
 		const range = selection.getRangeAt(0);
-		const container = (range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer).closest('.semantics-result');
+		const element = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer;
+		const container = element.closest('.semantics-result');
 		switch (wrapper) {
-		case 'ncls': case 'tor': case 'ger': case 'ptc': {
-			const rangeRect = range.getClientRects()[0];
-			
-			$(document.body).append({ncls: $nclsComboBox, tor: $torComboBox, ger: $gerComboBox, ptc: $ptcComboBox }[wrapper]
-				.css('top', `${scrollY + rangeRect.top + rangeRect.height}px`)
-				.css('left', `${scrollX + rangeRect.left}px`)
-				.data('range', range));
+		case 'tor': case 'ger': case 'ptc': case 'ncls': {
+			// 선택한 영역이 오롯이 하나의 태그와 일치할 때
+			if(range.toString().length == element.closest('.sem')?.textContent?.length) {
+				const wrapperEl = createElement({ el: 'span', class: 'sem ' + wrapper, dataset: { gc: gcomments[wrapper] }});
+				// 일치하는 태그가 성분 태그일 경우
+				if(element.closest('.sem').matches('.s,.o,.po,.to,.go,.ptco,.c,.oc,.appo,.adjphr,.advphr')) {
+					// 품사가 명사절이면 성분 태그 밖에 감싼다.
+					if(wrapper == 'ncls') {
+						wrapperEl.dataset.gc = gcomments.ncls[Array.from(element.closest('.sem').classList).filter(c => ['s','o','po','to','go','ptco','c','oc','appo'].includes(c))[0]]
+						$(element.closest('.sem')).wrap(wrapperEl);
+					// 그 외(to보정사, 동명사, 분사)엔 성분 태그가 품사를 감싸도록
+					}else $(element.closest('.sem')).wrapInner(wrapperEl);
+				}else {
+					$(element.closest('.sem')).wrap(wrapperEl);
+				}
+				refreshDOMs(container);
+			}
+			// 태그의 겹침이 없는 경우
+			else {
+				// to부정사,동명사,분사는 일단 태그를 먼저 표시.
+				if(['tor','ger','ptc'].includes(wrapper)) {
+					const wrapperEl = createElement({ el: 'span', class: 'sem ' + wrapper, dataset: { gc: gcomments[wrapper] }});
+					try {
+						range.surroundContents(wrapperEl);
+					} catch (er) {
+						wrapperEl.appendChild(range.extractContents());
+						range.insertNode(wrapperEl);
+					}
+				}
+				const rangeRect = range.getClientRects()[0];
+				// 성분을 묻는 콤보박스를 표시
+				$(document.body).append({ncls: $nclsComboBox, tor: $torComboBox, ger: $gerComboBox, ptc: $ptcComboBox }[wrapper]
+					.css('top', `${scrollY + rangeRect.top + rangeRect.height}px`)
+					.css('left', `${scrollX + rangeRect.left}px`)
+					.data('range', range));
+				
+			}
 			break;
 		}
-		case 'acls': case 'advcls': case 'pcl':
+		case 'acls': case 'advcls': case 'pcl': {
+			// 형용사절,부사절,삽입절은 성분을 'M'으로 먼저 표시하고
 			const el = document.createElement('span');
 			el.className = 'sem m';
 			el.dataset.rc = rcomments['m'];
@@ -987,7 +1019,9 @@
 			tandem.trimTextContent(container);
 			
 			range.selectNode(el);
+		}
 		default:
+			// 품사를 표시한다.
 			const el2 = document.createElement('span');
 			el2.classList.add('sem', wrapper=='pcl'?'advcls':wrapper);
 			if(gcomments[wrapper]) el2.dataset.gc = gcomments[wrapper];
