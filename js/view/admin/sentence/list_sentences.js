@@ -131,7 +131,7 @@ async function pageinit(memberId, alias, image) {
 				command.keyword = Array.from($inputSection.find('input').get(), input => input.value).join('~');
 				break;
 			}
-			case 'regDate': {
+			case 'regDate': case 'updateDate': {
 				command.fromDate = $inputSection.find('input:eq(0)').val();
 				command.toDate = $inputSection.find('input:eq(1)').val();
 				break;
