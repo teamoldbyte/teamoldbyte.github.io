@@ -428,8 +428,11 @@
 						range.insertNode(innerElement);
 					}
 					const outerElement = createElement({
-						el: 'span', class: 'sem ncls', dataset: { gc: gcomments.ncls[role] }
+						el: 'span', class: 'sem ncls'
 					});
+					if(gcomments.ncls[role]) {
+						outerElement.dataset.gc = gcomments.ncls[role];
+					}
 					$(innerElement).wrap(outerElement);
 					
 					$nclsComboBox.data('range', null).detach();
@@ -466,32 +469,23 @@
 					const role = this.value;
 					const wrapper = this.closest('.tor-role-menu,.ger-role-menu,.ptc-role-menu').className.match(/(\w+)-role-menu/)[1] // 콤보박스 종류 파악
 					const $comboBox = {tor:$torComboBox,ger:$gerComboBox,ptc:$ptcComboBox}[wrapper];
-					const innerElement = createElement({
+					const roleElement = createElement({
 						el: 'span', class: `sem ${pseudoMarkTypes[role]??role}`
 					})
-					if(rcomments[role]) innerElement.dataset.rc = rcomments[role];
-					if(['adjphr','advphr'].includes(role) && gcomments[role]) innerElement.dataset.gc = gcomments[role];
-					const range = $comboBox.data('range'); 
-					try {
-						range.surroundContents(innerElement);
-					} catch (er) {
-						innerElement.appendChild(range.extractContents());
-						range.insertNode(innerElement);
-					}
-					const outerElement = createElement({
-						el: 'span', class: `sem ${wrapper}`, dataset: { gc: gcomments[wrapper] }
-					});
+					if(rcomments[role]) roleElement.dataset.rc = rcomments[role];
+					if(['adjphr','advphr'].includes(role) && gcomments[role]) roleElement.dataset.gc = gcomments[role];
+					const wrapperElement = $comboBox.data('wrapperEl');
 					if(['adjphr','advphr'].includes(role)) {	
 						// 괄호를 가진 형용사구,부사구는 바깥으로
-						$(innerElement).wrapInner(outerElement);
+						$(wrapperElement).wrap(roleElement);
 					}else {
-						$(innerElement).wrap(outerElement);
+						$(wrapperElement).wrapInner(roleElement);
 					}
 					
-					range.detach();
+					$comboBox.data('range').detach();
 					getSelection().removeAllRanges();
-					$comboBox.data('range', null).detach();
-					refreshDOMs(innerElement.closest('.semantics-result'));
+					$comboBox.data('range', null).data('wrapperEl', null).detach();
+					refreshDOMs(wrapperElement.closest('.semantics-result'));
 				})
 				.on('mouseup', function(e) {
 					// 명사절, to부정사, 동명사, 분사 역할 지정 박스를 벗어나면 박스를 떼낸다.
@@ -985,8 +979,9 @@
 			// 태그의 겹침이 없는 경우
 			else {
 				// to부정사,동명사,분사는 일단 태그를 먼저 표시.
+				let wrapperEl;
 				if(['tor','ger','ptc'].includes(wrapper)) {
-					const wrapperEl = createElement({ el: 'span', class: 'sem ' + wrapper, dataset: { gc: gcomments[wrapper] }});
+					wrapperEl = createElement({ el: 'span', class: 'sem ' + wrapper, dataset: { gc: gcomments[wrapper] }});
 					try {
 						range.surroundContents(wrapperEl);
 					} catch (er) {
@@ -999,7 +994,7 @@
 				$(document.body).append({ncls: $nclsComboBox, tor: $torComboBox, ger: $gerComboBox, ptc: $ptcComboBox }[wrapper]
 					.css('top', `${scrollY + rangeRect.top + rangeRect.height}px`)
 					.css('left', `${scrollX + rangeRect.left}px`)
-					.data('range', range));
+					.data('range', range).data('wrapperEl', wrapperEl));
 				
 			}
 			break;
