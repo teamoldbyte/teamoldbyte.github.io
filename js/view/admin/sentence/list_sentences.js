@@ -120,6 +120,10 @@ async function pageinit(memberId, alias, image) {
 		if(data != 'pageNav' && !e?.originalEvent?.submitter?.matches('#refreshBtn')) {
 			command.page = 1;
 		}
+		if(e?.originalEvent?.submitter) {
+			delete command.sortName;
+			delete command.asc;
+		}
 		e.preventDefault();
 		const $inputSection = $(this).find(`.search-input-section.${command.searchType}`);
 		switch(command.searchType) {
@@ -164,7 +168,7 @@ async function pageinit(memberId, alias, image) {
 		}else {
 			$hiddenSortName.val(this.dataset.value);
 		}
-		$(`#${searchFormId}`).trigger('submit');
+		$(`#${searchFormId}`).trigger('submit','sort');
 	});
 	
 	
