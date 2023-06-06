@@ -1,90 +1,10 @@
 /** /admin/ssam/today_posters.html
 @author LGM
  */
-function pageinit(memberId, memberAlias, memberImage){
-	const svocSectionJson = {
-		el: 'div', className: 'svoc-section row position-relative', children: [
-			{ el: 'div', className: 'svoc-block col my-auto' },
-			{ el: 'div', className: 'svoc-mdf-btns btn-group px-2', children: [
-					{ el: 'button', 'data-seq': '', 
-						className: 'js-edit-svoc login-required btn text-bluegray-300 p-0 pe-1',
-						'data-toggle': 'tooltip', title: '분석 수정', children: [
-							{ el: 'span', className: 'fas fa-marker'}
-						]
-					},
-					{ el: 'button', 'data-seq': '', 
-						className: 'js-del-svoc login-required btn text-bluegray-300 p-0 ps-1',
-						'data-toggle': 'tooltip', title: '분석 삭제', children: [
-							{ el: 'span', className: 'fas fa-trash-alt'}
-						]
-					}
-				]
-			},
-			{ el: 'div', className: 'writer-section col-12 col-md-1 mt-2 mt-xl-0 btn', 'data-bs-toggle': 'collapse' , children: [
-				{ el: 'div', className: 'personacon-alias alias text-truncate' }
-			]}
-		]
-	};	
-	const noteSectionJson = {
-		el: 'div', className: 'note-block one-block row g-0', children: [
-			{ el: 'div', className: 'note text-section', children: [
-				{ el: 'div', className: 'note-text', textContent: '노트 본문' },
-				{ el: 'div', className: 'note-editor', style: 'display: none;', children: [
-					{ el: 'textarea', className: 'text-input col-12' },
-					{ el: 'div', className: 'form-check form-switch d-inline-block mx-1', children: [
-						{ el: 'label', className: 'form-check-label text-sm', role: 'button', children: [
-							{ el: 'input', type: 'checkbox', className: 'open-input form-check-input', checked: true },
-							'회원들과 노트를 공유합니다.'
-						]}
-					]},
-					{ el: 'button', type: 'button', className: 'btn p-0', 'data-bs-toggle': 'modal', 'data-bs-target': '#note-modal', children: [
-						{ el: 'span', className: 'material-icons-outlined fs-6', textContent: 'help_outline' }
-					]},
-					{ el: 'div', className: 'note-edit-btns btn-group btn-set float-end mt-0 mt-sm-2', children: [
-						{ el: 'button', type: 'button', className: 'js-edit-note-cancel btn btn-sm btn-outline-fico', textContent: '취소' },
-						{ el: 'button', type: 'button', className: 'js-edit-note btn btn-sm btn-fico', textContent: '확인' }
-					]}
-				]}
-			]},
-			{ el: 'div', className: 'col-12 personacon-section text-end mt-1 text-secondary fst-italic', children: [
-				'written by ',
-				{ el: 'div', className: 'personacon-alias alias d-inline fst-normal' }
-			]},
-			{ el: 'div', className: 'col-auto ms-auto row mh-2rem', children: [
-				{ el: 'div', className: 'col-auto ms-auto me-1 note-mdf-btns btn-group', children: [
-					{ el: 'button', type: 'button', 
-						className: 'js-edit-note-open login-required btn text-bluegray-300',
-						'data-toggle': 'tooltip', title: '노트 수정', children: [
-							{ el: 'span', className: 'far fa-file-alt' },
-							{ el: 'span', className: 'fas fa-pen fa-xs', style: {
-								left: '-8px', top: '5px', position: 'relative'
-							}}
-						]
-					},
-					{ el: 'button', type: 'button', 
-						className: 'js-delete-note login-required btn fas fa-trash-alt text-bluegray-300',
-						'data-toggle': 'tooltip', title: '노트 삭제'
-					}
-				]},
-				{ el: 'div', className: 'updatedate col-auto ms-auto p-0 mt-1 text-secondary text-xs' }
-			]}
-		]
-	};
+async function pageinit(memberId, memberAlias, memberImage){
+	
+	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/fragment/workbook/element_templates.min.html', jQuery.noop, 'html');
 
-	const transModifyBtnsJson = {
-		el: 'div', className: 'trans-mdf-btns', children: [
-			{ el: 'button', type: 'button', className: 'js-edit-trans-open login-required btn btn-sm py-0 pe-0 pt-0',
-				'data-toggle': 'tooltip', title: '해석 수정', children: [
-					{ el: 'span', className: 'material-icons fs-5', textContent: 'edit' }
-				]
-			},
-			{ el: 'button', type: 'button', className: 'js-del-trans login-required btn btn-sm py-0',
-				'data-toggle': 'tooltip', title: '해석 삭제', children: [
-					{ el: 'span', className: 'material-icons fs-5', textContent: 'delete' }
-				]
-			}
-		]
-	}
 	const transEditorJson = {
 		el: 'div', className: 'trans-editor mt-2', children: [
 			{ el: 'textarea', className: 'text-input form-control' },
@@ -92,15 +12,6 @@ function pageinit(memberId, memberAlias, memberImage){
 				{ el: 'button', type: 'button', className: 'js-edit-trans-cancel btn btn-sm btn-outline-fico', textContent: '취소' },
 				{ el: 'button', type: 'button', className: 'js-edit-trans login-required btn btn-sm btn-fico', textContent: '확인' }
 			]}
-		]
-	}
-	const aiLoadingIconJson = {
-		el: 'div', className: 'ailoading-icon position-relative overflow-hidden d-inline-block',
-		style: { width: '50px', height: '50px' }, children: [
-			{ el: 'lottie-player', className: 'position-absolute top-50 start-50 translate-middle',
-				src: 'https://assets1.lottiefiles.com/packages/lf20_iJX38w.json',
-				background: 'transparent', speed: '3', loop: true, autoplay: true, style: { width: '150px', height: '150px' }
-			}
 		]
 	}
 	document.querySelector('section').append(createElement([
@@ -420,7 +331,7 @@ function pageinit(memberId, memberAlias, memberImage){
 
 		for(let j = 0; j < svocListLen; j++) {
 			let svocTag = svocList[j];
-			const $svocBlock = $(createElement(svocSectionJson));
+			const $svocBlock = $(WORKBOOK_ELEMENTS).children('.svoc-section').clone(true);
 			if(j > 0) $svocBlock.addClass('collapse');
 			$svocBlock.appendTo($section.find('.result-semantic-section'));
 			tandem.showSemanticAnalysis(text, svocTag.svocBytes, $svocBlock.find('.svoc-block'))
@@ -477,7 +388,7 @@ function pageinit(memberId, memberAlias, memberImage){
 				}
 				$transBlock.find('.translation-text').text(korTrans.kor);
 				if(memberId == korTrans.memberId) {
-					$transBlock.append(createElement(transModifyBtnsJson));
+					$transBlock.append($(WORKBOOK_ELEMENTS).find('.trans-mdf-btns').clone(true));
 				}
 			}
 			$aiTransSection.find('.ai-translation-block').first().collapse('show');
@@ -668,10 +579,10 @@ function pageinit(memberId, memberAlias, memberImage){
 		let $semantics = null;
 		if(forNew) {
 			// 분석 추가일 경우 최상위 분석을 복사한 폼을 생성
-			var $newSection = $(createElement(svocSectionJson)).addClass('new-svoc-form');
+			var $newSection = $(WORKBOOK_ELEMENTS).children('.svoc-section').clone(true).addClass('new-svoc-form');
 
 			$newSection.find('.personacon-alias').text(memberAlias);
-			const $personacon = $('#hiddenDivs .member-personacon').clone(true);
+			const $personacon = $('#hiddenDivs>.member-personacon').clone(true);
 			if(memberImage) {
 				const profile = $personacon.find('.personacon-profile')
 											.removeClass('profile-default')[0];
@@ -803,7 +714,7 @@ function pageinit(memberId, memberAlias, memberImage){
 				const $newTrans = $transCopyBlock.clone();
 				$newTrans.data('korTid', tid).find('.translation-text').text(kor);
 				$newTrans.find('.translator').text('by ' + memberAlias);
-				$newTrans.append(createElement(transModifyBtnsJson));
+				$newTrans.append($(WORKBOOK_ELEMENTS).find('.trans-mdf-btns').clone(true));
 				
 				$transSection.find('.ai-translation-section').prepend($newTrans);
 				$newTrans.addClass('show');
@@ -1521,7 +1432,7 @@ function pageinit(memberId, memberAlias, memberImage){
 /* ------------------------------ Embed functions --------------------------- */
 	// 노트 정보를 DOM으로 생성
 	function createNoteDOM(note) {
-		const $block = $(createElement(noteSectionJson));
+		const $block = $(WORKBOOK_ELEMENTS).children('.note-block').clone(true);
 		$block.data('noteId', note.noteId);
 		const $content = $block.find('.note.text-section');
 		// 내용
