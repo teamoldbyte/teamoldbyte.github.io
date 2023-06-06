@@ -576,7 +576,7 @@ async function pageinit(memberId, alias, image) {
 				{ el: 'td', className: 'data-englength text-center', textContent: senlength || 0 },
 				{ el: 'td', className: 'data-eng text-start js-open-detail ps-3 text-truncate', role: 'button', 'data-sentence-id': sentenceId, textContent: eng },
 				{ el: 'td', className: 'data-grammeta text-center', 'data-gram-meta': gramMeta, style: {display: 'none'} },
-				{ el: 'td', className: 'data-useful text-center', 'data-useful': useful, style: {display: 'none'} },
+				{ el: 'td', className: 'data-useful text-center', 'data-useful': useful??true, style: {display: 'none'} },
 				{ el: 'td', className: 'data-searchcount text-center', textContent: searchCount || 0 },
 				{ el: 'td', className: 'data-fscore ', textContent: fscore || 0 },
 				{ el: 'td', className: 'data-metastatus ', textContent: META_LONG[metaStatus] },
