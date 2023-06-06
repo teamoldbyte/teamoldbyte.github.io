@@ -412,7 +412,7 @@
 	.workbook-menu-section .indicator{
 		display: none;
 		position: absolute;
-		top: calc(-50% - 5px);
+		top: calc(-50% + 5px);
 		width: 70px;
 		height: 70px;
 		background: #d8d9e9;
