@@ -15,7 +15,7 @@
 						class="js-collapse-existing-battles fold-icon text-xl align-middle expanded"></span></label>
 				<div class="existing-battles-section col collapse show"></div>
 			</div>
-			<div class="add-battle-section">
+			<div class="add-battle-section"><form>
 				<div class="input-summary-section">
 					<div class="summary-book row g-0 block collapse">
 						<label class="col-auto lh-1 my-auto text-fc-purple fw-bold">배틀북</label>
@@ -220,12 +220,12 @@
 							</div>
 						</div>
 					</div>
-					<div class="row g-0">
+					<div class="row g-2">
 						<label class="col-12 lh-1 mb-2 my-auto text-fc-purple fw-bold">질문</label>
 						<select class="form-select ask-select col"></select>
 					</div>
 					<div class="craft-maker-container row g-0 mt-3"></div>
-					<div class="text-center mt-4"><button class="js-context-complete btn btn-fico w-25">다음</button>
+					<div class="text-center mt-4"><button type="button" class="js-context-complete btn btn-fico w-25">다음</button>
 					</div>
 				</div>
 				<div class="input-summary-section">				
@@ -271,53 +271,77 @@
 				<div class="button-section text-center mt-3">
 					<button type="button" class="js-add-battle btn btn-fico w-25" style="display: none;">완료</button>
 				</div>
+			</form></div>
+			<div class="open-add-battle-section text-center" style="display: none;">
+				<button type="button" class="js-open-add-battle btn btn-fico w-25" title="이 문장에 배틀을 다른 배틀을 추가합니다." data-bs-toggle="tooltip">배틀 추가등록</button>
 			</div>
 		</div>
 
-		<!-- 공통 편집 버튼 -->
-		<div class="craft-editor-btns-common col-4 d-inline">
-			<button title="실행취소 (단축키: Ctrl + Z)" class="btn btn-outline-fico col-6" disabled value="undo">
-				<i class="fas fa-undo-alt"></i>
-			</button>
-			<button title="재실행 (단축키: Ctrl + Y)" class="btn btn-outline-fico col-6" disabled value="redo">
-				<i class="fas fa-undo-alt fa-flip-horizontal"></i>
-			</button>
-		</div>
 
 		<!-- 배틀 1 편집 버튼 -->
-		<div class="craft-editor-btns-1">
-			<input type="checkbox" title="정답 선택" value="answer">
-			<input type="checkbox" title="보기 선택" value="option">
+		<div class="craft-editor-btns-1 btn-group col-8">
+			<input type="checkbox" title="정답 선택" value="answer" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="정답 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">정답으로 만들 영역을 아래 문장에서 선택하세요.</label>
+			<input type="checkbox" title="보기 선택" value="option" class="btn-check">
+			<label class="btn btn-outline-fico" title="보기 선택"
+				data-bs-toggle="tooltip" data-bs-placement="bottom">보기로 만들 영역을 아래 문장에서 선택하세요.</label>
 		</div>
 		<!-- 배틀 2 편집 버튼 -->
-		<div class="craft-editor-btns-2">
-			<input type="checkbox" title="수식어 선택" value="modifier">
-			<input type="checkbox" title="피수식어 선택" value="modificand">
+		<div class="craft-editor-btns-2 btn-group col-8">
+			<input type="checkbox" title="수식어 선택" value="modifier" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="수식어 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">수식어를 아래 문장에서 드래그하여 선택하세요.</label>
+			<input type="checkbox" title="피수식어 선택" value="modificand" class="btn-check">
+			<label class="btn btn-outline-fico" title="피수식어 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">피수식어를 아래 문장에서 드래그하여 선택하세요.</label>
 		</div>
 		<!-- 배틀 3 편집 버튼 -->
-		<div class="craft-editor-btns-3">
-			<input type="checkbox" title="빈칸 선택" value="pick-right">
+		<div class="craft-editor-btns-3 btn-group col-8">
+			<input type="checkbox" title="빈칸 선택" value="pick-right" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="빈칸 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">양자택일을 할 영역을 아래 문장에서 선택하세요.</label>
 		</div>
 		<!-- 배틀 4 편집 버튼 -->
-		<div class="craft-editor-btns-4">
-			<input type="checkbox" title="정답 선택" value="answer-wrong">
-			<input type="checkbox" title="보기 선택" value="option">
+		<div class="craft-editor-btns-4 btn-group col-8">
+			<input type="checkbox" title="정답 선택" value="answer-wrong" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="정답 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">문제로 출제할 영역을 아래 문장에서 드래그하여 선택하세요.</label>
+			<input type="checkbox" title="보기 선택" value="option" class="btn-check">
+			<label class="btn btn-outline-fico" title="보기 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">보기를 아래 문장에서 선택하세요.</label>
 		</div>
 		<!-- 배틀 5 편집 버튼 -->
-		<div class="craft-editor-btns-5">
-			<input type="checkbox" title="보기 선택" value="option">
+		<div class="craft-editor-btns-5 btn-group col-8">
+			<input type="checkbox" title="보기 선택" value="option" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="보기 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">선택지로 만들 보기들을 아래 문장에서 선택하세요.</label>
 		</div>
 		<!-- 배틀 6 편집 버튼 -->
-		<div class="craft-editor-btns-6">
-			<input type="checkbox" title="빈칸 선택" value="fill-right">
+		<div class="craft-editor-btns-6 btn-group col-8">
+			<input type="checkbox" title="빈칸 선택" value="fill-right" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="빈칸 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">빈칸으로 만들 영역을 아래 문장에서 선택하세요.</label>
 		</div>
 		<!-- 배틀 7 편집 버튼 -->
-		<div class="craft-editor-btns-7">
-			<input type="checkbox" title="해석구간 선택" value="option">
+		<div class="craft-editor-btns-7 btn-group col-8">
+			<input type="checkbox" title="해석구간 선택" value="option" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="해석구간 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">문제로 낼 해석 구간(미선택시 전체)을 아래 문장에서 선택하세요.</label>
 		</div>
 		<!-- 배틀 8 편집 버튼 -->
-		<div class="craft-editor-btns-8">
-			<input type="checkbox" title="빈칸 선택" value="pick-right">
+		<div class="craft-editor-btns-8 btn-group col-8">
+			<input type="checkbox" title="빈칸 선택" value="pick-right" class="btn-check" checked>
+			<label class="btn btn-outline-fico" title="빈칸 선택" 
+				data-bs-toggle="tooltip" data-bs-placement="bottom">빈칸으로 만들 영역을 아래 문장에서 선택하세요.</label>
+		</div>
+		<!-- 공통 편집 버튼 -->
+		<div class="craft-editor-btns-common col-4 d-inline">
+			<button type="button" title="실행취소 (단축키: Ctrl + Z)" class="btn btn-outline-fico col-6" data-bs-toggle="tooltip"
+				data-bs-placement="bottom" disabled value="undo"><i class="fas fa-undo-alt"></i>
+			</button><button type="button" title="재실행 (단축키: Ctrl + Y)" class="btn btn-outline-fico col-6" data-bs-toggle="tooltip"
+				data-bs-placement="bottom" disabled value="redo"><i class="fas fa-undo-alt fa-flip-horizontal"></i>
+			</button>
 		</div>
 
 		<!-- 배틀 추가 입력:해석 선택 -->
@@ -364,7 +388,7 @@
 						</div>
 					</div>
 					<div class="modal-footer justify-content-center">
-						<button class="btn btn-fico" data-bs-dismiss="modal">확인</button>
+						<button type="button" class="btn btn-fico" data-bs-dismiss="modal">확인</button>
 					</div>
 				</div>
 			</div>
