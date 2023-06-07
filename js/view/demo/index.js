@@ -56,9 +56,11 @@ function pageinit(fullUsed){
 			return;
 		}
 		const text = $textarea.val().trim().quoteNormalize().replace(/[A-Za-z0-9]/, l => l.toUpperCase());
-		
 		if(text.length < 8 || !text.includes(' ') || !/[a-z]{2,}/.test(text)) {
 			alertModal('최소 8자 이상의 영어 문장 형식만 분석됩니다.', () => $textarea[0].focus());
+			return;
+		}else if(tokenizer.sentences(text).length > 1) {
+			alertModal('한 문장만 입력해 주시기 바랍니다.', () => $textarea[0].focus());
 			return;
 		}
 		
