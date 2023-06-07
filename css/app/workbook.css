@@ -1954,6 +1954,18 @@
 	color: #fff;
 	border: none;
 }
+.finger-section .svoc-mdf-btns{
+	background-color: #fff;
+    border-radius: 5px;
+    color: #019c9e;
+    border: 2px solid #e5e5e5;
+    padding: 0.25rem 0;
+}
+.finger-section .svoc-mdf-btns .js-edit-svoc,
+.finger-section .svoc-mdf-btns .js-set-worthless{
+	color: #019c9e;
+} 
+
 /* 구문분석 결과영역 */
 /*.view-passage-section .result-section .one-sentence-unit-section{*/
 .view-passage-section .one-sentence-unit-section{
@@ -2106,6 +2118,7 @@
 	border: 2px solid #e5e5e5;
 	border-radius: 5px;
 }
+
 /**/
 .view-passage-section .result-semantic-section .writer-section{
 	position: relative;
