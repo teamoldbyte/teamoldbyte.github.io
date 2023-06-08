@@ -843,7 +843,7 @@
 					if (next.nodeType == 1
 						&& next.matches(innerSvocRegex)
 						&& Array.from(one.classList).filter(cl=>['s','v','c','oc','po','a'].includes(cl))
-						.every(cl2 => Array.from(nextToNext.classList).filer(cl=>['s','v','c','oc','po','a'].includes(cl)).includes(cl2))) {
+						.every(cl2 => Array.from(nextToNext.classList).filter(cl=>['s','v','c','oc','po','a'].includes(cl)).includes(cl2))) {
 						one.insertAdjacentHTML('beforeEnd', next.innerHTML);
 						next.remove();
 						// 1,2,3에서 1을 검사하여 1,2가 합쳐져서 1+2,3이 됐다면 다시 1+2를 검사.
@@ -853,7 +853,7 @@
 						&& nextToNext != null && nextToNext.nodeType == 1
 						&& nextToNext.matches(innerSvocRegex)
 						&& Array.from(one.classList).filter(cl=>['s','v','c','oc','po','a'].includes(cl))
-						.every(cl2 => Array.from(nextToNext.classList).filer(cl=>['s','v','c','oc','po','a'].includes(cl)).includes(cl2))) {
+						.every(cl2 => Array.from(nextToNext.classList).filter(cl=>['s','v','c','oc','po','a'].includes(cl)).includes(cl2))) {
 						one.insertAdjacentHTML('beforeEnd', next.data + nextToNext.innerHTML);
 						next.remove();
 						nextToNext.remove();
