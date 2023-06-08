@@ -798,7 +798,7 @@
 	 */
 	function splitInners(div) {
 		const inners = div.getElementsByClassName('sem inner'),
-			innerSvocRegex = /\b([svca]|oc|po)\b inner/;
+			innerSvocRegex = Array.from(['s','v','c','oc','a','po'],s=>`.inner.${s}`).toString();
 		for (let i = 0, len = inners.length; i < len; i++) {
 			let one = inners[i];
 			if (one == null) continue;
@@ -841,9 +841,9 @@
 				if (next != null) {
 					let nextToNext = next.nextSibling;
 					if (next.nodeType == 1
-						&& next.className.match(innerSvocRegex) != null
-						&& one.className.match(innerSvocRegex)[0]
-						== next.className.match(innerSvocRegex)[0]) {
+						&& next.matches(innerSvocRegex)
+						&& Array.from(one.classList).filter(cl=>['s','v','c','oc','po','a'].includes(cl))
+						.every(cl2 => Array.from(nextToNext.classList).filer(cl=>['s','v','c','oc','po','a'].includes(cl)).includes(cl2))) {
 						one.insertAdjacentHTML('beforeEnd', next.innerHTML);
 						next.remove();
 						// 1,2,3에서 1을 검사하여 1,2가 합쳐져서 1+2,3이 됐다면 다시 1+2를 검사.
@@ -851,9 +851,9 @@
 					} else if (next.nodeType != 1
 						&& (next.data == null || next.data.match(/[^\s]/) == null)
 						&& nextToNext != null && nextToNext.nodeType == 1
-						&& nextToNext.className.match(innerSvocRegex) != null
-						&& one.className.match(innerSvocRegex)[0]
-						== nextToNext.className.match(innerSvocRegex)[0]) {
+						&& nextToNext.matches(innerSvocRegex)
+						&& Array.from(one.classList).filter(cl=>['s','v','c','oc','po','a'].includes(cl))
+						.every(cl2 => Array.from(nextToNext.classList).filer(cl=>['s','v','c','oc','po','a'].includes(cl)).includes(cl2))) {
 						one.insertAdjacentHTML('beforeEnd', next.data + nextToNext.innerHTML);
 						next.remove();
 						nextToNext.remove();
