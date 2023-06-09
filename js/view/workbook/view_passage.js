@@ -4,8 +4,9 @@
  async function pageinit(memberId, memberAlias, memberImage, memberRoleType, workbookId, ownerId, priorityId, passageId, sentenceList) {
 	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	const tts = new FicoTTS({initSuccessCallback: () => {
-		// 자동재생 조작 금지
-		//document.querySelector('#ttsSettings .form-switch').remove();
+		// PC에선 자동재생 조작 금지
+		if(!devSize.isPhone())
+			document.querySelector('#ttsSettings .form-switch').remove();
 	}});
 	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/fragment/workbook/element_templates.min.html', jQuery.noop, 'html'); 
 //	const WORKBOOK_ELEMENTS = await $.get('/fragment/workbook/element_templates.html', jQuery.noop, 'html'); 
