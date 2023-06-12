@@ -65,6 +65,7 @@
 					}else {
 						sentenceList = sentenceList.concat(idbSentenceList.toReversed());
 						renderSentences();
+						showStepBlock($('#step-1'))
 					}
 				})(cursor);
 			});
@@ -133,7 +134,7 @@
 			.callFunction(() => $('.logo.anim-talking').remove()).start();
 		}
 	})
-	showStepBlock($('#step-1'))
+	
 	function showStepBlock($block) {
 		const stepHtmlString = $block.find('.body-text')[0].outerHTML;
 		const guideTextTypewriter = new Typewriter($block.find('.body-text').empty().css('visibility','visible')[0], {
@@ -166,6 +167,9 @@
 						.callFunction(() => {
 							anime({
 								targets: $('.one-sentence-unit-section:eq(0) .ai-translation-block:eq(0)')[0],
+								changeBegin: anim => {
+									$(anim.animatables[0].target).find('.translation-text').text(sentenceList[0].korList[0].kor)
+								},
 								opacity: [0, 1],
 								delay: 2000,
 								complete: () => {
@@ -544,9 +548,6 @@
 					$aiTransSection = $sectionClone.find('.ai-translation-section')
 												   .show().empty();
 				for(let j = 0; j < korListLen; j++) {
-					if(j == 0) {
-						$('#step-1 .translation-text').text(korList[j].kor);
-					}
 					const $transBlock = $transCopyBlock.clone();
 					$aiTransSection.append($transBlock);
 					$transBlock.find('.translation-text').text(korList[j].kor);
