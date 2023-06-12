@@ -20,13 +20,32 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 		appendList(classNoteBooks, $('.classnote-workbook-section .list-inline').get(0));
 	
 	new Swiper('.swiper', {
-		slidesPerView: 'auto',
 		watchSlidesProgress: true,
-		simulateTouch: true,
 		resistance: false,
-		slidesPerGroupAuto: true,
+		freeMode: true,
+		slidesPerView: 'auto',
 		grid: {
-			rows: rowNum
+			fill: 'row'
+		},
+		breakpoints: {
+			320: {
+				slidesPerGroup: 3,
+				grid: {
+					rows: 3
+				}
+			},
+			576: {
+				slidesPerGroup: 5,
+				grid: {
+					rows: 2
+				}
+			},
+			992: {
+				slidesPerGroup: 7,
+				grid: {
+					rows: 2
+				}
+			}
 		},
 		navigation: {
 			prevEl: '.swiper-button-prev',
