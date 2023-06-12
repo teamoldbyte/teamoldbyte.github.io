@@ -182,7 +182,6 @@
 											},
 											scaleX: [0,1],
 											duration: 500,
-											easing: 'linear',
 											delay: 500,
 											complete: () => {
 												guideTextTypewriter
