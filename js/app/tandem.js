@@ -796,9 +796,10 @@
 	 * 목적어를 제외한 성분끼리 바로 앞뒤로 붙어있으면 하나의 태그로 합친다.
 	 * (목적어는 간접목적어 직접목적어일 수 있다.)
 	 */
+	const INNER_SVOC_ARR = ['s','v','c','oc','a','po'];
+	const INNER_SVOC_REGEX = Array.from(INNER_SVOC_ARR, s => `.inner.${s}`).toString()
 	function splitInners(div) {
-		const inners = div.getElementsByClassName('sem inner'),
-			innerSvocRegex = /\b([svca]|oc|po)\b inner/;
+		const inners = div.getElementsByClassName('sem inner');
 		for (let i = 0, len = inners.length; i < len; i++) {
 			let one = inners[i];
 			if (one == null) continue;
@@ -836,14 +837,13 @@
 			}
 			// inner 내부에 inner는 없고, 바로 다음 element와 동일한 성분이면 묶어주기.
 			// 목적어-목적어는 제외.
-			else if (one.matches('.s,.v,.c,.po,.oc,.a')) {
+			else if (Array.from(one.classList).some(c => INNER_SVOC_ARR.includes(c))) {
 				let next = one.nextSibling;
 				if (next != null) {
 					let nextToNext = next.nextSibling;
 					if (next.nodeType == 1
-						&& next.className.match(innerSvocRegex) != null
-						&& one.className.match(innerSvocRegex)[0]
-						== next.className.match(innerSvocRegex)[0]) {
+						&& next.matches(INNER_SVOC_REGEX) && one.classList.length > 0 && nextToNext.classList.length > 0
+						&& hasSameInnerSvocClasses(one, nextToNext)) {
 						one.insertAdjacentHTML('beforeEnd', next.innerHTML);
 						next.remove();
 						// 1,2,3에서 1을 검사하여 1,2가 합쳐져서 1+2,3이 됐다면 다시 1+2를 검사.
@@ -851,9 +851,8 @@
 					} else if (next.nodeType != 1
 						&& (next.data == null || next.data.match(/[^\s]/) == null)
 						&& nextToNext != null && nextToNext.nodeType == 1
-						&& nextToNext.className.match(innerSvocRegex) != null
-						&& one.className.match(innerSvocRegex)[0]
-						== nextToNext.className.match(innerSvocRegex)[0]) {
+						&& nextToNext.matches(INNER_SVOC_REGEX) && one.classList.length > 0 && nextToNext.classList.length > 0
+						&& hasSameInnerSvocClasses(one, nextToNext)) {
 						one.insertAdjacentHTML('beforeEnd', next.data + nextToNext.innerHTML);
 						next.remove();
 						nextToNext.remove();
@@ -863,7 +862,11 @@
 			}
 		}
 	}
-
+	function hasSameInnerSvocClasses(element1, element2) {
+		const classes1 = Array.from(element1.classList).filter(cl => INNER_SVOC_ARR.includes(cl));
+		const classes2 = Array.from(element2.classList).filter(cl => INNER_SVOC_ARR.includes(cl));
+		return classes1.every(cl => classes2.includes(cl));
+	}
 	/**
 	 * 태그의 텍스트 내용에 trim을 적용하여 가장자리 공백을 표시에서 제외
 	 * 중첩된 태그의 텍스트가 가장자리 공백을 가질 경우 내부 태그에서부터 부모 태그 순서대로 공백을 밀어낸다.
