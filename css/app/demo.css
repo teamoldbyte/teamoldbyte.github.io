@@ -1744,7 +1744,7 @@
 /* 번역 부분 */
 .translation-section{
     color: #666;
-	padding-left: 18px;
+	/* padding-left: 18px; */
 	line-height: 1.25;
 	font-family: 'Nanum Gothic';
 	position: relative;
@@ -1761,13 +1761,13 @@
 	position: relative;
 	bottom: -2px;
 }
-.translation-section .translation-text{
+/* .translation-section .translation-text{
     font-size: 0.9rem;
     vertical-align: middle;
     color: #b01a2c;
 	display: flex;
 	word-break: keep-all;
-}
+} */
 .translation-section .translator{
 	font-size: 0.7rem;
 	color: #019c9e;
