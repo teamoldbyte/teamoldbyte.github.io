@@ -842,7 +842,7 @@
 				if (next != null) {
 					let nextToNext = next.nextSibling;
 					if (next.nodeType == 1
-						&& next.matches(INNER_SVOC_REGEX) && one.classList.length > 0 && nextToNext.classList.length > 0
+						&& next.matches(INNER_SVOC_REGEX) && one.classList?.length > 0 && nextToNext.classList?.length > 0
 						&& hasSameInnerSvocClasses(one, nextToNext)) {
 						one.insertAdjacentHTML('beforeEnd', next.innerHTML);
 						next.remove();
@@ -851,7 +851,7 @@
 					} else if (next.nodeType != 1
 						&& (next.data == null || next.data.match(/[^\s]/) == null)
 						&& nextToNext != null && nextToNext.nodeType == 1
-						&& nextToNext.matches(INNER_SVOC_REGEX) && one.classList.length > 0 && nextToNext.classList.length > 0
+						&& nextToNext.matches(INNER_SVOC_REGEX) && one.classList?.length > 0 && nextToNext.classList?.length > 0
 						&& hasSameInnerSvocClasses(one, nextToNext)) {
 						one.insertAdjacentHTML('beforeEnd', next.data + nextToNext.innerHTML);
 						next.remove();
