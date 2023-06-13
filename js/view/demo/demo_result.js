@@ -114,7 +114,7 @@
 			+ '<img class="logo position-absolute start-50 anim-talking" alt="logo" width="150" height="150" src="https://static.findsvoc.com/images/logo/main_logo_headonly.svg">'
 			+ '</div><div class="demo-lastmsg"></div>', () => { 
 				$blockUnit.addClass('collapse').children('.text-section').remove();
-				$blockUnit.find('.related-list').html('<div class="empty-list one-block note-text"><div class="my-auto add-icon login-required" role="button"><span class="note-text text-gray-400">인덱스 핑거는 멤버십 회원에게 제공됩니다.</span></div></div>')
+				$blockUnit.find('.related-list').html('<div class="empty-list one-block note-text row g-0"><div class="my-auto add-icon login-required" role="button"><span class="note-text text-gray-400">인덱스 핑거는 멤버십 회원에게 제공됩니다.</span></div></div>')
 				$('.one-sentence-unit-section:eq(0) .step-block-unit').removeClass('position-absolute slide-out-bck-center slide-in-right').collapse('show');
 				$('.one-sentence-unit-section:eq(0) .origin-sentence-section .fold-icon').addClass('expanded');
 				$('.step-block-unit>.ai-translation-block').remove();
