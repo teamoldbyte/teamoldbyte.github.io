@@ -897,6 +897,7 @@
 	 * 요소의 텍스트가 한 줄인지, 여러 줄인지에 따라 코멘트의 정렬을 수정.
 	 */
 	function correctMarkLine(div) {
+		if(!div) return;
 		div.removeAttribute('style');
 		// 텍스트 내용이 없는 태그는 삭제
 		div.querySelectorAll('.sem').forEach( elem => {
