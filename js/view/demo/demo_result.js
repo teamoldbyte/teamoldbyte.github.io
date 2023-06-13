@@ -432,7 +432,7 @@
 			case $block.is('#step-6'): {
 				new Typewriter($block.find('.related-list')[0], { cursor: '', delay: 40})
 				.callFunction(() => $block.find('.related-list').addClass('show'))
-				.pauseFor(500).changeDelay(40).typeString('<div class="water-mark">예시 입력 문장</div>')
+				.pauseFor(500).changeDelay(40).typeString('<div class="water-mark" style="top: 1.5rem;">예시 입력 문장</div>')
 				.pauseFor(1000).changeDelay(20).typeString('<div class="svoc-section row g-0 position-relative"><div class="svoc-block col"><div class="semantics-result" data-seq="3"><span class="sem s inner" data-rc="S">He</span> <span class="sem v inner" data-rc="V">thought</span> <span class="brkt ncls cls-start" data-lv="1">[</span><span class="sem ncls" data-lv="1"><span class="sem o outer" data-rc="O" data-lv="1">that <span class="sem ger" data-gc="동명사"><span class="sem s inner" data-rc="S">knowing these things</span></span> <span class="sem v inner" data-rc="V">would ensure</span> <span class="sem o inner" data-rc="O">his success</span></span></span><span class="brkt  ncls cls-end" data-lv="1">]</span>.</div></div></div>')
 				.callFunction(() => tandem.correctMarkLine($block.find('.related-list .semantics-result:eq(0)')[0]))
 				.pauseFor(500).changeDelay(40).typeString('<div class="water-mark">인덱스 핑거 예시</div>')
