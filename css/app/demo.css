@@ -1749,6 +1749,7 @@
 	font-family: 'Nanum Gothic';
 	position: relative;
 	width: auto;
+	font-size: 0.9rem;
 }
 .translation-section .add-btn{
 	position: relative;
