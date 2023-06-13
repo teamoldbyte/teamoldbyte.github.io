@@ -124,7 +124,7 @@
 .version-section{
     height: 30px;
 }
-@media (man-width: 1400px){
+@media (max-width: 1400px){
 	.tandem-layout-section{
 		max-width: 1350px;
 	}
@@ -140,6 +140,10 @@
     }
 }
 @media (max-width: 576px){
+	.tandem-layout-section{
+		margin: 0;
+	}
+
     .tandem-layout-content-section {
         min-height: 100vh;
         padding: 0px;
