@@ -957,22 +957,26 @@
 	function wrapBracket(selection, wrapper){
 		const range = selection.getRangeAt(0);
 		const element = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer;
+		const sem = element.closest('.sem');
 		const container = element.closest('.semantics-result');
 		switch (wrapper) {
 		case 'tor': case 'ger': case 'ptc': case 'ncls': {
 			// 선택한 영역이 오롯이 하나의 태그와 일치할 때
-			if(range.toString().length == element.closest('.sem')?.textContent?.length) {
+			
+			if(range.toString().length == sem?.textContent?.length) {
 				const wrapperEl = createElement({ el: 'span', class: 'sem ' + wrapper, dataset: { gc: gcomments[wrapper] }});
 				// 일치하는 태그가 성분 태그일 경우
-				if(element.closest('.sem').matches('.s,.o,.po,.to,.go,.ptco,.c,.oc,.appo,.adjphr,.advphr')) {
+				if(sem.matches('.s,.o,.po,.to,.go,.ptco,.c,.oc,.appo,.adjphr,.advphr')) {
 					// 품사가 명사절이면 성분 태그 밖에 감싼다.
 					if(wrapper == 'ncls') {
-						wrapperEl.dataset.gc = gcomments.ncls[Array.from(element.closest('.sem').classList).filter(c => ['s','o','po','to','go','ptco','c','oc','appo'].includes(c))[0]]
-						$(element.closest('.sem')).wrap(wrapperEl);
+						// 기존 성분의 gcomment가 혹시 있으면 없앤다.(명사절의 gcomment와 중복됨)
+						if(sem?.dataset?.gc) delete sem.dataset.gc;
+						wrapperEl.dataset.gc = gcomments.ncls[Array.from(sem.classList).filter(c => ['s','o','po','to','go','ptco','c','oc','appo'].includes(c))[0]]
+						$(sem).wrap(wrapperEl);
 					// 그 외(to보정사, 동명사, 분사)엔 성분 태그가 품사를 감싸도록
-					}else $(element.closest('.sem')).wrapInner(wrapperEl);
+					}else $(sem).wrapInner(wrapperEl);
 				}else {
-					$(element.closest('.sem')).wrap(wrapperEl);
+					$(sem).wrap(wrapperEl);
 				}
 				refreshDOMs(container);
 			}
