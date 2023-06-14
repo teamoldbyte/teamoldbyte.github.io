@@ -700,20 +700,26 @@
 		margin-bottom: 20px;
 	}
 }
+.workbook-index-section .swiper-section{
+	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
+	border-radius: 5px;
+	background-color: var(--white);
+}
+.workbook-index-section .swiper-section .swiper-button-section{
+	width: 3rem;
+	position: relative;
+}
 .workbook-index-section .book-section {
 	white-space: nowrap;
 	/* overflow-x: scroll; */
 	height: auto;
 	max-width: calc(1250px - 1rem);
 	/* width: calc(100vw - 100px - 7rem); */
-	width: 100%;
-	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
+	width: calc(100% - 6rem);
 	/* padding: 40px; */
-	padding: 2rem;
-	border-radius: 5px;
+	padding: 2rem 0;
 	font-family: 'HCRDotum';
 	font-size: 13px;
-	background-color: var(--white);
 }
 .workbook-index-section .book-section::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera*/
@@ -779,6 +785,15 @@
 	/* .workbook-section .list-inline>*:first-child{
 		margin-left: 1rem;
 	} */
+}
+@media (max-width: 576px) {
+	.workbook-index-section .book-section {
+		width: calc(100vw - 3rem);
+		padding: 5px 0;
+	}
+	.workbook-index-section .swiper-section .swiper-button-section{
+		width: 0.5rem;
+	}
 }
 /* 현재 총 등록된 워크북 수 표시 영역 */
 .workbook-index-section .book-count-section .animation-section{
