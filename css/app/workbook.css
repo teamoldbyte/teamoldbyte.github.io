@@ -762,17 +762,25 @@
 	color: #3E2723;
 }
 @media (max-width: 991px) {
+	.workbook-index-section .swiper-section .swiper-button-section{
+		width: 1rem;
+	}
+
     .workbook-index-section .book-section {
-		width: calc(100vw - 1rem);
+		width: calc(100vw - 5rem);
 		border: none;
-		padding: 5px;
+		padding: 5px 0;
 	}
 }
 @media (max-width: 767px) {
+	.workbook-index-section .swiper-section .swiper-button-section{
+		width: 0.5rem;
+	}
+
     .workbook-index-section .book-section {
-		width: calc(100vw - 1rem);
+		width: calc(100vw - 3rem);
 		border: none;
-		padding: 5px;
+		padding: 5px 0;
 	}
 	.workbook-index-section .book-section .book-title{
 		display: none;
