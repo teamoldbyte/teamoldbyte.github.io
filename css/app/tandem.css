@@ -28,7 +28,16 @@
 	.semantics-result {
 		font-family: 'Frutiger', sans-serif;
 		font-size: 1.125rem;
-		word-break: keep-all;
+		word-break: break-all;
+	}
+}
+/* 프린트를 보는 사람에겐 보다 많은 양을 보여주고 스타일링을 위해 글자를 작게 */
+@media print {
+	:root {
+		font-size: 12px;
+	}
+	.semantics-result {
+		word-break: break-all;
 	}
 }
 /* @media (max-width: 1199.5px) {
