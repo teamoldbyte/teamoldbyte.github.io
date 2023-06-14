@@ -652,18 +652,28 @@
 		let textNodes = getLeafNodes([div]).filter(function(v) {
 			return v.nodeType == 3;
 		});
-		textNodes.forEach(function(n) {
-			let unit = n;
-			let match = unit.data.substring(1).match(/[\s-]/);
-			while (unit.nodeType == 3 && match != null && (match.index > -1)) {
-				// 줄바꿈 기준에 맞추어 텍스트를 분리.
-				// 'A B' -> 'A',' B' 
-				// 'A-B' -> 'A-','B'
-				unit.splitText(match.index + (match[0] == '-' ? 2 : 1));
-				unit = unit.nextSibling;
-				match = unit.data.substring(1).match(/[\s-]/);
-			}
-		});
+		// 모바일이나 프린트에서는 줄바꿈으로 인한 여백이 보기 싫으므로 word-break: break-all;
+		if(getComputedStyle(div).wordBreak == 'break-all') {
+			textNodes.forEach(n => {
+				let a = n;
+				while(a.length > 1) {
+					a = a.splitText(1);
+				}
+			})
+		}else {
+			textNodes.forEach(function(n) {
+				let unit = n;
+				let match = unit.data.substring(1).match(/[\s-]/);
+				while (unit.nodeType == 3 && match != null && (match.index > -1)) {
+					// 줄바꿈 기준에 맞추어 텍스트를 분리.
+					// 'A B' -> 'A',' B' 
+					// 'A-B' -> 'A-','B'
+					unit.splitText(match.index + (match[0] == '-' ? 2 : 1));
+					unit = unit.nextSibling;
+					match = unit.data.substring(1).match(/[\s-]/);
+				}
+			});
+		}
 		// 분리된 텍스트 노드들을 다시 선택.
 		textNodes = getLeafNodes([div]).filter(function(v) {
 			return v.nodeType == 3;
