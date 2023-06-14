@@ -297,7 +297,7 @@
 		div.innerHTML = '';
 
 		createBasicDOMs(text, svocList, div);
-
+		
 		checkPOSDepth(div);
 
 		splitInners(div);
@@ -425,7 +425,8 @@
 			const tag = uniqTags[i];
 			if (prior != null && tag.start == prior.start && tag.end == prior.end) {
 				// 성분태그의 rcomment,gcomment가 없거나 등위절/병렬절과 겹치는 경우, 겹치는 성분 태그를 제거.
-				if (markTypesNeedBrackets.indexOf(prior.markType) > -1) {
+				// to부정사나 분사는 자체 괄호가 없어서 형용사구,부사구를 한 번 더 치면서 gcomment를 병합하기 때문에 제외.
+				if (markTypesNeedBrackets.indexOf(prior.markType) > -1 && !['TOR','PTC'].includes(tag.markType)) {
 					if ((tag.rcomment == null && tag.gcomment == null)
 						|| (tag.markType != 'V' && ['CCLS', 'PCLS'].indexOf(prior.markType) > -1)) {
 						uniqTags.splice(uniqTags.indexOf(tag), 1);
@@ -436,7 +437,7 @@
 					}
 				}
 				// 순서가 뒤바뀐 경우도 처리.
-				else if (markTypesNeedBrackets.indexOf(tag.markType) > -1) {
+				else if (markTypesNeedBrackets.indexOf(tag.markType) > -1 && !['TOR','PTC'].includes(prior.markType)) {
 					if ((prior.rcomment == null && prior.gcomment == null)
 						|| (prior.markType != 'V' && ['CCLS', 'PCLS'].indexOf(tag.markType) > -1)) {
 						uniqTags.splice(uniqTags.indexOf(prior), 1);
@@ -921,7 +922,7 @@
 		const elements = div.querySelectorAll('.sem:not(.line-end)'/*'.s,.o,.c,.v,.oc,.m,.cls'*/);
 		for (let i = 0, len = elements.length; i < len; i++) {
 			const el = elements[i];
-			/*  단어가 위 아래 두 그룹으로 분리되었으나 첫번째 그룹의 너비가 한 글자 미만인 경우
+			/*  단어가 위 아래 두 그룹으로 분리되었으나 첫 번째 그룹에 코멘트를 표기하기 어려울 경우
 			  첫 번째 그룹은 무시하고 두 번째 그룹에 가운데 정렬 적용.(=.odd)  
 			  left위치는 첫번째 그룹을 기준으로 적용되므로 
 			  첫 번째, 두 번째 그룹의 left값 차이만큼 왼쪽으로 이동. */
