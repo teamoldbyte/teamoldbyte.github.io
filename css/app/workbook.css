@@ -1643,13 +1643,30 @@
 } 
 /* 전체 지문영역의 지문 이동 버튼 */
 .full-text-section .js-prev-passage{
-	opacity: .5;
-	left: -6rem;
+	opacity: .75;
+	left: -3rem;
+	display: inline-block;
+	color: var(--fc-yellow);
+	position: absolute;
 }
 .full-text-section .js-next-passage{
-	opacity: .5;
-	right: -6rem;
+	opacity: .75;
+	right: -2rem;
+	position: absolute;
+	color: var(--fc-yellow);
+	display: inline-block;
 }
+@media (max-width: 1200px) {
+
+	/* 전체 지문영역의 지문 이동 버튼 */
+	.full-text-section .js-prev-passage{
+		left: -1rem;
+	}
+	.full-text-section .js-next-passage{
+		right: 0;
+	}
+}
+
 @media (max-width: 991px) {
 	.full-text-section .js-prev-passage{
 		color: var(--fc-yellow);
