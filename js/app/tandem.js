@@ -228,7 +228,7 @@
 				}
 			}
 			// If the node is a text node, update the position counter.
-			else if (n.nodeType == 3) {
+			else if (n.nodeType == Node.TEXT_NODE) {
 				svocDom2Arr.pos += n.textContent.replaceAll(/[\n\u200b]/gm, '').length;
 			}
 		}
@@ -651,7 +651,7 @@
 
 		// 말단 텍스트 노드들을 선택
 		let textNodes = getLeafNodes([div]).filter(function(v) {
-			return v.nodeType == 3;
+			return v.nodeType == Node.TEXT_NODE;
 		});
 		// 모바일이나 프린트에서는 줄바꿈으로 인한 여백이 보기 싫으므로 word-break: break-all;
 		if(getComputedStyle(div).wordBreak == 'break-all') {
@@ -665,7 +665,7 @@
 			textNodes.forEach(function(n) {
 				let unit = n;
 				let match = unit.data.substring(1).match(/[\s-]/);
-				while (unit.nodeType == 3 && match != null && (match.index > -1)) {
+				while (unit.nodeType == Node.TEXT_NODE && match != null && (match.index > -1)) {
 					// 줄바꿈 기준에 맞추어 텍스트를 분리.
 					// 'A B' -> 'A',' B' 
 					// 'A-B' -> 'A-','B'
@@ -677,7 +677,7 @@
 		}
 		// 분리된 텍스트 노드들을 다시 선택.
 		textNodes = getLeafNodes([div]).filter(function(v) {
-			return v.nodeType == 3;
+			return v.nodeType == Node.TEXT_NODE;
 		});
 		let pos = 0, prevNode;
 		textNodes.forEach(n => {
@@ -821,10 +821,10 @@
 				for (let j = 0, len2 = childNodes.length; j < len2; j++) {
 					const child = childNodes[j];
 					// 자식의 자식이 inner일 경우
-					if (child.nodeType == 1
+					if (child.nodeType == Node.ELEMENT_NODE
 						&& child.getElementsByClassName('inner').length > 0) {
 						child.childNodes.forEach(function(desc) {
-							if (desc.nodeType != 1 || !desc.matches('.inner')) {
+							if (desc.nodeType != Node.ELEMENT_NODE || !desc.matches('.inner')) {
 								let clone = div.ownerDocument.createElement('span');
 								clone.className = 'sem v inner';
 								clone.dataset.rc = one.dataset.rc;
@@ -834,8 +834,8 @@
 							}
 						});
 					}
-					// 자식이 inner일 경우
-					else if (child.nodeType != 1 || !child.matches('.inner')) {
+					// 자식이 inner가 아니거나 텍스트 노드일 경우
+					else if (child.nodeType != Node.ELEMENT_NODE || !child.matches('.inner')) {
 						let clone = div.ownerDocument.createElement('span');
 						clone.className = 'sem v inner';
 						clone.dataset.rc = one.dataset.rc;
@@ -848,21 +848,20 @@
 			}
 			// inner 내부에 inner는 없고, 바로 다음 element와 동일한 성분이면 묶어주기.
 			// 목적어-목적어는 제외.
-			else if (Array.from(one.classList).some(c => INNER_SVOC_ARR.includes(c))) {
+			else if (one.matches(INNER_SVOC_REGEX)) {
 				let next = one.nextSibling;
-				if (next != null) {
+				if (next?.nextSibling?.nodeType == Node.ELEMENT_NODE) {
 					let nextToNext = next.nextSibling;
-					if (next.nodeType == 1
-						&& next.matches(INNER_SVOC_REGEX) && one?.classList?.length > 0 && nextToNext?.classList?.length > 0
+					if (next.nodeType == Node.ELEMENT_NODE
+						&& next.matches(INNER_SVOC_REGEX)
 						&& hasSameInnerSvocClasses(one, nextToNext)) {
 						one.insertAdjacentHTML('beforeEnd', next.innerHTML);
 						next.remove();
 						// 1,2,3에서 1을 검사하여 1,2가 합쳐져서 1+2,3이 됐다면 다시 1+2를 검사.
 						i--;
-					} else if (next.nodeType != 1
+					} else if (next.nodeType != Node.ELEMENT_NODE
 						&& (next.data == null || next.data.match(/[^\s]/) == null)
-						&& nextToNext != null && nextToNext.nodeType == 1
-						&& nextToNext.matches(INNER_SVOC_REGEX) && one?.classList?.length > 0 && nextToNext?.classList?.length > 0
+						&& nextToNext.matches(INNER_SVOC_REGEX)
 						&& hasSameInnerSvocClasses(one, nextToNext)) {
 						one.insertAdjacentHTML('beforeEnd', next.data + nextToNext.innerHTML);
 						next.remove();
@@ -892,12 +891,12 @@
 			if (!one.hasChildNodes()) {
 				continue;
 			}
-			while (one.firstChild.nodeType == 3 && one.firstChild.data.startsWith(' ')) {
+			while (one.firstChild.nodeType == Node.TEXT_NODE && one.firstChild.data.startsWith(' ')) {
 				one.firstChild.data = one.firstChild.data.substring(1);
 				one.parentNode.insertBefore(blank.cloneNode(), one);
 			}
 
-			while (one.lastChild.nodeType == 3 && one.lastChild.data.endsWith(' ')) {
+			while (one.lastChild.nodeType == Node.TEXT_NODE && one.lastChild.data.endsWith(' ')) {
 				one.lastChild.data = one.lastChild.data.slice(0, -1);
 				one.parentNode.insertBefore(blank.cloneNode(), one.nextSibling);
 			}
@@ -1243,7 +1242,7 @@
 			div.style.lineHeight = '1rem';
 			// 말단 텍스트 노드들을 선택
 			const textNodes = getLeafNodes([div]).filter(function(v) {
-				return v.nodeType == 3;
+				return v.nodeType == Node.TEXT_NODE;
 			});
 			let lineNumber = 0;
 			let prevLineLowerHeight = 0,
