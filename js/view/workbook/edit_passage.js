@@ -2,7 +2,7 @@
 @author LGM
  */
 function pageinit(sentenceList, memberId) {
-	$('#loadingModal').modal('hide');
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	const passageId = Number(sessionStorage.getItem('editingPassageId')||sessionStorage.getItem('passageId'));
 	let workbookId56;
 	if(document.referrer) {
