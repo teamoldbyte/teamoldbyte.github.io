@@ -2,7 +2,7 @@
  * @author LGM
  */
 function pageinit(workbookId, workbookCover, helloBook, isMyOwn, sampleCount, passageIdList) {
-	$('#loadingModal').modal('hide').hide();
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 
 	// [지문 레이아웃 정렬]--------------------------------------------
 	const $listPassageSection = $('.list-passage-section');
