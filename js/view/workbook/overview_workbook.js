@@ -3,7 +3,7 @@
  */
 function pageinit(workbookId, workbookCover, passageIdList, publicOpenWorkBooks, protectedOpenWorkBooks) {
 	const isMobile = window.visualViewport.width < 768;
-	$('#loadingModal').modal('hide').hide();
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	// [지문 레이아웃 정렬]--------------------------------------------
 	$('.list-passage-section').masonry({
 		// options
