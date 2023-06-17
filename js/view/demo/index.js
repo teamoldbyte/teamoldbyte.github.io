@@ -3,7 +3,7 @@
  */
 function pageinit(fullUsed){
 	
-	$('#loadingModal').modal('hide').hide();
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	
 	// [분석 횟수를 확인 후 분석 실행 가능여부 판단]
 	const MAX_CHARS_TODAY = 300;
