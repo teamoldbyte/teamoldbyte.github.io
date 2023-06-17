@@ -209,7 +209,7 @@
 		</div>
 	</div>	
  */	
-	
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	
 	// 현재 페이지에서만 로고에 글래스 효과 추가 
 	$('.workbook-menu-section').find('.logo-link-section').addClass('glass-effect');
