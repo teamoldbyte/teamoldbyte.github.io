@@ -3,7 +3,7 @@
  */
 function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCount) {
 	const workbookRegDate = new Date($('.workbook-info-section .reg-date').text());
-	$('#loadingModal').modal('hide');
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	// 모바일 툴팁 (워크북 타입)
 	if(document.querySelector('.type-tooltip')) {
 		const typeTooltip = new bootstrap.Tooltip(document.querySelector('.type-tooltip'),{trigger:'hover focus'});
