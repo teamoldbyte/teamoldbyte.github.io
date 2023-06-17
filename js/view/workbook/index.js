@@ -2,7 +2,7 @@
  * @author LGM
  */
 function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, memberId){
-	$('#loadingModal').modal('hide').hide();
+	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	const isMobile = window.visualViewport.width < 768;
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, horizontalOrder: true, transitionDuration: '0.8s'
