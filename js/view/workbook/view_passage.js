@@ -1286,7 +1286,7 @@
 		const sentenceId = $(this).closest('.js-finger-detail').data('sentenceId');
 		confirmModal('<div class="text-start row"><span class="col-12 text-center">완전한 문장의 구성으로 충족되지 않습니다.<br>다음과 같은 경우에 해당합니다.</span><div class="mx-auto w-auto d-block"><br>	• 오타가 포함된 문장<br>	• 불완전하게 잘린 문장<br>	• 문장구성이 안되는 문장<br>	• 불완전한 인용구, 구두점오류가 있는 문장<br>	• 기타 비문장</div></div>', () => {
 			$.ajax({
-				url: '/adminxyz/sentence/useful/edit',
+				url: '/sentence/useful/edit',
 				type: 'POST',
 				data: JSON.stringify({sentenceId, useful: false}),
 				contentType: 'application/json',
