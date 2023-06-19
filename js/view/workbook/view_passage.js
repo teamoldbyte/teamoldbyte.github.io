@@ -279,10 +279,12 @@
 	});
 		// [지문 타이틀 수정]-----------------------------------------------------------
 	$('.passage-title-block').on('click', '.display-block', function() {
-		const isShown = $(this).is('.show');
-		$('.passage-title-block .edit-block').collapse(isShown?'show':'hide');
-		$('.passage-title-block .display-block').collapse(isShown?'hide':'show');
-		if(isShown) $('.passage-title-block .title-input:visible')[0].focus();
+		if($(this).siblings('.edit-block').length > 0) {
+			const isShown = $(this).is('.show');
+			$('.passage-title-block .edit-block').collapse(isShown?'show':'hide');
+			$('.passage-title-block .display-block').collapse(isShown?'hide':'show');
+			if(isShown) $('.passage-title-block .title-input:visible')[0].focus();
+		}
 	}).on('click','.js-edit-ptitle', function() {
 		const titleSection = this.closest('.passage-title-block');
 		const passageTitle = $(titleSection).find('.title-input').val().trim();
