@@ -243,6 +243,7 @@
 	bottom: 15px;
 	right: 15px;
 }
+
 .index-section .search-icon-section{
 	position: relative;
 	top: -60px;
@@ -255,6 +256,18 @@
 	border-radius: 50%;
 	padding: 4px;
 	background-color: #585174;
+}
+
+@media(max-width:576px){
+	.demo-counter {
+		right: calc(15px + 2.25rem);
+	}
+
+	.index-section .search-btn{
+		top: auto;
+		bottom: 15px;
+		right: 15px;
+	}
 }
 .index-section .example-category-section,
 .size-compare-section .example-category-section {
@@ -472,7 +485,7 @@
 	transform: translateX(-50%);
 	position: absolute;
 }
-@media (min-width: 1940px) {
+@media (min-width: 1400px) {
 	.index-section .membership-info-section lottie-player{
 		width: 10vw;
 		height: auto;
@@ -622,6 +635,15 @@
 	.index-section .example-category-section .category-text{
 		font-size: 12px;
 	}
+	/* 데모 입력 하단 안내 텍스트 영역 */
+	.index-section .membership-text-section{
+		padding: calc(100px + 5rem) 1rem 0 1rem;
+	}
+	.index-section .membership-info-section .app-name-text{
+		font-size: 4rem;
+		top: 7.5rem;
+		bottom: auto;
+	}
 	.catchphrase-section{
 		font-size: 1.2rem;
 	}
@@ -630,6 +652,15 @@
 	}
 	.demo-guide-section .guide-text{
 		font-size: 13px;
+	}
+
+	.index-section .block-section{
+		padding: 0;
+	}
+	/* 입력 예시 */
+	.index-section .input-example-section{
+		padding: 0 10px;
+		
 	}
 }
 
