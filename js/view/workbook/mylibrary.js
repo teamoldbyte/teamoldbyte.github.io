@@ -36,35 +36,35 @@ function pageinit(myWorkBookList) {
 					slidesPerGroup: 3,
 					autoHeight: contentLength <= 3,
 					grid: {
-						rows: 3
+						rows: contentLength > 6 ? 3 : contentLength > 3 ? 2 : 1
 					}
 				},
 				576: {
 					slidesPerGroup: 4,
 					autoHeight: contentLength <= 4,
 					grid: {
-						rows: 2
+						rows: contentLength > 4 ? 2 : 1
 					}
 				},
 				676: {
 					slidesPerGroup: 5,
 					autoHeight: contentLength <= 5,
 					grid: {
-						rows: 2
+						rows: contentLength > 5 ? 2 : 1
 					}
 				},
 				768: {
 					slidesPerGroup: 4,
 					autoHeight: contentLength <= 4,
 					grid: {
-						rows: 2
+						rows: contentLength > 4 ? 2 : 1
 					}
 				},
 				992: {
 					slidesPerGroup: 7,
 					autoHeight: contentLength <= 7,
 					grid: {
-						rows: 2
+						rows: contentLength > 7 ? 2 : 1
 					}
 				}
 			},
