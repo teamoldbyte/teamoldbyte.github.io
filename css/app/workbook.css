@@ -685,10 +685,6 @@
 	/* margin: 0 20px; */
 	margin-right: 2rem;
 }
-.list-library-section .workbook-section .list-inline .book-unit:nth-child(2n-1){
-	/* margin-bottom: 40px; */
-	margin-bottom: 2rem;
-}
 .workbook-section .bookshelf-section .list-inline .book-unit{
 	height: 15rem;	
 }
