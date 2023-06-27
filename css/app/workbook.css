@@ -1344,7 +1344,7 @@
    }
 }
 /* 워크북 수정 및 개요보기 */
-.edit-workbook-section .passage,
+.edit-workbook-section .passage:not(.ui-sortable-placeholder),
 .overview-workbook-section .passage {
 	counter-increment: psgCounter;
 	word-break: break-all;
