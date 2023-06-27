@@ -26,6 +26,7 @@ function pageinit(myWorkBookList) {
 		new Swiper(swiperEl, {
 			watchSlidesProgress: true,
 			//resistance: false,
+			 // if rows > 1, slidesPerView:'auto' not compatible
 			slidesPerView: 'auto',
 			freeMode,
 			grid: {
@@ -55,6 +56,7 @@ function pageinit(myWorkBookList) {
 				},
 				768: {
 					slidesPerGroup: 4,
+					spaceBetween: 30,
 					autoHeight: contentLength <= 4,
 					grid: {
 						rows: contentLength > 4 ? 2 : 1
@@ -62,6 +64,8 @@ function pageinit(myWorkBookList) {
 				},
 				992: {
 					slidesPerGroup: 7,
+					slidesPerView: contentLength > 7 ? 7 : 'auto',
+					spaceBetween: 5,
 					autoHeight: contentLength <= 7,
 					grid: {
 						rows: contentLength > 7 ? 2 : 1
