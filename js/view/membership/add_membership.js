@@ -389,10 +389,10 @@ function pageinit(membershipCommand) {
 	
 	$(document).on('show.bs.modal', '#done-info-modal', function(e) {
 		const button = e.relatedTarget;
-		const memberShipInfoDiv = button.closest('.membership-info-parent');
+		const memberShipInfoDiv = button.closest('.membership-item-block');
 		const iid = memberShipInfoDiv.querySelector('.iid').value;
-		const itemName = memberShipInfoDiv.querySelector('.membership-info .name').value;
-		const price = memberShipInfoDiv.querySelector('.membership-info .price').innerHTML;
+		const itemName = memberShipInfoDiv.querySelector('.item-full-name').value;
+		const price = memberShipInfoDiv.querySelector('.item-real-price').value;
 		
 		orderItemList = [iid];
 		$(this).find('.btn-close').show();
