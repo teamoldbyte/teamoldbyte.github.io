@@ -218,6 +218,144 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		$('#loadingModal').modal('show');
 		location.assign(`/workbook/passage/${ntoa(workbookId)}/${ntoa(passageId)}${senQuery}`);
 	});
+	// [피드백 목록, 피코쌤노트요청 목록 추가 조회]----------------------------------
+	$(document).on('click', '.feedback-list .page-item, .note-request-list .page-item', function() {
+		const content = this.closest('.pagination-section').dataset.content;
+		const pageNum = this.dataset.pagenum;
+		$.getJSON(`/workbook/${content}/list/${workbookId}`, { pageNum }, page => content == 'feedback' ? feedbackPageRefresh(page) : ssamnoteRequestPageRefresh(page));
+	})
+	
+	// [피드백 블럭을 누르면 펼치기/접기]------------------------------------------
+	.on('click', '.feedback-unit', function() {
+		const $text = $(this).find('.feedback-text');
+		const textMax = $text.data('org');
+		const textMin = textMax.replace(/[\r\n].+/g, '');
+		const isOpen = $(this).toggleClass('open').hasClass('open');
+
+		$text.text(isOpen ? textMax : textMin);
+		$(this).siblings().toggle(!isOpen);
+	})
+	
+	
+	function createWorker(worker) {
+		const imageSrc = worker?.image?.length > 0
+			? `url(/resource/profile/images/${worker.image})`
+			: 'var(--fc-logo-head)';
+
+		const memberPersonacon = {
+			el: 'img',
+			className: 'personacon-profile',
+			src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
+			style: {
+				backgroundPosition: 'center',
+				backgroundSize: 'cover',
+				backgroundRepeat: 'no-repeat',
+				backgroundImage: imageSrc,
+			},
+		};
+
+		const email = {
+			el: 'span',
+			className: 'email col-6 my-auto',
+			textContent: worker.email,
+		};
+
+		const alias = {
+			el: 'span',
+			className: 'alias col-3 my-auto',
+			textContent: worker.alias,
+		};
+
+		const deleteButton = {
+			el: 'button',
+			className: 'del-coworker my-auto btn del-btn col-1 fas fa-trash-alt',
+		};
+
+		return {
+			el: 'div',
+			className: 'coworker row g-0',
+			'data-mid': worker.memberId,
+			children: [
+				{ el: 'div', className: 'member-personacon', children: [memberPersonacon] },
+				email,
+				alias,
+				deleteButton,
+			],
+		};
+	}
+	function feedbackPageRefresh(page) {
+		const contentJSONs = Array.from(page.content, item => {
+			const feedbackRegDate = new Date(item.regDate);
+			return { el: 'div', className: 'feedback-unit row g-0', role: 'button', title: '펼쳐보기/접기', children: [
+				{ el: 'div', className: 'feedback-text-block col-12 col-lg-10 row g-0 m-auto', children: [
+					{ el: 'span', className: 'feedback-text text-truncate', 'data-org': item.content , textContent: item.content.replace(/\n.+/g, '') }
+				]},
+				{ el: 'div', className: 'regDate-section col-6 col-lg-2', children: [
+					{ el: 'span', className: 'reg-date', textContent: (new Date(Math.max(workbookRegDate, feedbackRegDate))).format('yyyy-MM-dd') }
+				]}
+			]};
+		})
+		$('.feedback-list .feedback-unit').remove();
+		$('.feedback-list .pagination-section').before(createElement(contentJSONs));
+		$('.feedback-list .pagination-section .swiper-pagination').get(0).replaceChildren(createElement(getPaginations(page)));
+	}
+	
+	function ssamnoteRequestPageRefresh(page) {
+		const requestStatusLabels = {'H' : '대기중', 'W' : '작성중', 'D' : '작성&lt;br&gt;완료', 'C' : '취 소', 'S' : '추 천'};
+		const contentJSONs = Array.from(page.content, item => {
+			return {
+			el: 'div', className: `note-request-unit row g-0 js-view-passage passage status-${item.progressStatus.toLowerCase()}`,
+			role: 'button', 'data-pid': item.passageId, 'data-bs-toggle': 'tooltip', title: '클릭시 노트를 신청한 지문 상세보기로 이동합니다.', children: [
+				// 상태값
+				{ el: 'div', className: 'col-2 col-xl-1 row g-0 m-auto', children: [
+					{ el: 'div', className: 'badge-block', children: [
+						{ el: 'span', className: 'status-text', innerHTML: requestStatusLabels[item.progressStatus] }
+					]}
+				]},
+				// 문장내용(추천의 경우 +제안문구)
+				{ el: 'div', className: 'col-8 col-xl-9 row g-0 m-auto', children: [
+					item.progressStatus == 'S' ? { el: 'span', className: 'suggest-text', children: [
+						'이 문장에 대해 ', { el: 'span', className: 'app-name-text', textContent: 'fico' },
+						'쌤 노트를 ', { el: 'b', textContent: '신청' }, '해 보면 어떨까요?'
+					]} : '',
+					{ el: 'span', className: 'sentence-text text-truncate', textContent: item.sentence.eng }
+				]},
+				// 등록일
+				{ el: 'div', className: 'col-2 m-auto text-center', children: [
+					{ el: 'span', className: 'reg-date', textContent: new Date(item.regDate).format('yyyy-MM-dd')}
+				]}
+			]}
+		})
+		$('.note-request-list .note-request-unit').remove();
+		$('.note-request-list .pagination-section').before(createElement(contentJSONs));
+		$('.note-request-list .pagination-section .swiper-pagination').get(0).replaceChildren(createElement(getPaginations(page)));
+	}
+
+	function getPaginations(page) {
+		const totalPages = page.totalPages,	// 전체 페이지 수
+			currPage = page.number + 1,		// 현재 페이지(1부터)
+			blockLength = 10,
+			currBlock = Math.ceil(currPage / blockLength),	// 현재 페이지리스트 뭉치 번호(1부터)
+			startPage = (currBlock - 1) * blockLength + 1,				// 페이지리스트 첫번째 번호(1부터)
+			endPage = (startPage + blockLength <= totalPages) ? (startPage + blockLength - 1) : totalPages; // 페이지리스트 마지막 번호
+		
+		const pages = [];
+		for(let i = startPage; i <= endPage; i++) {
+			pages.push({
+				el: 'span', className: `page-item swiper-pagination-bullet${currPage==i?' swiper-pagination-bullet-active':''}`,
+				'data-pagenum': i
+			})
+		}
+		if(startPage > blockLength)
+			pages.unshift({
+				el: 'span', className: 'page-item', role: 'button', 'data-pagenum': startPage - 1 , innerHTML: '&laquo;'
+			})
+		if(endPage < totalPages) 
+			pages.push({
+				el: 'span', className: 'page-item', role: 'button', 'data-pagenum': endPage + 1, innerHTML: '&raquo;'
+			})
+		return pages;
+	}	
 	// [(헬로북)지문 등록하기 화면으로 이동]
 	if(helloBook) {
 		$('.js-add-passage-open').click(function() {
@@ -410,144 +548,5 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				});
 			});
 		})
-		
-		// [피드백 목록, 피코쌤노트요청 목록 추가 조회]----------------------------------
-		$(document).on('click', '.feedback-list .page-item, .note-request-list .page-item', function() {
-			const content = this.closest('.pagination-section').dataset.content;
-			const pageNum = this.dataset.pagenum;
-			$.getJSON(`/workbook/${content}/list/${workbookId}`, { pageNum }, page => content == 'feedback' ? feedbackPageRefresh(page) : ssamnoteRequestPageRefresh(page));
-		})
-		
-		// [피드백 블럭을 누르면 펼치기/접기]------------------------------------------
-		.on('click', '.feedback-unit', function() {
-			const $text = $(this).find('.feedback-text');
-			const textMax = $text.data('org');
-			const textMin = textMax.replace(/[\r\n].+/g, '');
-			const isOpen = $(this).toggleClass('open').hasClass('open');
-
-			$text.text(isOpen ? textMax : textMin);
-			$(this).siblings().toggle(!isOpen);
-		})
-		
-		
-		function createWorker(worker) {
-			const imageSrc = worker?.image?.length > 0
-				? `url(/resource/profile/images/${worker.image})`
-				: 'var(--fc-logo-head)';
-
-			const memberPersonacon = {
-				el: 'img',
-				className: 'personacon-profile',
-				src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
-				style: {
-					backgroundPosition: 'center',
-					backgroundSize: 'cover',
-					backgroundRepeat: 'no-repeat',
-					backgroundImage: imageSrc,
-				},
-			};
-
-			const email = {
-				el: 'span',
-				className: 'email col-6 my-auto',
-				textContent: worker.email,
-			};
-
-			const alias = {
-				el: 'span',
-				className: 'alias col-3 my-auto',
-				textContent: worker.alias,
-			};
-
-			const deleteButton = {
-				el: 'button',
-				className: 'del-coworker my-auto btn del-btn col-1 fas fa-trash-alt',
-			};
-
-			return {
-				el: 'div',
-				className: 'coworker row g-0',
-				'data-mid': worker.memberId,
-				children: [
-					{ el: 'div', className: 'member-personacon', children: [memberPersonacon] },
-					email,
-					alias,
-					deleteButton,
-				],
-			};
-		}
-		function feedbackPageRefresh(page) {
-			const contentJSONs = Array.from(page.content, item => {
-				const feedbackRegDate = new Date(item.regDate);
-				return { el: 'div', className: 'feedback-unit row g-0', role: 'button', title: '펼쳐보기/접기', children: [
-					{ el: 'div', className: 'feedback-text-block col-12 col-lg-10 row g-0 m-auto', children: [
-						{ el: 'span', className: 'feedback-text text-truncate', 'data-org': item.content , textContent: item.content.replace(/\n.+/g, '') }
-					]},
-					{ el: 'div', className: 'regDate-section col-6 col-lg-2', children: [
-						{ el: 'span', className: 'reg-date', textContent: (new Date(Math.max(workbookRegDate, feedbackRegDate))).format('yyyy-MM-dd') }
-					]}
-				]};
-			})
-			$('.feedback-list .feedback-unit').remove();
-			$('.feedback-list .pagination-section').before(createElement(contentJSONs));
-			$('.feedback-list .pagination-section .swiper-pagination').get(0).replaceChildren(createElement(getPaginations(page)));
-		}
-		
-		function ssamnoteRequestPageRefresh(page) {
-			const requestStatusLabels = {'H' : '대기중', 'W' : '작성중', 'D' : '작성&lt;br&gt;완료', 'C' : '취 소', 'S' : '추 천'};
-			const contentJSONs = Array.from(page.content, item => {
-				return {
-				el: 'div', className: `note-request-unit row g-0 js-view-passage passage status-${item.progressStatus.toLowerCase()}`,
-				role: 'button', 'data-pid': item.passageId, 'data-bs-toggle': 'tooltip', title: '클릭시 노트를 신청한 지문 상세보기로 이동합니다.', children: [
-					// 상태값
-					{ el: 'div', className: 'col-2 col-xl-1 row g-0 m-auto', children: [
-						{ el: 'div', className: 'badge-block', children: [
-							{ el: 'span', className: 'status-text', innerHTML: requestStatusLabels[item.progressStatus] }
-						]}
-					]},
-					// 문장내용(추천의 경우 +제안문구)
-					{ el: 'div', className: 'col-8 col-xl-9 row g-0 m-auto', children: [
-						item.progressStatus == 'S' ? { el: 'span', className: 'suggest-text', children: [
-							'이 문장에 대해 ', { el: 'span', className: 'app-name-text', textContent: 'fico' },
-							'쌤 노트를 ', { el: 'b', textContent: '신청' }, '해 보면 어떨까요?'
-						]} : '',
-						{ el: 'span', className: 'sentence-text text-truncate', textContent: item.sentence.eng }
-					]},
-					// 등록일
-					{ el: 'div', className: 'col-2 m-auto text-center', children: [
-						{ el: 'span', className: 'reg-date', textContent: new Date(item.regDate).format('yyyy-MM-dd')}
-					]}
-				]}
-			})
-			$('.note-request-list .note-request-unit').remove();
-			$('.note-request-list .pagination-section').before(createElement(contentJSONs));
-			$('.note-request-list .pagination-section .swiper-pagination').get(0).replaceChildren(createElement(getPaginations(page)));
-		}
-
-		function getPaginations(page) {
-			const totalPages = page.totalPages,	// 전체 페이지 수
-				currPage = page.number + 1,		// 현재 페이지(1부터)
-				blockLength = 10,
-				currBlock = Math.ceil(currPage / blockLength),	// 현재 페이지리스트 뭉치 번호(1부터)
-				startPage = (currBlock - 1) * blockLength + 1,				// 페이지리스트 첫번째 번호(1부터)
-				endPage = (startPage + blockLength <= totalPages) ? (startPage + blockLength - 1) : totalPages; // 페이지리스트 마지막 번호
-			
-			const pages = [];
-			for(let i = startPage; i <= endPage; i++) {
-				pages.push({
-					el: 'span', className: `page-item swiper-pagination-bullet${currPage==i?' swiper-pagination-bullet-active':''}`,
-					'data-pagenum': i
-				})
-			}
-			if(startPage > blockLength)
-				pages.unshift({
-					el: 'span', className: 'page-item', role: 'button', 'data-pagenum': startPage - 1 , innerHTML: '&laquo;'
-				})
-			if(endPage < totalPages) 
-				pages.push({
-					el: 'span', className: 'page-item', role: 'button', 'data-pagenum': endPage + 1, innerHTML: '&raquo;'
-				})
-			return pages;
-		}
 	}
 }
