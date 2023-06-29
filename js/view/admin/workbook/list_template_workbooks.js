@@ -118,7 +118,7 @@ function pageinit() {
 	$('#addPassageTitles').on('click', function() {
 		const workbookId = parseInt($('#templateDetailSection .template-wid-info').text().trim());
 		const title = $('#templateDetailSection .template-title-info').text().trim();
-		location.assign(`/adminxyz/workbook/passagetitle/batch/${ntoa(workbookId)}?wtitle=${title}`);
+		location.assign(`/adminxyz/template/passagetitle/batch/${ntoa(workbookId)}?wtitle=${title}`);
 	})
 	
 	// [지문 타이틀 수정]-----------------------------------------------------------
