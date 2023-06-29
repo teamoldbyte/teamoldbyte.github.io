@@ -379,7 +379,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				$('#passageLimitModal').modal('show');
 				return;
 			}		
-			location.assign(`/workbook/passagetitle/batch/${ntoa(workbookId)}`);
+			location.assign(`/workbook/passagetitle/batch/${ntoa(workbookId)}?wtitle=${encodeURIComponent($('#title').val())}`);
 		})
 		
 		
