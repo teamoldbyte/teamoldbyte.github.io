@@ -1069,7 +1069,7 @@ async function pageinit(memberId, memberAlias, memberImage){
 		const $editSection = $(this).closest('.edit-section');
 		const $qnaUnit = $editSection.closest('.qna-unit');
 		const title = $editSection.find('.q-title').val().trim();
-		const content = $editSection.find('.text-input').val();
+		const content = $editSection.find('.text-input').summernote('code');
 		
 		if(content.length == 0){
 			alert('내용을 입력해 주세요.');
@@ -1254,7 +1254,7 @@ async function pageinit(memberId, memberAlias, memberImage){
 		const $answer = $editSection.closest('.answer-section');
 		const $contentSection = $answer.find('.text-section');
 		const $qnaUnit = $answer.closest('.qna-unit');
-		const content = $editSection.find('.text-input').val().trim();
+		const content = $editSection.find('.text-input').summernote('code').trim();
 		
 		if(content.length == 0) {
 			alert('내용을 입력해 주세요.');
@@ -1373,7 +1373,7 @@ async function pageinit(memberId, memberAlias, memberImage){
 		const $qnaUnit = $addSection.closest('.qna-unit');
 		const $content = $addSection.find('.text-input');
 		const title = $addSection.find('.q-title').val().trim();
-		const content = $content.val().trim();
+		const content = $content.summernote('code').trim();
 		if(content.length == 0) return;
 		const questionCommand = {
 			targetId: $qnaUnit.data('targetId'), title, content, 
