@@ -7,7 +7,7 @@
 }
 /* 써머노트 에디터 안에서의 탭문자 간격 */
 .note-editable{
-  font-family: "HCRDotum";
+  font-family: Frutiger,HCRDotum;
   white-space: break-spaces;
   tab-size: 4
 }
