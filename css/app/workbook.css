@@ -697,9 +697,10 @@
 	}
 }
 .workbook-index-section .swiper-section{
-	box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset;
+	border: 2px solid #f0f0f0;
+	/* box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset; */
 	border-radius: 5px;
-	background-color: var(--white);
+	background-color: #fff;
 }
 .workbook-index-section .swiper-section .swiper-button-section{
 	width: 3rem;
@@ -1400,7 +1401,7 @@
 	position: absolute;
 	top: -25px;
 	left: 0;
-	width: 180px;
+	width: 280px;
 	height: 25px;
 	border-radius: 5px 5px 0 0;
 	background-color: #fff;
@@ -1418,11 +1419,11 @@
 	bottom: -4px;
 	left: 1px;
 	height: 4px;
-	width: 178px;	
+	width: 278px;	
 }
 .passage-title-section .passage-title{
 	position: absolute;
-	width: 170px;
+	width: 270px;
 	padding-left: 15px;
 	display: block;
 	line-height: 37px;
@@ -1897,7 +1898,7 @@
 }
 
 .view-passage-section .tab-section .note-section .text-section *{
-	font-family: Frutiger, HCRDotum;
+	font-family: 'Frutiger', 'HCRDotum';
 	white-space: break-spaces;
 	tab-size: 4;
 	margin-top: 0;
