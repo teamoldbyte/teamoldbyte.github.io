@@ -579,7 +579,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		const noteId = Number($noteSection.data('noteId'));
 		const workbookId = Number($sentenceSection.data('workbookId'));
 		const publicOpen = $textSection.find('.open-input').is(':checked');
-		const content = $textSection.find('.text-input').val().trim();
+		const content = $textSection.find('.text-input').summernote('code').trim();
 		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
@@ -765,7 +765,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		const $editSection = $(this).closest('.edit-section');
 		const $qnaUnit = $editSection.closest('.qna-unit');
 		const title = $editSection.find('.q-title').val().trim();
-		const content = $editSection.find('.text-input').val();
+		const content = $editSection.find('.text-input').summernote('code');
 		
 		if(content.length == 0){
 			alert('내용을 입력해 주세요.');
@@ -950,7 +950,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		const $answer = $editSection.closest('.answer-section');
 		const $contentSection = $answer.find('.text-section');
 		const $qnaUnit = $answer.closest('.qna-unit');
-		const content = $editSection.find('.text-input').val().trim();
+		const content = $editSection.find('.text-input').summernote('code').trim();
 		
 		if(content.length == 0) {
 			alert('내용을 입력해 주세요.');
