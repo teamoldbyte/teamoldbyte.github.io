@@ -560,7 +560,7 @@
 		const diffLevel = addSection.querySelector('.battle-diffLevel-section input:checked').value;
 		const ask = addSection.querySelector('.ask-select').value.trim();
 		const askTag = addSection.querySelector('.askTag').value.trim();
-		const comment = addSection.querySelector('textarea.comment').value.trim();
+		const comment = $(addSection).find('textarea.comment').summernote('code').trim();
 		/*const source = addSection.querySelector('.source').value.trim();*/
 		const engLength = battleContext.textContent.trim().length;
 		
@@ -1702,7 +1702,7 @@
 							$(this).closest('.comment-section').find('.js-open-edit-battle-comment').show();
 						}},
 						{ el: 'button', class: 'btn btn-sm btn-fico', textContent: '수정', onclick: function() {
-							const content = $(this).closest('.edit-comment-section').children('textarea').val().trim();
+							const content = $(this).closest('.edit-comment-section').children('textarea').summernote('code').trim();
 							$.ajax({
 								url: '/craft/battle/edit/comment',
 								type: 'post',
