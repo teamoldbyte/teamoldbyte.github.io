@@ -1585,7 +1585,7 @@
 		const $noteSection = $(this).closest('.note-block');
 		const noteId = Number($noteSection.data('noteId'));
 		const publicOpen = $textSection.find('.open-input').is(':checked');
-		const content = $textSection.find('.text-input').val().trim();
+		const content = $textSection.find('.text-input').summernote('code').trim();
 		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
 		const $sentenceSection = $textSection.closest('.one-sentence-unit-section');
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
