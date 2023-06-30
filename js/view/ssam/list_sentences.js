@@ -862,7 +862,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const sentenceId = Number($sentenceSection.data('sentenceId'));
 		const workbookId = Number($sentenceSection.data('workbookId'));
 		const $addSection = $(this).closest('.add-section');
-		const content = $addSection.find('.text-input').val().trim();
+		const content = $addSection.find('.text-input').summernote('code').trim();
 		const publicOpen = $addSection.find(':checkbox').is(':checked');
 		if(content.length == 0) return;
 		
@@ -927,7 +927,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		const title = $addSection.find('.q-title').val().trim();
 		const $content = $addSection.find('.text-input');
-		const content = $content.val().trim();
+		const content = $content.summernote('code').trim();
 		const command = {
 				targetId: Number($sentenceSection.data('sentenceId')),
 				qtype: 'S', workbookId, passageId, questionerId: memberId, priorityId,
@@ -989,7 +989,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const noteId = Number($noteSection.data('noteId'));
 		const workbookId = Number($sentenceSection.data('workbookId'));
 		const publicOpen = $textSection.find('.open-input').is(':checked');
-		const content = $textSection.find('.text-input').val().trim();
+		const content = $textSection.find('.text-input').summernote('code').trim();
 		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
@@ -1147,7 +1147,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const $editSection = $(this).closest('.edit-section');
 		const $qnaUnit = $editSection.closest('.qna-unit');
 		const title = $editSection.find('.q-title').val().trim();
-		const content = $editSection.find('.text-input').val();
+		const content = $editSection.find('.text-input').summernote('code');
 		
 		if(content.length == 0){
 			alert('내용을 입력해 주세요.');
@@ -1332,7 +1332,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const $answer = $editSection.closest('.answer-section');
 		const $contentSection = $answer.find('.text-section');
 		const $qnaUnit = $answer.closest('.qna-unit');
-		const content = $editSection.find('.text-input').val().trim();
+		const content = $editSection.find('.text-input').summernote('code').trim();
 		
 		if(content.length == 0) {
 			alert('내용을 입력해 주세요.');
@@ -1451,7 +1451,7 @@ function pageinit(memberId, memberAlias, memberImage, sentenceList, offsetIndex)
 		const $qnaUnit = $addSection.closest('.qna-unit');
 		const $content = $addSection.find('.text-input');
 		const title = $addSection.find('.q-title').val().trim();
-		const content = $content.val().trim();
+		const content = $content.summernote('code').trim();
 		if(content.length == 0) return;
 		const questionCommand = {
 			targetId: $qnaUnit.data('targetId'), title, content, 
