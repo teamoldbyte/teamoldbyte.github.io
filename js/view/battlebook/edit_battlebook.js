@@ -130,13 +130,12 @@ function pageinit(battleBookId) {
 			})
 		}else {
 			const command = {battleBookId: battleBookId};
-			command[$input.attr('name')] = $input.is(':radio')
-											// 라디오버튼 타입이면 체크된 값만 사용
+			command[$input.attr('name')] = $input.is(':radio')// 라디오버튼 타입이면 체크된 값만 사용
 											? ($input.filter(':checked').val() == 'true')
+											: $input.is('textarea') ? $input.summernote('code').trim()
 											// type="number"면 숫자로 파싱
-											: ($input.attr('type')=='number')
-												? parseInt($input.val())
-												: $input.val().trim();
+											: ($input.attr('type')=='number') ? parseInt($input.val())
+											: $input.val().trim();
 			// 배틀북 정보 수정(ajax)--------------------------------
 			$.ajax({
 				url: form.action,
