@@ -1899,6 +1899,7 @@
 .view-passage-section .tab-section .note-section .text-section *{
 	font-family: Frutiger, HCRDotum;
 	white-space: break-spaces;
+	tab-size: 4;
 	margin-top: 0;
 	margin-bottom: 0;
 }	
