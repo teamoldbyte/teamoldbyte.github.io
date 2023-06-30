@@ -1896,8 +1896,9 @@
 	position: relative;
 }
 
-.view-passage-section .tab-section .note-section .text-section{
+.view-passage-section .tab-section .note-section .text-section *{
 	font-family: Frutiger, HCRDotum;
+	white-space: break-spaces;
 	margin-top: 0;
 	margin-bottom: 0;
 }	
