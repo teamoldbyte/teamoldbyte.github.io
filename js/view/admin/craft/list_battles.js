@@ -479,7 +479,7 @@ async function pageinit() {
 			// 태그
 			askTag: askDetailSection.querySelector('.battle-askTag').value,
 			//코멘트
-			comment: askDetailSection.querySelector('.battle-comment').value			
+			comment: $(askDetailSection).find('.battle-comment').summernote('code')			
 		});
 	}
 	
