@@ -911,7 +911,7 @@ async function pageinit(memberId, memberAlias, memberImage){
 		const noteId = Number($noteSection.data('noteId'));
 		const workbookId = Number($sentenceSection.data('workbookId'));
 		const publicOpen = $textSection.find('.open-input').is(':checked');
-		const content = $textSection.find('.text-input').val().trim();
+		const content = $textSection.find('.text-input').summernote('code').trim();
 		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
