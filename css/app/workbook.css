@@ -870,7 +870,7 @@
 }
 /* 워크북 오버뷰 - 북 소개 영역 */
 .workbook-overview-section .workbook-info-section .description{
-	white-space: pre-line;
+	white-space: break-spaces;
 }
 /* 워크북 작성자 */
 .workbook-overview-section .personacon img{
@@ -1394,7 +1394,7 @@
 .edit-workbook-section .edit-menu-block{
 	position: absolute;
 	top: 0;
-	right: 0;
+	right: 5px;
 }
 /* 워크북 수정 및 개요보기 - 지문 타이틀 */
 .passage-title-section{
