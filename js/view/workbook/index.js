@@ -88,7 +88,7 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					
 					$overviewSection.find('.title').text(title);
 					
-					$overviewSection.find('.description').text(description);
+					$overviewSection.find('.description').html(description);
 		
 					$overviewSection.find('.price').text(price > 0
 										? (price.toLocaleString() + ' fico')
