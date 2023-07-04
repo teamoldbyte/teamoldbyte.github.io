@@ -3,6 +3,7 @@
  */
 function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCount) {
 	const workbookRegDate = new Date($('.workbook-info-section .reg-date').text());
+	const workBookType = $('#workBookType').val();
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	// 모바일 툴팁 (워크북 타입)
 	if(document.querySelector('.type-tooltip')) {
@@ -33,8 +34,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 	
 	
 	Compressor.setDefaults({quality: 0.8, width: 210, height: 315, maxWidth: 210, maxHeight: 315, resize: 'cover'});
-	// [워크북 개요의 지문 레이아웃 정렬]--------------------------------------------
-	$('.workbook-overview-section .list-passage-section').masonry({
+	const masonryOptions = {
 		// options
 		itemSelector: '.passage',
 		columnWidth: '.passage',
@@ -43,7 +43,9 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		horizontalOrder: true,
 		// slow transitions
 		transitionDuration: '0.8s'
-	});
+	};
+	// [워크북 개요의 지문 레이아웃 정렬]--------------------------------------------
+	$('.workbook-overview-section .list-passage-section').masonry(masonryOptions);
 	
 	if(!helloBook) {
 	// [커버 이미지 미리보기 변경]-----------------------------------------------------------
@@ -73,13 +75,17 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		e.stopImmediatePropagation();
 		e.stopPropagation();
 		const $block = $(this.closest('.edit-hover'));
-		const $input = $block.find('input,select,textarea');
+		const $input = $block.find('input,select,#description').eq(0);
 		$block.addClass('active');
 		if($input.is(':file')) {
 			$input.data('originData', $imgPreview.css('background-image'));
 			$block.find('.mdf-btns').css('display', 'block');
 		}else {
 			$input.prop('readonly', false);
+			if($input.is('#description')) {
+				$input.siblings('.description-preview').hide(0);
+				openSummernote($input);
+			}
 			$input.data('originData', $input.is(':radio')
 									? $input.filter(':checked').val() : $input.val());
 			
@@ -91,7 +97,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 	$('.js-edit-cancel').click(function(e) {
 		e.stopPropagation();
 		const $block = $(this.closest('.edit-hover'));
-		const $input = $block.find('input,select,textarea');
+		const $input = $block.find('input,select,#description').eq(0);
 		
 		if($input.is(':file')) {// 커버이미지는 원래이미지로 복구
 			$imgPreview.css('background-image', $input.data('originData'));
@@ -103,6 +109,10 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			if($input.is(':radio')) {
 				$input.filter('[value="'+$input.data('originData')+'"]').prop('checked', true);
 			}else {
+				if($input.is('#description')) {
+					$('#description').summernote('destroy');
+					$input.siblings('.description-preview').show(0);
+				}
 				$input.val($input.data('originData'));
 			}
 			$input.prop('readonly', true);
@@ -112,14 +122,14 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 	});
 	
 	// [입력 내용이 있으면 수정 확인 버튼 활성화]----------------------------------------
-	$('.edit-hover input, .edit-hover select, .edit-hover textarea').on('input', function() {
+	$('.edit-hover input, .edit-hover select, .edit-hover textarea').on('input summernote.change', function() {
 		$(this.closest('.edit-hover')).find('.mdf-btns button').prop('disabled', false);
 	});
 	
 	// [워크북 내용 수정]-------------------------------------------------------
 	$('.edit-workbook-form').submit(function(e) {
 		e.preventDefault();
-		const $input = $(this).find('input,select,textarea');
+		const $input = $(this).find('input,select,#description').eq(0);
 		const $block = $input.closest('.edit-hover');
 		const form = this;
 		if($input.is(':file')) {
@@ -143,6 +153,8 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			const command = {workBookId: workbookId};
 			command[$input.attr('name')] = $input.is(':radio')
 											? ($input.filter(':checked').val() == 'true')
+											: $input.is('#description')
+											? $input.summernote('code').trim()
 											: $input.val().trim();
 			
 			// 워크북 정보 수정(ajax)--------------------------------
@@ -152,7 +164,10 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		
 		function successEdit() {
 			alertModal('수정되었습니다.');
-			
+			if($input.is('#description')) {
+				$input.siblings('.description-preview').html($input.summernote('code')).show(0);
+				$input.summernote('destroy');
+			}
 			$block.removeClass('active').find('.edit-badge').show().removeAttr('style');
 			$block.find('.mdf-btns').hide()
 				.find('button:not(.js-edit-cancel)').prop('disabled', true);
@@ -179,6 +194,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		if(passages != null && passages.content?.length > 0) {
 			for(let i = 0, len = passages.content?.length; i < len; i++) {
 				const $passage = $('#hiddenDivs .passage').clone();
+				
 				const passage = passages.content[i];
 				// passageId
 				$passage.attr('data-pid', passage.passageId);
@@ -198,10 +214,21 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				// sentenceList
 				const $texts = $passage.find('.passage-text');
 				const sentences = passage.sentenceList;
+				if(sentences.length == 0) {
+					
+					$texts.addClass('pe-none').append($('#hiddenDivs .guide-add-sentences').clone());
+				}
 				for(let j = 0, len2 = sentences.length; j < len2; j++) {
 					$texts.append(sentences[j].eng);
 				}
-				$passageList.append($passage).masonry('appended', $passage);
+				// '문장 추가 버튼 제거'
+				if(!'TC'.includes(workBookType) || sentences?.length > 0) {
+					$passage.find('.js-add-sentences').remove();
+				}
+				$passageList.append($passage);
+				if($passageList.is('.moving')) {
+					$passageList.sortable('refresh');
+				} else $passageList.masonry('appended', $passage);
 			}
 			if(passages.last) scrollObserver.disconnect();
 			pageScroller.dataset.pagenum++;
@@ -234,55 +261,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 
 		$text.text(isOpen ? textMax : textMin);
 		$(this).siblings().toggle(!isOpen);
-	})
-	
-	
-	function createWorker(worker) {
-		const imageSrc = worker?.image?.length > 0
-			? `url(/resource/profile/images/${worker.image})`
-			: 'var(--fc-logo-head)';
-
-		const memberPersonacon = {
-			el: 'img',
-			className: 'personacon-profile',
-			src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
-			style: {
-				backgroundPosition: 'center',
-				backgroundSize: 'cover',
-				backgroundRepeat: 'no-repeat',
-				backgroundImage: imageSrc,
-			},
-		};
-
-		const email = {
-			el: 'span',
-			className: 'email col-6 my-auto',
-			textContent: worker.email,
-		};
-
-		const alias = {
-			el: 'span',
-			className: 'alias col-3 my-auto',
-			textContent: worker.alias,
-		};
-
-		const deleteButton = {
-			el: 'button',
-			className: 'del-coworker my-auto btn del-btn col-1 fas fa-trash-alt',
-		};
-
-		return {
-			el: 'div',
-			className: 'coworker row g-0',
-			'data-mid': worker.memberId,
-			children: [
-				{ el: 'div', className: 'member-personacon', children: [memberPersonacon] },
-				email,
-				alias,
-				deleteButton,
-			],
-		};
-	}
+	});
 	function feedbackPageRefresh(page) {
 		const contentJSONs = Array.from(page.content, item => {
 			const feedbackRegDate = new Date(item.regDate);
@@ -411,8 +390,96 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			$(titleSection).find('.title-input').val($title.text()).hide();
 			$(titleSection).find('.title-edit-btn-section').hide();
 		})
-		
-		// [지문 수정 화면으로 이동]-----------------------------------------------------
+		.on('show.bs.dropdown', '.edit-menu-block .dropdown-toggle', function() {
+			$('.passage .edit-menu-block .dropdown-toggle.show').dropdown('hide').each(function(){
+				$(this).closest('.edit-menu-block').hide();
+			});
+			$(this).closest('.edit-menu-block').show();
+		})
+		.on('mouseout', '.edit-menu-block', function() {
+			if(!$(this).find('.dropdown-toggle').is('.show')) $(this).hide();
+		})
+		// [지문 순서 이동 활성화]
+		.on('click', '.js-move-passage', function() {
+			const $listSection = $(this).closest('.list-passage-section');
+			
+			$(this).closest('.dropdown-menu').siblings('.dropdown-toggle').dropdown('hide');
+			$('.js-add-passage-open').tooltip('hide');
+			$('#exitEditPassageOrder,.js-add-passage-open,.passage-list-normal-guide,.passage-list-moving-guide').toggle();
+			$listSection.addClass('moving row').masonry('destroy')
+			.sortable({
+				classes: {
+					"ui-sortable-helper": "shadow-lg"
+				},
+				cursor: 'move',
+				update: (_event, ui) => {
+					if (confirm('문장을 여기로 이동하겠습니까?')) {
+						let $prev = ui.item.prev('.passage'),
+							$next = ui.item.next('.passage');
+						// 다음 문장이 없으면 이전문장의 ordernum + 1000
+						if ($next.length == 0) {
+							ui.item[0].dataset.orderNum = Number($prev[0].dataset.orderNum) + 1000;
+						}
+						// 이전 문장이 없으면 다음 문장의 ordernum / 2
+						else if ($prev.length == 0) {
+							const nextOrder = Number($next[0].dataset.orderNum),
+								newOrder = Math.round(nextOrder / 2);
+							if (newOrder == nextOrder) {
+								alertModal('더이상 이동할 수 없습니다.');
+								$listSection.sortable('cancel');
+								return;
+							}
+							else ui.item[0].dataset.orderNum = newOrder;
+						}
+						// 그 외엔 이전 문장과 다음 문장의 ordernum 사잇값
+						else {
+							const prevOrder = Number($prev[0].dataset.orderNum),
+								nextOrder = Number($next[0].dataset.orderNum),
+								newOrder = Math.round((prevOrder + nextOrder) / 2);
+							if ([prevOrder, nextOrder].indexOf(newOrder) > -1) {
+								alertModal('더이상 이동할 수 없습니다.');
+								$listSection.sortable('cancel');
+								return;
+							}
+							else ui.item[0].dataset.orderNum = newOrder;
+						}
+	
+						// 전송 내용 생성.
+						const command = { workbookId,
+							passageId: parseInt(ui.item[0].dataset.pid), 
+							orderNum: parseInt(ui.item[0].dataset.orderNum)
+						};
+	
+						// 지문 순서 수정(ajax)----------------------
+						$.ajax({
+							url: '/workbook/passage/order/edit',
+							type: 'POST',
+							data: JSON.stringify(command),
+							contentType: 'application/json',
+							success: () => alertModal('지문 순서가 성공적으로 변경되었습니다.'),
+							error: () => alertModal('지문 순서 변경이 실패했습니다.', () => {
+								$listSection.sortable('cancel');
+							})
+						})
+	
+					} else {
+						$listSection.sortable('cancel');
+					}
+				}
+			});
+		}).on('click', '#exitEditPassageOrder', function() {
+			$('.list-passage-section.moving').removeClass('moving row')
+			.masonry(masonryOptions);
+			$(this).add('.js-add-passage-open').toggle();
+		})
+		// [지문 문장 추가 화면으로 이동]---------------------------------------------
+		.on('click', '.js-add-sentences', function() {
+			const $passage = $(this).closest('.passage');
+			const passageId = parseInt($passage[0].dataset.pid);
+			const ptitle = $passage.find('.passage-title').text().trim();
+			location.assign(`/workbook/passage/sentence/add/${ntoa(workbookId)}/${ntoa(passageId)}?ptitle=${encodeURIComponent(ptitle)}`);
+		})
+		// [지문 수정 화면으로 이동]-------------------------------------------------
 		.on('click', '.js-edit-passage', function() {
 			const passageId = Number(this.closest('.passage').dataset.pid);
 			const passageTitle = this.closest('.passage').querySelector('.passage-title').title;
@@ -527,18 +594,15 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		})
 		// [공동 작업자 제외]
 		$(document).on('click', '.del-coworker', function() {
-			console.log(this.closest('.coworker'))
 			const $coworker = $(this).closest('.coworker');
 			const alias = $coworker.find('.alias').text();
 			const memberId = parseInt($coworker.data('mid'));
 			confirmModal(`${alias}님을 작업자에서 제외하시겠습니까?`, () => {
-				console.log($coworker)
 				$.ajax({
 					url: '/workbook/coworker/del',
 					type: 'POST',
 					data: { workbookId: workbookId, coworkerIdList: [memberId] },
 					success: () => {
-						console.log($coworker)
 						$coworker.remove();
 						alertModal(`${alias}님을 작업자에서 제외했습니다.`);
 					},
@@ -548,5 +612,52 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				});
 			});
 		})
+		
+		function createWorker(worker) {
+			const imageSrc = worker?.image?.length > 0
+				? `url(/resource/profile/images/${worker.image})`
+				: 'var(--fc-logo-head)';
+
+			const memberPersonacon = {
+				el: 'img',
+				className: 'personacon-profile',
+				src: 'https://static.findsvoc.com/images/app/member/profile_paper.png',
+				style: {
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+					backgroundRepeat: 'no-repeat',
+					backgroundImage: imageSrc,
+				},
+			};
+
+			const email = {
+				el: 'span',
+				className: 'email col-6 my-auto',
+				textContent: worker.email,
+			};
+
+			const alias = {
+				el: 'span',
+				className: 'alias col-3 my-auto',
+				textContent: worker.alias,
+			};
+
+			const deleteButton = {
+				el: 'button',
+				className: 'del-coworker my-auto btn del-btn col-1 fas fa-trash-alt',
+			};
+
+			return {
+				el: 'div',
+				className: 'coworker row g-0',
+				'data-mid': worker.memberId,
+				children: [
+					{ el: 'div', className: 'member-personacon', children: [memberPersonacon] },
+					email,
+					alias,
+					deleteButton,
+				],
+			};
+		}
 	}
 }
