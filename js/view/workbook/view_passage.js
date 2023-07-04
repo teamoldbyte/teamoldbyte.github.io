@@ -2118,7 +2118,7 @@
 	.on('show.bs.collapse', '.craft-section', function() {
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section');
 		$sentenceSection.find('.dashboard-section').collapse('hide');
-		const translations = Array.from($sentenceSection.find('.ai-translation-block'), transBlock => {
+		const translations = Array.from($sentenceSection.find('.ai-translation-section').eq(0).find('.ai-translation-block'), transBlock => {
 			return {id: $(transBlock).data('korTid'), text: transBlock.querySelector('.translation-text').textContent}
 		})
 		if(this.querySelector('.battle-section-panel') == null) {
