@@ -1,8 +1,10 @@
-/** /workbook/add_passage.html
+/** /workbook/add_sentence.html
 @author LGM
  */
 function pageinit(memberId) {
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
+	
+	$('#cancelEdit').remove() // 나중에 html에서 지우자.
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
@@ -89,7 +91,6 @@ function pageinit(memberId) {
 			return false;
 		}
 	}).autocomplete('instance');
-	console.log($('#newPassageText'))
 	autocompleteInstance._renderItem = function( ul, item ) {
 	  const $li = $( "<li>" );
 	  if(item.disabled) $li.addClass("ui-state-disabled");
@@ -276,11 +277,15 @@ function pageinit(memberId) {
 	})
 	// [(공통)단위 문장 삭제]
 	.on('click', '.js-delete-sentence-btn', function() {
+		if($('.edit-passage .divided-sentence').length < 2) {
+			alertModal('최소 한 문장은 필요합니다. 처음부터 입력하고 싶으시다면 \'입력 초기화\'를 눌러 주세요');
+			return;
+		}
 		if(confirm('삭제하시겠습니까?')) {
 			$(this).closest('.divided-sentence').fadeOut(function() {
 				const $lastInput = $(this).siblings('.divided-sentence').last();
 				$(this).remove();
-				$lastInput.find(':text').trigger('input');
+				$lastInput.find(':text').trigger('input')[0].focus();
 			});
 		}
 	})
@@ -289,7 +294,7 @@ function pageinit(memberId) {
 		const $new = $('#hiddenDivs .divided-sentence').clone();
 		$(this).closest('.divided-sentence').after($new);
 		await sleep(100);
-		$new.fadeIn().find(':text').trigger('input');
+		$new.fadeIn().find(':text').trigger('input')[0].focus();
 	});
 	// [지문 검색 버튼 클릭]
 	$('#searchBtn').on('click', async function(_e, paramKeyword) {
@@ -346,8 +351,9 @@ function pageinit(memberId) {
 					$('.step-2').addClass('opacity-50 pe-none');
 					$('.step-3').removeClass('opacity-50 pe-none');
 					$('.step-1 .collapse,.step-3 .collapse').collapse('toggle');
-					$('#editPassage, .edit-passage').hide();
-					$('.final-pssage').show();	
+					//$('#editPassage, .edit-passage').hide();
+					//$('.final-pssage').show();
+					displaySentences(Array.from(total, s => {return {eng: s}}))	
 					return;		
 				}
 			}
@@ -423,7 +429,12 @@ function pageinit(memberId) {
 		$('.search-result-section .list-group-item').removeClass('active');
 		$('.step-2,.step-3').removeClass('opacity-50 pe-none');
 		$('.step-2 .collapse,.step-3 .collapse').collapse('toggle');
-		$('#editPassage, .edit-passage').hide();
+		displaySentences(
+			Array.from(
+				tokenizer.sentences(
+					$('#newPassageText').val().trim()).filter(s => /[a-zA-Z]/.test(s))
+					, s => { return {eng: s.sentenceNormalize()}}));
+		//$('#editPassage, .edit-passage').hide();
 		$('.final-pssage').show();
 	});
 	$('.step-2 .collapse:eq(0)').on('shown.bs.collapse hidden.bs.collapse', function() {
@@ -437,23 +448,36 @@ function pageinit(memberId) {
 		
 		$('.step-2,.step-3').removeClass('opacity-50 pe-none');
 		$('.step-2 .collapse,.step-3 .collapse').collapse('toggle');
-		$('#editPassage, .final-passage').show();
-		$('.edit-passage').hide();
+		
+		const $selected = $(this);
+		if($selected.data('passageId')) {
+			const passageId = $selected.data('passageId');
+			// 지문 편집용 문장 호출(ajax)
+			$.getJSON('/workbook/passage/sentences/edit/' + passageId, displaySentences)
+			.fail(() => alertModal('지문을 편집할 수 없습니다.'));
+		} else if($selected.data('sentenceId')){
+			const sentenceId = $selected.data('sentenceId');
+			
+			displaySentences([{eng: $selected.text(), sentenceId}]);
+		}		
+		
+		//$('#editPassage, .final-passage').show();
+		//$('.edit-passage').hide();
 	});
 	
 	// [(워크북)최종 분석 문장/지문 표시]
 	$('.step-3 .collapse:eq(0)').on('shown.bs.collapse', async function() {
 		searchingSentenceDone = false;
-		let height = 0;
+		/*let height = 0;
 		while(height != $('#text')[0].scrollHeight) {
 			height = $('#text')[0].scrollHeight;
 			await sleep(50);
 			$('#text').css('height', height + 'px');
-		}
+		}*/
 	});
 	
 	// [(워크북)선택지문 편집 요청]
-	$('#editPassage').on('click', function() {
+	/*$('#editPassage').on('click', function() {
 		const $selected = $('.search-result-section .list-group-item.active');
 		if($selected.data('passageId')) {
 			const passageId = $selected.data('passageId');
@@ -466,20 +490,20 @@ function pageinit(memberId) {
 			displaySentences([{eng: $selected.text(), sentenceId}]);
 		}
 		
-		async function displaySentences(sentenceDtoList) {
-			$('.final-passage').hide();
-			const $result = $('.edit-passage').show().find('.sentence-list').empty();
-			for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
-				const $sentence = $('#hiddenDivs .divided-sentence').clone();
-				$sentence.appendTo($result);
-				await sleep(100);
-				
-				$sentence.data('sentenceId', sentenceDtoList[i].sentenceId)
-					.data('orgData', sentenceDtoList[i].eng)
-					.fadeIn().find(':text').val(sentenceDtoList[i].eng).trigger('input');
-			}
+	});*/
+	async function displaySentences(sentenceDtoList) {
+		$('.final-passage').hide();
+		const $result = $('.edit-passage').show().find('.sentence-list').empty();
+		for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
+			const $sentence = $('#hiddenDivs .divided-sentence').clone();
+			$sentence.appendTo($result);
+			await sleep(100);
+			
+			$sentence.data('sentenceId', sentenceDtoList[i].sentenceId||0)
+				.data('orgData', sentenceDtoList[i].eng)
+				.fadeIn().find(':text').val(sentenceDtoList[i].eng).trigger('input');
 		}
-	});
+	}
 	// [(워크북)선택지문 편집 취소]
 	$('#cancelEdit').on('click', function() {
 		$('.final-passage, .edit-passage').toggle();
@@ -521,13 +545,18 @@ function pageinit(memberId) {
 						dirty = true;
 					} else {
 						$form.find('#text').prop('disabled', true);
-						if(sentenceId != null) {
+						if(passageId != null) {
+							$('input[name="existingPassageId"]').val(passageId);
+						} else {
 							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 						}
 					}
 				}
 				// 편집을 안한 경우 
-				else if(sentenceId != null){
+				else if(passageId != null) {
+					$('input[name="existingPassageId"]').val(passageId);
+					$form.find('#text').prop('disabled', true);
+				} else if(sentenceId != null){
 					createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 					$form.find('#text').prop('disabled', true);
 				}
