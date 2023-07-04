@@ -174,6 +174,25 @@ function pageinit(isHelloBook, memberId) {
 		return [ result.input.includes('×'), result.arr.length > 0 ];
 	}
 	
+	// 문장 입력 제한 해제
+	$('#newPassageText').on('click', function(e) {
+		if(e.offsetX < 0) {
+			myFicoUsages.length = 0;
+			$('.ocr-btn').prop('disabled', false);
+			$(this)
+				.removeClass('form-control')
+				.prop('disabled', false)
+				.attr('placeholder', '분석할 영어 문장/지문을 입력하세요.')
+				.trigger('input');
+			localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
+			anime({
+				targets: this,
+				borderColor: ['#ff0','#585174'],
+				duration: 5000
+			})
+		}
+	})
+	
 	if(!isHelloBook) {
 		const ocr = new FicoOCR();
 		// 사진파일 입력시 ocr 동작.
