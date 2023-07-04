@@ -199,6 +199,9 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				// passageId
 				$passage.attr('data-pid', passage.passageId);
 				
+				// orderNum
+				$passage.attr('data-order-num', passage.orderNum);
+				
 				// title
 				if(helloBook)
 					$passage.find('.passage-title').text(new Date(passage.regDate).format('yyyy-MM-dd(e)'))
