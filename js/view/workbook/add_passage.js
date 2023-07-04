@@ -191,7 +191,7 @@ function pageinit(isHelloBook, memberId) {
 				duration: 5000
 			})
 		}
-	})
+	});
 	
 	if(!isHelloBook) {
 		const ocr = new FicoOCR();
@@ -305,6 +305,10 @@ function pageinit(isHelloBook, memberId) {
 	})
 	// [(공통)단위 문장 삭제]
 	.on('click', '.js-delete-sentence-btn', function() {
+		if($('.edit-passage .divided-sentence').length < 2) {
+			alertModal('최소 한 문장은 필요합니다. 처음부터 입력하고 싶으시다면 \'입력 초기화\'를 눌러 주세요');
+			return;
+		}
 		if(confirm('삭제하시겠습니까?')) {
 			$(this).closest('.divided-sentence').fadeOut(function() {
 				const $lastInput = $(this).siblings('.divided-sentence').last();
@@ -392,8 +396,9 @@ function pageinit(isHelloBook, memberId) {
 					$('.step-2').addClass('opacity-50 pe-none');
 					$('.step-3').removeClass('opacity-50 pe-none');
 					$('.step-1 .collapse,.step-3 .collapse').collapse('toggle');
-					$('#editPassage, .edit-passage').hide();
-					$('.final-pssage').show();	
+					displaySentences(Array.from(total, s => {return {eng: s}}))	
+/*					$('#editPassage, .edit-passage').hide();
+					$('.final-pssage').show();	*/
 					return;		
 				}
 			}
@@ -477,8 +482,14 @@ function pageinit(isHelloBook, memberId) {
 			$('.search-result-section .list-group-item').removeClass('active');
 			$('.step-2,.step-3').removeClass('opacity-50 pe-none');
 			$('.step-2 .collapse,.step-3 .collapse').collapse('toggle');
-			$('#editPassage, .edit-passage').hide();
-			$('.final-pssage').show();
+			
+			displaySentences(
+				Array.from(
+					tokenizer.sentences(
+						$('#newPassageText').val().trim()).filter(s => /[a-zA-Z]/.test(s))
+						, s => { return {eng: s.sentenceNormalize()}}));			
+/*			$('#editPassage, .edit-passage').hide();
+			$('.final-pssage').show();*/
 		});
 		$('.step-2 .collapse:eq(0)').on('shown.bs.collapse hidden.bs.collapse', function() {
 			$('#jumpTo3').fadeToggle();
@@ -491,23 +502,36 @@ function pageinit(isHelloBook, memberId) {
 			
 			$('.step-2,.step-3').removeClass('opacity-50 pe-none');
 			$('.step-2 .collapse,.step-3 .collapse').collapse('toggle');
-			$('#editPassage, .final-passage').show();
-			$('.edit-passage').hide();
+			
+			
+			const $selected = $(this);
+			if($selected.data('passageId')) {
+				const passageId = $selected.data('passageId');
+				// 지문 편집용 문장 호출(ajax)
+				$.getJSON('/workbook/passage/sentences/edit/' + passageId, displaySentences)
+				.fail(() => alertModal('지문을 편집할 수 없습니다.'));
+			} else if($selected.data('sentenceId')){
+				const sentenceId = $selected.data('sentenceId');
+				
+				displaySentences([{eng: $selected.text(), sentenceId}]);
+			}			
+/*			$('#editPassage, .final-passage').show();
+			$('.edit-passage').hide();*/
 		});
 		
 		// [(워크북)최종 분석 문장/지문 표시]
 		$('.step-3 .collapse:eq(0)').on('shown.bs.collapse', async function() {
 			searchingSentenceDone = false;
-			let height = 0;
+/*			let height = 0;
 			while(height != $('#text')[0].scrollHeight) {
 				height = $('#text')[0].scrollHeight;
 				await sleep(50);
 				$('#text').css('height', height + 'px');
-			}
+			}*/
 		});
 		
 		// [(워크북)선택지문 편집 요청]
-		$('#editPassage').on('click', function() {
+/*		$('#editPassage').on('click', function() {
 			const $selected = $('.search-result-section .list-group-item.active');
 			if($selected.data('passageId')) {
 				const passageId = $selected.data('passageId');
@@ -520,20 +544,20 @@ function pageinit(isHelloBook, memberId) {
 				displaySentences([{eng: $selected.text(), sentenceId}]);
 			}
 			
-			async function displaySentences(sentenceDtoList) {
-				$('.final-passage').hide();
-				const $result = $('.edit-passage').show().find('.sentence-list').empty();
-				for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
-					const $sentence = $('#hiddenDivs .divided-sentence').clone();
-					$sentence.appendTo($result);
-					await sleep(100);
-					
-					$sentence.data('sentenceId', sentenceDtoList[i].sentenceId)
-						.data('orgData', sentenceDtoList[i].eng)
-						.fadeIn().find(':text').val(sentenceDtoList[i].eng).trigger('input');
-				}
+		});*/
+		async function displaySentences(sentenceDtoList) {
+			$('.final-passage').hide();
+			const $result = $('.edit-passage').show().find('.sentence-list').empty();
+			for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
+				const $sentence = $('#hiddenDivs .divided-sentence').clone();
+				$sentence.appendTo($result);
+				await sleep(100);
+				
+				$sentence.data('sentenceId', sentenceDtoList[i].sentenceId||0)
+					.data('orgData', sentenceDtoList[i].eng)
+					.fadeIn().find(':text').val(sentenceDtoList[i].eng).trigger('input');
 			}
-		});
+		}
 		// [(워크북)선택지문 편집 취소]
 		$('#cancelEdit').on('click', function() {
 			$('.final-passage, .edit-passage').toggle();
