@@ -367,6 +367,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		
 		// [지문 타이틀 수정]-----------------------------------------------------------
 		$(document).on('click', '.passage-title', function() {
+			if($('.js-edit-ptitle').length == 0) return; 
 			$(this).hide().siblings('.title-input,.title-edit-btn-section').show()
 			.closest('.passage-title-section').addClass('edit');
 		}).on('click','.js-edit-ptitle', function() {
