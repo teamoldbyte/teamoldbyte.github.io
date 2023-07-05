@@ -65,7 +65,7 @@ function pageinit(myWorkBookList) {
 				992: {
 					slidesPerGroup: 7,
 					slidesPerView: contentLength > 7 ? 7 : 'auto',
-					spaceBetween: 5,
+					spaceBetween: 30,
 					autoHeight: contentLength <= 7,
 					grid: {
 						rows: contentLength > 7 ? 2 : 1
