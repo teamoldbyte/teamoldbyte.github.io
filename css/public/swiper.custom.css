@@ -13,6 +13,16 @@
 .swiper-button-prev, .swiper-rtl .swiper-button-next {
 	left: -0.5rem;
 }
+.swiper-button-prev::after{
+	font-family: "Font Awesome 5 Free";
+	content: "\f053";
+	color: var(--fc-yellow);
+}
+.swiper-button-next::after{
+	font-family: "Font Awesome 5 Free";
+	content: "\f054";
+	color: var(--fc-yellow);
+}
 
 .swiper-button-next:after, .swiper-button-prev:after{
 	/* font-size: calc(var(--swiper-navigation-size) - 5px ) !important; */
