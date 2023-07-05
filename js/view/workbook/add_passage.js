@@ -545,19 +545,6 @@ function pageinit(isHelloBook, memberId) {
 			}
 			
 		});*/
-		async function displaySentences(sentenceDtoList) {
-			$('.final-passage').hide();
-			const $result = $('.edit-passage').show().find('.sentence-list').empty();
-			for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
-				const $sentence = $('#hiddenDivs .divided-sentence').clone();
-				$sentence.appendTo($result);
-				await sleep(100);
-				
-				$sentence.data('sentenceId', sentenceDtoList[i].sentenceId||0)
-					.data('orgData', sentenceDtoList[i].eng)
-					.fadeIn().find(':text').val(sentenceDtoList[i].eng).trigger('input');
-			}
-		}
 		// [(워크북)선택지문 편집 취소]
 		$('#cancelEdit').on('click', function() {
 			$('.final-passage, .edit-passage').toggle();
@@ -572,6 +559,19 @@ function pageinit(isHelloBook, memberId) {
 				}})
 			));
 		}else taghistory = [];		
+	}
+	async function displaySentences(sentenceDtoList) {
+		$('.final-passage').hide();
+		const $result = $('.edit-passage').show().find('.sentence-list').empty();
+		for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
+			const $sentence = $('#hiddenDivs .divided-sentence').clone();
+			$sentence.appendTo($result);
+			await sleep(100);
+			
+			$sentence.data('sentenceId', sentenceDtoList[i].sentenceId||0)
+				.data('orgData', sentenceDtoList[i].eng)
+				.fadeIn().find(':text').val(sentenceDtoList[i].eng).trigger('input');
+		}
 	}
 
 	
