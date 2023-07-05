@@ -4,7 +4,6 @@
 function pageinit(memberId) {
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	
-	$('#cancelEdit').remove() // 나중에 html에서 지우자.
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
@@ -157,18 +156,18 @@ function pageinit(memberId) {
 		return [ result.input.includes('×'), result.arr.length > 0 ];
 	}
 	// 문장 입력 제한 해제
-	$('#newPassageText').on('click', function(e) {
-		if(e.offsetX < 0) {
+	$('.text-input-container').on('click', function(e) {
+		if(e.offsetX < 10) {
 			myFicoUsages.length = 0;
 			$('.ocr-btn').prop('disabled', false);
-			$(this)
+			$(this).find('textarea')
 				.removeClass('form-control')
 				.prop('disabled', false)
 				.attr('placeholder', '분석할 영어 문장/지문을 입력하세요.')
 				.trigger('input');
 			localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 			anime({
-				targets: this,
+				targets: $('#newPassageText')[0],
 				borderColor: ['#ff0','#585174'],
 				duration: 5000
 			})
@@ -546,7 +545,7 @@ function pageinit(memberId) {
 					} else {
 						$form.find('#text').prop('disabled', true);
 						if(passageId != null) {
-							$('input[name="existingPassageId"]').val(passageId);
+							createHidden($form, 'existingPassageId', passageId);
 						} else {
 							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 						}
@@ -554,7 +553,7 @@ function pageinit(memberId) {
 				}
 				// 편집을 안한 경우 
 				else if(passageId != null) {
-					$('input[name="existingPassageId"]').val(passageId);
+					createHidden($form, 'existingPassageId', passageId);
 					$form.find('#text').prop('disabled', true);
 				} else if(sentenceId != null){
 					createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
