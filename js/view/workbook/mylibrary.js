@@ -73,8 +73,8 @@ function pageinit(myWorkBookList) {
 				}
 			},
 			navigation: {
-				prevEl: '.swiper-button-prev',
-				nextEl: '.swiper-button-next'
+				prevEl: $(swiperEl).siblings('.swiper-button-section').find('.swiper-button-prev')[0],
+				nextEl: $(swiperEl).siblings('.swiper-button-section').find('.swiper-button-next')[0]
 			},
 			lazy: {
 				enabled: true,
@@ -145,9 +145,9 @@ function pageinit(myWorkBookList) {
 					if(!bookPage.empty) {
 						$(swiperEl).find('.default-message').remove();
 						appendList(bookPage, $(swiperEl).find('.swiper-wrapper'));
-						if(bookPage?.numberOfElements > (devSize.isDesktop() ? 7 : devSize.isPhone() ? 3 : 5)) {
+						/*if(bookPage?.numberOfElements > (devSize.isDesktop() ? 7 : devSize.isPhone() ? 3 : 5)) {*/
 							initializeSwiper(swiperEl, bookPage)
-						}else {
+						/*}else {
 							$(swiperEl).on('click', '.book-unit', function() {
 								const $section = $(this).closest('.workbook-block');
 								const workbookId56 = ntoa(this.dataset.workBookId);
@@ -161,8 +161,8 @@ function pageinit(myWorkBookList) {
 								this.classList.remove('swiper-lazy');
 								this.style.backgroundImage = `url(${this.dataset.background})`;
 							})
-							$(swiperEl).find('.swiper-button-prev,.swiper-button-next').remove();
-						}
+							$(swiperEl).siblings('.swiper-button-section').find('.swiper-button-prev,.swiper-button-next').remove();
+						}*/
 					}else {
 						$(swiperEl).on('click', '.book-unit', function() {
 							const $section = $(this).closest('.workbook-block');
@@ -172,7 +172,7 @@ function pageinit(myWorkBookList) {
 							location.assign(`/workbook/${$section.is('#studyWorkbookSection')?'study/overview':'mybook/edit'}/${workbookId56}`);
 							//----------------------------------------------------------------		
 						})
-						$(swiperEl).find('.swiper-button-prev,.swiper-button-next').remove();
+						$(swiperEl).siblings('.swiper-button-section').find('.swiper-button-prev,.swiper-button-next').remove();
 					}
 				})
 				.fail( () => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
