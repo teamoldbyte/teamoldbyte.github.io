@@ -696,17 +696,20 @@
 		margin-bottom: 20px;
 	}
 }
-.workbook-index-section .swiper-section{
+.workbook-index-section .swiper-section,
+.list-library-section .swiper-section{
 	border: 2px solid #f0f0f0;
 	/* box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset; */
 	border-radius: 5px;
 	background-color: #fff;
 }
-.workbook-index-section .swiper-section .swiper-button-section{
+.workbook-index-section .swiper-section .swiper-button-section,
+.list-library-section .swiper-section .swiper-button-section{
 	width: 3rem;
 	position: relative;
 }
-.workbook-index-section .book-section {
+.workbook-index-section .book-section ,
+.list-library-section .book-section {
 	white-space: nowrap;
 	/* overflow-x: scroll; */
 	height: auto;
@@ -759,22 +762,26 @@
 	color: #3E2723;
 }
 @media (max-width: 991px) {
-	.workbook-index-section .swiper-section .swiper-button-section{
+	.workbook-index-section .swiper-section .swiper-button-section,
+	.list-library-section .swiper-section .swiper-button-section{
 		width: 1rem;
 	}
 
-    .workbook-index-section .book-section {
+    .workbook-index-section .book-section ,
+	.list-library-section .book-section {
 		width: calc(100vw - 5rem);
 		border: none;
 		padding: 5px 0;
 	}
 }
 @media (max-width: 767px) {
-	.workbook-index-section .swiper-section .swiper-button-section{
+	.workbook-index-section .swiper-section .swiper-button-section,
+	.list-library-section .swiper-section .swiper-button-section{
 		width: 0.5rem;
 	}
 
-    .workbook-index-section .book-section {
+    .workbook-index-section .book-section ,
+	.list-library-section .book-section {
 		width: calc(100vw - 3rem);
 		border: none;
 		padding: 5px 0;
@@ -792,11 +799,13 @@
 	} */
 }
 @media (max-width: 576px) {
-	.workbook-index-section .book-section {
+	.workbook-index-section .book-section ,
+	.list-library-section .book-section {
 		width: calc(100vw - 3rem);
 		padding: 5px 0;
 	}
-	.workbook-index-section .swiper-section .swiper-button-section{
+	.workbook-index-section .swiper-section .swiper-button-section,
+	.list-library-section .swiper-section .swiper-button-section{
 		width: 0.5rem;
 	}
 }
@@ -870,7 +879,7 @@
 }
 /* 워크북 오버뷰 - 북 소개 영역 */
 .workbook-overview-section .workbook-info-section .description{
-	white-space: break-spaces;
+	white-space: pre-line;
 }
 /* 워크북 작성자 */
 .workbook-overview-section .personacon img{
@@ -1044,16 +1053,6 @@
 .workbook-section .blank .add-workbook-area .add-btn{
 	display: inline-block;
 	vertical-align: middle;
-}
-.workbook-section .book {
-	cursor: pointer;
-	display: block;
-	width: 150px;
-	height: 220px;
-	position: relative;
-	box-shadow: 0 2px 0px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.25);
-	overflow: hidden;
-	transition: box-shadow 0.3s linear;
 }
 .workbook-section .book {
 	cursor: pointer;
@@ -1243,17 +1242,16 @@
 /*------------------------------------------------------------------------------
                               mylibrary.html
  -----------------------------------------------------------------------------*/
-.list-library-section .book-section {
+/* .list-library-section .book-section {
     height: auto;
 	max-width: calc(1250px - 1rem);
 	width: 100%;
-    /* padding: 40px; */
 	padding: 2rem;
     border-radius: 5px;
     font-family: 'HCRDotum';
     font-size: 13px;
     background-color: var(--white);
-}
+} */
 
 /* collapse를 위한 고정높이 */
 .list-library-section .list-inline {
@@ -1299,12 +1297,12 @@
 		height: calc(20rem + 40px);
 	}
 
-   .list-library-section .book-section {
+   /* .list-library-section .book-section {
 	    padding: 1.5rem 0.5rem;
 		height: 23rem;
 		height: auto;
 		width: calc(100vw - 2rem);
-	}
+	} */
 	
 	.list-library-section .subs-num{
 		right: 1rem;
@@ -1394,7 +1392,7 @@
 .edit-workbook-section .edit-menu-block{
 	position: absolute;
 	top: 0;
-	right: 5px;
+	right: 0;
 }
 /* 워크북 수정 및 개요보기 - 지문 타이틀 */
 .passage-title-section{
