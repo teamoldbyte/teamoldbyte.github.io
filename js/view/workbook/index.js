@@ -17,10 +17,16 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 		appendList(classNoteBooks, $('.classnote-workbook-section .list-inline').get(0));
 	
 	$('.public-workbook-section,.protected-workbook-section,.classnote-workbook-section').each(function() {
+		const contentLength = $(this).find('.book').length
+		const deviceSizeNumber = (matchMedia('(max-width: 575.8px)').matches) ? 0
+			: (matchMedia('(max-width: 675.8px)').matches) ? 1
+			: (matchMedia('(max-width: 991.8px)').matches) ? 2
+			: 3;
+		const freeMode = [contentLength > 9, contentLength > 8, contentLength > 10, contentLength > 14][deviceSizeNumber];
 		new Swiper($(this).find('.swiper')[0], {
 			watchSlidesProgress: true,
 			resistance: false,
-			freeMode: true,
+			freeMode,
 			slidesPerView: 'auto',
 			grid: {
 				fill: 'row'
@@ -28,20 +34,40 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 			breakpoints: {
 				320: {
 					slidesPerGroup: 3,
+					autoHeight: contentLength <= 3,
 					grid: {
-						rows: 3
+						rows: contentLength > 6 ? 3 : contentLength > 3 ? 2 : 1
 					}
 				},
 				576: {
-					slidesPerGroup: 5,
+					slidesPerGroup: 4,
+					autoHeight: contentLength <= 4,
 					grid: {
-						rows: 2
+						rows: contentLength > 4 ? 2 : 1
+					}
+				},
+				676: {
+					slidesPerGroup: 5,
+					autoHeight: contentLength <= 5,
+					grid: {
+						rows: contentLength > 5 ? 2 : 1
+					}
+				},
+				768: {
+					slidesPerGroup: 4,
+					spaceBetween: 30,
+					autoHeight: contentLength <= 4,
+					grid: {
+						rows: contentLength > 4 ? 2 : 1
 					}
 				},
 				992: {
 					slidesPerGroup: 7,
+					slidesPerView: contentLength > 7 ? 7 : 'auto',
+					spaceBetween: 30,
+					autoHeight: contentLength <= 7,
 					grid: {
-						rows: 2
+						rows: contentLength > 7 ? 2 : 1
 					}
 				}
 			},
@@ -51,6 +77,12 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 			},
 			lazy: true,
 			on: {
+				beforeInit: function(s) {
+					s.isLast = contentLength < 24; // 워크북 인덱스는 페이징 사이즈 = 24
+				},
+				afterInit: function(s) {
+					s.lazy.load();
+				},
 				click: function(s,e) {
 					if(!s.clickedSlide) return;
 					const $overviewSection = $(s.el).closest('.workbook-section').siblings('.workbook-overview-section');
