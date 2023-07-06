@@ -8,10 +8,12 @@
 	height: calc(var(--swiper-navigation-size) + 15px);
 }
 .swiper-button-next, .swiper-rtl .swiper-button-prev {
-	right: -0.5rem;
+	/* right: -0.75rem; */
+	right: -1rem;
 }
 .swiper-button-prev, .swiper-rtl .swiper-button-next {
-	left: -0.5rem;
+	/* left: -0.75rem; */
+	left: -1rem;
 }
 .swiper-button-prev::after{
 	font-family: "Font Awesome 5 Free";
