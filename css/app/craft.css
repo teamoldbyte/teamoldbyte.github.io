@@ -1842,7 +1842,8 @@ u {
 	font-weight: 700;
 	cursor: pointer;
 }
-.explain-section .one-word-unit-section .title:hover::after{
+.explain-section .one-word-unit-section:hover .title::after,
+.explain-section .one-word-unit-section .title.tts-playing::after{
 	display: inline-block;
 	font-family: "Font Awesome 5 Free";
 	content: "\f028";
