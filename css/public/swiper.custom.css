@@ -9,26 +9,27 @@
 }
 .swiper-button-next, .swiper-rtl .swiper-button-prev {
 	/* right: -0.75rem; */
-	right: -1rem;
+	right: -1.25rem;
 }
 .swiper-button-prev, .swiper-rtl .swiper-button-next {
 	/* left: -0.75rem; */
-	left: -1rem;
+	left: -1.25rem;
 }
 .swiper-button-prev::after{
 	font-family: "Font Awesome 5 Free";
 	content: "\f053";
-	color: var(--fc-yellow);
+	color: #6ca3ff;
 }
 .swiper-button-next::after{
 	font-family: "Font Awesome 5 Free";
 	content: "\f054";
-	color: var(--fc-yellow);
+	color: #6ca3ff;
 }
 
 .swiper-button-next:after, .swiper-button-prev:after{
 	/* font-size: calc(var(--swiper-navigation-size) - 5px ) !important; */
-	font-size: 3.5rem;
+	/* font-size: 3.5rem; */
+	font-size: 2rem;
 }
 @media (max-width: 576px) {
 	.swiper-button-next:after, .swiper-button-prev:after{
