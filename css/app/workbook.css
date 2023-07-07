@@ -701,11 +701,12 @@
 	border: 2px solid #f0f0f0;
 	/* box-shadow: rgb(185 185 185) 3px 1px 6px 0px inset, rgb(255 255 255 / 50%) -3px -3px 6px 1px inset; */
 	border-radius: 5px;
-	background-color: #fff;
+	/* background-color: #fff; */
+	background-color: #dfebff;
 }
 .workbook-index-section .swiper-section .swiper-button-section,
 .list-library-section .swiper-section .swiper-button-section{
-	width: 3rem;
+	width: 2rem;
 	position: relative;
 }
 .workbook-index-section .book-section ,
@@ -715,9 +716,11 @@
 	height: auto;
 	max-width: calc(1250px - 1rem);
 	/* width: calc(100vw - 100px - 7rem); */
-	width: calc(100% - 6rem);
+	width: calc(100% - 4rem);
 	/* padding: 40px; */
-	padding: 2rem 0;
+	/* padding: 2rem 0;*/
+	margin: 2rem 0;
+	padding: 0 0.5rem;
 	font-family: 'HCRDotum';
 	font-size: 13px;
 }
@@ -801,7 +804,7 @@
 @media (max-width: 576px) {
 	.workbook-index-section .book-section ,
 	.list-library-section .book-section {
-		width: calc(100vw - 3rem);
+		width: calc(100vw - 3.5rem);
 		padding: 5px 0;
 	}
 	.workbook-index-section .swiper-section .swiper-button-section,
@@ -1026,11 +1029,17 @@
 	line-height: 0;
 }
 .workbook-index-section .workbook-section .list-inline {
-	height: 42rem;
+	height: 44rem;
+}
+.list-library-section .workbook-section .list-inline{
+	height: 32rem;
 }
 @media (max-width: 767px) {
 	.workbook-index-section .workbook-section .list-inline {
 		height: 36rem;
+	}
+	.list-library-section .workbook-section .list-inline{
+		height: 35rem;
 	}
 }
 .workbook-section .list-inline > li {
@@ -1441,7 +1450,8 @@
 	display: none;
 }
 .passage-title-section.edit input{
-	display: block;
+	display: inline-block;
+	margin-bottom: calc(5rem - 25px);
 	position: absolute;
 	padding-left: 5px;
 	width: 160px;
@@ -1452,7 +1462,7 @@
 	transition: all .2s cubic-bezier(0, 0, 0.2, 1);
 }
 .passage-title-section.edit .title-edit-btn-section{
-	display: block;
+	display: inline-block;
 	position: absolute;
 	right: 0;
 }
