@@ -215,7 +215,7 @@ async function pageinit() {
 			$detailSection.find('.class-size-info').text($(thisRow).find('.class-size-data').text());
 			$detailSection.find('.class-phone-info').text($(thisRow).find('.class-phone-data').text());
 			$detailSection.find('.class-uri-info')
-				.text(`${location.origin}/ssam/class/${info.classUri}`)
+				.text(`${location.origin}/ssamclass/${info.classUri}`)
 				.attr('href', `/ssam/class/${info.classUri}`);
 			$detailSection.find('.address-info').text($(thisRow).find('.address-data').text());
 			$detailSection.find('.postal-code-info').text(info.postalCode);

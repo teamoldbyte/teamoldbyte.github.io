@@ -208,14 +208,14 @@ async function pageinit() {
 		async function displaySentenceInfo(info) {
 			const $detailSection = $('#ssamDetailSection');
 			
-			$detailSection.find('.workplace-info').text(info.workPlace);
-			$detailSection.find('.jobtype-info').text(info.jobType);
-			$detailSection.find('.stdnums-info').text(info.stdNums);
-			$detailSection.find('.district-info').text(info.district);
+			$detailSection.find('.workplace-info').text(info.workPlace||'');
+			$detailSection.find('.jobtype-info').text(info.jobType||'');
+			$detailSection.find('.stdnums-info').text(info.stdNums||'');
+			$detailSection.find('.district-info').text(info.district||'');
 			$detailSection.find('.regdate-info').text(new Date(info.regDate).format('yyyy-MM-dd'));
 			$detailSection.find('.startdate-info').text(new Date(info.startDate).format('yyyy-MM-dd'));
 			$detailSection.find('.enddate-info').text(new Date(info.endDate).format('yyyy-MM-dd'));
-			$detailSection.find('.profile-info').html(info.profile);
+			$detailSection.find('.profile-info').html(info.profile||'');
 			// 분석 작성자 표시
 			/*$detailSection.find('.writer-section .personacon-alias').text(svocTag.writerAlias);
 			if(svocTag.image) {
