@@ -63,7 +63,8 @@
 						}
 						cursorParam.continue().then(readOrDelete);
 					}else {
-						sentenceList = sentenceList.concat(idbSentenceList.toReversed());
+						idbSentenceList.reverse();
+						sentenceList = sentenceList.concat(idbSentenceList);
 						renderSentences();
 						showStepBlock($('#step-1'))
 					}
