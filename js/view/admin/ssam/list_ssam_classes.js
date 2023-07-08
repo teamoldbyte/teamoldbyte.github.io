@@ -216,7 +216,7 @@ async function pageinit() {
 			$detailSection.find('.class-phone-info').text($(thisRow).find('.class-phone-data').text());
 			$detailSection.find('.class-uri-info')
 				.text(`${location.origin}/ssamclass/${info.classUri}`)
-				.attr('href', `/ssam/class/${info.classUri}`);
+				.attr('href', `/ssamclass/${info.classUri}`);
 			$detailSection.find('.address-info').text($(thisRow).find('.address-data').text());
 			$detailSection.find('.postal-code-info').text(info.postalCode);
 			$detailSection.find('.reg-date-info').text($(thisRow).find('.reg-date-data').text());
