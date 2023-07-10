@@ -764,6 +764,9 @@ transform: translate(-50%, -50%);
 	font-family: 'HCRDotum';
 	font-size: 13px;
 }
+.list-library-section .book-section{
+	padding: 0.5rem;
+}
 .workbook-index-section .book-section::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera*/
 }
@@ -1072,7 +1075,7 @@ transform: translate(-50%, -50%);
 	height: 44rem;
 }
 .list-library-section .workbook-section .list-inline{
-	height: 34rem;
+	height: 32rem;
 }
 @media (max-width: 767px) {
 	.workbook-index-section .workbook-section .list-inline {
