@@ -632,9 +632,14 @@
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
+				
+				// sentenceId를 할당(단어모듈용)
+				$wordBlock.data('sentenceId', sentence.sentenceId)
+				
+				// 우선 복사 원본의 뜻 부분들을 삭제
 				$wordBlock.find('.one-part-unit-section').remove();
 				
-				// 단어의 품사별 뜻 표시
+				// 단어의 품사별 뜻 새로 표시
 				$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
 						e.stopPropagation();
 						const on = this.dataset.playing == 'on';
