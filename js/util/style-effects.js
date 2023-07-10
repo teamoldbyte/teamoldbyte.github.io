@@ -1,5 +1,7 @@
 /** 화면을 구성하는 이펙트 처리
-@author LGM
+ @requires jQuery 3.3
+ @description 부트스트랩 툴팁, ScrollReveal, 부트스트랩 폼데이터 유효성 검사, 각종 버튼들 띠용거리는 애니메이션 효과, 폭죽효과를 전역적으로 정의.
+ @author LGM
  */
 (function($,document,window,ScrollReveal) {
 	$(function(){
@@ -43,7 +45,7 @@
 		})
 		return this;
 	}
-	$(document).on('click','a,button,.btn', function() {
+	$(document).on('click','a:not(.no-bounce),button:not(.no-bounce),.btn:not(.no-bounce)', function() {
 		$(this).bounce();
 	})
 	/* ---------------------------------------------------------------------- */
