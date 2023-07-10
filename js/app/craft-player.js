@@ -1789,7 +1789,7 @@
 		// 단어 목록 정보
 		explainSection.querySelector('.words-section')
 		.replaceChildren(answerInfo.wordList.length > 0 ? createElement(Array.from(answerInfo.wordList, word => {
-			return 	{ "el": "span", "class": 'one-word-unit-section', "children": [
+			return 	{ "el": "span", "class": 'one-word-unit-section', "data-sentence-id": answerInfo.svocTag.sentenceId, "children": [
 				{ "el": "span", "class": "title", textContent: word.title, "data-playing": 'false', onclick: function(e) {
 					e.stopPropagation();
 					const on = this.dataset.playing == 'true';
