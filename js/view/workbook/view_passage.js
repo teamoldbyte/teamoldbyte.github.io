@@ -356,11 +356,11 @@
 		const $addSection = $(this).closest('.add-section');
 		const $textInput = $addSection.find('.text-input');
 		const content = $textInput.val().trim();
-		const publicOpen = $addSection.find(':checkbox').is(':checked');
+		const noteAccess = $addSection.find('.note-open-input').val();
 		if(content.length == 0) return;
 		
 		// 지문 노트 추가(ajax)--------------------------------------------------
-		addPassageNote({workbookId, passageId, memberId, content, publicOpen}, appendNote);
+		addPassageNote({workbookId, passageId, memberId, content, noteAccess}, appendNote);
 		//--------------------------------------------------------------------
 		
 		function appendNote(note) {
@@ -1461,11 +1461,11 @@
 		const sentenceId = Number($sentenceSection.data('sentenceId'));
 		const $addSection = $(this).closest('.add-section');
 		const content = $addSection.find('.text-input').val().trim();
-		const publicOpen = $addSection.find(':checkbox').is(':checked');
+		const noteAccess = $addSection.find('.note-open-input').val();
 		if(content.length == 0) return;
 		
 		// 문장 노트 추가(ajax)----------------------------------------------------
-		addSentenceNote({workbookId, sentenceId, memberId, content, publicOpen}, appendNote);
+		addSentenceNote({workbookId, sentenceId, memberId, content, noteAccess}, appendNote);
 		//----------------------------------------------------------------------
 		
 		function appendNote(note) {
@@ -1589,9 +1589,9 @@
 		const $textSection = $(this).closest('.text-section');
 		const $noteSection = $(this).closest('.note-block');
 		const noteId = Number($noteSection.data('noteId'));
-		const publicOpen = $textSection.find('.open-input').is(':checked');
+		const noteAccess = $textSection.find('.note-open-input').val();
 		const content = $textSection.find('.text-input').summernote('code').trim();
-		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
+		const jsonCommand = {noteId, workbookId, memberId, content, noteAccess}
 		const $sentenceSection = $textSection.closest('.one-sentence-unit-section');
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
@@ -1613,7 +1613,7 @@
 				$noteSection.find('.note').toggleClass('overflow-hidden mb-4');
 			}
 			$textSection.find('.note-editor').hide();
-			$textSection.find('.open-input').prop('checked', note.publicOpen);
+			$textSection.find('.note-open-input').val(note.noteAccess);
 			$textSection.find('.note-text').html(note.content).show();
 			$noteSection.find('.updatedate').text(new Date().toLocaleDateString());
 			$noteSection.find('.note-mdf-btns, .updatedate').show();
@@ -1655,11 +1655,6 @@
 			$section.find('.empty-list').hide();
 		});
 		
-	})
-	// [지문/문장 노트 공개여부 메세지 토글]
-	.on('input', '.open-input', function() {
-		this.nextSibling.data = this.checked ? '회원들과 노트를 공유합니다.'
-											: '노트를 비공개로 보관합니다.'
 	})
 	// [지문/문장 노트 추가 폼 닫기]----------------------------------------------------
 	.on('click', '.cancel-add-note-btn', function() {
@@ -2150,8 +2145,8 @@
 		if(memberId != note?.memberInfo?.memberId) {
 			block.querySelector('.note-mdf-btns').remove();
 		}else {
-			const input = block.querySelector('.note-editor .open-input');
-			input.checked = note.publicOpen;
+			const input = block.querySelector('.note-editor .note-open-input');
+			input.value = note.noteAccess;
 			$(input).trigger('input');
 		}
 		block.querySelector('.personacon-section .alias').textContent = note?.memberInfo?.alias;
