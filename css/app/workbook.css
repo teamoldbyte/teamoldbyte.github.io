@@ -658,6 +658,32 @@
 	}
 }
 
+
+/* 메뉴 하단의 앱 소개 문구 */
+.workbook-menu-section .app-name-section{
+	padding-left: 0;
+	padding-right: 0;
+}
+.workbook-menu-section .app-name-section .title-text{
+	font-size: 1.1rem;
+	font-family: Roboto,'Nunito Sans','Open Sans';
+	color: #303672;
+	margin-bottom: 1.5rem;
+ }
+.workbook-menu-section .app-name-section .title-text .num{
+	font-size: 1.2em;
+	font-weight: bolder;
+}
+.workbook-menu-section .app-name-section .sub-title{
+	font-family: Roboto,'Nunito Sans','Open Sans';
+	font-size: 1rem;
+}
+.workbook-menu-section .app-name-section .sub-title .text{
+	color: #303672;
+}
+ .workbook-menu-section .app-name-section .sub-title .red-text{
+	 color: #b01a2c;
+}
 /*------------------------------------------------------------------------------
                                  index.html
  -----------------------------------------------------------------------------*/
@@ -711,6 +737,8 @@
 }
 .workbook-index-section .book-section ,
 .list-library-section .book-section {
+	background-color: #fff;
+	border-radius: 5px;
 	white-space: nowrap;
 	/* overflow-x: scroll; */
 	height: auto;
