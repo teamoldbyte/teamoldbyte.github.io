@@ -453,11 +453,11 @@ function pageinit(memberId, memberAlias, memberImage){
 		const workbookId = Number($sentenceSection.data('workbookId'));
 		const $addSection = $(this).closest('.add-section');
 		const content = $addSection.find('.text-input').val().trim();
-		const publicOpen = $addSection.find(':checkbox').is(':checked');
+		const noteAccess = $addSection.find('.note-open-input').val();
 		if(content.length == 0) return;
 		
 		// 문장 노트 추가(ajax)----------------------------------------------------
-		addSentenceNote({workbookId, sentenceId, memberId, content, publicOpen}, appendNote);
+		addSentenceNote({workbookId, sentenceId, memberId, content, noteAccess}, appendNote);
 		//----------------------------------------------------------------------
 		
 		function appendNote(note) {
@@ -578,9 +578,9 @@ function pageinit(memberId, memberAlias, memberImage){
 		const $sentenceSection = $textSection.closest('.one-sentence-unit-section');
 		const noteId = Number($noteSection.data('noteId'));
 		const workbookId = Number($sentenceSection.data('workbookId'));
-		const publicOpen = $textSection.find('.open-input').is(':checked');
+		const noteAccess = $textSection.find('.note-open-input').val();
 		const content = $textSection.find('.text-input').summernote('code').trim();
-		const jsonCommand = {noteId, workbookId, memberId, content, publicOpen}
+		const jsonCommand = {noteId, workbookId, memberId, content, noteAccess}
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
 		if(content.length == 0) return;
@@ -598,7 +598,7 @@ function pageinit(memberId, memberAlias, memberImage){
 		
 		function successEditNote(note) {
 			$textSection.find('.note-editor').hide();
-			$textSection.find('.open-input').prop('checked', note.publicOpen);
+			$textSection.find('.note-open-input').val(note.noteAccess);
 			$textSection.find('.note-text').html(note.content).show();
 			$noteSection.find('.updatedate').text(new Date().toLocaleDateString());
 			$noteSection.find('.note-mdf-btns, .updatedate').show();
@@ -1139,8 +1139,8 @@ function pageinit(memberId, memberAlias, memberImage){
 		if(memberId != note?.memberInfo?.memberId) {
 			$block.find('.note-mdf-btns').remove();
 		}else {
-			$block.find('.note-editor .open-input')
-				  .prop('checked', note.publicOpen).trigger('input');
+			$block.find('.note-editor .note-open-input')
+				  .val(note.noteAccess).trigger('input');
 		}
 		const $personacon = $block.find('.personacon-section');
 		$personacon.find('.alias').text(note?.memberInfo?.alias);
