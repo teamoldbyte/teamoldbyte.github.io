@@ -4,7 +4,7 @@
 function pageinit(myWorkBookList) {
 	
 	if(myWorkBookList.empty) {
-		$('.book-section[data-list-type="study"]').get(0).prepend(createElement({
+		$('.book-section[data-list-type="study"]').prepend(createElement({
 			  el: 'span', className: 'default-message', children: [
 				 '다른 사람이 만든 워크북을 보고 싶다면?',
 				 { el: 'br'},
