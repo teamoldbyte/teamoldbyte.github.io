@@ -1072,7 +1072,7 @@ transform: translate(-50%, -50%);
 	height: 44rem;
 }
 .list-library-section .workbook-section .list-inline{
-	height: 33rem;
+	height: 34rem;
 }
 @media (max-width: 767px) {
 	.workbook-index-section .workbook-section .list-inline {
@@ -1690,14 +1690,14 @@ transform: translate(-50%, -50%);
 	opacity: .75;
 	left: -3rem;
 	display: inline-block;
-	color: var(--fc-yellow);
+	color: #92c9dd;
 	position: absolute;
 }
 .full-text-section .js-next-passage{
 	opacity: .75;
 	right: -2rem;
 	position: absolute;
-	color: var(--fc-yellow);
+	color: #92c9dd;
 	display: inline-block;
 }
 @media (max-width: 1200px) {
@@ -2553,11 +2553,11 @@ transform: translate(-50%, -50%);
 	}
 
 	/* 노트 영역 - 노트 에디터 영역 */
-	.collapse-section .note-edit-btns{
+	/* .collapse-section .note-edit-btns{
 		position: absolute;
 		bottom: -25px;
 		right: 0;
-	}
+	} */
 
 }
 
