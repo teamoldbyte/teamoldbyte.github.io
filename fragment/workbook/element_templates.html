@@ -114,19 +114,29 @@
 		<div class="note-block one-block row g-0">
 			<div class="note text-section">
 				<div class="note-text ws-breakspaces">노트 본문</div>
-				<div class="note-editor" style="display: none;"><textarea class="text-input col-12"></textarea>
-					<div class="form-check form-switch d-inline-block mx-1">
-						<label class="form-check-label text-sm" role="button">
-							<input type="checkbox" class="open-input form-check-input">회원들과 노트를 공유합니다.
-						</label>
-					</div>
-					<button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#note-modal">
-						<span class="material-icons-outlined fs-6">help_outline</span>
-					</button>
-					<div class="note-edit-btns btn-group btn-set float-end mt-0 mt-sm-2">
-						<button type="button" class="js-edit-note-cancel btn btn-sm btn-outline-fico">취소</button>
-						<button type="button" class="js-edit-note btn btn-sm btn-fico">확인</button>
-					</div>
+				<div class="note-editor" style="display: none;">
+					<textarea class="text-input col-12"></textarea>
+					<!-- 노트 공개 설정, 버튼 영역 -->
+					<div class="row g-0 mt-2">
+						<div class="col-4 col-sm-2">
+							<select class="note-open-input form-select d-inline-block" aria-label="note-open select">
+								<option value="P" selected>전체 공개</option>
+								<option value="T">구독자 공개</option>
+								<option value="R">비공개</option>
+							</select>
+						</div>
+						<div class="col-1 ms-1">
+							<button type="button" class="btn p-0 text-fc-purple" data-bs-toggle="modal" data-bs-target="#note-modal">
+								<span class="material-icons-outlined fs-6">help_outline</span>
+							</button>
+						</div>
+						<div class="col-6 col-sm-auto ms-auto text-end">
+							<div class="note-edit-btns btn-group btn-set">
+								<button type="button" class="js-edit-note-cancel btn btn-sm btn-outline-fico">취소</button>
+								<button type="button" class="js-edit-note btn btn-sm btn-fico">확인</button>
+							</div>
+						</div>
+					</div><!-- -->
 				</div>
 			</div>
 			<div class="col-12 row g-0 personacon-section text-end mt-0 mt-md-1 text-secondary">
