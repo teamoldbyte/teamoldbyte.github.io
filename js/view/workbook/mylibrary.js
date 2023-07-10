@@ -4,17 +4,16 @@
 function pageinit(myWorkBookList) {
 	
 	if(myWorkBookList.empty) {
-		$('.book-section[data-list-type="study"]').css('height', 'auto')
-			.removeClass('swiper').get(0).replaceChildren(createElement({
-				el: 'span', className: 'default-message', children: [
-					'다른 사람이 만든 워크북을 보고 싶다면?',
-					{ el: 'br'},
-					'워크북 구독을 하면 여기서 볼 수 있습니다.'
-				]
-			}));
-	}else {
+		$('.book-section[data-list-type="study"]').get(0).prepend(createElement({
+			  el: 'span', className: 'default-message', children: [
+				 '다른 사람이 만든 워크북을 보고 싶다면?',
+				 { el: 'br'},
+				 '워크북 구독을 하면 여기서 볼 수 있습니다.'
+			  ]
+		   })).find('.list-inline').css('height', 'auto');
+	 }else {
 		appendList(myWorkBookList, $('.book-section[data-list-type="study"] .list-inline'));
-	}
+	 }
 
 	function initializeSwiper(swiperEl, page) {
 		const contentLength = page.numberOfElements;
@@ -164,6 +163,7 @@ function pageinit(myWorkBookList) {
 							$(swiperEl).siblings('.swiper-button-section').find('.swiper-button-prev,.swiper-button-next').remove();
 						}*/
 					}else {
+						$(swiperEl).find('.list-inline').css('height', 'auto');
 						$(swiperEl).on('click', '.book-unit', function() {
 							const $section = $(this).closest('.workbook-block');
 							const workbookId56 = ntoa(this.dataset.workBookId);
