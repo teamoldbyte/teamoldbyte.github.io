@@ -711,6 +711,18 @@
 	/* margin: 0 20px; */
 	margin-right: 2rem;
 }
+.list-library-section .workbook-section .list-inline .book-unit{
+	padding: 0.5rem 0;
+}
+.list-library-section .bookshelf-section .default-message{
+	position: absolute;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+}
+.list-library-section .book-section{
+	position:relative;
+}
 .workbook-section .bookshelf-section .list-inline .book-unit{
 	height: 15rem;	
 }
@@ -1060,7 +1072,7 @@
 	height: 44rem;
 }
 .list-library-section .workbook-section .list-inline{
-	height: 32rem;
+	height: 33rem;
 }
 @media (max-width: 767px) {
 	.workbook-index-section .workbook-section .list-inline {
