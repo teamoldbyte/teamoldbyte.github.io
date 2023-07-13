@@ -195,21 +195,22 @@ async function pageinit(memberId, alias, image) {
 	})
 	// 센텐스 상세보기
 	$(document).on('click', '.js-open-detail', function() {
+		const thisRow = this.closest('tr');
+		const $detailSection = $('#sentenceDetailSection');
+		const detailOpened = $detailSection.is('.show');
 		const sentenceId = this.dataset.sentenceId;
 		const eng = this.textContent
 		
-		const thisRow = this.closest('tr');
-		const $detailSection = $('#sentenceDetailSection');
-		if($detailSection.is('.show') && $detailSection.is($(thisRow).next())) {
+		if(detailOpened && $detailSection.is($(thisRow).next())) {
 			$detailSection.collapse('hide');
 			return;
 		}
 		$(thisRow).addClass('active').siblings('tr').removeClass('active');
 		
-		if($detailSection.is('.show')) {
-			$detailSection[0].scrollIntoView({ behavior: 'instant', block: 'nearest'})
-		}
-		$(thisRow).after($detailSection.collapse('show'));
+		$(thisRow).after($detailSection);
+		if(detailOpened) $detailSection[0].scrollIntoView({ behavior: 'instant', block: 'start'})
+		else $detailSection.collapse('show');
+			
 		
 		$('#editSentence').prop('disabled', true);
 		
@@ -264,10 +265,10 @@ async function pageinit(memberId, alias, image) {
 			// GramMeta 정보
 			$detailSection.find('.gram-info :text').val(sentenceInfo.gramMeta);
 			// useful 정보
-			$detailSection.find('.useful-info :radio[name="useful"]').filter(function() {
+			/*$detailSection.find('.useful-info :radio[name="useful"]').filter(function() {
 				if(this.value == $(thisRow).find('.data-useful')[0].dataset.useful)
 					this.checked = true;
-			});
+			});*/
 			// 단어 목록 정보(탭 목록 첫번째)
 			const $wordList = $detailSection.find('#nav-wordlist').empty();
 			const $wordUnitTemplate = $(WORKBOOK_ELEMENTS).find('.one-word-unit-section');
@@ -299,7 +300,6 @@ async function pageinit(memberId, alias, image) {
 		const $tabPane = $(this.dataset.bsTarget);
 		
 		if($tabPane.is('.loaded,.loading')) return;
-		
 		$tabPane.addClass('loading');
 		const sentenceId = $('#sentenceDetailSection')[0].dataset.sentenceId;
 		switch($tabPane[0].id.match(/nav-(\w+)/)[1]) {
@@ -345,7 +345,8 @@ async function pageinit(memberId, alias, image) {
 	
 	// 문장 상세보기 펼쳐질 때 스크롤 이동
 	.on('shown.bs.collapse', '#sentenceDetailSection', function() {
-		window.scrollTo(0,document.getElementById('sentenceDetailSection').offsetTop);
+		this.scrollIntoView({ behavior: 'instant', block: 'start'})
+		//window.scrollTo(0,document.getElementById('sentenceDetailSection').offsetTop);
 	})
 	// 인덱스 핑거 상세보기
 	.on('click', '.js-finger-detail', async function(e) {
@@ -530,17 +531,17 @@ async function pageinit(memberId, alias, image) {
 	
 	// useful 수정
 	$('#editUseful').on('click', function() {
-		const valueCell = $('.one-sentence-row.active').find('.data-useful')[0];
-		const useful = $(':radio[name="useful"]:checked').val() == 'true';
+		//const valueCell = $('.one-sentence-row.active').find('.data-useful')[0];
 		const sentenceId = parseInt($(this).closest('tr')[0].dataset.sentenceId);
 		$.ajax({
 			url: '/adminxyz/sentence/useful/edit',
 			type: 'POST',
-			data: JSON.stringify({sentenceId, useful}),
+			data: JSON.stringify({sentenceId, useful: false}),
 			contentType: 'application/json',
 			success: () => {
-				valueCell.dataset.useful = useful;
-				alertModal('useful 정보를 수정했습니다.');
+				alertModal('useful 정보를 false로 수정하였습니다.', () => $('#sentenceDetailSection').collapse('hide'));
+				setTimeout(() => {if($('#alertModal').is('.show'))$('#alertModal').modal('hide')}, 800);
+				$('.one-sentence-row.active').addClass('pe-none bg-danger')
 			},
 			error: () => alertModal('useful 정보 수정에 실패했습니다.')
 		});
