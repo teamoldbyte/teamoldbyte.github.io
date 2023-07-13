@@ -120,6 +120,7 @@
 	margin: auto;
 	margin-bottom: 3rem;
 	padding: 0.5rem;
+	/* padding-top: 4rem; */
 }
 .version-section{
     height: 30px;
@@ -1394,6 +1395,12 @@
     font-size: 1.1rem;
 	color: #585174;
 	font-weight: 600;
+}
+.title-section .title-text::before{
+	content: '◼︎';
+}
+.title-section .sub-title{
+	display: none;
 }
 .sub-title{
 	font-family: 'HCRDotum';
