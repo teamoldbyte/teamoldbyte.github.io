@@ -1719,14 +1719,12 @@
 
 @media (max-width: 991px) {
 	.full-text-section .js-prev-passage{
-		color: var(--fc-yellow);
 		opacity: .75;
 		left: -1.5rem;
 	}
 	.full-text-section .js-next-passage{
-		color: var(--fc-yellow);
 		opacity: .75;
-		right: -1.5rem;
+		right: 0.5rem;
 	}
 }
 .swing-in-top-fwd {
