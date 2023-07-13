@@ -82,11 +82,12 @@
 .main-menu-section form{
 	color: var(--fc-purple)!important;
 }
+/* 
 .main-menu-section > *{
 	padding: 10px;
 	font-size: 25px;
 	vertical-align: text-bottom;
-}
+} */
 
 /* 메뉴 아이콘 영역 */
 .main-menu-section .menu-icon-section .navbar-nav{
@@ -323,4 +324,33 @@
 		height: 12rem;
 	}
 
+}
+
+
+/* 메뉴 하단의 앱 소개 문구 */
+.app-name-section{
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: 0.5rem;
+	margin-bottom: 1rem;
+}
+.app-name-section .title-text{
+	font-size: 1.1rem;
+	font-family: Roboto,'Nunito Sans','Open Sans';
+	color: #303672;
+	margin-bottom: 1.5rem;
+ }
+.app-name-section .title-text .num{
+	font-size: 1.2em;
+	font-weight: bolder;
+}
+.app-name-section .sub-title{
+	font-family: Roboto,'Nunito Sans','Open Sans';
+	font-size: 1rem;
+}
+.app-name-section .sub-title .text{
+	color: #303672;
+}
+ .app-name-section .sub-title .red-text{
+	 color: #b01a2c;
 }
