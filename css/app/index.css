@@ -83,8 +83,8 @@ body{
 .catch-phrase-section{
 	/* margin-top: 20vh; */
 	/* margin-bottom: 3rem; */
-	padding: 3rem;
-	padding-bottom: 10px;
+	padding: 2rem;
+	padding-bottom: 0;
 	font-size: 1.75rem;
 	font-family: 'Dubai', sans-serif;
 }
@@ -156,6 +156,7 @@ body{
 	/* margin-bottom: 5rem; */
 	padding: calc(50px + 1.5rem);
 	padding-top: 0;
+	margin-top: 2rem;
 	background-color: #262841;
 	border-radius: 5px;
 }
