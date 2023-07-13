@@ -1843,7 +1843,7 @@
 }
 .ai-translation-section{
 	display: inline-block;
-	max-width: 95%;
+	/* max-width: 95%; */
 }
 /* 번역 텍스트 */
 .ai-translation-block{
