@@ -1926,7 +1926,8 @@
 .word-section .title:hover{
 	cursor: pointer;
 }
-.word-section .title:hover::after{
+.one-word-unit-section:hover .title::after,
+.word-section .title.tts-playing::after{
 	display: inline-block;
 	font-family: "Font Awesome 5 Free";
 	content: "\f028";
