@@ -652,7 +652,7 @@
     .workbook-menu-section{
 		/* top: 2rem; */
 		right: 0rem;
-		padding: 0;
+		/* padding: 0; */
 		width: 100%;
 		margin-top: 2rem;
 		position: relative;
@@ -1060,7 +1060,7 @@
 	background-image: url('https://static.findsvoc.com/images/app/tandem/wood.jpg');
 }
 .workbook-section .bookshelf-section{
-	margin-bottom: 4rem;
+	margin-bottom: 3rem;
 	text-align: center;
 }
 .workbook-section .book::after,
