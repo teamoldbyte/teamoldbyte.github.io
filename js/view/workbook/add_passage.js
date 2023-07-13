@@ -175,7 +175,7 @@ function pageinit(isHelloBook, memberId) {
 	}
 	
 	// 문장 입력 제한 해제
-	$('.text-input-container').on('click', function(e) {
+	/*$('.text-input-container').on('click', function(e) {
 		if(e.offsetX < 10) {
 			myFicoUsages.length = 0;
 			$('.ocr-btn').prop('disabled', false);
@@ -191,7 +191,7 @@ function pageinit(isHelloBook, memberId) {
 				duration: 5000
 			})
 		}
-	});
+	});*/
 	
 	if(!isHelloBook) {
 		const ocr = new FicoOCR();
