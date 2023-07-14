@@ -633,8 +633,8 @@
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
 				
-				// sentenceId를 할당(단어모듈용)
-				$wordBlock.data('sentenceId', sentence.sentenceId)
+				// wordId, sentenceId, workbookId를 할당(단어모듈용)
+				$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId});
 				
 				// 우선 복사 원본의 뜻 부분들을 삭제
 				$wordBlock.find('.one-part-unit-section').remove();
