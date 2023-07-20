@@ -223,7 +223,9 @@
 		// Web SpeechSynthesis API 사용 가능한 브라우저일 경우 흐름
 		else if('speechSynthesis' in window) {
 			let loopNum = 1, loopInterval = 200, loopTimer, endCallback;
-			let seamlessInterval; // Chrome Destop 버전은 15초가 되면 강제로 재생을 멈춘다. 브라우저가 멈추기 전에 임의로 멈추고 곧바로 재생함으로써 끊임없게 들리게 한다.
+			// Chrome Destop 버전은 15초가 되면 강제로 재생을 멈춘다. 브라우저가 멈추기 전에 임의로 멈추고 곧바로 재생함으로써 끊임없게 들리게 한다.
+			let seamlessInterval; 
+
 			this.init = () => {
 				appendModal();
 				utterance = new SpeechSynthesisUtterance();
@@ -243,7 +245,11 @@
 				}
 				if('onvoiceschanged' in speechSynthesis) {
 					speechSynthesis.onvoiceschanged = initVoices;
-				}else initVoices();
+				}
+				if(speechSynthesis.getVoices) {
+					initVoices();
+					this.changeOptions();
+				}
 			}
 			this.speak = (text, callback = () => {}) => {
 				if(this.initialized == undefined) {
@@ -257,10 +263,7 @@
 				
 				clearInterval(seamlessInterval);
 				speechSynthesis.speak(utterance);
-				seamlessInterval = setInterval(() => {
-					speechSynthesis.pause();
-					speechSynthesis.resume();
-				}, 14000);
+				applySeamless();
 			}
 			this.speakRepeat = (text, loop, interval, callback = () => {}) => {
 				clearTimeout(loopTimer);
@@ -272,10 +275,7 @@
 				
 				clearInterval(seamlessInterval);
 				speechSynthesis.speak(utterance);
-				seamlessInterval = setInterval(() => {
-					speechSynthesis.pause();
-					speechSynthesis.resume()
-				}, 14000);				
+				applySeamless();			
 			}
 			this.speakSample = (idx, rate, pitch) => {
 				utterance.text = SAMPLE_TEXT;
@@ -381,7 +381,32 @@
 				else if(voices.length == 0 && _options.initFailCallback != null) 
 					_options.initFailCallback.call(this);
 			}
-			
+			function applySeamless() {
+				// 공백을 제거한 글자 수 카운트
+				const chars = utterance.text.replace(/\W/g,'').length;
+				// 글자 수를 평균 단어 길이로 나누어 단어 수를 추정한다.
+				// 평균 단어 길이는 언어에 따라 다르므로 적절히 설정한다.
+				// 예를 들어, 영어의 경우 5.1로 설정할 수 있다.
+				const averageWordLength = 5.1;
+				const words = chars / averageWordLength;
+				// 단어 수를 150으로 나누어 분 단위로 측정한다. (일반적으로 TTS의 속도는 분당 150 ~ 250 단어이다.)
+				let minutes = words / 150;
+				
+				// 분을 초로 변환하고, rate와 pitch에 따라 조정한다.
+				let seconds = minutes * 60 / utterance.rate;
+				
+				// 15초를 넘는다고 추정하면 14초에 재생을 멈추고 다시 재개한다. (Chrome Destop 버전은 15초가 되면 강제로 재생을 멈춘다.)
+				if (seconds >= 15) {
+					seamlessInterval = setInterval(() => {
+						if(speechSynthesis.speaking && !speechSynthesis.paused) {
+							new Promise((resolve,_)=>{
+								speechSynthesis.pause();
+								resolve();
+							}).then(() => speechSynthesis.resume())
+						}
+					}, 14000)
+				}
+			}
 		}else {
 			alert('브라우저에서 지원하는 목소리가 없어서\n "읽어주는 서비스"가 제공되지 않습니다.');
 			return;
