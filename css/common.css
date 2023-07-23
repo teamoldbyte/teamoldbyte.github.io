@@ -361,37 +361,37 @@ a:hover {
 }
 
 .text-orange-500{
-	color: rgb(249 115 22) !important;	
+	color: #f97316 !important;	
 }
 
 .text-yellow-400{
-	color: rgb(251, 191, 36) !important;
+	color: #fbbf24 !important;
 }
 .text-yellow-500{
-	color: rgb(234, 179, 8) !important;
+	color: #eab308 !important;
 }
 
 .text-green-600{
-	color: rgb(5, 150, 105) !important;
+	color: #059669 !important;
 }
 .text-green-700{
 	color: #019c9e !important;
 }
 
 .text-red-600{
-	color: rgb(220, 38, 38) !important;
+	color: #dc2626 !important;
 }
 .text-red-700{
-	color: rgb(185, 28, 28) !important;
+	color: #b91c1c!important;
 }
 .text-gray-300{
-	color: rgb(209 213 219) !important;
+	color: #d1d5db !important;
 }
 .text-gray-400{
-	color: rgb(156 163 175) !important;
+	color: #9ca3af!important;
 }
 .text-gray-500{
-	color: rgb(107 114 128) !important;
+	color: #6b7280!important;
 }
 .text-gray-700{
 	color: #424250 !important;
@@ -848,4 +848,29 @@ u {
 		transform: translateY(-50%);
 		margin-left: 0.25rem;
 	}
+}
+
+
+/**********************************************************
+ *					menu icon
+ **********************************************************/
+
+/* PC에서 워크북 메뉴 스타일 */
+@media (min-width: 768px) {
+	.workbook-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
+		transform: scaleX(-1) translateY(25%);
+	}
+
+	.workbook-menu-section .menu-icon-section ul li:hover a .icon.fa-head-side-virus{
+		transform: scaleX(-1) translateY(-30px);
+	}
+}
+@media (max-width: 992px) {
+	.workbook-menu-section .menu-icon-section ul li:hover a .icon.fa-head-side-virus{
+		transform: scaleX(-1) translateY(-20px);
+	}
+}
+
+.main-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
+	transform: scaleX(-1);
 }
