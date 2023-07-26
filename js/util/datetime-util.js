@@ -13,7 +13,7 @@ Date.prototype.format = function(f) {
             case "yyyy": return d.getFullYear();
             case "yy": return (d.getFullYear() % 1000).zf(2);
             case "MMMM": return monthName[d.getMonth()];
-            case "MMM": return monthName[d.getMonth()].substring(0, 3) + '.';
+            case "MMM": return monthName[d.getMonth()].substring(0, 3);
             case "MM": return (d.getMonth() + 1).zf(2);
             case "M": return (d.getMonth() + 1);
             case "dd": return d.getDate().zf(2);
