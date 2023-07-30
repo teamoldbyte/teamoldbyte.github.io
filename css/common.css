@@ -644,6 +644,11 @@ u {
 	}
 }
 */
+
+
+.btn-check:focus+.btn, .btn:focus {
+	box-shadow: inherit;
+}
 /**********************************************************
  *			체크 박스 
  **********************************************************/
@@ -844,9 +849,11 @@ u {
 @media (max-width: 768px) {
 	.workbook-menu-section .menu-icon-section .beta-badge{
 		position: absolute;
-		top: 50%;
+		/* top: 50%;
 		transform: translateY(-50%);
-		margin-left: 0.25rem;
+		margin-left: 0.25rem; */
+		bottom: 5px;
+		left: 3px;
 	}
 }
 
@@ -856,7 +863,7 @@ u {
  **********************************************************/
 
 /* PC에서 워크북 메뉴 스타일 */
-@media (min-width: 768px) {
+@media (min-width: 767px) {
 	.workbook-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
 		transform: scaleX(-1) translateY(25%);
 	}
@@ -865,9 +872,9 @@ u {
 		transform: scaleX(-1) translateY(-30px);
 	}
 }
-@media (max-width: 992px) {
-	.workbook-menu-section .menu-icon-section ul li:hover a .icon.fa-head-side-virus{
-		transform: scaleX(-1) translateY(-20px);
+@media (max-width: 768px) {
+	.workbook-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
+		transform: scaleX(-1);
 	}
 }
 
