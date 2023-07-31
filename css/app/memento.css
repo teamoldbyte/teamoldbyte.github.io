@@ -1,0 +1,802 @@
+/**********************************************************
+ *				auto_play.html  
+ **********************************************************/
+/* 전체 카드 영역 */
+.play-block-section{
+	width: calc(12rem + 50vw);
+	padding-bottom: 6rem;
+	/* background-color: #dfebff; */
+	background-color: #3b636d;
+}
+/* .play-block-section::before{
+	content: 'STUDY MODE';
+	position: absolute;
+	top: -1.5rem;
+	right: 0;
+	font-size: 1rem;
+	color: #3b636d;
+} */
+/* 버튼 색상 */
+#moveAutoPlayTest,
+#moveMementoTrace,
+#startAutoPlay,
+#finishAutoPlay,
+#prevWords,
+#nextWords{
+	background-color: #262841;
+}
+#startAutoPlay{
+	margin-left: auto;
+	margin-right: 0.25rem;
+}
+#finishAutoPlay{
+	margin-left: 0.25rem;
+	margin-right: auto;
+}
+/* 재생 전 메세지 영역 */
+.cover-before-play{
+	position:absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	text-align: center;
+	background-color: #fef6ff;
+	/* color: #fff; */
+	border-radius: 0.75rem;
+	/* border: 10px solid #fef6ff; */
+	z-index: 1;
+}
+.cover-before-play .cover-before-play-cover{
+	background-color: #262841;
+	width: calc(100% - 2rem);
+	height: calc(100% - 2rem);
+	margin: auto;
+	padding: 1rem;
+	border-radius: 0.75rem;
+	top: 1rem;
+	position: relative;
+
+	
+	background-image: url("https://static.findsvoc.com/images/app/memento/autoplay-cover.png");
+	background-repeat: no-repeat;
+	background-size: 37%;
+	background-position: top 5rem center;
+}
+/* .cover-before-play .cover-before-play-cover::before{
+	content: 'MEMENTO';
+	position: absolute;
+	bottom: 1.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 2rem;
+	color: #3c4c6e;
+} */
+.cover-before-play .cover-before-play-cover div{
+	color: #fff;
+	font-size: 1.1rem;
+	line-height: 2;
+	position: relative;
+	/* top: calc(50% - 7rem); */
+}
+.cover-before-play .cover-before-play-cover .text-1{
+	top: calc(36rem/2 - 7rem);
+	font-size: 2rem;
+	/* bottom: calc(-36rem/2); */
+}
+.cover-before-play .cover-before-play-cover .text-2{
+	/* top: calc(50% - 2rem); */
+	bottom: calc(-36rem/2 - 2rem);
+}
+.cover-before-play .text-2{
+	display: inline-block;
+	text-align: left;
+	/* top: 50%; */
+	/* bottom: calc(-38rem / 2); */
+	/* transform: translateY(-50%); */
+}
+.cover-before-play .start-btn-text,
+.cover-before-play .gotest-btn-text{
+	border-radius: 5px;
+	padding: 3px 5px;
+	background-color: #fff;
+	color: #262841;
+}
+/* 슬라이드 재생/멈춤 */
+.display-hover {
+	display: none;
+	opacity: .3;
+	color: #92c9dd;
+}
+.word-unit-section{
+	height: 25rem;
+	/* background-color: #fef6ff; */
+	background-color: var(--slate);
+	/* box-shadow: inset #ddd 0 0 16px; */
+	border-radius: .75rem;
+	padding: 1rem 3rem;
+}
+.word-unit-section:hover .display-hover {
+	display: block;
+	color: #92c9dd;
+}
+/* 워드 블럭의 카드 모양 영역 */
+.word-unit-section .card-shape-section{
+	height: 100%;
+	color: #fff;
+	background-color: #262841;
+	border-radius: 0.75rem;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	position:relative;
+}
+/* .word-unit-section .card-shape-section::before{
+	content: '';
+	opacity: 0.5;
+	background-image: url("https://static.findsvoc.com/images/logo/main_logo.svg");
+	background-repeat: no-repeat;
+	background-size: 10rem;
+	background-position: bottom 1rem left 1rem;
+	position: absolute;
+	top:0;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+} */
+/* 워드 타이틀 */
+.word-unit-section .title{
+	font-family: "Apple SD Gothic Neo","Segoe UI";
+	/* color: #0dcaf0; */
+	color: var(--slate);
+	font-weight: 600;
+}
+.word-unit-section .part{
+	font-family: "Apple SD Gothic Neo","Segoe UI";
+	color: #0aa190;
+	font-weight: bold;
+}
+.word-unit-section .meaning{
+	color: #fff;
+	font-size: 1.1rem;
+}
+.word-unit-section .conj-text{
+	color: #fff;
+	/* font-weight: bold; */
+}
+.word-unit-section .phonetic{
+	color: #fff;
+	font-size: 1rem;
+}
+
+/* operation 영역 */
+.operation-section .icon-btn-section .btn{
+	color: #262841;
+}
+/* 플레이어 화면의 높이, 좌우 여백 조정 */ 
+.information-section,
+.config-section{
+	width: 6rem;
+}
+.operation-section{
+	height: 6rem;
+	padding: 1.5rem 0;
+}
+.word-card-section{
+	width: 50vw;
+}
+/* information 영역 */
+.information-section > div{
+	/* color: #325872; */
+	/* color: #b2988b; */
+	color: gold;
+}
+.information-section > div:hover{
+	/* color: #0f4970; */
+	color: #fbbf24;
+}
+.information-section .num-text{
+	position:relative;
+	bottom: 0.25rem;
+}
+/* config 영역 */
+.config-section{
+	/* background-color: #fef6ff; */
+	background-color: #768e94a1;
+	height: -webkit-fit-content;
+	height: fit-content;
+	border-radius: 0.5rem;
+	margin: 0 0.75rem;
+	width: 4.5rem;
+	padding: 1rem 0;
+}
+.config-section .icon-block{
+	text-align: center;
+	margin-bottom: 2.5rem;
+	position: relative;
+}
+.config-section button{
+	/* color: #325872; */
+	/* color:#05083d; */
+	color: #262841;
+}
+.config-section button:hover{
+	/* color: #af06c0; */
+	color:#05083d;
+}
+.config-section .icon-title{
+	position: absolute;
+	display: block;
+	font-size: 0.75rem;
+	bottom: -1rem;
+	left: 0;
+	width: 100%;
+	font-family: 'Nanum Gothic';
+	font-weight: bold;
+	color: #262841;
+}
+/* TTS 자동재생 버튼 및 처음부터 반복재생 버튼 활성/비활성 */
+#changeAutoPlay, #changeTTSAutoPlay, #changeSlideLoop, #changeEngAutoOpen {
+	opacity: .5;
+}
+#changeAutoPlay.active,
+#changeTTSAutoPlay.active,
+#changeSlideLoop.active,
+#changeEngAutoOpen.active {
+	opacity: 1;
+}
+#changeTTSAutoPlay.active::before{
+	content: "\f028";
+}
+#changeEngAutoOpen.active::before{
+	content: "\f06e";
+}
+#changeAutoPlay.active::before{
+	content: "\f04e";
+}
+#changeSlideLoop.active::before{
+	content: "\f2f1";
+}
+#changeTTSAutoPlay::before{
+	content: "\f6a9";
+}
+#changeEngAutoOpen::before{
+	content: "\f070";
+}
+#changeAutoPlay::before{
+	content: "\f04e";
+}
+#changeSlideLoop::before{
+	content: "\f2f1";
+}
+/* TTS 자동재생 버튼 및 처음부터 반복재생 버튼 활성/비활성 */
+#saveConfigs .fa-save {
+	left: 25%;
+	top: 40%;
+	text-shadow: -1px -1px #768e94a1;
+}
+/* #saveConfigs .fa-save::before {
+	background-color: #fef6ff;
+} */
+/*문장 보기 영역*/
+.example-sentence-section,
+.options-cover{
+	/* padding: 1.5rem; */
+	margin-top: 1.5rem;
+	min-height: 8rem;
+	/* background-color: #fef6ff; */
+	background-color: var(--slate);
+	color: #fff;
+	border-radius: 0.5rem;
+	height: calc(38rem - 25rem - 1.5rem);
+}
+.example-sentence-section .example-sentence-section-cover,
+.options-cover .options-section{
+	/* padding: 1.5rem; */
+	padding: 1rem;
+	background-color: #262841;
+	width: calc(100% - 2rem);
+	height: calc(100% - 2rem);
+	margin: 1rem;
+	border-radius: 0.75rem;
+	/* top: 1rem;
+	position: relative; */
+}
+.example-sentence-section .example-sentence-section-cover{
+	overflow-y: auto;
+}
+.example-sentence-section .guide-text {
+	/* content: '플레이를 잠시 멈추고 아래 문장을 빠르게 독해해 보세요.'; */
+	color: #c1c1c1;
+	/* position: absolute; */
+	/* top: 2.25rem;
+	font-size: .9rem;
+	left: 50%;
+	transform: translateX(-50%); */
+	width: 100%;
+}
+.example-sentence-section .eng{
+	/* margin-top: 1.5rem; */
+	font-size: 1.25rem;
+}
+.example-sentence-section .cover-text b,
+.example-sentence-section .eng b{
+	color: #fbbf24;
+}
+.example-sentence-section .workbook-title{
+	color: #c1c1c1;
+	opacity: 0.5;
+	position: absolute;
+	right: 1.5rem;
+	bottom: 1rem;
+}
+/* 영어 예문의 툴팁 */
+.tooltip .tooltip-inner{
+	max-width: 500px;
+}
+.tooltip .tooltip-inner b{
+	color: #eab308
+}
+.example-sentence-section .fa-mouse {
+	color: #92c9dd;
+}
+.example-sentence-section:hover .fa-mouse {
+	-webkit-animation: wobble-hor-bottom 0.8s both;
+	        animation: wobble-hor-bottom 0.8s both;
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2023-7-15 13:39:24
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation wobble-hor-bottom
+ * ----------------------------------------
+ */
+@-webkit-keyframes wobble-hor-bottom {
+  0%,
+  100% {
+    -webkit-transform: translateX(0%);
+            transform: translateX(0%);
+    -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+  }
+  15% {
+    -webkit-transform: translateX(-3px) rotate(-6deg);
+            transform: translateX(-3px) rotate(-6deg);
+  }
+  30% {
+    -webkit-transform: translateX(1.5px) rotate(6deg);
+            transform: translateX(1.5px) rotate(6deg);
+  }
+  45% {
+    -webkit-transform: translateX(-1.5px) rotate(-3.6deg);
+            transform: translateX(-1.5px) rotate(-3.6deg);
+  }
+  60% {
+    -webkit-transform: translateX(.9px) rotate(2.4deg);
+            transform: translateX(.9px) rotate(2.4deg);
+  }
+  75% {
+    -webkit-transform: translateX(-.6px) rotate(-1.2deg);
+            transform: translateX(-.6px) rotate(-1.2deg);
+  }
+}
+@keyframes wobble-hor-bottom {
+  0%,
+  100% {
+    -webkit-transform: translateX(0%);
+            transform: translateX(0%);
+    -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+  }
+  15% {
+    -webkit-transform: translateX(-3.0px) rotate(-6deg);
+            transform: translateX(-3.0px) rotate(-6deg);
+  }
+  30% {
+    -webkit-transform: translateX(1.5px) rotate(6deg);
+            transform: translateX(1.5px) rotate(6deg);
+  }
+  45% {
+    -webkit-transform: translateX(-1.5px) rotate(-3.6deg);
+            transform: translateX(-1.5px) rotate(-3.6deg);
+  }
+  60% {
+    -webkit-transform: translateX(.9px) rotate(2.4deg);
+            transform: translateX(.9px) rotate(2.4deg);
+  }
+  75% {
+    -webkit-transform: translateX(-.6px) rotate(-1.2deg);
+            transform: translateX(-.6px) rotate(-1.2deg);
+  }
+}
+
+	
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+/* 스와이퍼 영역 */
+.swiper {
+	height: 38rem;
+}
+
+.swiper-slide {
+	width: 100%;
+	text-align: center;
+	/* font-size: 18px; */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.swiper-slide img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.swiper-button-section > div{
+	width: auto;
+	top: 12rem;
+}
+.swiper-button-next, 
+.swiper-button-prev {
+	color: #0dcaf0;
+}
+.swiper-button-section .swiper-button-prev{
+	left: 0.75rem;
+}
+.swiper-button-section .swiper-button-next{
+	right: 0.75rem;
+}
+.autoplay-progress {
+	position: absolute;
+	left: 3.5rem;
+	top: 1.5rem;
+	z-index: 10;
+	width: 48px;
+	height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	color: #4dbaff;
+}
+
+.autoplay-progress svg {
+	--progress: 0;
+	position: absolute;
+	left: 0;
+	top: 0px;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	stroke-width: 4px;
+	stroke: #89a6ff;
+	fill: none;
+	stroke-dashoffset: calc(125.6 * (1 - var(--progress)));
+	stroke-dasharray: 125.6;
+	transform: rotate(-90deg);
+}
+/* 스와이퍼 페이지네이션 영역 */
+.swiper-pagination{
+	bottom: calc(3rem - 12px)!important;
+}
+.swiper-pagination-bullet-active{
+background: #b8ffbc;
+}
+
+/* 영어 예문 안내 영역 */
+.example-eng-info{
+	position: absolute;
+	z-index: 100;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	left: calc(50px + 1rem);
+	bottom: 0;
+	width: 15vw;
+	color:#fff;
+	background-color: #262841;
+	border: 1px solid rgba(255,255,255,.75);
+}
+
+@media(max-width: 992px){
+	.play-block-section{
+		width:100%;
+	}
+	.word-card-section{
+		width: calc(100% - 12rem);
+	}
+}
+@media(max-width: 768px){
+	/* 상단 메뉴 영역 */
+	.operation-section{
+		height: auto;
+		padding: 0.5rem;
+	}
+	.word-card-section{
+		width: calc(100% - 8rem);
+	}
+	.information-section{
+		width: 4rem;
+	}
+	.config-section{
+		width: 3rem;
+		margin: 0 0.5rem;
+	}
+	.config-section .icon-title{
+		bottom: -2rem;
+	}
+	.cover-before-play .cover-before-play-cover .text-2{
+		bottom: calc(-36rem/2 - 0rem);
+	}
+}
+@media(max-width: 576px){
+	.play-block-section{
+		width:100%;
+	}
+	.word-card-section{
+		width: 100%;
+	}
+	.word-unit-section{
+		padding: 0.5rem;
+	}
+	.word-unit-section .card-shape-section{
+		padding: 0.5rem;
+	}
+	.autoplay-progress{
+		left: 1.5rem;
+		top: 1.5rem;
+	}
+	#startAutoPlay,
+	#finishAutoPlay{
+		margin: auto;
+	}
+	.information-section,
+	.config-section{
+		width: 100%;
+	}
+	.cover-before-play .cover-before-play-cover{
+		width: calc(100% - 1rem);
+		height: calc(100% - 1rem);
+		top: 0.5rem;
+	}
+	.cover-before-play .cover-before-play-cover .text-2{
+		bottom: calc(-36rem/2 + 3rem);
+	}
+	.example-sentence-section .example-sentence-section-cover,
+	.options-cover .options-section{
+		padding: .5rem;
+		width: calc(100% - 1rem);
+		height: calc(100% - 1rem);
+		margin: 0.5rem;
+	}
+	.example-sentence-section .eng{
+		margin-top: 2rem;
+	}
+	.example-sentence-section .eng::before{
+		top: 1.5rem;
+	}
+
+	.swiper-button-section > div{
+		width: 4rem;
+	}
+	.swiper-button-section .swiper-button-prev{
+		left: -1.5rem;
+	}
+	.swiper-button-section .swiper-button-next{
+		right: -1.5rem;
+	}
+
+}
+/**********************************************************
+ *				auto_play_test.html  
+ **********************************************************/
+ /* 문제의 문장 영역 */
+ .word-unit-section .sentence-section{
+	height: 40%;
+	margin-top:4rem;
+	color: #0dcaf0;
+	font-size: 1.4rem;
+	overflow-y: auto;
+ }
+ /* 문제의 해석 영역 */
+ .word-unit-section .kor{
+	font-size: 1.125rem;
+	color: #fff;
+ }
+ /* 단어 보기 영역 */
+.options-cover .options-section{
+	padding: 1.5rem 1rem;
+}
+.options-section .option-block{
+	padding: 0 0.75rem;
+}
+.options-section .option{
+	width: 100%;
+	font-size: 1.125rem;
+	height: calc(100% - 0.75rem);
+	margin-bottom: 1rem;
+	/* margin-right: .5rem; */
+	color: #fff;
+	/* background: #4e578396; */
+	background: #373b4e99;
+	border: 1px solid rgba(255,255,255,.05);
+}
+.options-section .option:hover,
+.options-section .option.active{
+	background-color: #5169e6;
+	color: #fff;
+}
+/**********************************************************
+ *				memento_trace.html  
+ ***********************************p***********************/
+.memento-trace-block > div{
+	/* background-color: #262841; */
+	background-color: #142a39;
+	border-radius: 0.5rem;
+	padding: 2rem;
+	margin-bottom: 1rem;
+	color: #d2997e;
+}
+.memento-trace-block .word-part{
+	/* padding-bottom: 2rem; */
+	position: relative;
+}
+.memento-trace-block .word-part .save-date-section{
+	line-height: 2;
+}
+.memento-trace-block .low-part{
+	margin-top: 4rem;
+}
+.memento-trace-block .low-part::before{
+	content: '';
+	/* height: 2px; */
+	width: calc(100% + 4rem);
+	left: -2rem;
+	top: -2rem;
+	position: absolute;
+	/* border-bottom: 2px groove #0c101a; */
+	border-bottom: 2px groove #060d10;
+}
+.memento-trace-block .word-section{
+	position: relative;
+	font-size: 1.8rem;
+	margin-bottom: 2rem;
+}
+.memento-trace-block .word-section .word-title{
+	color: var(--slate);
+}
+.memento-trace-block .menu-block{
+	text-align: right;
+	/* position: absolute; */
+}
+.memento-trace-block .menu-block .menu-icon{
+	background-color: #142a39;
+	color: #d2997e;
+	border-radius: 50%;
+	border: 1.5px solid #d2997e;
+	padding: 0.25rem;
+	font-size: 1rem;
+}
+.memento-trace-block .menu-block .dropdown-menu{
+	box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+	background-color: #142a39;
+	padding: 0;
+}
+.memento-trace-block .menu-block .dropdown-menu.show{
+	/* transform: translate3d(0, 2.5rem, 0px)!important; */
+	/* transform: translate3d(-10px, 34px, 0px)!important; */
+	transform: translate(4rem, 2.5rem)!important;
+}
+.memento-trace-block .menu-block .dropdown-item:focus, 
+.memento-trace-block .menu-block .dropdown-item:hover{
+	background-color: #d2997e;
+	/* color: gray; */
+	/* color: #060d10; */
+	color: var(--slate);
+}
+.memento-trace-block .menu-block .dropdown-item{
+	color: #d2997e;
+	padding: 0.5rem 1rem;
+	position: relative;
+}
+.memento-trace-block .menu-block .dropdown-item::after{
+	width: calc(100% - 2rem);
+	content: '';
+	/* height: 2px; */
+	left: 1rem;
+	bottom: 0;
+	position: absolute;
+	/* border-bottom: 2px groove #0c101a; */
+	border-bottom: 2px groove #060d10;
+}
+.memento-trace-block .menu-block li:last-child .dropdown-item::after{
+	border-bottom: none;
+}
+.memento-trace-block .menu-block li:first-child .dropdown-item:hover{
+	border-radius: .25rem .25rem 0 0;
+}
+.memento-trace-block .menu-block li:last-child .dropdown-item:hover{
+	border-radius: 0 0 .25rem .25rem;
+}
+.memento-trace-block .menu-block .dropdown-item .fas{
+	margin-right: 0.75rem;
+}
+
+.memento-trace-block .progress-section{
+	margin-bottom: 2rem;
+}
+/**/
+.memento-trace-block .progress{
+	height: 0.5rem;
+}
+.memento-trace-block .progress-bar{
+	background-color: #38b8c9;
+}
+.memento-trace-block .save-date{
+	padding: 0.5rem 1rem;
+	/* border: 1.5px solid #d2997e; */
+	background-color: #0b4165;
+	border-radius: 1rem;
+}
+
+/* 문장 보기 */
+.memento-trace-block .eng{
+	color: #f6f0a0;
+}
+.memento-trace-block .eng b{
+	color: #ef9b9b;
+}
+
+/**********************************************************
+ *				about_memento.html  
+ **********************************************************/
+.detail-view{
+	border-radius: 0.75rem;
+
+}
+.detail-view.view-1{
+	position: absolute;
+	left: -21px;
+	width: 52%;
+	height: 44px;
+	background-image: url(https://static.findsvoc.com/images/app/memento/about-1.png);
+	background-size: 329%;
+	box-shadow: 0 0 10px 0px #ccc;
+	top: -6px;
+}
+.detail-view.view-2{
+	position: absolute;
+	left: 239px;
+	width: 60%;
+	height: 74px;
+	background-image: url(https://static.findsvoc.com/images/app/memento/about-1.png);
+	background-size: 323%;
+	background-position: 39% 93%;
+	box-shadow: 0 0 10px 0px #ccc;
+	top: 218px;
+}
+.detail-view.view-3{
+	position: absolute;
+	left: 274px;
+	width: 60%;
+	height: 74px;
+	background-image: url(https://static.findsvoc.com/images/app/memento/about-1.png);
+	background-size: 323%;
+	background-position: 59% 23%;
+	box-shadow: 0 0 10px 0px #ccc;
+	top: 53px;
+}

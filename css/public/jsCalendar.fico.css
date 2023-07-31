@@ -1,0 +1,92 @@
+/* Fico Calendar Theme */
+/* 달력 최상단, 월 타이틀 */
+.jsCalendar.fico-theme thead .jsCalendar-title {
+	height: 20px;
+	line-height: 20px;
+}
+.jsCalendar.fico-theme thead .jsCalendar-title-name {
+	font-size: 14px;
+	padding: 0 5px;
+	width: calc(100% - 40px);
+	text-align: center;
+}
+/* 달력 최상단, 좌우 네비 */
+.jsCalendar.fico-theme thead .jsCalendar-nav-left, .jsCalendar.fico-theme thead .jsCalendar-nav-right {
+	font-size: 12px;
+	height: 20px;
+	line-height: 20px;
+	margin: 0;
+	width: 20px;
+}
+.jsCalendar.fico-theme thead .jsCalendar-week-days th, .jsCalendar.fico-theme tbody td {
+	height: 20px;
+	line-height: 20px;
+	margin: 0;
+	width: 20px;
+}
+.jsCalendar.fico-theme.classic-theme thead .jsCalendar-week-days th {
+	width: 23px;
+}
+.jsCalendar.fico-theme.classic-theme thead .jsCalendar-week-days th, .jsCalendar.fico-theme.classic-theme tbody td {
+	margin: -1px 0 0 -1px;
+}
+/* 지난 달/다음달 일자 표시 */
+.jsCalendar tbody td.jsCalendar-next, 
+.jsCalendar tbody td.jsCalendar-previous{
+	color: gray;
+}
+/* 선택된 날짜 표시 */
+.jsCalendar tbody td.jsCalendar-selected{
+	/* border: 1.5px solid #e6e6e6; */
+	border: none;
+}
+.jsCalendar tbody td.jsCalendar-selected.correct{
+	background-color: #2b784a;
+}
+.jsCalendar tbody td.jsCalendar-selected.wrong{
+	background-color: #782b2b;
+}
+.jsCalendar table{
+	/* background-color: #685656; */
+	background-color: #015463;
+	width: 15rem;
+	height: 15rem;
+	margin: auto;
+	color: var(--slate);
+}
+.jsCalendar.fico-theme thead .jsCalendar-week-days th, 
+.jsCalendar.fico-theme tbody td{
+	width: calc((15rem - 8px) / 7);
+	height: calc((15rem - 8px) / 7);
+    text-align: center;
+    line-height: calc((15rem - 8px) / 7);
+}
+.jsCalendar tbody td:hover{
+	background-color: gray;
+}
+/* 달력에 초기 선택된 날짜 스타일 제거 */
+.jsCalendar tbody td.jsCalendar-current {
+	background: none;
+}
+/* 보관/완료 날짜에 절대위치의 플래그를 추가하기 위함 */
+.jsCalendar .saved,
+.jsCalendar .completed {
+	position: relative;
+}
+.jsCalendar .saved::before,
+.jsCalendar .completed::after {
+	position:absolute;
+	top: 0;
+	left: 50%;
+	transform: translateY(-25%);
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	font-size: .5rem;
+}
+
+.jsCalendar .saved::before {
+	content: '\f024';
+}
+.jsCalendar .completed::after {
+	content: '\f11e';
+}
