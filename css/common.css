@@ -862,7 +862,10 @@ u {
  *					menu icon
  **********************************************************/
 
-/* PC에서 워크북 메뉴 스타일 */
+/* 메멘토 메뉴 스타일 */
+#go-memento-about:hover{
+	font-weight: bold;
+}
 @media (min-width: 767px) {
 	.workbook-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
 		transform: scaleX(-1) translateY(25%);
@@ -876,8 +879,4 @@ u {
 	.workbook-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
 		transform: scaleX(-1);
 	}
-}
-
-.main-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
-	transform: scaleX(-1);
 }
