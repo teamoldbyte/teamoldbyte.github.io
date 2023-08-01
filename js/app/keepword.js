@@ -4,7 +4,8 @@
  */
 (function() {
 	const SESSION_STORAGE_KEY = 'savedWordList',
-		WORD_SELECTOR = '.one-word-unit-section';
+		WORD_UNIT_CLASSNAME = 'one-word-unit-section',
+		WORD_UNIT_SELECTOR = `.${WORD_UNIT_CLASSNAME}`;
 	const saveWordBtnJson = {
 		el: 'span', role: 'button', class: 'js-save-word keep-word-btn fas fa-download fa-sm', 
 				dataset: { bsToggle: 'tooltip', bsTitle: '보관하기'}
@@ -36,6 +37,10 @@
 			resolve();
 		}else {
 			$.getJSON('/memento/keepword/init', list => {
+				if(!Array.isArray(list)) {
+					alertModal('저장된 단어 목록을 읽어오지 못했습니다.', reject);
+					return;
+				}
 				savedWordList = list;
 				let trimmedCount = 0; // 저장공간 부족시 스토리지에서 제외할 단어 수
 				(function saveDBIntoSession(){
@@ -126,10 +131,22 @@
 						})
 					}
 				}
-				$(WORD_SELECTOR).each((_, wordUnitSection) => findMatchWordObserver.observe(wordUnitSection));
-				$(document).on('DOMNodeInsertedIntoDocument', WORD_SELECTOR, function() {
-					findMatchWordObserver.observe(this);
+				$(WORD_UNIT_SELECTOR).each((_, wordUnitSection) => {
+					findMatchWordObserver.observe(wordUnitSection);
+				});
+				const mutationObserver = new MutationObserver((mutations) => {
+					mutations?.forEach(m => {
+						if(m.type == 'childList') {
+							m.addedNodes?.forEach(n => {
+								if(n.nodeType == Node.ELEMENT_NODE 
+								&& n.classList?.contains(WORD_UNIT_CLASSNAME)) {
+									findMatchWordObserver.observe(n);
+								}
+							})
+						}
+					});
 				})
+				mutationObserver.observe(document, {childList: true,subtree:true});
 			});
 		})		
 	})
@@ -137,20 +154,20 @@
 	
 	$(document)
 	// [.one-word-unit-section 블럭에 마우스를 올리면 버튼 표시]-----------------------
-	.on('mouseover', WORD_SELECTOR, function() {
+	.on('mouseover', WORD_UNIT_SELECTOR, function() {
 		if($(this).is('.saved,.processing') || $(this).find('.js-save-word').length > 0) return;
 		const saveWordBtn = createElement(saveWordBtnJson);
 		const $title = $(this).find('.title');
 		$(saveWordBtn).css('--offset', Math.max($title[0].offsetWidth/2, 22) + 'px');
 		$(saveWordBtn).insertAfter($title)
 	})
-	.on('mouseleave', WORD_SELECTOR, function() {
+	.on('mouseleave', WORD_UNIT_SELECTOR, function() {
 		if($(this).is('.processing')) return;
 		$(this).find('.js-save-word').remove();
 	})
 	// [단어 보관]----------------------------------------------------------------
 	.on('click', '.js-save-word', function() {
-		const $wordSection = $(this).closest(WORD_SELECTOR)
+		const $wordSection = $(this).closest(WORD_UNIT_SELECTOR)
 		if($wordSection.is('.processing')) return;
 		$wordSection.addClass('processing');
 		
@@ -183,7 +200,7 @@
 	.on('click', '.js-unsave-word', function(e) {
 		e.stopPropagation();
 		e.stopImmediatePropagation();
-		const $wordSection = $(this).closest(WORD_SELECTOR)
+		const $wordSection = $(this).closest(WORD_UNIT_SELECTOR)
 		if($wordSection.is('.processing')) return;
 		$wordSection.addClass('processing');
 		$(this).tooltip('hide');
@@ -233,8 +250,8 @@
 			opacity: 0,
 			easing: 'linear',
 			complete: (_anim) => {
-				const $wordSection = $(parent).closest(WORD_SELECTOR);
-				$(WORD_SELECTOR).filter((_, wordSection) => $(wordSection).data('wordId') == $wordSection.data('wordId') && !$(wordSection).is('.saved,.processing'))
+				const $wordSection = $(parent).closest(WORD_UNIT_SELECTOR);
+				$(WORD_UNIT_SELECTOR).filter((_, wordSection) => $(wordSection).data('wordId') == $wordSection.data('wordId') && !$(wordSection).is('.saved,.processing'))
 				.each((_, wordSection) => {
 					findMatchWordObserver.unobserve(wordSection);
 					findMatchWordObserver.observe(wordSection);
@@ -261,7 +278,7 @@
 		});
 		unsavedToastContainer.appendChild(unsavedToast);
 		const $wordSection = $(parent)
-			.closest(WORD_SELECTOR).removeData('keepWordId');
+			.closest(WORD_UNIT_SELECTOR).removeData('keepWordId');
 		$wordSection.prepend(unsavedToastContainer);
 		parent.style.transformOrigin = '200% 0';
 		anime({
