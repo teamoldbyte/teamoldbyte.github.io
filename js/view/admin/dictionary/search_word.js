@@ -13,20 +13,21 @@ function pageinit() {
 			// 일반 단어 검색 결과. 대소문자가 다르게 검색된 결과를 받아오더라도 일단은 보여줘야 한다.
 			// 그래야 대문자 단어가 없는 것인지, 아얘 없는 것인지를 판단할 수 있다.
 			const normalWord = wordList.find(word=>word.title == title);
-			const firstWord = wordList?.[0];
+			const anyWord = normalWord ?? wordList?.[0];
 			
 			$('#searchResult').collapse('show');
-			$('#searchResult').find('.saveTitle,.one-word-unit-section .word-title').text(title);
+			$('#searchResult').find('.saveTitle').text(title)
+			$('#searchResult').find('.one-word-unit-section .word-title').text(anyWord.title);
 			
 			$('#searchResult .empty-list').toggle(wordList == null || wordList.length == 0 || normalWord == null);
-			$('#searchResult .one-word-unit-section').toggle(firstWord != null);
+			$('#searchResult .one-word-unit-section').toggle(anyWord != null);
 			$('#searchResult .one-word-unit-section').children(':not(.title,.title-section)').remove();
-			if(firstWord) {
-				$('#searchResult .input-lemma').val(firstWord.lemma||'')[0].dataset.org = firstWord.lemma||'';
-				$('#searchResult').get(0).dataset.wordId = firstWord.wid;
-				$('#searchResult .level').text(firstWord.level);
-				$('#searchResult .level-input').val(firstWord.level);
-				$('#searchResult .one-word-unit-section').get(0).appendChild(createElement(createSenseListAndForm(false, firstWord.senseList)));
+			if(anyWord) {
+				$('#searchResult .input-lemma').val(anyWord.lemma||'')[0].dataset.org = anyWord.lemma||'';
+				$('#searchResult').get(0).dataset.wordId = anyWord.wid;
+				$('#searchResult .level').text(anyWord.level);
+				$('#searchResult .level-input').val(anyWord.level);
+				$('#searchResult .one-word-unit-section').get(0).appendChild(createElement(createSenseListAndForm(false, anyWord.senseList)));
 			}
 			
 			// 구동사 검색 결과
