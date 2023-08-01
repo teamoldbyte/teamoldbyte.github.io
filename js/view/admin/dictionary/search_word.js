@@ -18,7 +18,7 @@ function pageinit() {
 			$('#searchResult').collapse('show');
 			$('#searchResult').find('.saveTitle,.one-word-unit-section .word-title').text(title);
 			
-			$('#searchResult .empty-list').toggle(wordList == null || wordList.length == 0 || !normalWord);
+			$('#searchResult .empty-list').toggle(wordList == null || wordList.length == 0 || normalWord == null);
 			$('#searchResult .one-word-unit-section').toggle(firstWord != null);
 			$('#searchResult .one-word-unit-section').children(':not(.title,.title-section)').remove();
 			if(firstWord) {
