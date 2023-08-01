@@ -609,6 +609,7 @@ background: #b8ffbc;
 	margin-top:4rem;
 	color: #0dcaf0;
 	font-size: 1.4rem;
+	overflow-x: hidden;
 	overflow-y: auto;
  }
  /* 문제의 해석 영역 */

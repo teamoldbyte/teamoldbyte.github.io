@@ -1231,8 +1231,10 @@
                               add_workbook.html
  -----------------------------------------------------------------------------*/
 .add-workbook-section .add-workbook-area {
-   width: 200px;
-   height: 300px; 
+   /* width: 200px;
+   height: 300px;  */
+   width: 10rem;
+   height: 15rem; 
    background: white url(https://static.findsvoc.com/images/logo/main_logo_headonly.svg) center/cover no-repeat;
 	opacity: 0.6;
 	border: 2px dashed #9d9d9d;
@@ -1721,10 +1723,12 @@
 	.full-text-section .js-prev-passage{
 		opacity: .75;
 		left: -1.5rem;
+		bottom: -1rem;
 	}
 	.full-text-section .js-next-passage{
 		opacity: .75;
 		right: 0.5rem;
+		bottom: -1rem;
 	}
 }
 .swing-in-top-fwd {
