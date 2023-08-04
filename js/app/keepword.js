@@ -84,7 +84,7 @@
 				});
 				function matchSavedWords(wordUnitSection) {
 					const wordId = $(wordUnitSection).data().wordId;
-					const found = savedWordList.find(word => word.wordId == wordId)
+					const found = savedWordList.find(word => word.wordId == wordId && !word.del)
 					// 보관 목록에 있는 단어일 경우
 					if(found) {
 						$(wordUnitSection).addClass('saved').data('keepWordId', found.keepWordId).find('.title').before($(createElement(unsaveWordBtnJson)).show());
@@ -173,23 +173,41 @@
 		
 		const { wordId, sentenceId, workbookId } = $wordSection.data();
 		
-		new Promise((resolve,_) => {
-			setTimeout(() => resolve(), 1000);
-		}).then(() => {
-			getNowDate().then(saveDate => {
+		setTimeout(() => {
+			const indexInSavedList = savedWordList.findIndex(word => word.wordId == wordId);
+			// 보관 이력이 있던 단어 재보관
+			if(indexInSavedList > -1) {
+				const keepWordId = savedWordList[indexInSavedList].keepWordId;
 				$.ajax({
-					url: '/memento/word/save',
+					url: '/memento/word/change-status',
 					type: 'POST',
 					contentType: 'application/json',
-					data: JSON.stringify({wordId, sentenceId, workbookId, saveDate}),
-					success: (keepWordId) => {
-						saveIntoSessionStorage({wordId, keepWordId, saveDate})
+					data: JSON.stringify({keepWordId, del: false}),
+					success: () => {
+						savedWordList[indexInSavedList].del = false;
+						sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(savedWordList));
 						successSave(this, keepWordId);
 					},
-					error: () => alertModal('단어 보관에 실패했습니다.')
+					error: () => alertModal('단어 보관 해제에 실패했습니다.')
 				});
-			})
-		})
+			}
+			// 신규 보관
+			else {
+				getNowDate().then(saveDate => {
+					$.ajax({
+						url: '/memento/word/save',
+						type: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify({wordId, sentenceId, workbookId, saveDate}),
+						success: (keepWordId) => {
+							saveIntoSessionStorage({wordId, keepWordId, saveDate, del: false})
+							successSave(this, keepWordId);
+						},
+						error: () => alertModal('단어 보관에 실패했습니다.')
+					});
+				})
+			}
+		}, 1000);
 		
 		
 	})
@@ -225,8 +243,8 @@
 	//-------------------------Embedded Functions-------------------------------
 	
 	function saveIntoSessionStorage(keepWord) {
-		const { wordId, keepWordId, saveDate } = keepWord;
-		const object = {wordId, keepWordId, saveDate};
+		const { wordId, keepWordId, saveDate, del } = keepWord;
+		const object = {wordId, keepWordId, saveDate, del};
 		if(!savedWordList) {
 			savedWordList = [object];
 		}else savedWordList.push(object);
@@ -236,7 +254,7 @@
 	
 	function unsaveFromSessionStorage(keepWordId) {
 		if(savedWordList) {
-			savedWordList = savedWordList.filter(word => word.keepWordId != keepWordId);
+			savedWordList.find(kwd => kwd.keepWordId == keepWordId).del = true;
 			sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(savedWordList))
 		}
 	}
