@@ -211,6 +211,8 @@ async function pageinit(testSentenceList, testType) {
 		html: true, title: $('<div class="text-center" style="width:6rem"><label class="form-label">문장<br>반복 재생 횟수</label><input type="number" min="1" class="js-change-sentence-repeat form-control pe-0 me-1 d-inline" value="' + sentenceRepeat + '" style="width:4rem">회</div>')[0]
 	});
 	$(document)
+	// 다음 슬라이드로
+	.on('click', '.js-next-slide', slideToNextUnsolved)
 	.on('shown.bs.tooltip', '#changeSentenceRepeat', function() {
 		$('.js-change-sentence-repeat').val(sentenceRepeat)[0].focus();
 	})
@@ -277,61 +279,75 @@ async function pageinit(testSentenceList, testType) {
 					const records = Array.from(keepWordDtoList, answer => {
 						return { keepWordId: answer.keepWordId, pass: choices.some(choose => $(choose).data('keepWordId') == answer.keepWordId)};
 					})
-					Promise.all([
-						Promise.resolve(timerAnim.pause()),
-						new Promise((resolve, reject) => {
-							$.ajax({
-								url: '/memento/test/records',
-								type: 'POST',
-								data: JSON.stringify(records),
-								contentType: 'application/json',
-								success: () => {
-									keepWordDtoList.forEach(kw => {
-										oxList.add(kw.keepWordId);
-									})
-									
-									$slide.find('.option').addClass('pe-none');
-									$slide.find('.option').get()
-									.forEach(choice => {
-										if(keepWordDtoList.some(kwd => kwd.keepWordId == $(choice).data('keepWordId')))
-											$(choice).addClass('answer');
-										else {
-											$(choice).addClass('not-answer');
-										}
-									})
-									$(swiperInstance.pagination.bullets[swiperInstance.activeIndex]).addClass('position-relative')
-									.append(createElement({
-										el: 'span', class: 'pagination-bullet-check fas fa-check fa-sm top-0 start-0', style: {
-											position: 'absolute', color: '#0dcaf0', transform: 'translate(-10%, -50%)'
-										}
-									}));
-									const charCount = test.eng.replace(/\W/g,'').length;
-									const expectedSpeakLength = charCount * 60 / (5.1 * 250);
-									const sentenceSection = createElement({
-										el: 'div', style: { color: 'var(--slate)', fontSize: '1.1rem'},
-									})
-									$slide.find('.kor-section').append(sentenceSection);
-									new Typewriter(sentenceSection, {
-										delay: (expectedSpeakLength * 1000 / charCount), cursor: ''
-									}).typeString(test.eng).callFunction(() => {
-										setTimeout(resolve, 1000)
-									}).start();
-								},
-								error: () => {
-									alertModal('풀이 제출에 실패했습니다.');
-									$btn.removeClass('pe-none');
-									reject();
+					
+					timerAnim.pause();
+					
+					$.ajax({
+						url: '/memento/test/records',
+						type: 'POST',
+						data: JSON.stringify(records),
+						contentType: 'application/json',
+						success: () => {
+							keepWordDtoList.forEach(kw => {
+								oxList.add(kw.keepWordId);
+							})
+							
+							$slide.find('.option').addClass('pe-none');
+							$slide.find('.option').get()
+							.forEach(choice => {
+								if(keepWordDtoList.some(kwd => kwd.keepWordId == $(choice).data('keepWordId')))
+									$(choice).addClass('answer');
+								else {
+									$(choice).addClass('not-answer');
 								}
 							})
-						}),
-						new Promise((resolve, _reject) => {
-							if(sentenceAutoplay) {
-								tts.stop(() => tts.speakRepeat(test.eng, sentenceRepeat, 250, () => setTimeout(() => resolve(), 500)));
-							}else {
-								setTimeout(() => resolve(), 1000);
-							}
-						})
-					]).then(() => slideToNextUnsolved());		
+							$(swiperInstance.pagination.bullets[swiperInstance.activeIndex]).addClass('position-relative')
+							.append(createElement({
+								el: 'span', class: 'pagination-bullet-check fas fa-check fa-sm top-0 start-0', style: {
+									position: 'absolute', color: '#0dcaf0', transform: 'translate(-10%, -50%)'
+								}
+							}));
+							const charCount = test.eng.replace(/\W/g,'').length;
+							const expectedSpeakLength = charCount * 60 / (5.1 * 250);
+							const sentenceSection = createElement({
+								el: 'div', style: { marginTop: '1rem',color: 'var(--slate)', fontSize: '1.2rem'},
+							})
+							$slide.find('.kor-section').append(sentenceSection);
+							new Typewriter(sentenceSection, {
+								delay: (expectedSpeakLength * 1000 / charCount), cursor: ''
+							}).typeString(test.eng).callFunction(() => {
+								
+								anime({
+									targets: $btn.siblings('.js-next-slide').get(),
+									duration: 400,
+									rotateX: ['180deg','0deg'],
+									easing: 'linear'
+								})
+								anime({
+									targets: $btn.get(),
+									duration: 400,
+									easing: 'linear',
+									rotateX: ['0deg','180deg'],
+									update: (anim) => {
+										if(anim.progress > 50)
+										$btn.css('zIndex', -1)
+									}
+								})
+							}).start();
+						},
+						error: () => {
+							alertModal('풀이 제출에 실패했습니다.');
+							$btn.removeClass('pe-none');
+							reject();
+						}
+					});
+					new Promise((resolve, _reject) => {
+						if(sentenceAutoplay) {
+							tts.stop(() => tts.speakRepeat(test.eng, sentenceRepeat, 250, () => setTimeout(() => resolve(), 500)));
+						}else {
+							setTimeout(() => resolve(), 1000);
+						}
+					})
 				})
 				
 				return $slide;	
