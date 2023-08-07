@@ -910,7 +910,9 @@ background: #b8ffbc;
 	background: #373b4e99;
 	border: 1px solid rgba(255,255,255,.05);
 }
-.options-section .option:hover,
+.options-section .option:hover{
+	border-color: #fff;
+}
 .options-section .option.active{
 	background-color: #5169e6;
 	color: #fff;
