@@ -174,45 +174,13 @@
 		const { wordId, sentenceId, workbookId } = $wordSection.data();
 		
 		setTimeout(() => {
-			const indexInSavedList = savedWordList.findIndex(word => word.wordId == wordId);
-			// 보관 이력이 있던 단어 재보관
-			if(indexInSavedList > -1) {
-				const keepWordId = savedWordList[indexInSavedList].keepWordId;
-				$.ajax({
-					url: '/memento/word/change-status',
-					type: 'POST',
-					contentType: 'application/json',
-					data: JSON.stringify({keepWordId, del: false}),
-					success: () => {
-						savedWordList[indexInSavedList].del = false;
-						sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(savedWordList));
-						successSave(this, keepWordId);
-					},
-					error: () => alertModal('단어 보관 해제에 실패했습니다.')
-				});
-			}
-			// 신규 보관
-			else {
-				getNowDate().then(saveDate => {
-					$.ajax({
-						url: '/memento/word/save',
-						type: 'POST',
-						contentType: 'application/json',
-						data: JSON.stringify({wordId, sentenceId, workbookId, saveDate}),
-						success: (keepWordId) => {
-							saveIntoSessionStorage({wordId, keepWordId, saveDate, del: false})
-							successSave(this, keepWordId);
-						},
-						error: () => alertModal('단어 보관에 실패했습니다.')
-					});
-				})
-			}
+			keepWord(wordId, sentenceId, workbookId)
+			.then(keepWordId => {
+				successSave(this, keepWordId);
+			}).catch(() => alertModal('단어 보관에 실패했습니다.'))
 		}, 1000);
 		
 		
-	})
-	.on('hidden.bs.toast', '.js-saved-toast', function() {
-
 	})
 	// [단어 보관 해제]------------------------------------------------------------
 	.on('click', '.js-unsave-word', function(e) {
@@ -241,6 +209,47 @@
 	})
 	
 	//-------------------------Embedded Functions-------------------------------
+	
+	/** 보관했던 이력이 있으면 상태값만 바꾸고, 없으면 새로 보관
+	 * @returns keepWordId
+	 */
+	function keepWord(wordId, sentenceId, workbookId) {
+		return new Promise((resolve, reject) => {
+			const indexInSavedList = savedWordList.findIndex(word => word.wordId == wordId);
+			// 보관 이력이 있던 단어 재보관
+			if(indexInSavedList > -1) {
+				const keepWordId = savedWordList[indexInSavedList].keepWordId;
+				$.ajax({
+					url: '/memento/word/change-status',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({keepWordId, del: false}),
+					success: () => {
+						savedWordList[indexInSavedList].del = false;
+						sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(savedWordList));
+						resolve(keepWordId);
+					},
+					error: reject
+				});
+			}
+			// 신규 보관
+			else {
+				getNowDate().then(saveDate => {
+					$.ajax({
+						url: '/memento/word/save',
+						type: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify({wordId, sentenceId, workbookId, saveDate}),
+						success: (keepWordId) => {
+							saveIntoSessionStorage({wordId, keepWordId, saveDate, del: false})
+							resolve(keepWordId);
+						},
+						error: reject
+					});
+				})
+			}		
+		});
+	}
 	
 	function saveIntoSessionStorage(keepWord) {
 		const { wordId, keepWordId, saveDate, del } = keepWord;
@@ -341,4 +350,6 @@
 			);
 		});
 	}
+	
+	Object.assign(window, { keepWord });
 })();
