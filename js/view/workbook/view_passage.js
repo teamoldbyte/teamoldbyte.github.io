@@ -677,9 +677,9 @@
 	let scrollDirectionPrev = 0;
 	let lastScrollTop = $('.view-passage-section')[0].scrollTop;
 	const $topMenu = $('.workbook-menu-section');
-	$('.view-passage-section').on('scroll', function() {
-		const scrollDirectionNow = this.scrollTop > lastScrollTop ? 1 : -1;
-		lastScrollTop = this.scrollTop;
+	$(document).on('scroll', function() {
+		const scrollDirectionNow = scrollY > lastScrollTop ? 1 : -1;
+		lastScrollTop = scrollY;
 		
 		if(scrollDirectionPrev == scrollDirectionNow) return;
 		if($('#js-mobile-menu .passage-sentence-nav').is('.show')) return;
