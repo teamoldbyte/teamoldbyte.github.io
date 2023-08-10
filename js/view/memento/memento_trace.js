@@ -434,7 +434,7 @@ async function pageinit(initialTraceList, totalCount, isLast) {
 
 		// 캘린더를 생성합니다. min과 max 옵션을 객체 리터럴로 전달합니다. 
 		const calendar = jsCalendar.new( div, new Date(keepword.saveDate), 
-		{ min: new Date(keepword.saveDate), max: new Date() }, CALENDAR_OPTIONS );
+		Object.assign({ min: new Date(keepword.saveDate), max: new Date() }, CALENDAR_OPTIONS));
 
 		// onDateRender 함수를 정의합니다. 
 		calendar.onDateRender(function (date, el, info) { 
