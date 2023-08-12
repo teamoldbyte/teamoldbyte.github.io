@@ -7,8 +7,11 @@
 		WORD_UNIT_CLASSNAME = 'one-word-unit-section',
 		WORD_UNIT_SELECTOR = `.${WORD_UNIT_CLASSNAME}`;
 	const saveWordBtnJson = {
-		el: 'span', role: 'button', class: 'js-save-word keep-word-btn fas fa-download fa-sm', 
-				dataset: { bsToggle: 'tooltip', bsTitle: '보관하기'}
+		el: 'span', role: 'button', class: 'js-save-word keep-word-btn fas fa-download', 
+		dataset: { bsToggle: 'tooltip', bsTitle: '보관하기'}, children: [
+			{ el: 'span', class: 'keep-word-tail'}
+		]
+		
 	} 
 	const unsaveWordBtnJson = {
 		el: 'span', role: 'button',
@@ -71,6 +74,7 @@
 		$.getScript('https://static.findsvoc.com/js/public/peel.min.js', () => {
 			document.head.appendChild(createElement([
 				{ el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/public/peel.min.css' },
+				/*{ el: 'link', rel: 'stylesheet', href: '/css/app/keepword.css' }*/
 				{ el: 'link', rel: 'stylesheet', href: 'https://static.findsvoc.com/css/app/keepword.min.css' }
 			]));
 			$(function() {
