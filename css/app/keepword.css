@@ -24,7 +24,8 @@
 	position: absolute;
 	border: none;
 	border-radius: 5px;
-	color: #66A3DA;
+	/*color: #66A3DA;*/
+	color: #019c9e;
 	top: -17px;
 	left: var(--offset);
 	/*background: #fff;*/
