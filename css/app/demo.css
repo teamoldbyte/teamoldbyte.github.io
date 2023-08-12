@@ -1932,7 +1932,7 @@
 .word-section .title.tts-playing::after{
 	display: block;
 	position: absolute;
-	top: -10px;
+	top: -12px;
 	left: 15px;
 	rotate: -15deg;
 	font-family: "Font Awesome 5 Free";
