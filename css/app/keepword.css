@@ -25,25 +25,26 @@
 	border: none;
 	border-radius: 5px;
 	color: #66A3DA;
-	top: -19px;
+	top: -17px;
 	left: var(--offset);
-	background: #fff;
-	padding: 3px 10px;
-	transform-origin: 0px 18px;
+	/*background: #fff;*/
+	padding: 3px;
+	/*transform-origin: 0px 18px;*/
 	animation: keep-word-present .3s;
-	box-shadow: -2px 2px 5px #aaa;
+	/*box-shadow: -2px 2px 5px #aaa;*/
 }
-.keep-word-btn::after {
-	content: '';
+.keep-word-tail {
+	/*content: '';*/
 	position: absolute;
-	bottom: -3px;
-	left: 0px;
-	width: 10px;
-	height: 10px;
-	border: solid #fff;
-	border-top-color: transparent;
-	border-bottom-color: transparent;
-	border-width: 5px 0px 5px 5px;
+	visibility: visible;
+	top: 50%;
+	left: 50%;
+	width: 3px;
+	padding:2px;
+	height: 3px;
+	transform: translate(-50%, -50%);
+	background-color: transparent;
+	border-radius: 15px;
 }
 @keyframes keep-word-present {
 	0% {
@@ -73,45 +74,32 @@
 		scale: 1;
 	}
 }
-.processing .keep-word-btn::after {
+.processing .keep-word-tail {
+	visibility: visible;
 	animation: keep-word-processing-ball 1s forwards;
-	transform-origin: 0px -9px;
 }
 @keyframes keep-word-processing-ball {
 	5% {
-		border-width: 5px 5px 6px 11px;
 	}
 	10% {
-		border-color: var(--bs-red);
-		border-top-color: var(--bs-red);
-		border-left-color: var(--bs-red);
-		border-width: 5px 5px 5px 5px;
-		border-radius: 5px;
+		background-color: var(--bs-red);
+		transform:translateX(-15px) scale(1.5);
 	}
 	70% {
-		border-color: var(--bs-red);
-		border-top-color: var(--bs-red);
-		border-left-color: var(--bs-red);
-		border-width: 5px 5px 5px 5px;
-		border-radius: 5px;
+		background-color: var(--bs-red);
+		transform:translateX(-50%) scale(4);
 		z-index: -1;
 	}
 	90% {
-		border-color: var(--fc-yellow);
-		border-top-color: var(--fc-yellow);
-		border-left-color: var(--fc-yellow);
-		border-width: 5px 5px 5px 5px;
-		border-radius: 5px;
+		background-color: var(--fc-yellow);
+		transform:translateX(-50%) scale(3);
 		z-index: -1;
 	}
 	100% {
 		z-index: -1;
-		border-color: var(--fc-yellow);
-		border-top-color: var(--fc-yellow);
-		border-left-color: var(--fc-yellow);
-		border-width: 5px 5px 5px 5px;
-		border-radius: 5px;
-		rotate: 290deg;
+		background-color: var(--fc-yellow);
+		transform:translateX(-50%) scale(3);
+		rotate: 360deg;
 	}
 }
 
