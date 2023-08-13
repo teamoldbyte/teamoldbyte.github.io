@@ -76,13 +76,24 @@
 	border-radius: 0.75rem;
 	top: 1rem;
 	position: relative;
-
-	
+}
+.cover-before-play .cover-before-play-cover::before{
+	position: absolute;
+	top:0;
+	left:0;
+	width: 100%;
+	height: 100%;
+	content: '';
 	background-image: url("https://static.findsvoc.com/images/app/memento/autoplay-cover.png");
 	background-repeat: no-repeat;
 	background-size: 37%;
 	background-position: top 5rem center;
 }
+/* 오토플레이 테스트는 색상 변경 */
+.autoplay-test-section .cover-before-play .cover-before-play-cover{
+	background: radial-gradient(#34364D 20%, #262841);
+}
+
 /* .cover-before-play .cover-before-play-cover::before{
 	content: 'MEMENTO';
 	position: absolute;
@@ -106,7 +117,7 @@
 }
 .cover-before-play .cover-before-play-cover .text-2{
 	/* top: calc(50% - 2rem); */
-	bottom: calc(-36rem/2 - 2rem);
+	bottom: calc(-36rem/2 - 1rem);
 }
 .cover-before-play .text-2{
 	display: inline-block;
@@ -148,6 +159,7 @@
 	border-radius: 0.75rem;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	position:relative;
+	padding: 1rem;
 }
 /* .word-unit-section .card-shape-section::before{
 	content: '';
@@ -516,7 +528,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 	margin-bottom: 2rem;
 	text-align: right;
 	font-size: 1rem;
-	padding-top: 0.5rem;
+	padding-top: 0;
 	padding-right: 0.5rem;
 	color: #fff;
 }
@@ -626,8 +638,12 @@ background: #b8ffbc;
 		width:100%;
 		padding-bottom: 5rem;
 		border-radius: 0;
-		background: linear-gradient(to top, #69aeae, #7dc6c6, #83d9d9);
+		/* background: linear-gradient(to top, #69aeae, #7dc6c6, #83d9d9); */
 		/* background-color: #3b636d; */
+		background-color: transparent;
+	}
+	.autoplay-test-section .play-block-section{
+		padding-bottom: 2.5rem;
 	}
 	/**/
 	.play-block-section .pagination-section {
@@ -643,10 +659,11 @@ background: #b8ffbc;
 		bottom: 3.5rem!important;
 	}
 	.word-card-section{
-		width: 100%;
+		width: 100%!important;
+		margin-left: 0!important;
 	}
 	.word-unit-section{
-		padding: 0.5rem;
+		padding: 0.5rem !important;
 		background-color: transparent;
 		height: 20rem;
 		min-height: 20rem;
@@ -659,8 +676,8 @@ background: #b8ffbc;
 		padding-top: 0;
 	}
 	.autoplay-progress{
-		left: 1rem;
-		top: 1rem;
+		left: 1rem !important;
+		top: 1rem !important;
 	}
 	/* 단어 세트 이전/다음 버튼 */
 	#prevWords{
@@ -838,14 +855,25 @@ background: #b8ffbc;
 	}
 	.example-sentence-section .example-sentence-section-cover,
 	.options-cover .options-section{
-		padding: .5rem;
+		padding: .5rem!important;
 		width: calc(100% - 1rem);
 		height: calc(100% - 1rem);
 		/* margin: 0.5rem; */
 		margin: 0 0.5rem;
 	}
+	/* auto play test의 하단 선택 보기 영역 */
+	.options-cover .options-section{
+		height: calc(100% - 0.5rem);
+	}
+	.options-section .option-block{
+		padding: 0 0.25rem !important;
+	}
+	.options-section .option{
+		height: calc(100% - 0.5rem) !important;
+		margin-bottom: 0.5rem !important;
+	}
 	.example-sentence-section .eng{
-		margin-top: 2rem;
+		margin-top: 0;
 	}
 	.example-sentence-section .eng::before{
 		top: 1.5rem;
@@ -876,6 +904,29 @@ background: #b8ffbc;
 	}
 
 }
+
+/* 플레이어 오른쪽 상단, 전체화면 토글 버튼 */
+.fullscreen-toggle-btn {
+	position: absolute;
+	color: #FFF;
+	bottom: 100%;
+	right: 0;
+	width: auto;
+	background-color: #3b636d;
+	border-top-left-radius: .75rem!important;
+	border-top-right-radius: .75rem!important;
+	border-bottom-right-radius: 0!important;
+	transform:translateY(50%);
+	box-shadow: none!important;
+	padding-bottom: 0;
+	margin-bottom: 0.25rem;
+}
+@media(max-width: 576px){
+	.fullscreen-toggle-btn{
+		display: none;
+	}
+}
+
 /**********************************************************
  *				auto_play_test.html  
  **********************************************************/
@@ -911,12 +962,16 @@ background: #b8ffbc;
 	background: #373b4e99;
 	border: 1px solid rgba(255,255,255,.05);
 }
-.options-section .option:hover{
-	border-color: #fff;
-}
+.options-section .option:hover,
 .options-section .option.active{
 	background-color: #5169e6;
 	color: #fff;
+}
+@media(max-width: 576px){
+	/* 문제의 문장 영역 */
+	.word-unit-section .sentence-section{
+		margin-top:3.25rem;
+	}
 }
 /**********************************************************
  *				memento_trace.html  
@@ -928,6 +983,7 @@ background: #b8ffbc;
 	padding: 2rem;
 	margin-bottom: 1rem;
 	color: #d2997e;
+	height: calc(100% - 1rem);
 }
 .memento-trace-block .word-part{
 	/* padding-bottom: 2rem; */
