@@ -854,7 +854,7 @@
 @media (max-width: 576px) {
 	.workbook-index-section .book-section ,
 	.list-library-section .book-section {
-		width: calc(100vw - 3.5rem);
+		width: calc(100% - 1rem);
 		padding: 5px 0;
 	}
 	.workbook-index-section .swiper-section .swiper-button-section,
