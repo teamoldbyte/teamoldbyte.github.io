@@ -1934,7 +1934,7 @@
 	position: absolute;
 	top: -14px;
 	left: 15px;
-	rotate: -15deg;
+	/*rotate: -15deg;*/
 	font-family: "Font Awesome 5 Free";
 	content: "\f028";
 	font-style: normal;
