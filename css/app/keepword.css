@@ -24,10 +24,11 @@
 	position: absolute;
 	border: none;
 	border-radius: 5px;
-	/*color: #66A3DA;*/
 	color: #019c9e;
+	/*color: #66A3DA;*/
 	top: -17px;
-	left: var(--offset);
+	left: 20px;
+	/*left: var(--offset);*/
 	/*background: #fff;*/
 	padding: 3px;
 	/*transform-origin: 0px 18px;*/
