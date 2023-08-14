@@ -947,6 +947,7 @@ background: #b8ffbc;
  /* 단어 보기 영역 */
 .options-cover .options-section{
 	padding: 1.5rem 1rem;
+	overflow-y: auto;
 }
 .options-section .option-block{
 	padding: 0 0.75rem;
@@ -985,10 +986,10 @@ background: #b8ffbc;
 	color: #d2997e;
 	height: calc(100% - 1rem);
 }
-.memento-trace-block .word-part{
-	/* padding-bottom: 2rem; */
+/* .memento-trace-block .word-part{
+	padding-bottom: 2rem;
 	position: relative;
-}
+} */
 .memento-trace-block .word-part .save-date-section{
 	line-height: 2;
 }
@@ -1033,7 +1034,8 @@ background: #b8ffbc;
 .memento-trace-block .menu-block .dropdown-menu.show{
 	/* transform: translate3d(0, 2.5rem, 0px)!important; */
 	/* transform: translate3d(-10px, 34px, 0px)!important; */
-	transform: translate(4rem, 2.5rem)!important;
+	
+	/* transform: translate(4rem, 2.5rem)!important; */
 }
 .memento-trace-block .menu-block .dropdown-item:focus, 
 .memento-trace-block .menu-block .dropdown-item:hover{
