@@ -215,7 +215,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 			isInvalid = true;
 		} else {
 			const sentences = tokenizer.sentences(input);
-			const isSentenceTooLong = sentences.some(sentence => sentence.length > MAX_SENTENCE_LENGTH);
+			const isSentenceTooLong = !isSsam && sentences.some(sentence => sentence.length > MAX_SENTENCE_LENGTH);
 			if (isSentenceTooLong) {
 				const index = sentences.findIndex(sentence => sentence.length > MAX_SENTENCE_LENGTH) + 1;
 				invalidText.textContent = `${index}번째 문장의 글자수가 너무 많습니다.`;
@@ -275,7 +275,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 					textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 				})
 			}
-			if (tempSentence.length > MAX_SENTENCE_LENGTH) {
+			if (!isSsam && tempSentence.length > MAX_SENTENCE_LENGTH) {
 				alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 				return;
 			}
@@ -372,7 +372,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 					textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 				})
 			}
-			if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+			if(!isSsam && tempSentence.length > MAX_SENTENCE_LENGTH) {
 				alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 				return;					
 			}
@@ -495,7 +495,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 	/** 전체 문장의 길이 계산하여 문장 추가 버튼과 지문 추가 버튼 토글하기
 	 */
 	function calcParaLengthToggleAddBtn() {
-		const overflow = Array.from($(`${ONE_SENTENCE_SELECTOR} .sentence-text`).get(), sentence => sentence.textContent).join('').length >= 1500;
+		const overflow = !isSsam && Array.from($(`${ONE_SENTENCE_SELECTOR} .sentence-text`).get(), sentence => sentence.textContent).join('').length >= 1500;
 
 		$('.exceed-max-notice')[overflow ? 'slideDown' : 'slideUp'](100);
 		$('.js-open-add-sentence')[overflow ? 'slideUp' : 'slideDown'](100);
