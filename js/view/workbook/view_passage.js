@@ -11,6 +11,11 @@
 	const WORKBOOK_ELEMENTS = await $.get('https://static.findsvoc.com/fragment/workbook/element_templates.min.html', jQuery.noop, 'html'); 
 //	const WORKBOOK_ELEMENTS = await $.get('/fragment/workbook/element_templates.html', jQuery.noop, 'html'); 
 	
+	
+	const partTypeMap = {
+		'n.':'명사', 'v.':'동사','vt.':'타동사','vi.':'자동사','a.':'형용사','ad.':'부사','prep.':'전치사','conj.':'접속사','int.':'감탄사',
+		'NP.' : '명사구', 'phrasal-v.': '구동사', 'VP.' : '동사구', 'PP.': '전치사구', 'ADP.': '부사구', 'AJP.': '형용사구'
+	}
 /*
 
 <!-- 분석 평가 모달 영역 -->
@@ -1483,6 +1488,266 @@
 			})
 		}
 	})
+	// [문장의 오픈보카 폼]---------------------------------------------------------
+	.on('click', '.js-open-voca-form', function(e) {
+		const $sentenceUnit = $(this).closest('.one-sentence-unit-section');
+		
+		// 대상 문장 텍스트 세팅
+		$('#openVocaModal').find('.original-sentence,.original-sentence-background')
+		.text($sentenceUnit.find('.origin-sentence .sentence-text').text());
+		
+		// 1단계를 제외한 모든 단계 닫고, 유형 선택 초기화
+		$('#openVocaModal .voca-reg-phase').hide().eq(0).show()
+		.find('input[name="vocaTypeCheck"]').prop('checked', false);
+		
+		// 해석 목록 세팅
+		$('#openVocaModal .trans-list').empty().append(createElement({
+			el: 'ol', children: Array.from($sentenceUnit.find('.translation-section:eq(0) .ai-translation-block .translation-text'), block => {
+			return {
+				el: 'li', class: 'translation-text', textContent: block.textContent
+			}
+		})}));
+		
+		// 텍스트, 표제어 초기화
+		$('#openVocaModal').find('.text-in-sentence,.lemma').val('')
+		
+		// 의미, 추가의미 초기화
+		$('#openVocaModal').find('.meaning,.additional-sense-type,.additional-meaning').val('').prop('disabled', true);
+		
+		// 대상 문장 div 지정 (sentenceId, wordId 따기 위함)
+		$('#openVocaModal').data('sentenceUnit', $sentenceUnit).modal('show');
+	})
+	// [오픈보카 유형 선택]---------------------------------------------------------
+	.on('change', 'input[name="vocaTypeCheck"]', function() {
+		$('#openVocaModal').find('.lemma,.meaning,.additional-meaning').val('').removeClass('is-valid is-invalid');
+		$('#addVoca,#appendVoca,.additional-sense-type,.additional-meaning').prop('disabled', true);
+		if(this.value) {
+			$('#openVocaModal .additional-sense-type').empty().append(`<option value="${this.value}" selected>${partTypeMap[this.value]}</option>`)
+		}else $('#openVocaModal .additional-sense-type').html('<option value="">-품사선택-</option>');
+		$(this).closest('.voca-reg-phase').next('.voca-reg-phase').slideDown();
+	})
+	// [오픈보카 범위 선택]---------------------------------------------------------
+	.on('mousedown', '#openVocaModal .original-sentence', function() {
+		$(this).siblings('.original-sentence-background').text(this.textContent);
+	});
+	// 문장 영역과 문장 배경 영역의 스크롤 동기화
+	$('#openVocaModal .original-sentence').on('scroll', function() {
+		$('#openVocaModal .original-sentence-background')[0].scrollTop = this.scrollTop;
+	});
+	$(document)
+	.on('mouseup', '#openVocaModal .original-sentence', function() {
+		const sel = getSelection();
+		const text = this.textContent;
+		if(!sel.anchorNode.isSameNode(sel.focusNode)) return;
+		if(sel.type == 'Range' && sel.toString().trim().length > 0) {
+			
+			const position = sel.anchorNode.compareDocumentPosition(sel.focusNode);
+			let backwards = false;
+			// position == 0 if nodes are the same
+			if (!position && sel.anchorOffset > sel.focusOffset || 
+			  position === Node.DOCUMENT_POSITION_PRECEDING)
+			  backwards = true; 
+
+			if(backwards) {
+				sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
+			}
+			let { anchorNode, anchorOffset, focusNode, focusOffset} = sel;
+			// 양끝 공백이 있으면 제거합니다.
+			while (/^(\s|[.,?!'"])/.test(text.substring(anchorOffset))) {
+				anchorOffset++;
+			}
+			while (/(\s|'s|[.,?!'"])$/.test(text.substring(0, focusOffset))) {
+				focusOffset--;
+			}
+			// 범위 바깥에 단어가 계속된다면 범위 확장
+			while(anchorOffset > 0 && /\w/.test(text[anchorOffset - 1])) {
+				anchorOffset--;
+			}
+			while(focusOffset < text.length && /\w/.test(text[focusOffset])) {
+				focusOffset++;
+			}
+			
+			sel.setBaseAndExtent(focusNode, focusOffset, anchorNode, anchorOffset);
+
+			const offsets = [sel.anchorOffset,sel.focusOffset].sort((a,b) => a - b);
+			const $nextPhase = $(this).closest('.voca-reg-phase').next('.voca-reg-phase').slideDown();
+			$nextPhase.find('.word-start').val(offsets[0]);
+			$nextPhase.find('.word-end').val(offsets[1]);
+			$nextPhase.find('.text-in-sentence,.lemma').val(sel.toString().substring(0, 50)).removeClass('is-valid is-invalid');
+			$nextPhase.find('.meaning,.additional-meaning').val('')
+			$nextPhase.find('.meaning,.additional-sense-type,.additional-meaning').prop('disabled', true);
+			$('#addVoca,#appendVoca').prop('disabled', true);
+			$nextPhase.find('.lemma').focus();
+			
+			const backface = $('#openVocaModal .original-sentence-background').get(0).firstChild;
+			const backRange = new Range();
+			backRange.setStart(backface, offsets[0]);
+			backRange.setEnd(backface, offsets[1]);
+			backRange.surroundContents($('<span class="ws-breakspaces bg-info"></span>').get(0))
+		}
+	})
+	.on('input', '#openVocaModal .lemma', function() {
+		$(this).removeClass('is-valid is-invalid');
+		$('#openVocaModal').find('.meaning,.additional-sense-type,.additional-meaning').val('').prop('disabled', true);
+		$('#addVoca,#appendVoca').prop('disabled', true);
+	})
+	.on('click', '#searchVoca', function() {
+		const $lemma = $('#openVocaModal .lemma');
+		const text = $lemma.val().trim();
+		if(text.length == 0 || text.length > 50) {
+			$lemma.addClass('is-invalid').removeClass('is-valid');
+			return;
+		}else {
+			$lemma.addClass('is-valid').removeClass('is-invalid');
+		}
+		$.getJSON('/openvocas/search/word', { text }, vocaInfo => {
+			$('#openVocaModal').find('.additional-sense-type,.additional-meaning').prop('disabled', false);
+			$('#addVoca, #appendVoca').prop('disabled', false);
+			$('#openVocaModal .word-id').val(vocaInfo.wordId);
+	
+			// 검색결과 단어가 있을 경우
+			if(vocaInfo.wordId > 0) {
+				const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
+				
+				$('#openVocaModal .meaning').val(vocaInfo.meaningList.join('\n'));
+				
+				const $senseTypeSelect = $('#openVocaModal .additional-sense-type');
+				const senseTypes = Array.from($senseTypeSelect.find('option').get(), opt => opt.value).filter(stype => stype.length > 0);
+				const wordUnit = $sentenceUnit.find('.one-word-unit-section').get().find(unit => {
+					return $(unit).data('wordId') == vocaInfo.wordId;
+				});
+				// 문장의 단어 리스트로 이미 등록된 경우
+				if(wordUnit) {
+					const senseTypesInWordList = Array.from($(wordUnit).find('.part').get(), part => part.textContent);
+					$('#openVocaModal .additional-sense-type')
+					.append(createElement(senseTypesInWordList.filter(p => !senseTypes.includes(p)), (part, i) => {
+						return { el: 'option', selected: i == 0, value: part, textContent: partTypeMap[part]};
+					}));
+					showOpenVocaAppendBtn();
+				}
+				// 사전으로는 등록됐지만 문장 단어 리스트에 없는 경우
+				else {
+					if(!/\s/.test(text)) {
+						// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
+						$('#openVocaModal .additional-sense-type').empty()
+						.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
+							return { el: 'option', value: key, textContent: value };
+						})));
+					}else {
+						// 구를 추가할 때에는 이미 등록된 품사들 중에서 선택할 수 있도록
+						$('#openVocaModal .additional-sense-type').empty()
+						.append(createElement(Array.from(vocaInfo.meaningList, (meaning,i) => {
+							const partType = meaning.match(/[a-zA-Z-]+\./)[0];
+							return { el: 'option', selected: i == 0, value: partType, textContent: partTypeMap[partType]}
+						}))); 
+					}
+					showOpenVocaAddBtn();
+				}					
+			}
+			// 사전으로 등록되지 않은 단어
+			else {
+				$('#openVocaModal .meaning').val('시스템에 등록되지 않은 어휘입니다.')
+				if(!/\s/.test(text)) {
+					// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
+					$('#openVocaModal .additional-sense-type').empty()
+					.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
+							return { el: 'option', value: key, textContent: value };
+						})));
+				}				
+				showOpenVocaAddBtn();
+			}
+		})
+	})
+	.on('click', '#addVoca,#appendVoca', function() {
+		const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
+		const wordId = parseInt($('#openVocaModal .word-id').val()),
+		 partType = $('#openVocaModal .additional-sense-type').val(),
+		 appendMeaning = $('#openVocaModal .additional-meaning').val().trim(),
+		 sentenceId = $sentenceUnit.data('sentenceId'),
+		 title = $('#openVocaModal .lemma').val().trim(),
+		 token = $('#openVocaModal .text-in-sentence').val().trim(),
+		 start = parseInt($('#openVocaModal .word-start').val()),
+		 end = parseInt($('#openVocaModal .word-end').val());
+		
+		const adding = $(this).is('#addVoca');
+		const url = adding ? `/openvocas/new/${/\s/.test(title)? 'phrase':'word'}`
+			: '/openvocas/append/meaning';
+		
+		if(partType.length == 0 && appendMeaning.length > 0) {
+			alertModal('품사가 선택되지 않은 추가의미가 있습니다.', () => $('#openVocaModal .additional-sense-type').focus());
+			return;
+		}
+		
+		$.ajax({ url,
+			 type: 'POST',
+			 data: { wordId, partType, appendMeaning, sentenceId, title, token, start, end},
+			 success: word => {
+				if(!!word && Object.getOwnPropertyNames(word).includes('senseList')) {
+					const $wordSection = $sentenceUnit.find('.word-section>.one-block');
+					if(adding) {
+						const $wordBlock = $wordCopySection.clone();
+						
+						// wordId, sentenceId, workbookId를 할당(단어모듈용)
+						$wordBlock.data({wordId: word.wid, sentenceId, workbookId});
+						
+						// 우선 복사 원본의 뜻 부분들을 삭제
+						$wordBlock.find('.one-part-unit-section').remove();
+						
+						// 단어의 품사별 뜻 새로 표시
+						$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
+								e.stopPropagation();
+								const on = this.dataset.playing == 'on';
+								if(on) {
+									stopAllTTS();
+								}else {
+									stopAllTTS(this);
+									this.dataset.playing = 'on';
+									this.classList.add('tts-playing','blink-2');
+									tts.speakRepeat(word.title, 2, 500, () => {
+										this.classList.remove('tts-playing', 'blink-2');
+										this.dataset.playing = 'off';
+									});
+								}
+						});
+						const senseList = word.senseList;
+						let senseListLen = senseList.length;
+						
+						for(let k = 0; k < senseListLen; k++) {
+							const sense = senseList[k], $partBlock = $partCopySection.clone();
+							
+							$wordBlock.append($partBlock);
+							$partBlock.find('.part').text(sense.partType);
+							$partBlock.find('.meaning').text(sense.meaning);
+						}
+						$wordSection.append($wordBlock);						 
+					}
+					// 의미 및 품사 추가만 한 경우
+					else {
+						const $wordBlock = $wordSection.find('.one-word-unit-section').filter((_,el) => $(el).data('wordId') == word.wid);
+						
+						$wordBlock.find('.one-part-unit-section').remove();
+						const senseList = word.senseList;
+						let senseListLen = senseList.length;
+						for(let k = 0; k < senseListLen; k++) {
+							const sense = senseList[k], $partBlock = $partCopySection.clone();
+							
+							$wordBlock.append($partBlock);
+							$partBlock.find('.part').text(sense.partType);
+							$partBlock.find('.meaning').text(sense.meaning);
+							
+						}
+					}
+					alertModal('등록되었습니다. 단어목록을 확인해 주세요.', () => $('#openVocaModal').modal('hide'));
+				} else {
+					alertModal('등록결과를 조회할 수 없습니다\n등록창을 닫습니다.', () => $('#openVocaModal').modal('hide'))
+				}				 
+			 },
+			 error: () => {
+				 alertModal('등록에 실패했습니다.');
+			 }
+		});
+	})
+	
 	/*
 	// [문장의 질문 목록 가져오기(1회)]-----------------------------------------------
 	.one('show.bs.tab', '.one-sentence-unit-section .nav-link[data-type=qna]', function() {
@@ -2265,6 +2530,31 @@
 		return $answerSection;
 	}
 */		
+	function showOpenVocaAddBtn() {
+		anime({
+			targets: $('#addVoca,#appendVoca').get(),
+			rotateX: (el) => el.id === 'addVoca' ? '0deg' : '180deg',
+			duration: 400,
+			easing: 'linear',
+			update: anim => {
+				if(anim.progress > 50)
+					$('#appendVoca').css('zIndex', -1)
+			}
+		});		
+	}
+	
+	function showOpenVocaAppendBtn() {
+		anime({
+			targets: $('#addVoca,#appendVoca').get(),
+			rotateX: (el) => el.id === 'addVoca' ? '180deg' : '0deg',
+			duration: 400,
+			easing: 'linear',
+			update: anim => {
+				if(anim.progress > 50)
+					$('#appendVoca').css('zIndex', 0)
+			}
+		});		
+	}
 }
 /* 타이머 */
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+//const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
