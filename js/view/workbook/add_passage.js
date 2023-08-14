@@ -1,7 +1,7 @@
 /** /workbook/add_passage.html
 @author LGM
  */
-function pageinit(isHelloBook, memberId) {
+function pageinit(isHelloBook, memberId, isSsam) {
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
@@ -30,7 +30,7 @@ function pageinit(isHelloBook, memberId) {
 	}
 	
 	function _verifyUsageLimit() {
-		if(memberId != 15000550 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		if(!isSsam && memberId != 15000550 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('#inputComplete, .ocr-btn').prop('disabled', true);
 			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
 			alertModal(`일일 분석량<span class="text-red-700">(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
@@ -142,7 +142,7 @@ function pageinit(isHelloBook, memberId) {
 			],
 		})
 		// 입력어가 유효한 글자로 제한량 이하일 경우
-		if(textLen < maxChars && !validateResult[0]) {
+		if(isSsam || (textLen < maxChars && !validateResult[0])) {
 			// 입력어가 없으면 검색버튼 비활성화
 			$('#inputComplete').attr("disabled", (textLen == 0));
 			textTooltip?.hide();
@@ -287,7 +287,7 @@ function pageinit(isHelloBook, memberId) {
 				));
 			}
 			$('#askMoreSentenceModal').modal('show');
-		}else if(isHelloBook && sentences.reduce((acc, curr) => acc + curr.length, 0) > maxChars) {
+		}else if(!isSsam && isHelloBook && sentences.reduce((acc, curr) => acc + curr.length, 0) > maxChars) {
 			alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
 		}else $('#beforeSubmitModal').modal('show');
 	});
@@ -373,7 +373,7 @@ function pageinit(isHelloBook, memberId) {
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 						})
 					}
-					if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+					if(!isSsam && tempSentence.length > MAX_SENTENCE_LENGTH) {
 						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 						return;					
 					}
@@ -667,7 +667,7 @@ function pageinit(isHelloBook, memberId) {
 		$form.trigger('submit');
 	});
 	$('#passageForm').on('submit', function() {
-		if(isHelloBook && $(this).find('input[name="text"]').text().length > maxChars) {
+		if(!isSsam && isHelloBook && $(this).find('input[name="text"]').text().length > maxChars) {
 			alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
 			return;
 		}
