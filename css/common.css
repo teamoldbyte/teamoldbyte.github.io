@@ -888,6 +888,7 @@ u {
 .fico-modal .modal-content{
 	border: none;
 	border-radius: 0.5rem;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .fico-modal .modal-header{
 	/* background: linear-gradient(to right, var(--fc-purple), #fff); */
