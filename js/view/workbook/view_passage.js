@@ -1523,7 +1523,14 @@
 		$('#addVoca,#appendVoca,.additional-sense-type,.additional-meaning').prop('disabled', true);
 		if(this.value) {
 			$('#openVocaModal .additional-sense-type').empty().append(`<option value="${this.value}" selected>${partTypeMap[this.value]}</option>`)
-		}else $('#openVocaModal .additional-sense-type').html('<option value="">-품사선택-</option>');
+		}else {
+			$('#openVocaModal .additional-sense-type').empty()
+			.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
+				return { el: 'option', value: key, textContent: value };
+			}))).prepend(createElement({
+				el: 'option', textContent: '-품사선택-', selected: true, disabled: true
+			}));
+		}
 		$(this).closest('.voca-reg-phase').next('.voca-reg-phase').slideDown();
 	})
 	// [오픈보카 범위 선택]---------------------------------------------------------
@@ -1577,7 +1584,7 @@
 			$nextPhase.find('.meaning,.additional-meaning').val('')
 			$nextPhase.find('.meaning,.additional-sense-type,.additional-meaning').prop('disabled', true);
 			$('#addVoca,#appendVoca').prop('disabled', true);
-			$nextPhase.find('.lemma').focus();
+			$nextPhase.find('.lemma').trigger('input').focus();
 			
 			const backface = $('#openVocaModal .original-sentence-background').get(0).firstChild;
 			const backRange = new Range();
@@ -1587,19 +1594,20 @@
 		}
 	})
 	.on('input', '#openVocaModal .lemma', function() {
-		$(this).removeClass('is-valid is-invalid');
-		$('#openVocaModal').find('.meaning,.additional-sense-type,.additional-meaning').val('').prop('disabled', true);
+		const text = this.value.trim();
+		$(this).toggleClass('is-invalid', text.length == 0 || text.length > 50)
+			.toggleClass('is-valid', text.length > 0 && text.length <= 50)
+			.siblings('.uppercase-feedback').toggle(this.value.trim().toLowerCase() != this.value.trim());
+		//$('#openVocaModal').find('.meaning,.additional-sense-type,.additional-meaning').val('').prop('disabled', true);
 		$('#addVoca,#appendVoca').prop('disabled', true);
 	})
 	.on('click', '#searchVoca', function() {
 		const $lemma = $('#openVocaModal .lemma');
 		const text = $lemma.val().trim();
-		if(text.length == 0 || text.length > 50) {
-			$lemma.addClass('is-invalid').removeClass('is-valid');
+		if($lemma.is('.is-invalid')) {
 			return;
-		}else {
-			$lemma.addClass('is-valid').removeClass('is-invalid');
 		}
+		
 		$.getJSON('/openvocas/search/word', { text }, vocaInfo => {
 			$('#openVocaModal').find('.additional-sense-type,.additional-meaning').prop('disabled', false);
 			$('#addVoca, #appendVoca').prop('disabled', false);
@@ -1611,23 +1619,25 @@
 				
 				$('#openVocaModal .meaning').val(vocaInfo.meaningList.join('\n'));
 				
-				const $senseTypeSelect = $('#openVocaModal .additional-sense-type');
-				const senseTypes = Array.from($senseTypeSelect.find('option').get(), opt => opt.value).filter(stype => stype.length > 0);
+				//const $senseTypeSelect = $('#openVocaModal .additional-sense-type');
+				// 현재 추가의미 품사목록 select에 있는 품사들
+				//const senseTypes = Array.from($senseTypeSelect.find('option').get(), opt => opt.value).filter(stype => stype.length > 0);
 				const wordUnit = $sentenceUnit.find('.one-word-unit-section').get().find(unit => {
 					return $(unit).data('wordId') == vocaInfo.wordId;
 				});
+				
 				// 문장의 단어 리스트로 이미 등록된 경우
 				if(wordUnit) {
-					const senseTypesInWordList = Array.from($(wordUnit).find('.part').get(), part => part.textContent);
+					/*const senseTypesInWordList = Array.from($(wordUnit).find('.part').get(), part => part.textContent);
 					$('#openVocaModal .additional-sense-type')
-					.append(createElement(senseTypesInWordList.filter(p => !senseTypes.includes(p)), (part, i) => {
+					.append(createElement(Array.from(senseTypesInWordList.filter(p => !senseTypes.includes(p)), (part, i) => {
 						return { el: 'option', selected: i == 0, value: part, textContent: partTypeMap[part]};
-					}));
+					})));*/
 					showOpenVocaAppendBtn();
 				}
 				// 사전으로는 등록됐지만 문장 단어 리스트에 없는 경우
 				else {
-					if(!/\s/.test(text)) {
+					/*if(!/\s/.test(text)) {
 						// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
 						$('#openVocaModal .additional-sense-type').empty()
 						.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
@@ -1641,20 +1651,20 @@
 						}).filter(partType => !senseTypes.includes(partType)), (partType,i) => {
 							return { el: 'option', selected: i == 0, value: partType, textContent: partTypeMap[partType]}
 						})));
-					}
+					}*/
 					showOpenVocaAddBtn();
 				}					
 			}
 			// 사전으로 등록되지 않은 단어
 			else {
 				$('#openVocaModal .meaning').val('시스템에 등록되지 않은 어휘입니다.')
-				if(!/\s/.test(text)) {
+				/*if(!/\s/.test(text)) {
 					// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
 					$('#openVocaModal .additional-sense-type').empty()
 					.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
 							return { el: 'option', value: key, textContent: value };
 						})));
-				}				
+				}*/
 				showOpenVocaAddBtn();
 			}
 		})
