@@ -913,7 +913,7 @@ u {
 	background-repeat: no-repeat;
 	background-position-y: 100%;
 	background-size: 50%;
-	opacity: 0.2;
+	opacity: 0.75;
 }
 .fico-modal .modal-header .btn-close{
 	font-size: 1.25rem;
