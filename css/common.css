@@ -922,6 +922,7 @@ u {
 }
 .fico-modal .modal-body{
 	padding: 1rem 2rem;
+	min-height: 10rem;
 }
 /* .fico-modal .modal-body::before{
 	content: '';

@@ -101,14 +101,22 @@ function alertModal(msg, callback) {
 	let modal = document.getElementById('alertModal');
 	if(!modal) {
 		modal = createElement({
-			"el":"div","id":"alertModal","class":"modal fade","data-bs-backdrop":"static","tabIndex":0,"children":[
+			"el":"div","id":"alertModal","class":"modal fico-modal fade","data-bs-backdrop":"static","tabIndex":0,"children":[
 				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 					{"el":"div","class":"modal-content","children":[
+						{"el":"div","class":"modal-header no-title","children":[
+							{"el":"h5","class":"mb-0"},
+							{"el":"button","type":"button","class":"btn btn-close fas fa-times","data-bs-dismiss":"modal"}
+						]},
 						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')},
-							{"el":"div","class":"button-section row g-1 col-6 mx-auto","children":[
-								{"el":"button","class":"btn btn-fico", 'data-bs-dismiss':'modal',"textContent": "확인"}
-		]}]}]}]}]});
+							{"el":"div","class":"text-section my-auto text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')}
+						]},
+						{"el":"div","class":"modal-footer row gx-2 col-md-6 col-8 mx-auto","children":[
+							{"el":"div","class":"col text-center","children":[
+								{"el":"button","class":"btn btn-fico w-100", 'data-bs-dismiss':'modal',"textContent": "확인"}
+							]}
+						]}
+		]}]}]});
 		document.body.appendChild(modal);
 		modal.addEventListener('keypress', function(event) {
 			if(event.code == 'Enter') {
@@ -129,22 +137,28 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 	if(!modal) {
 		modal = createElement({
 			"el":"div","id":"confirmModal","data-bs-backdrop":"static", 'data-bs-return': '0',
-			"class":"modal fade","tabIndex":0,"children":[
+			"class":"modal fico-modal fade","tabIndex":0,"children":[
 				{"el":"div","class":"modal-dialog modal-md modal-dialog-centered","children":[
 					{"el":"div","class":"modal-content","children":[
+						{"el":"div","class":"modal-header no-title","children":[
+							{"el":"h5","class":"mb-0"},
+							{"el":"button","type":"button","class":"btn btn-close fas fa-times","data-bs-dismiss":"modal"}
+						]},						
 						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section my-3 text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')},
-							{"el":"div","class":"button-section row gx-2 col-md-6 col-8 mx-auto","children":[
-								{ "el": "div", className: 'col text-center', children: [
-									{"el":"button","class":"btn btn-fico w-100","textContent": "확인", onclick: () => {
-										modal.dataset.bsReturn = 1;
-										bootstrap?.Modal?.getInstance(modal).hide();
-									}}
-								]},
-								{ "el": "div", className: 'col text-center', children: [
-									{"el":"button","class":"btn btn-outline-fico w-100", "textContent": "취소", 'data-bs-dismiss':'modal'}
-								]}
-		]}]}]}]}]});
+							{"el":"div","class":"text-section my-auto text-center text-dark","innerHTML":msg.replace(/\n/g,'<br>')}
+						]},
+						{"el":"div","class":"modal-footer row gx-2 col-md-6 col-8 mx-auto","children":[
+							{"el":"div","class":"col text-center","children":[
+								{"el":"button","class":"btn btn-fico w-100","textContent": "확인", onclick: () => {
+									modal.dataset.bsReturn = 1;
+									bootstrap?.Modal?.getInstance(modal).hide();
+								}}
+							]},
+              {"el":"div","class":"col text-center","children":[
+								{"el":"button","class":"btn btn-outline-fico w-100", "textContent": "취소", 'data-bs-dismiss':'modal'}
+							]}
+						]}						
+		]}]}]});
 		document.body.appendChild(modal);
 		modal.addEventListener('keypress', function(event) {
 			if(event.code == 'Enter') {
