@@ -1,7 +1,7 @@
 /** /workbook/add_sentence.html
 @author LGM
  */
-function pageinit(memberId) {
+function pageinit(memberId, isSsam) {
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
@@ -31,7 +31,7 @@ function pageinit(memberId) {
 	}
 	
 	function _verifyUsageLimit() {
-		if(memberId != 15000550 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		if(!isSsam && memberId != 15000550 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('#inputComplete, .ocr-btn').prop('disabled', true);
 			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
 			alertModal(`일일 분석량<span class="text-red-700">(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
@@ -124,7 +124,7 @@ function pageinit(memberId) {
 			],
 		})
 		// 입력어가 유효한 글자로 제한량 이하일 경우
-		if(textLen < maxChars && !validateResult[0]) {
+		if(isSsam || (textLen < maxChars && !validateResult[0])) {
 			// 입력어가 없으면 검색버튼 비활성화
 			$('#inputComplete').attr("disabled", (textLen == 0));
 			textTooltip?.hide();
@@ -327,7 +327,7 @@ function pageinit(memberId) {
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 						})
 					}
-					if(tempSentence.length > MAX_SENTENCE_LENGTH) {
+					if(!isSsam && tempSentence.length > MAX_SENTENCE_LENGTH) {
 						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 						return;					
 					}

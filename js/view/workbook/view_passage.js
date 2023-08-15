@@ -1635,11 +1635,12 @@
 						})));
 					}else {
 						// 구를 추가할 때에는 이미 등록된 품사들 중에서 선택할 수 있도록
-						$('#openVocaModal .additional-sense-type').empty()
-						.append(createElement(Array.from(vocaInfo.meaningList, (meaning,i) => {
-							const partType = meaning.match(/[a-zA-Z-]+\./)[0];
+						$('#openVocaModal .additional-sense-type')
+						.append(createElement(Array.from(Array.from(vocaInfo.meaningList, meaning => {
+							return meaning.match(/[a-zA-Z-]+\./)[0];
+						}).filter(partType => !senseTypes.includes(partType)), (partType,i) => {
 							return { el: 'option', selected: i == 0, value: partType, textContent: partTypeMap[partType]}
-						}))); 
+						})));
 					}
 					showOpenVocaAddBtn();
 				}					
