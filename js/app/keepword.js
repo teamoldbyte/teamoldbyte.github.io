@@ -170,7 +170,8 @@
 		$(this).find('.js-save-word').remove();
 	})
 	// [단어 보관]----------------------------------------------------------------
-	.on('click', '.js-save-word', function() {
+	.on('click', '.js-save-word', function(e) {
+		e.stopPropagation();
 		const $wordSection = $(this).closest(WORD_UNIT_SELECTOR)
 		if($wordSection.is('.processing')) return;
 		$wordSection.addClass('processing');
