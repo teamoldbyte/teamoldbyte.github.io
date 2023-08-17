@@ -562,11 +562,11 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 				$.getJSON('/member/search', { email: btoa(input.value.trim()) }, worker => {
 					input.value = '';
 					if(worker) {
+						const $newListSection = $('#coworker-edit-modal .list-new-coworker-section');
 						const newWorkerBlock = createElement(createWorker(worker));
-						$(newWorkerBlock).find('.del-btn').hide().before(createElement({
-							el: 'span', className: 'col-1 my-auto fas fa-plus new-worker-symbol' 
-						}));
-						$('#coworker-edit-modal .list-new-coworker-section').get(0).appendChild(newWorkerBlock);
+						
+						$newListSection.append(newWorkerBlock)
+							.find('.empty-msg').hide();
 						$('.add-coworker-btn').prop('disabled', false);
 					}else{ 
 						alertModal('존재하지 않은 회원입니다.');
@@ -576,7 +576,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		})
 		// [공동 작업자 추가 등록]---------------------------------------------------
 		$('.add-coworker-btn').on('click', function() {
-			const coworkerIdList = Array.from($('.list-new-coworker-section').get(0).children, block => block.dataset.mid);
+			const coworkerIdList = Array.from($('.list-new-coworker-section .coworker').get(), block => block.dataset.mid);
 			$.ajax({
 				url: '/workbook/coworker/add',
 				type: 'POST',
@@ -585,11 +585,8 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 					alertModal('공동 작업자가 추가되었습니다.');
 					$('#coworker-email').val('');
 					$('.add-coworker-btn').prop('disabled', true);
-					$('.list-new-coworker-section').children().each(function() {
-						$(this).find('.del-btn').show();
-						$(this).find('.new-worker-symbol').remove();
-					});
-					$('.list-coworker-section').append($('.list-new-coworker-section').children());
+					$('.list-coworker-section').append($('.list-new-coworker-section').children('.coworker'));
+					$('.list-new-coworker-section .empty-msg').show();
 				},
 				error: function() {
 					alertModal('작업자 등록에 실패했습니다.');
@@ -602,18 +599,27 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			const alias = $coworker.find('.alias').text();
 			const memberId = parseInt($coworker.data('mid'));
 			confirmModal(`${alias}님을 작업자에서 제외하시겠습니까?`, () => {
-				$.ajax({
-					url: '/workbook/coworker/del',
-					type: 'POST',
-					data: { workbookId: workbookId, coworkerIdList: [memberId] },
-					success: () => {
-						$coworker.remove();
-						alertModal(`${alias}님을 작업자에서 제외했습니다.`);
-					},
-					error: function() {
-						alertModal('작업자 제외가 실패했습니다.');
-					},
-				});
+				if($(this).closest('.list-new-coworker-section').length > 0) {
+					$coworker.remove();
+					if($('.list-new-coworker-section .coworker').length == 0) {
+						$('.list-new-coworker-section .empty-msg').show();
+						$('.add-coworker-btn').prop('disabled', true);
+					}
+				}else {
+					$.ajax({
+						url: '/workbook/coworker/del',
+						type: 'POST',
+						data: { workbookId: workbookId, coworkerIdList: [memberId] },
+						success: () => {
+							$coworker.remove();
+							alertModal(`${alias}님을 작업자에서 제외했습니다.`);
+						},
+						error: function() {
+							alertModal('작업자 제외가 실패했습니다.');
+						},
+					});
+					
+				}
 			});
 		})
 		
@@ -649,6 +655,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			const deleteButton = {
 				el: 'button',
 				className: 'del-coworker my-auto btn del-btn col-1 fas fa-trash-alt',
+				title: '목록에서 제외합니다.'
 			};
 
 			return {
