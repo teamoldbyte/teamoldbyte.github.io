@@ -1735,7 +1735,7 @@
 		
 		$.ajax({ url,
 			 type: 'POST',
-			 data: { wordId, partType, appendMeaning, sentenceId, title, token, start, end},
+			 data: { wordId: wordId ? wordId : 0, partType, appendMeaning, sentenceId, title, token, start, end},
 			 success: word => {
 				if(!!word && Object.getOwnPropertyNames(word).includes('senseList')) {
 					const $wordSection = $sentenceUnit.find('.word-section>.one-block');
