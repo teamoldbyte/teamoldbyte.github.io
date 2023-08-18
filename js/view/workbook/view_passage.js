@@ -1512,14 +1512,16 @@
 		$('#openVocaModal').find('.text-in-sentence,.lemma').val('')
 		
 		// 의미, 추가의미 초기화
-		$('#openVocaModal').find('.meaning,.additional-sense-type,.additional-meaning').val('').prop('disabled', true);
+		$('#openVocaModal').find('.additional-sense-type,.additional-meaning').empty().val('').prop('disabled', true);
+		$('#openVocaModal .meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>')
 		
 		// 대상 문장 div 지정 (sentenceId, wordId 따기 위함)
 		$('#openVocaModal').data('sentenceUnit', $sentenceUnit).modal('show');
 	})
 	// [오픈보카 유형 선택]---------------------------------------------------------
 	.on('change', 'input[name="vocaTypeCheck"]', function() {
-		$('#openVocaModal').find('.lemma,.meaning,.additional-meaning').val('').removeClass('is-valid is-invalid');
+		$('#openVocaModal').find('.lemma,.additional-meaning').empty().val('').removeClass('is-valid is-invalid');
+		$('#openVocaModal .meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>')
 		$('#addVoca,#appendVoca,.additional-sense-type,.additional-meaning').prop('disabled', true);
 		if(this.value) {
 			$('#openVocaModal .additional-sense-type').empty().append(`<option value="${this.value}" selected>${partTypeMap[this.value]}</option>`)
@@ -1581,8 +1583,9 @@
 			$nextPhase.find('.word-start').val(offsets[0]);
 			$nextPhase.find('.word-end').val(offsets[1]);
 			$nextPhase.find('.text-in-sentence,.lemma').val(sel.toString().substring(0, 50)).removeClass('is-valid is-invalid');
-			$nextPhase.find('.meaning,.additional-meaning').val('')
-			$nextPhase.find('.meaning,.additional-sense-type,.additional-meaning').prop('disabled', true);
+			$nextPhase.find('.additional-meaning').empty().val('')
+			$nextPhase.find('.additional-sense-type,.additional-meaning').prop('disabled', true);
+			$nextPhase.find('.meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>')
 			$('#addVoca,#appendVoca').prop('disabled', true);
 			$nextPhase.find('.lemma').trigger('input').focus();
 			
@@ -1598,32 +1601,55 @@
 		$(this).toggleClass('is-invalid', text.length == 0 || text.length > 50)
 			.toggleClass('is-valid', text.length > 0 && text.length <= 50)
 			.siblings('.uppercase-feedback').toggle(this.value.trim().toLowerCase() != this.value.trim());
-		//$('#openVocaModal').find('.meaning,.additional-sense-type,.additional-meaning').val('').prop('disabled', true);
+		$('#openVocaModal .meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>');
+		$('#openVocaModal .word-id').val(0);
 		$('#addVoca,#appendVoca').prop('disabled', true);
 	})
 	.on('click', '#searchVoca', function() {
 		const $lemma = $('#openVocaModal .lemma');
 		const text = $lemma.val().trim();
+		const partType = $('input[name="vocaTypeCheck"]:checked').val() == 'phrasal-v.' ? 'pv' : 'np';
 		if($lemma.is('.is-invalid')) {
 			return;
 		}
-		
-		$.getJSON('/openvocas/search/word', { text }, vocaInfo => {
+		$('#openVocaModal .word-id').val(0);
+		$.getJSON('/openvocas/search/word', { text, partType }, vocaInfoList => {
 			$('#openVocaModal').find('.additional-sense-type,.additional-meaning').prop('disabled', false);
 			$('#addVoca, #appendVoca').prop('disabled', false);
-			$('#openVocaModal .word-id').val(vocaInfo.wordId);
+			if(partType === 'np')
+				$('#openVocaModal .word-id').val(vocaInfoList[0]?.wordId??0);
 	
 			// 검색결과 단어가 있을 경우
-			if(vocaInfo.wordId > 0) {
+			if(vocaInfoList?.length > 0) {
 				const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
 				
-				$('#openVocaModal .meaning').val(vocaInfo.meaningList.join('\n'));
+				// 단어일 경우 바로 여러 줄의 텍스트로 뜻 표시
+				if(partType === 'np') {
+					$('#openVocaModal .meaning').empty()
+					.append($('<ul class="list-group list-group-flush"></ul>')
+					.append(createElement(Array.from(vocaInfoList[0].meaningList, meaning => {
+						return { el: 'li', class: 'list-group-item', textContent: meaning }
+					}))));
+				}
+				// 구동사일 경우 선택 가능한 리스트로 뜻 표시
+				else {
+					$('#openVocaModal .meaning').empty()
+					.append(createElement([ { el: 'div', class: 'text-center m-2 text-secondary', textContent: '───── 아래 뜻 중 적절한 것이 있으면 선택하세요. ─────', selected: true} ].concat(Array.from(vocaInfoList, (vocaInfo,i) => {
+						return { el: 'div', class: 'form-check', role: 'button', children: [
+							{ el: 'input', type: 'checkbox', class: 'form-check-input', id: 'openVocaMeaningCheck' + i, value: vocaInfo.wordId },
+							{ el: 'label', class: 'form-check-label', htmlFor: 'openVocaMeaningCheck' + i, children: [
+								{ el: 'span', class: 'pv-title fw-bold me-5', textContent: vocaInfo.title },
+								vocaInfo.meaningList.join(' ')
+							]}
+						]}
+					}))));
+				}
 				
 				//const $senseTypeSelect = $('#openVocaModal .additional-sense-type');
 				// 현재 추가의미 품사목록 select에 있는 품사들
 				//const senseTypes = Array.from($senseTypeSelect.find('option').get(), opt => opt.value).filter(stype => stype.length > 0);
 				const wordUnit = $sentenceUnit.find('.one-word-unit-section').get().find(unit => {
-					return $(unit).data('wordId') == vocaInfo.wordId;
+					return Array.from(vocaInfoList, vocaInfo => vocaInfo.wordId).includes($(unit).data('wordId'));
 				});
 				
 				// 문장의 단어 리스트로 이미 등록된 경우
@@ -1646,7 +1672,7 @@
 					}else {
 						// 구를 추가할 때에는 이미 등록된 품사들 중에서 선택할 수 있도록
 						$('#openVocaModal .additional-sense-type')
-						.append(createElement(Array.from(Array.from(vocaInfo.meaningList, meaning => {
+						.append(createElement(Array.from(Array.from(vocaInfoList.meaningList, meaning => {
 							return meaning.match(/[a-zA-Z-]+\./)[0];
 						}).filter(partType => !senseTypes.includes(partType)), (partType,i) => {
 							return { el: 'option', selected: i == 0, value: partType, textContent: partTypeMap[partType]}
@@ -1657,7 +1683,7 @@
 			}
 			// 사전으로 등록되지 않은 단어
 			else {
-				$('#openVocaModal .meaning').val('시스템에 등록되지 않은 어휘입니다.')
+				$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
 				/*if(!/\s/.test(text)) {
 					// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
 					$('#openVocaModal .additional-sense-type').empty()
@@ -1669,6 +1695,19 @@
 			}
 		})
 	})
+	.on('change', '#openVocaModal .meaning .form-check-input', function() {
+		if(this.checked) {
+			$('#openVocaModal .meaning .form-check-input').not(this).prop('checked', false);
+			$('#openVocaModal .lemma').val($(this.labels[0]).find('.pv-title').text());
+			$('#openVocaModal .word-id').val(this.value);
+		}else {
+			$('#openVocaModal .word-id').val(0);
+		}
+	})
+	.on('input', '#openVocaModal .additional-meaning', function() {
+		$('#addVoca,#appendVoca').prop('disabled', !this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
+	})
+	
 	.on('click', '#addVoca,#appendVoca', function() {
 		const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
 		const wordId = parseInt($('#openVocaModal .word-id').val()),
@@ -1686,6 +1725,11 @@
 		
 		if(partType.length == 0 && appendMeaning.length > 0) {
 			alertModal('품사가 선택되지 않은 추가의미가 있습니다.', () => $('#openVocaModal .additional-sense-type').focus());
+			return;
+		}
+		
+		if(!wordId && !appendMeaning) {
+			alertModal('등록된 의미들 중 선택을 하거나 추가의미를 입력해 주세요.');
 			return;
 		}
 		
