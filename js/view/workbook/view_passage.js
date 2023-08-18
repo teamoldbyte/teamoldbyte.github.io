@@ -1686,6 +1686,7 @@
 			else {
 				if(!partType) { // 구가 아닌 단어일 경우, 등록을 막는다.
 					$('#openVocaModal .meaning').html('<p class="p-2 text-center">시스템에 등록되지 않은 어휘입니다.<br>빠른 시일 내에 등록해 드리겠습니다.<br>감사합니다.</p>')
+					$('#openVocaModal .uppercase-feedback').hide();
 					$('#addVoca,#appendVoca,.additional-sense-type,.additional-meaning').prop('disabled', true);
 				}else 
 					$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
