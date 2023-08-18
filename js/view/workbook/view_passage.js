@@ -1608,15 +1608,16 @@
 	.on('click', '#searchVoca', function() {
 		const $lemma = $('#openVocaModal .lemma');
 		const text = $lemma.val().trim();
-		const partType = $('input[name="vocaTypeCheck"]:checked').val() == 'phrasal-v.' ? 'pv' : 'np';
-		if($lemma.is('.is-invalid')) {
+		const partType = $('input[name="vocaTypeCheck"]:checked').val();
+		const searchPartType = partType == 'phrasal-v.' ? 'pv' : 'np';
+		if(!text || $lemma.is('.is-invalid')) {
 			return;
 		}
 		$('#openVocaModal .word-id').val(0);
-		$.getJSON('/openvocas/search/word', { text, partType }, vocaInfoList => {
+		$.getJSON('/openvocas/search/word', { text, partType: searchPartType }, vocaInfoList => {
 			$('#openVocaModal').find('.additional-sense-type,.additional-meaning').prop('disabled', false);
 			$('#addVoca, #appendVoca').prop('disabled', false);
-			if(partType === 'np')
+			if(searchPartType === 'np')
 				$('#openVocaModal .word-id').val(vocaInfoList[0]?.wordId??0);
 	
 			// 검색결과 단어가 있을 경우
@@ -1624,7 +1625,7 @@
 				const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
 				
 				// 단어일 경우 바로 여러 줄의 텍스트로 뜻 표시
-				if(partType === 'np') {
+				if(searchPartType === 'np') {
 					$('#openVocaModal .meaning').empty()
 					.append($('<ul class="list-group list-group-flush"></ul>')
 					.append(createElement(Array.from(vocaInfoList[0].meaningList, meaning => {
@@ -1683,7 +1684,11 @@
 			}
 			// 사전으로 등록되지 않은 단어
 			else {
-				$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
+				if(!partType) { // 구가 아닌 단어일 경우, 등록을 막는다.
+					$('#openVocaModal .meaning').html('<p class="p-2 text-center">시스템에 등록되지 않은 어휘입니다.<br>빠른 시일 내에 등록해 드리겠습니다.<br>감사합니다.</p>')
+					$('#addVoca,#appendVoca,.additional-sense-type,.additional-meaning').prop('disabled', true);
+				}else 
+					$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
 				/*if(!/\s/.test(text)) {
 					// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
 					$('#openVocaModal .additional-sense-type').empty()
