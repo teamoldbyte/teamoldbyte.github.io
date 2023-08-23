@@ -19,7 +19,7 @@ async function pageinit(testSentenceList, testType) {
 	const progressContent = document.querySelector(".autoplay-progress span");
 	
 	let HTML_TEMPLATE = await $.get('https://static.findsvoc.com/fragment/memento/auto_play_test.min.html', jQuery.noop, 'html');
-	//let HTML_TEMPLATE = await $.get('/fragment/memento/auto_play_test.html', jQuery.noop, 'html');
+	// let HTML_TEMPLATE = await $.get('/fragment/memento/auto_play_test.html', jQuery.noop, 'html');
 	const LOCAL_STORAGE_CONFIG_KEY = 'MementoAutoPlayTestConfigs';
 	const configs = JSON.parse(localStorage.getItem(LOCAL_STORAGE_CONFIG_KEY)||'{}');
 		
@@ -41,6 +41,14 @@ async function pageinit(testSentenceList, testType) {
 		$('#finishAutoPlay').prop('disabled', false);
 		$('.cover-before-play,.cover-before-play-cover').hide();
 		$('#waitingLottie').show();
+
+		// 모바일 시작종료 버튼 토글
+		$('.autoplay-top-mobile-menu .start-btn').toggleClass('start-btn finish-btn')
+		.find('.fas').toggleClass('fa-play fa-pause');
+		
+		// 모바일에서 숨겨놓은 하단 영어 예문 영역 보이기 
+		$('.example-sentence-section, .options-cover').show();
+
 		if(swiperInstance) {
 			swiperInstance.enable();
 			return;
@@ -108,17 +116,19 @@ async function pageinit(testSentenceList, testType) {
 				transitionEnd(s) {
 					if(timerAnim.paused) timerAnim.play()
 					$(s.slides[s.activeIndex - 1]).find('button').attr('tabIndex', -1).trigger('blur');
+					s.allowSlideNext = (s.activeIndex != s.slides.length - 2 || oxList.size == s.slides.length - 1);
 				},
 				reachEnd(s) {
 					$(s.pagination.el).hide()
 					timerAnim.pause();
 					$('.operation-section,.config-section').css('visibility','hidden');
 					
-					$('.time-result-msg .elapsed-time').text(Math.round(testSentenceList.length * 20 - timer.time + timer.ext));
 					$('.time-result-msg .expected-time').text(testSentenceList.length * 20);
+					$('.time-result-msg .elapsed-time').text(Math.round(testSentenceList.length * 20 - timer.time));
 					
 					if(timer.ext > 0) {
 						$('.time-over-msg').slideDown();
+						$('.time-result-msg .elapsed-time').text(Math.round(testSentenceList.length * 20 + timer.ext));
 						$('.time-result-msg .additional-msg').text(`${Math.round(timer.ext)}초 초과!`)
 					}else if(timer.time > 0 && timer.time > testSentenceList.length * 20 /10) {
 						$('.time-result-msg .additional-msg').text(`${Math.round(timer.time)}초나 여유있게 풀어냈습니다!`)
@@ -143,12 +153,20 @@ async function pageinit(testSentenceList, testType) {
 		$('.cover-before-play').show();
 		timerAnim.pause();
 		
+		// 모바일 시작종료 버튼 토글
+		$('.autoplay-top-mobile-menu .finish-btn').toggleClass('start-btn finish-btn')
+		.find('.fas').toggleClass('fa-play fa-pause');
+		
 		if(oxList.size > 0) {
 			confirmModal('지금 바로 테스트 결과를 보시겠습니까?', () => {
 				$('#getResultForm').submit();
 			}, () => {
 				$('.cover-before-play').hide();
 				$(this).prop('disabled', false);
+				
+				// 모바일 시작종료 버튼 토글
+				$('.autoplay-top-mobile-menu .start-btn').toggleClass('start-btn finish-btn')
+				.find('.fas').toggleClass('fa-play fa-pause');
 				if(!timerAnim.completed) timerAnim.play();
 			});
 		}else {
@@ -157,14 +175,78 @@ async function pageinit(testSentenceList, testType) {
 			}, () => {
 				$('.cover-before-play').hide();
 				$(this).prop('disabled', false);
+				// 모바일 시작종료 버튼 토글
+				$('.autoplay-top-mobile-menu .start-btn').toggleClass('start-btn finish-btn')
+				.find('.fas').toggleClass('fa-play fa-pause');
 				if(!timerAnim.completed) timerAnim.play();
 			})
 		}
 	})
 	
+	// (모바일) 하단 메뉴 접고 펼치기
+	let prevY = scrollY, prevDir;
+	const mobileConfigSection = $('.mobile-config-section-open-btn-block').get(0);
+	$(window).on('scroll', function(e) {
+		if(prevDir ^ (prevY < scrollY)) {
+			prevDir = prevY < scrollY;
+			// 위로 스크롤하면 하단 메뉴 및 펼침버튼 접기
+			if(prevY >= scrollY) {
+				anime({
+					targets: mobileConfigSection,
+					translateY: 0,
+					duration: 300,
+					easing: 'easeOutQuad'
+				})
+				$('.mobile-config-section-open-btn.active').button('toggle');
+				anime({
+					targets: '.mobile-config-section-open-btn .fas',
+					rotate: '0deg',
+					duration: 300,
+					easing: 'easeOutQuad',
+				})				
+			}
+			// 아래로 스크롤하면 펼침버튼 보이기
+			anime({
+				targets: $(mobileConfigSection).find('.mobile-config-section-open-btn').get(0),
+				translateY: prevY < scrollY ? 0 : '100%',
+				duration: 300,
+				easing: 'easeOutQuad'
+			})
+		}
+		prevY = scrollY;
+	})
+	$('.mobile-config-section-open-btn').on('click', function() {
+		const isActive = this.classList.contains('active');
+		anime({
+			targets: mobileConfigSection,
+			translateY: isActive ? '-100%' : 0,
+			duration: 300,
+			easing: 'easeOutQuad'
+		});
+		anime({
+			targets: '.mobile-config-section-open-btn .fas',
+			rotate: isActive ? '180deg' : '0deg',
+			duration: 300,
+			easing: 'easeOutQuad'
+		})
+	});	
+	
+	// 모바일에서 시작 시, 팝업 모달 안보기
+	const LOCAL_STORAGE_INITIAL_GUIDE_KEY = 'MementoAutoPlayTestGuideConfirmed';
+	const guideConfirmed = JSON.parse(localStorage.getItem(LOCAL_STORAGE_INITIAL_GUIDE_KEY) || 'false');
+	if(!guideConfirmed && devSize.isPhone()) {
+		$('#startModal').modal('show');
+	};
+	$('#startModalNotDisplayCheck').on('click', function() {
+		localStorage.setItem(LOCAL_STORAGE_INITIAL_GUIDE_KEY, "true");
+	})	
+	
 	$('#getResultForm').on('formdata', function(e) {
 		e.originalEvent.formData.append('keepWordIds', Array.from(oxList).toString());
 	})
+	$('.autoplay-top-mobile-menu').on('click', '.start-btn,.finish-btn', function() {
+		$(this.matches('.start-btn') ? '#startAutoPlay' : '#finishAutoPlay').trigger('click');
+	})	
 	
 	$('#toggleFullscreen').on('click', function() {
 		if(!document.fullscreenElement) {
@@ -184,7 +266,7 @@ async function pageinit(testSentenceList, testType) {
 			$('#toggleFullscreen i').addClass('fa-expand').removeClass('fa-compress');
 		}
 	})	
-	$('#changeWordAutoPlay')
+	$('.js-change-word-autoplay')
 	.toggleClass('fa-volume-up', wordAutoplay)
 	.toggleClass('fa-volume-mute opacity-50', !wordAutoplay)
 	.attr('data-active', wordAutoplay)
@@ -194,37 +276,39 @@ async function pageinit(testSentenceList, testType) {
 		$(this).toggleClass('active', active);
 		$(this).toggleClass('fa-volume-up fa-volume-mute opacity-50')
 	})
-	$('#changeSentenceAutoPlay')
-	.toggleClass('fa-comment', sentenceAutoplay)
-	.toggleClass('fa-comment-slash opacity-50', !sentenceAutoplay)
+	$('.js-change-sentence-autoplay')
+	.toggleClass('fa-volume-up', sentenceAutoplay)
+	.toggleClass('fa-volume-mute opacity-50', !sentenceAutoplay)
 	.attr('data-active', sentenceAutoplay)
 	.on('click', function() {
 		const active = !JSON.parse(this.dataset.active);
 		sentenceAutoplay = active;
 		$(this).toggleClass('active', active);
-		$(this).toggleClass('fa-comment fa-comment-slash opacity-50')
+		$(this).toggleClass('fa-volume-up fa-volume-mute opacity-50')
 	})
 	// 문장 재생 횟수
-	$('#changeSentenceRepeat .number').text(sentenceRepeat);
-	new bootstrap.Tooltip($('#changeSentenceRepeat')[0], {
-		trigger: 'click', placement: 'right',
-		html: true, title: $('<div class="text-center" style="width:6rem"><label class="form-label">문장<br>반복 재생 횟수</label><input type="number" min="1" class="js-change-sentence-repeat form-control pe-0 me-1 d-inline" value="' + sentenceRepeat + '" style="width:4rem">회</div>')[0]
-	});
+	$('.js-change-sentence-repeat-open .number').text(sentenceRepeat);
+	$('.js-change-sentence-repeat-open').each((_,el) => {
+		new bootstrap.Tooltip(el, {
+			trigger: 'click', placement: 'right',
+			html: true, title: $('<div class="text-center" style="width:6rem"><label class="form-label">문장<br>반복 재생 횟수</label><input type="number" min="1" class="js-change-sentence-repeat form-control pe-0 me-1 d-inline" value="' + sentenceRepeat + '" style="width:4rem">회</div>')[0]
+		});
+	})
 	$(document)
 	// 다음 슬라이드로
 	.on('click', '.js-next-slide', slideToNextUnsolved)
-	.on('shown.bs.tooltip', '#changeSentenceRepeat', function() {
-		$('.js-change-sentence-repeat').val(sentenceRepeat)[0].focus();
+	.on('shown.bs.tooltip', '.js-change-sentence-repeat-open', function() {
+		$('.js-change-sentence-repeat:visible').val(sentenceRepeat)[0].focus();
 	})
 	.on('blur', '.js-change-sentence-repeat', function() {
-		$('#changeSentenceRepeat').tooltip('hide');
+		$('.js-change-sentence-repeat-open:visible').tooltip('hide');
 	})
 	.on('change', '.js-change-sentence-repeat', function() {
 		sentenceRepeat = Math.max(1,parseInt(this.value));
-		$('#changeSentenceRepeat .number').text(sentenceRepeat);
+		$('.js-change-sentence-repeat-open .number').text(sentenceRepeat);
 	})	
 	// 현재 설정 저장
-	$('#saveConfigs').on('click', function() {
+	$('.js-save-configs').on('click', function() {
 		
 		localStorage.setItem(LOCAL_STORAGE_CONFIG_KEY, JSON.stringify({
 			wordAutoplay, sentenceAutoplay, sentenceRepeat
@@ -232,6 +316,7 @@ async function pageinit(testSentenceList, testType) {
 		$(this).prev('.toast').toast('show');
 	});
 	
+
 	//--------------------------------------------------------------------------
 	function createSlideList(testList) {
 		
@@ -269,7 +354,7 @@ async function pageinit(testSentenceList, testType) {
 						if(wordAutoplay) {
 							tts.stop(() => tts.speak(word.title));
 						}
-						$slide.find('.choose-complete-section').toggle($slide.find('.option.active').length > 0); 
+						$slide.find('.choose-complete-section').toggle($slide.find('.option.active').length == keepWordDtoList.length); 
 					})
 					return $optionBlock;
 				}))
@@ -311,7 +396,7 @@ async function pageinit(testSentenceList, testType) {
 							const expectedSpeakLength = charCount * 60 / (5.1 * 250);
 							const sentenceSection = createElement({
 								el: 'div', style: { marginTop: '1rem',color: 'var(--slate)', fontSize: '1.2rem'},
-							})
+							});
 							$slide.find('.kor-section').append(sentenceSection);
 							new Typewriter(sentenceSection, {
 								delay: (expectedSpeakLength * 1000 / charCount), cursor: ''
@@ -321,7 +406,10 @@ async function pageinit(testSentenceList, testType) {
 									targets: $btn.siblings('.js-next-slide').get(),
 									duration: 400,
 									rotateX: ['180deg','0deg'],
-									easing: 'linear'
+									easing: 'linear',
+									complete: (anim) => {
+										anim.animatables[0].target.classList.remove('pe-none');
+									}
 								})
 								anime({
 									targets: $btn.get(),
@@ -452,6 +540,7 @@ async function pageinit(testSentenceList, testType) {
 			});
 			// 마지막 슬라이드는 풀이 종료를 알리는 슬라이드임.
 			const lastIndex = slides.length - 1;
+			
 			// 뒷 슬라이드 중 아직 안 푼 첫 번째 슬라이드로 이동.
 			for(let i = activeIndex; i < lastIndex; i++) {
 				if(!pagination.bullets[i].querySelector('.pagination-bullet-check')) {
@@ -460,6 +549,7 @@ async function pageinit(testSentenceList, testType) {
 				}
 			}
 			// 뒷슬라이드는 다 풀었으면 1.앞슬라이드 중 안 푼 슬라이드로 이동 OR 2.마지막 슬라이드로 이동.
+			swiperInstance.allowSlideNext = true;
 			swiperInstance.slideTo(unsolvedIndex);
 			return;
 			
