@@ -35,15 +35,21 @@
 #moveAutoPlayTest,
 #startAutoPlay,
 #finishAutoPlay,
-#prevWords,
-#nextWords{
+.js-prev-words,
+.js-next-words{
+	background-color: #262841;
+}
+.js-prev-words,
+.js-next-words{
 	background-color: #262841;
 }
 /* 단어 세트 이전/다음 버튼 */
-#prevWords{
+.js-prev-words{
 	margin-left: 1.75rem;
+	margin-right: auto;
 }
-#nextWords{
+.js-next-words{
+	margin-left: auto;
 	margin-right: 1.75rem;
 }
 #startAutoPlay{
@@ -295,46 +301,46 @@
 	color: #262841;
 }
 /* TTS 자동재생 버튼 및 처음부터 반복재생 버튼 활성/비활성 */
-#changeAutoPlay, #changeTTSAutoPlay, #changeSlideLoop, #changeEngAutoOpen {
+.js-auto-slidenext, .js-change-tts-autoplay, .js-change-loop, .js-eng-auto-open {
 	opacity: .5;
 }
-#changeAutoPlay.active,
-#changeTTSAutoPlay.active,
-#changeSlideLoop.active,
-#changeEngAutoOpen.active {
+.js-auto-slidenext.active,
+.js-change-tts-autoplay.active,
+.js-change-loop.active,
+.js-eng-auto-open.active {
 	opacity: 1;
 }
-#changeTTSAutoPlay.active::before{
+.js-change-tts-autoplay.active::before{
 	content: "\f028";
 }
-#changeEngAutoOpen.active::before{
+.js-eng-auto-open.active::before{
 	content: "\f06e";
 }
-#changeAutoPlay.active::before{
+.js-auto-slidenext.active::before{
 	content: "\f04e";
 }
-#changeSlideLoop.active::before{
+.js-change-loop.active::before{
 	content: "\f2f1";
 }
-#changeTTSAutoPlay::before{
+.js-change-tts-autoplay::before{
 	content: "\f6a9";
 }
-#changeEngAutoOpen::before{
+.js-eng-auto-open::before{
 	content: "\f070";
 }
-#changeAutoPlay::before{
+.js-auto-slidenext::before{
 	content: "\f04e";
 }
-#changeSlideLoop::before{
+.js-change-loop::before{
 	content: "\f2f1";
 }
 /* TTS 자동재생 버튼 및 처음부터 반복재생 버튼 활성/비활성 */
-#saveConfigs .fa-save {
+.js-save-configs .fa-save {
 	left: 25%;
 	top: 40%;
 	text-shadow: -1px -1px #768e94a1;
 }
-/* #saveConfigs .fa-save::before {
+/* .js-save-configs .fa-save::before {
 	background-color: #fef6ff;
 } */
 /*문장 보기 영역*/
@@ -647,16 +653,20 @@ background: #b8ffbc;
 	}
 	/**/
 	.play-block-section .pagination-section {
-		bottom: 2.5rem;
+		/* bottom: 2.5rem; */
+		bottom: 0rem;
 		padding: 0;
 	}
 	.mobile-pagination .fas{
 		font-size: 1.5rem;
+		/* color: #262841; */
+		color: #fff;
 	}
 	.swiper-pagination{
-		width: 90%!important;
+		width: 100%!important;
 		/* bottom: calc(3.25rem - 12px)!important; */
-		bottom: 3.5rem!important;
+		/* bottom: 3.5rem!important; */
+		top: 38.5rem!important;
 	}
 	.word-card-section{
 		width: 100%!important;
@@ -680,11 +690,13 @@ background: #b8ffbc;
 		top: 1rem !important;
 	}
 	/* 단어 세트 이전/다음 버튼 */
-	#prevWords{
-		margin-left: .25rem;
+	.js-prev-words{
+		/* margin-left: .25rem; */
+		margin-left: 0.5rem;
 	}
-	#nextWords{
-		margin-right: .25rem;
+	.js-next-words{
+		margin-right: .5rem;
+		/* margin-right: 0; */
 	}
 	/**/
 	#startAutoPlay,
@@ -746,10 +758,14 @@ background: #b8ffbc;
 	/* 하단 config영역 접고 펼치기 버튼 */
 	.mobile-config-section-open-btn-block {
 		position: fixed;
-		bottom: -1rem;
-		left: calc(50% - 2rem);
+		top: 100%;
+		/*bottom: -1rem;*/
+		/*left: calc(50% - 2rem);*/
 	}
 	.mobile-config-section-open-btn{
+	    position: absolute;
+		top: -50%;
+		left: calc(50% - 2rem);
 		width: 4rem;
 		height: 4rem;
 		border: none;
@@ -788,10 +804,11 @@ background: #b8ffbc;
 	}
 	/* config 영역 */
 	.config-section{
-		display: none;
+		/*display: none;*/
 		margin: 0;
-		position: fixed;
-		bottom: 0;
+		/*position: fixed;*/
+		/*bottom: 0;*/
+		/*left: 0;*/
 	}
 	.config-section .icon-block{
 		/* margin-bottom: 1.5rem; */
@@ -882,9 +899,11 @@ background: #b8ffbc;
 		height: 100%;
 	}
 	.example-sentence-section-cover .cover-text{
-		position:absolute;
+		position: absolute;
 		top: 50%;
-		transform: translateY(-50%);
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
 	}
 	/* 예문 안내 팁 */
 	.example-eng-info{
