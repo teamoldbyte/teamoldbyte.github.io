@@ -113,6 +113,9 @@ async function pageinit(initialPage) {
 	function displayOpenVocasPage(page) {
 		const startOffset = page?.totalElements - page?.number * page?.size;
 		
+		// 신청 단어 상세정보란 떼어내기
+		$('#wordDetailSection').collapse('hide').appendTo($('#hiddenDivs'));
+		
 		// content를 테이블에 표시
 		$('#openVocasListDiv tbody').empty()
 		.append(Array.from(page.content, (ov, i) => {
