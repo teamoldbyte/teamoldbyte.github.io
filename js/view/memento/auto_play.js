@@ -7,7 +7,7 @@ async function pageinit(keepWordList, totalCount) {
 	const progressContent = document.querySelector(".autoplay-progress span");
 	
 	let HTML_TEMPLATE = await $.get('https://static.findsvoc.com/fragment/memento/auto_play.min.html', jQuery.noop, 'html');
-	// let HTML_TEMPLATE = await $.get('/fragment/memento/auto_play.html', jQuery.noop, 'html');
+	//let HTML_TEMPLATE = await $.get('/fragment/memento/auto_play.html', jQuery.noop, 'html');
 	const LOCAL_STORAGE_CONFIG_KEY = 'MementoAutoPlayConfigs';
 	const configs = JSON.parse(localStorage.getItem(LOCAL_STORAGE_CONFIG_KEY)||'{}');
 	
@@ -26,8 +26,9 @@ async function pageinit(keepWordList, totalCount) {
 	let swiperInstance, keepWordIds = [];
 
 
-	$('.swiper-wrapper').append(createSlideDOMList(keepWordList))
-	if($('.swiper-wrapper').children().length == 0) {
+	
+	if($('.swiper-wrapper')
+	.append(createSlideDOMList(keepWordList)).children().length == 0) {
 		alertModal('학습할 단어가 없습니다.<br>내가 작성하거나 구독한 <b>워크북에서</b><br>학습이 필요한 단어를 <b>보관</b>해 보세요.<br><br>이전 화면으로 돌아갑니다.',
 			() => history.back());
 		$('.operation-section').addClass('pe-none opacity-50');
