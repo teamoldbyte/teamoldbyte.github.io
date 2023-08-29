@@ -361,11 +361,11 @@
 		const $addSection = $(this).closest('.add-section');
 		const $textInput = $addSection.find('.text-input');
 		const content = $textInput.val().trim();
-		const noteAccess = $addSection.find('.note-open-input').val();
+		const publicOpen = JSON.parse($addSection.find('.note-open-input').val());
 		if(content.length == 0) return;
 		
 		// 지문 노트 추가(ajax)--------------------------------------------------
-		addPassageNote({workbookId, passageId, memberId, content, noteAccess}, appendNote);
+		addPassageNote({workbookId, passageId, memberId, content, publicOpen}, appendNote);
 		//--------------------------------------------------------------------
 		
 		function appendNote(note) {
@@ -1939,17 +1939,19 @@
 		const noteId = Number($noteSection.data('noteId'));
 		const noteAccess = $textSection.find('.note-open-input').val();
 		const content = $textSection.find('.text-input').summernote('code').trim();
-		const jsonCommand = {noteId, workbookId, memberId, content, noteAccess}
+		const jsonCommand = {noteId, workbookId, memberId, content}
 		const $sentenceSection = $textSection.closest('.one-sentence-unit-section');
 		const ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		
 		if(content.length == 0) return;
 		// 문장 노트일 경우
-		if($sentenceSection.length > 0) {
+		if(ofWhat == 'sentence') {
 			jsonCommand.sentenceId = Number($sentenceSection.data('sentenceId'));
+			jsonCommand.noteAccess = noteAccess;
 		}// 지문 노트일 경우
 		else {
 			jsonCommand.passageId = passageId;
+			jsonCommand.publicOpen = JSON.parse(noteAccess);
 		}
 
 		// 노트 수정(ajax)-------------------------------
@@ -2482,7 +2484,7 @@
 /* ------------------------------ Embed functions --------------------------- */
 	// 노트 정보를 DOM으로 생성
 	function createNoteDOM(note) {
-		const block = $(WORKBOOK_ELEMENTS).children('.note-block').clone(true)[0];
+		const block = $(WORKBOOK_ELEMENTS).children(`.note-block.${note?.hasOwnProperty('sentenceId')?'sentence':'passage'}-note`).clone(true)[0];
 		if(devSize.isPhone()) block.querySelector('.note').classList.add('overflow-hidden');
 		block.dataset.noteId = note.noteId;
 		// 내용
@@ -2494,7 +2496,7 @@
 			block.querySelector('.note-mdf-btns').remove();
 		}else {
 			const input = block.querySelector('.note-editor .note-open-input');
-			input.value = note.noteAccess;
+			input.value = note.noteAccess??note.publicOpen;
 			$(input).trigger('input');
 		}
 		block.querySelector('.personacon-section .alias').textContent = note?.memberInfo?.alias;
