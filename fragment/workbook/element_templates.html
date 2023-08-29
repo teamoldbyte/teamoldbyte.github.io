@@ -110,12 +110,53 @@
 			</div>
 		</div>
 		
-		<!-- 노트 블럭 -->
-		<div class="note-block one-block row g-0">
+		<!-- 지문노트 블럭 -->
+		<div class="note-block passage-note one-block row g-0">
 			<div class="note text-section">
 				<div class="note-text ws-breakspaces">노트 본문</div>
-				<div class="note-editor" style="display: none;">
-					<textarea class="text-input col-12"></textarea>
+				<div class="note-editor" style="display: none;"><textarea class="text-input col-12"></textarea>
+					<!-- 노트 공개 설정, 버튼 영역 -->
+					<div class="row g-0 mt-2">
+						<div class="col-4 col-sm-2">
+							<select class="note-open-input form-select d-inline-block" aria-label="note-open select">
+								<option value="true" selected>구독자 공개</option>
+								<option value="false">비공개</option>
+							</select>
+						</div>
+						<div class="col-1 ms-1">
+							<button type="button" class="btn p-0 text-fc-purple" data-bs-toggle="modal" data-bs-target="#note-modal">
+								<span class="material-icons-outlined fs-6">help_outline</span>
+							</button>
+						</div>
+						<div class="col-6 col-sm-auto ms-auto text-end">
+							<div class="note-edit-btns btn-group btn-set">
+								<button type="button" class="js-edit-note-cancel btn btn-sm btn-outline-fico">취소</button>
+								<button type="button" class="js-edit-note btn btn-sm btn-fico">확인</button>
+							</div>
+						</div>
+					</div><!-- -->
+				</div>
+			</div>
+			<div class="col-12 row g-0 personacon-section text-end mt-0 mt-md-1 text-secondary">
+				<div class="personacon-alias alias col-auto ms-auto fst-normal lh-sm"></div>
+				<div class="updatedate col-auto ms-1 text-secondary text-xs lh-base"></div>
+			</div>
+			<div class="note-mdf-btns-section text-end">
+				<div class="note-mdf-btns btn-group">
+					<button type="button" class="js-edit-note-open login-required btn" data-toggle="tooltip" title="노트 수정">
+						<span class="material-icons fs-5">edit_document</span>
+					</button>
+					<button type="button" class="js-delete-note login-required btn" data-toggle="tooltip" title="노트 삭제">
+						<span class="material-icons fs-5">delete</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		<!-- 문장노트 블럭 -->
+		<div class="note-block sentence-note one-block row g-0">
+			<div class="note text-section">
+				<div class="note-text ws-breakspaces">노트 본문</div>
+				<div class="note-editor" style="display: none;"><textarea class="text-input col-12"></textarea>
 					<!-- 노트 공개 설정, 버튼 영역 -->
 					<div class="row g-0 mt-2">
 						<div class="col-4 col-sm-2">
