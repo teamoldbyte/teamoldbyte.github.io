@@ -279,7 +279,7 @@ label{
 /**********************************************************
  *					menu icon
  **********************************************************/
- .main-menu-section .menu-icon-section ul li:hover a .icon.fa-head-side-virus{
+ .main-menu-section .menu-icon-section ul li a .icon.fa-head-side-virus{
 	transform: scaleX(-1);
 }
  .main-menu-section .menu-icon-section .beta-badge{
