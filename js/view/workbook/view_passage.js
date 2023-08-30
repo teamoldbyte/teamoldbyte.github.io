@@ -1526,7 +1526,8 @@
 	})
 	// [오픈보카 유형 선택]---------------------------------------------------------
 	.on('change', 'input[name="vocaTypeCheck"]', function() {
-		$('#openVocaModal').find('.lemma,.additional-meaning').empty().val('').removeClass('is-valid is-invalid');
+		$('#openVocaModal .original-sentence-background').text($('#openVocaModal .original-sentence').text());
+		$('#openVocaModal').find('.text-in-sentence,.lemma,.additional-meaning').empty().val('').removeClass('is-valid is-invalid');
 		$('#openVocaModal .meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>')
 		$('#addVoca,#appendVoca,#requestVoca,.part-type,.additional-meaning').prop('disabled', true);
 		if(this.value) {
@@ -1625,6 +1626,21 @@
 			$('#addVoca, #appendVoca,#requestVoca').prop('disabled', false);
 			if(searchPartType === 'np')
 				$('#openVocaModal .word-id').val(vocaInfoList[0]?.wordId??0);
+	
+			// 품사목록 재설정
+			if(partType) {
+				const partTypes = new Set([partType]);
+				vocaInfoList?.forEach(vocaInfo => {
+					vocaInfo?.meaningList?.forEach(meaning => {
+						const searchedPartType = meaning.match(/[^\.]+/)[0]+'.';
+						if(!partTypes.has(searchedPartType)) partTypes.add(searchedPartType);
+					})
+				});
+				$('#openVocaModal .part-type').empty().append(
+					createElement(Array.from(partTypes, (val,i) => {
+						return { el: 'option', value: val, selected: i < 1, textContent: partTypeMap[val] };
+					})));
+			}
 	
 			// 검색결과 단어가 있을 경우
 			if(vocaInfoList?.length > 0) {
@@ -1740,7 +1756,7 @@
 		
 		const adding = $(this).is('#addVoca,#requestVoca');
 		const requesting = $(this).is('#requestVoca');
-		const url = adding ? `/openvocas/new/${/\s/.test(title)? 'phrase':'word'}`
+		const url = adding ? `/openvocas/new/${vocaType? 'phrase':'word'}`
 			: '/openvocas/append/meaning';
 		
 		// 품사도 선택하지 않고, 추가의미가 입력된 경우
@@ -1801,6 +1817,7 @@
 								$partBlock.find('.meaning').text(sense.meaning);
 							}
 						}
+						$wordSection.find('.empty-list').remove();
 						$wordSection.append($wordBlock);						 
 					}
 					// 의미 및 품사 추가만 한 경우
