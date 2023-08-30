@@ -668,7 +668,7 @@
 					const sense = senseList[k], $partBlock = $partCopySection.clone();
 					
 					$wordBlock.append($partBlock);
-					$partBlock.find('.part').text(sense.partType);
+					$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
 					$partBlock.find('.meaning').text(sense.meaning);
 				}
 				$wordSection.append($wordBlock);
@@ -1813,7 +1813,7 @@
 								const sense = senseList[k], $partBlock = $partCopySection.clone();
 								
 								$wordBlock.append($partBlock);
-								$partBlock.find('.part').text(sense.partType);
+								$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
 								$partBlock.find('.meaning').text(sense.meaning);
 							}
 						}
@@ -1831,7 +1831,7 @@
 							const sense = senseList[k], $partBlock = $partCopySection.clone();
 							
 							$wordBlock.append($partBlock);
-							$partBlock.find('.part').text(sense.partType);
+							$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
 							$partBlock.find('.meaning').text(sense.meaning);
 							
 						}
