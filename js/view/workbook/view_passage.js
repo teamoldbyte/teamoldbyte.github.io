@@ -13,7 +13,7 @@
 	
 	
 	const partTypeMap = {
-		'n.':'명사', 'v.':'동사','vt.':'타동사','vi.':'자동사','a.':'형용사','ad.':'부사','prep.':'전치사','conj.':'접속사','int.':'감탄사',
+		'n.':'명사', 'v.':'동사','vt.':'타동사','vi.':'자동사','a.':'형용사','ad.':'부사','prep.':'전치사','conj.':'접속사','int.':'감탄사', 'abbr.': '약어', 'pron.': '대명사',
 		'NP.' : '명사구', 'phrasal-v.': '구동사', 'VP.' : '동사구', 'PP.': '전치사구', 'ADP.': '부사구', 'AJP.': '형용사구'
 	}
 /*
@@ -1534,7 +1534,7 @@
 			$('#openVocaModal .part-type').empty().append(`<option value="${this.value}" selected>${partTypeMap[this.value]}</option>`)
 		}else {
 			$('#openVocaModal .part-type').empty()
-			.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
+			.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 11), ([key,value]) => {
 				return { el: 'option', value: key, textContent: value };
 			}))).prepend(createElement({
 				el: 'option', textContent: '문장에서 쓰인 품사를 목록에서 선택합니다.', selected: true, disabled: true, value: ''
