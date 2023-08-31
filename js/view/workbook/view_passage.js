@@ -370,11 +370,12 @@
 		
 		function appendNote(note) {
 			note['memberInfo'] = {memberId, alias: memberAlias};
-						   //------------------
-			const $block = createNoteDOM(note);
-						   //------------------
 			const $noteList = $addSection.closest('.note-section').find('.note-list').show();
-			$block.prependTo($noteList);
+			$noteList.each((_,el) => {
+						   //------------------
+				$(el).prepend(createNoteDOM(note));
+						   //------------------
+			})
 			$textInput.val('');
 			$addSection.toggle(300, function() {
 				$(this).siblings('.empty-list').hide();
@@ -1476,10 +1477,11 @@
 		function appendNote(note) {
 			note['memberInfo'] = {memberId, alias: memberAlias};
 			const $noteList = $sentenceSection.find('.note-section>.note-list');
+			$noteList.each((_,el) => {
 			 			   //------------------
-			const $block = createNoteDOM(note);
+				$(el).prepend(createNoteDOM(note));
 						   //------------------
-			$block.prependTo($noteList);
+			})
 			$addSection.find('.text-input').val('').summernote('destroy');
 			$addSection.hide(300, function() {
 				const $noteSection = $addSection.closest('.note-section');
@@ -2512,9 +2514,11 @@
 		if(memberId != note?.memberInfo?.memberId) {
 			block.querySelector('.note-mdf-btns').remove();
 		}else {
-			const input = block.querySelector('.note-editor .note-open-input');
-			input.value = note.noteAccess??note.publicOpen;
-			$(input).trigger('input');
+			const $input = $(block).find('.note-editor .note-open-input');
+			// input.value = true (O), $input.val("true") (O), $input.val(true) (X)
+			// ∴ val() 안에는 숫자 혹은 문자열이어야 함.
+			$input.val((note.noteAccess??note.publicOpen).toString());
+			$input.trigger('input');
 		}
 		block.querySelector('.personacon-section .alias').textContent = note?.memberInfo?.alias;
 		return $(block);
