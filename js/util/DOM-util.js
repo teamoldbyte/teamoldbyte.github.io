@@ -118,10 +118,8 @@ function alertModal(msg, callback) {
 						]}
 		]}]}]});
 		document.body.appendChild(modal);
-		modal.addEventListener('keypress', function(event) {
-			if(event.code == 'Enter') {
-				bootstrap?.Modal?.getInstance(modal).hide();
-			}
+		modal.addEventListener('shown.bs.modal', function() {
+			modal.querySelector('.modal-footer button[data-bs-dismiss]').focus();
 		});		
 	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
 	modal.addEventListener('hidden.bs.modal', onHidden);
