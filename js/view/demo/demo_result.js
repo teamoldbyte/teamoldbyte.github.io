@@ -2,6 +2,11 @@
  @author LGM
  */
  async function pageinit(sentenceList){
+	const partTypeMap = {
+		'n.':'명사', 'v.':'동사','vt.':'타동사','vi.':'자동사','a.':'형용사','ad.':'부사','prep.':'전치사','conj.':'접속사','int.':'감탄사', 'abbr.': '약어', 'pron.': '대명사',
+		'NP.' : '명사구', 'phrasal-v.': '구동사', 'VP.' : '동사구', 'PP.': '전치사구', 'ADP.': '부사구', 'AJP.': '형용사구'
+	}
+	
 	const originalList = Array.from(sentenceList);
 	sentenceList.reverse(); // 등록시간 역순으로 정렬
 	// 모바일이 아니거나 화면회전 기능을 지원하지 않으면 화면회전 버튼 삭제
@@ -589,7 +594,7 @@
 						const sense = senseList[k]; $partBlock = $partCopySection.clone();
 						
 						$wordBlock.append($partBlock);
-						$partBlock.find('.part').text(sense.partType);
+						$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
 						$partBlock.find('.meaning').text(sense.meaning);
 					}
 				}
