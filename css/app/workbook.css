@@ -1392,7 +1392,8 @@
       display: inline-block!important;
 		position: absolute;
 		right: 5px;
-		bottom: 5px;
+		top: 5px;
+		/* bottom: 5px; */
    }
 
 /* hover가 안되는 경우(태블릿,모바일의 경우) */}
@@ -1455,6 +1456,8 @@
 	position: absolute;
 	top: 0;
 	right: 0;
+	height: -webkit-fit-content;
+	height: fit-content;
 }
 /* 워크북 수정 및 개요보기 - 지문 타이틀 */
 .passage-title-section{
