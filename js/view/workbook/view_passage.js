@@ -907,7 +907,7 @@
 //	setTimeout(() => $('#loadingModal').modal('hide'), 2000);
 	$(document)
 	// [전체 문장 접고 펼치기]-------------------------------------------------------
-	.on('click', '#toggle-all-btn', function(e) {
+	.on('click', '#toggle-all-btn', function() {
 		const showOrHide = $(this).find('.fold-icon').is('.expanded')?'hide':'show'
 		// 스크롤 방지해놓고 전체 문장 접고 펼치기
 		$('.one-sentence-unit-section>.collapse').trigger('prv.scroll').collapse(showOrHide);
@@ -1491,7 +1491,7 @@
 		}
 	})
 	// [문장의 오픈보카 폼]---------------------------------------------------------
-	.on('click', '.js-open-voca-form', function(e) {
+	.on('click', '.js-open-voca-form', function() {
 		const $sentenceUnit = $(this).closest('.one-sentence-unit-section');
 		
 		// 대상 문장 텍스트 세팅
@@ -1602,7 +1602,7 @@
 			const backRange = new Range();
 			backRange.setStart(backface, offsets[0]);
 			backRange.setEnd(backface, offsets[1]);
-			backRange.surroundContents($('<span class="ws-breakspaces bg-info"></span>').get(0))
+			backRange.surroundContents($('<span class="bg-info"></span>').get(0))
 		}
 	})
 	.on('input', '#openVocaModal .lemma', function() {
@@ -1809,9 +1809,17 @@
 							$wordBlock.append($('<span class="meaning fst-italic">빠른 시일 내에 등록될 예정입니다.<span>'));
 						}else {
 							const senseList = word.senseList;
-							let senseListLen = senseList.length;
+							// '단어'를 검색결과의 뜻 선택만 했을 경우, senseList = []
+							if(senseList.length == 0) {
+								// "vt. 가다"와 같은 형태의 텍스트를 검색결과에서 추출
+								const meaningChoice = $('#openVocaModal .meaning .list-group-item').filter((_,el) => {
+									return el.textContent.startsWith(partType);
+								}).text();
+								
+								senseList.push({ partType, meaning: meaningChoice.substring(partType.length + 1)})
+							}
 							
-							for(let k = 0; k < senseListLen; k++) {
+							for(let k = 0; k < senseList.length; k++) {
 								const sense = senseList[k], $partBlock = $partCopySection.clone();
 								
 								$wordBlock.append($partBlock);
