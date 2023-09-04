@@ -1767,11 +1767,18 @@
 			return;
 		}
 		
-		// '단어' 이외 유형에서 검색된 wordId도 없고 추가의미도 없거나, '단어' 유형에서 wordId는 있는데 품사 선택을 안했을 경우
-		if(!!vocaType && !wordId && !appendMeaning || (!vocaType && wordId && !partType)) {
+		// 1. '단어' 이외 유형에서 검색된 wordId도 없고 추가의미도 없거나, 
+		// 2. '단어' 유형에서 wordId는 있는데 품사 선택을 안했거나,
+		// 3. '단어' 유형에서 wordId도 있고 품사도 선택했는데 등록된 품사도 아니고 추가의미도 입력하지 않았을 때
+		if((!!vocaType && !wordId && !appendMeaning) 
+		|| (!vocaType && wordId && !partType)
+		|| (!vocaType && wordId && !!partType && !appendMeaning 
+			&& $('#openVocaModal .meaning .list-group-item').filter((_,el) =>  el.textContent.startsWith(partType)).length == 0)) {
 			alertModal('등록된 의미들 중 선택을 하거나 추가의미를 입력해 주세요.');
 			return;
 		}
+		
+		
 		
 		$.ajax({ url,
 			 type: 'POST',
