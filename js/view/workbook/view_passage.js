@@ -590,9 +590,10 @@
 		}
 		
 		// 3. 분석 평가 표시
+		const expression = getMetaStatusExpression(sentence.metaStatus);
 		$sectionClone.find('.dashboard-section .meta-status')
-			.text({'S':'🥳','F':'🤯'}[sentence.metaStatus]||'🤔')
-			.attr('title',{'S':'평가를 받은 문장이예요.','F':'분석이 틀렸대요.'}[sentence.metaStatus]||'아직 평가되지 않은 문장이예요.')
+			.text(expression.icon)
+			.attr('title', expression.msg)
 			
 		// 4. 해석 표시 
 		
@@ -1114,8 +1115,6 @@
 	// [분석 결과 평가]------------------------------------------------------------
 	const checkModalContents = {'S': '<b>평가를 하는 이유</b><br><br>A.I.는 인간의 언어를 이해하면서 분석하지 않습니다.<br>학습자들에게 도움이 될 수 있도록 분석 결과를 평가해주세요.<br>평가도 하고 다양한 fico Egg도 모아보세요.',
 								'F': '<b>AI 분석이 정확하지 않은가요?</b><br><br>그건 회원님이 AI보다 실력이 좋다는 증거입니다.<br>직접 수정할 수도 있고 그냥 내버려 둘 수도 있습니다.<br>실력 발휘 기대합니다.'};
-	const resultStatusMap = {'S': {icon: '🥳', status: 'S', tooltip: '평가를 받은 문장이예요.'},
-							'F': {icon: '🤯', status: 'F', tooltip: '분석이 틀렸대요.'} };
 	
 	// 분석 평가 모달을 띄운 버튼에 따라 모달 속 내용 설정(문장정보, metaStatus)
 	$('#check-modal').on('show.bs.modal', function(e) {
@@ -1133,7 +1132,7 @@
 		const $statusIcon = $sentence.find('.dashboard-section .meta-status');
 		// metaStatus 저장(ajax)-------------------------------------------------
 		tandem?.meta?.submitMetaStatus($sentence.data('sentenceId'), metaStatus, 'workbook', () => {
-			metaStatusCallback($statusIcon, resultStatusMap[metaStatus]);
+			metaStatusCallback($statusIcon, getMetaStatusExpression(metaStatus));
 		});
 		// ---------------------------------------------------------------------
 		$('#check-modal').modal('hide');
@@ -1168,7 +1167,7 @@
 			update: function(anim) {
 				// 회전하는 도중 바뀐 metaStatus을 아이콘에 적용
 				if(!contentChanged && anim.progress > 20) {
-					$statusIcon.text(resultStatus.icon).attr('data-bs-original-title', resultStatus.tooltip);
+					$statusIcon.text(resultStatus.icon).attr({title: resultStatus.msg, dataBsOriginalTitle: resultStatus.msg});
 					contentChanged = true;
 				}
 			},
@@ -1245,7 +1244,7 @@
 			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'workbook');
 			// --------------------------------------------------------------
 			if(!isIndexFinger)
-				metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),resultStatusMap['S']);
+				metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),getMetaStatusExpression('S'));
 		}
 		
 		// 편집 저장 콜백(신규 분석 표식 해제 및 svocId 할당. 분석 접기/펼치기 대상 재정의)
@@ -2537,6 +2536,18 @@
 		}
 		block.querySelector('.personacon-section .alias').textContent = note?.memberInfo?.alias;
 		return $(block);
+	}
+	
+	// metaStatus 값에 따른 표시정보
+	function getMetaStatusExpression(status) {
+		switch(status) {
+			case 'S':
+				return { icon: '🥳', msg: '평가를 받은 문장이예요.' };
+			case 'F':
+				return { icon: '🤯', msg: '분석이 틀렸대요.' };
+			default:
+				return { icon: '🤔', msg: '아직 평가되지 않은 문장이예요.' };
+		}
 	}
 	// 질문 정보를 DOM으로 생성
 /*	var qSeq = 0;
