@@ -1733,7 +1733,7 @@
 	.on('change', '#openVocaModal .meaning .form-check-input', function() {
 		if(this.checked) {
 			$('#openVocaModal .meaning .form-check-input').not(this).prop('checked', false);
-			$('#openVocaModal .lemma').val($(this.labels[0]).find('.pv-title').text());
+			//$('#openVocaModal .lemma').val($(this.labels[0]).find('.pv-title').text());
 			$('#openVocaModal .word-id').val(this.value);
 		}else {
 			$('#openVocaModal .word-id').val(0);
