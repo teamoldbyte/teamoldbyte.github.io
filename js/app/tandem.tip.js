@@ -38,11 +38,11 @@
 		`${rul_div}부사절</b>${and_exampl}<span class=\"brkt advcls cls-start example\" data-lv=\"1\">[</span><span class=\"sem advcls cmnt-align-center example\" data-rc=\"M\" data-rc-min=\"M\" data-gc=\"시간 부사절\" data-lv=\"1\"><span class=\"sem m outer cmnt-align-center example\" data-rc=\"M\" data-rc-min=\"M\" data-lv=\"1\">When <span class=\"sem s inner cmnt-align-center example\" >I</span> <span class=\"sem v inner cmnt-align-center example\">arrive</span> </span></span><span class=\"brkt advcls cls-end example\" data-lv=\"1\">]</span></div><div class=\"col-4 my-auto\"></div></div>`
 	];
 	// 텐덤 도움말
-	const helpModal = createDefinedDiv({className: 'guide-modal-section modal fade', id: 'guide-modal', tabIndex: -1});
+	const helpModal = createDefinedDiv({className: 'guide-modal-section modal fico-modal fade', id: 'guide-modal', tabIndex: -1});
 	const helpDialog = createDefinedDiv({className: 'modal-dialog'});
 	const helpContent =  createDefinedDiv({className: 'modal-content border-0'});
 	const helpHeader = createDefinedDiv({className: 'modal-header bg-fc-purple'});
-	helpHeader.insertAdjacentHTML('beforeend','<h5 class="modal-title text-white">구문 분석 키워드</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button>');
+	helpHeader.insertAdjacentHTML('beforeend','<h5 class="modal-title text-white">구문 분석 키워드</h5><button type="button" class="btn-close fas fa-times" data-bs-dismiss="modal"></button>');
 	const helpBody = createDefinedDiv({className: 'modal-body py-0'});
 	tandemRules.forEach( r => helpBody.insertAdjacentHTML('beforeend', r));
 	const helpFooter = createDefinedDiv({className: 'modal-footer'});
