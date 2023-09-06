@@ -102,11 +102,10 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		},
 		select: function(_event, ui) {
 			if(!isHelloBook) {
-				if(confirm('선택한 문장으로 지문을 검색하시겠습니까?'))
-					$('#searchBtn').trigger('click', ui.item.value);
-				return false;
+			   confirmModal('선택한 문장으로 지문을 검색하시겠습니까?', () => $('#searchBtn').trigger('click', ui.item.value));
+			   return false;
 			}
-		}
+		 }
 	}).autocomplete('instance');
 	autocompleteInstance._renderItem = function( ul, item ) {
 	  const $li = $( "<li>" );
