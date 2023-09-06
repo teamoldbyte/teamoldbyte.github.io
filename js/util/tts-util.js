@@ -8,7 +8,7 @@
  @param options{autoplay, lang, pitch, rate, voiceIndex, initSuccessCallback, initFailCallback}
  ** autoplay - 자동재생여부. 이 모듈에서 사용하지 않음. 모듈 호출부에서 호출여부 판단시 사용. 값 저장만 모듈이 대신 해줌.
  */
-(function($, window, document) {
+ (function($, window, document) {
 	/**
 	@usage
 	1. var tts = new FicoTTS(); //just initialize.. does not guarantee immediate function.
@@ -415,18 +415,18 @@
 		const appendModal = () => {
 			if(document.querySelector('#ttsSettings') == null) 
 				document.body.appendChild(createElement({
-					"el":"div","class":"modal fade","id":"ttsSettings","tabIndex":"-1",
+					"el":"div","class":"modal fico-modal fade","id":"ttsSettings","tabIndex":"-1",
 					"aria-modal":"true","role":"dialog","children":[
 						{ "el":"div","class":"modal-dialog modal-dialog-centered","children":[
-							{ "el":"div","class":"modal-content rounded-8","children":[
+							{ "el":"div","class":"modal-content","children":[
 								{ "el":"style","textContent":"#ttsSettings input[type=range]::-webkit-slider-thumb {background:var(--fc-purple);}#ttsSettings .form-check-input:checked {background-color:var(--fc-purple);border-color:var(--fc-purple);}#ttsSettings .btn-check:checked+.btn {-webkit-animation: pulsate-bck 1s linear infinite both;animation: pulsate-bck 1s linear infinite both;}@-webkit-keyframes pulsate-bck {0% {-webkit-transform: scale(1);transform: scale(1);}50% {-webkit-transform: scale(0.9);transform: scale(0.9);}100% {-webkit-transform: scale(1);transform: scale(1);}}@keyframes pulsate-bck {0% {-webkit-transform: scale(1);transform: scale(1);}50% {-webkit-transform: scale(0.9);transform: scale(0.9);}100% {-webkit-transform: scale(1);transform: scale(1);}}#ttsSettings .form-check-input:focus {border-color:var(--fc-purple);box-shadow:0 0 0 0.25rem #58517440;background-image:url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23847aaf'/%3e%3c/svg%3e\")}#ttsSettings input[type=range]::after {content:attr(data-range);margin-left:10px}"},
 								{ "el":"div","class":"modal-header","children":[
-									{ "el":"h5","class":"modal-title fw-bold text-fc-purple","textContent":"음성 환경설정"},
+									{ "el":"h5","class":"modal-title","textContent":"음성 환경설정"},
 									{ "el":"div","class":"ms-auto text-align-end form-check form-switch", children: [
 										{ "el":"input","type":"checkbox","id":"ttsToggle","class":"form-check-input","checked":_options.autoplay},
 										{ "el":"label","class":"form-check-label text-dark","htmlFor":"ttsToggle","textContent":"자동 재생"}
 									]},
-									{ "el":"button","type":"button","class":"btn-close ms-2","data-bs-dismiss":"modal","aria-label":"Close","title":"닫기"}
+									{ "el":"button","type":"button","class":"btn-close ms-2 fas fa-times","data-bs-dismiss":"modal","aria-label":"Close","title":"닫기"}
 								]},
 								{ "el":"div","class":"modal-body","children":[
 									{ "el":"label","for":"ttsList","class":"form-label sub-title fs-6 text-dark","textContent":"목소리 선택"},
