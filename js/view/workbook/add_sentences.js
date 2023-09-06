@@ -85,8 +85,9 @@ function pageinit(memberId, isSsam) {
 		change: function(_event, ui) { // 유효한 선택지를 선택하면 자동입력
 		},
 		select: function(_event, ui) {
-			if(confirm('선택한 문장으로 지문을 검색하시겠습니까?'))
-				$('#searchBtn').trigger('click', ui.item.value);
+			confirmModal('선택한 문장으로 지문을 검색하시겠습니까?', () =>
+				$('#searchBtn').trigger('click', ui.item.value)
+			);
 			return false;
 		}
 	}).autocomplete('instance');
@@ -280,13 +281,13 @@ function pageinit(memberId, isSsam) {
 			alertModal('최소 한 문장은 필요합니다. 처음부터 입력하고 싶으시다면 \'입력 초기화\'를 눌러 주세요');
 			return;
 		}
-		if(confirm('삭제하시겠습니까?')) {
+		confirmModal('삭제하시겠습니까?', () => {
 			$(this).closest('.divided-sentence').fadeOut(function() {
 				const $lastInput = $(this).siblings('.divided-sentence').last();
 				$(this).remove();
 				$lastInput.find(':text').trigger('input')[0].focus();
 			});
-		}
+		});
 	})
 	// [(공통)단위 문장 추가]
 	.on('click', '.js-insert-sentence-btn', async function() {
@@ -562,7 +563,15 @@ function pageinit(memberId, isSsam) {
 				createHidden($form, 'dirty', dirty);
 				
 			}else {
-				const sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
+				let sentences;
+				if($('.edit-passage').is(':visible')) {
+					const $sentences = $('.edit-passage .divided-sentence');
+					sentences = Array.from($sentences.get(), el => $(el).find(':text').val().trim().sentenceNormalize());
+					$form.find('#text').prop('disabled', true);
+					createHidden($form, 'text', sentences.join(' '));
+				}else {
+					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
+				}
 				sentences.forEach(sentence => {
 					sentencesLength += sentence.length;
 				})
