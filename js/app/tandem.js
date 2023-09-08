@@ -551,7 +551,7 @@
 	 * 
 	 * 성분: s v o c oc m
 	 */
-	const posClasses = ['.s', '.ss', '.v', '.o', '.po', '.to', '.go', '.ptco', '.appo', '.c', '.oc', '.a', '.m'];
+	const posClasses = ['.s'/*, '.ss'*/, '.v', '.o', '.po', '.to', '.go', '.ptco', '.appo', '.c', '.oc', '.a', '.m'];
 	function checkPOSDepth(element) {
 		const children = element.querySelectorAll('.sem');
 		let base = posClasses.some(cls => element.matches(cls)) ? 1 : 0;
