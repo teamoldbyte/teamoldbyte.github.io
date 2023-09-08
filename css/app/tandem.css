@@ -214,7 +214,7 @@
 /* 주어(+ rcomment) 글자색 */
 .sem.s.inner, .sem.s.outer[data-rc]::before {color: #0340dd;}
 /* 의미상주어(+ rcomment) 글자색 */
-.sem.ss.inner, .sem.ss.outer[data-rc]::before {color: #0340dd;}
+.sem.ss, .sem.ss.outer[data-rc]::before {color: #0340dd;}
 /* 목적어(+ rcomment) 글자색 */
 .sem.o.inner, .sem.o.outer[data-rc]::before {color: #006379;}
 /* 전치사 목적어,부정사 목적어,동명사 목적어,분사 목적어(+ rcomment) 글자색 */
