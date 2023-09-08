@@ -1,4 +1,5 @@
-/**
+/** svoc 편집기
+ * @requires jquery.js, tandem.js, DOM-util.js
  * @version 2.0
  */
 (function($, document, tandem) {
@@ -51,7 +52,7 @@
 		rs: 's', io: 'o', do: 'o', ro: 'o'
 	}
 	const rcomments = {
-		s : 'S', rs: '(진)s', ss: '(의)s', v : 'V', o : 'O', io: 'i.o.', do: 'd.o.', po : '(전)o', ro: '(진)o', 
+		s : 'S', rs: '(진)s', v : 'V', o : 'O', io: 'i.o.', do: 'd.o.', po : '(전)o', ro: '(진)o', 
 		to: '(부)o', go: '(동)o', ptco: '(분)o', appo: '동격', 
 		c : 'C', oc : 'o.c.', m : 'M', a : 'A'};
 	const gcomments = {
