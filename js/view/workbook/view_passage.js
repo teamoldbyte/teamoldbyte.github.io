@@ -2009,13 +2009,12 @@
 	})
 	// [지문/문장의 노트 삭제]-------------------------------------------------------
 	.on('click', '.js-delete-note', function() {
+		const $noteBlock = $(this).closest('.note-block'),
+			$noteSection = $noteBlock.closest('.note-section'),
+			noteId = Number($noteBlock.data('noteId')),
+			$sentenceSection = $noteBlock.closest('.one-sentence-unit-section'),
+			ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
 		confirmModal('삭제하시겠습니까?', () => {
-			// 노트 삭제
-			const $noteBlock = $(this).closest('.note-block'),
-				noteId = Number($noteBlock.data('noteId')),
-				$sentenceSection = $noteBlock.closest('.one-sentence-unit-section'),
-				ofWhat = ($sentenceSection.length > 0) ? 'sentence' : 'passage';
-			
 			// 노트 삭제(ajax)--------------------
 			delNote(ofWhat, noteId, delCallback);
 			// ---------------------------------
