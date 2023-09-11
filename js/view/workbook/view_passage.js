@@ -704,7 +704,6 @@
 	
 	
 	$(window).on('resize', function() {
-		console.log(this)
 		// 휴대폰 세로 사이즈가 아닐 경우
 		if(!devSize.isPhone()) {
 			slideResizeObserver?.disconnect();
