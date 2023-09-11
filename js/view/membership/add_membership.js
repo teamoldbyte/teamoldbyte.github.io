@@ -382,12 +382,21 @@ function pageinit(membershipCommand) {
 	// 후원자 정보 임시전송
 	.on('submit', '#phase-1 form', function(e) {
 		e.preventDefault();
+		const submitter = e.originalEvent.submitter;
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
-			postJSON('/temp/membership',data, () => {
-				$('#phase-1,#phase-2').collapse('toggle');
-			}, 
-			'가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.');
+			submitter.disabled = true;
+			$.ajax({
+				url: '/temp/membership', type: 'POST', data: JSON.stringify(data),
+				contentType: 'application/json',
+				success: () => {
+					$('#phase-1,#phase-2').collapse('toggle');
+				},
+				error: () => {
+					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'))
+				},
+				complete: () => submitter.disabled = false
+			});				
 		}
 	})
 	
@@ -436,6 +445,7 @@ function pageinit(membershipCommand) {
 	// phase-3 완료
 	.on('submit', '#membershipForm', function(e) {
 		e.preventDefault();
+		const submitter = e.originalEvent.submitter;
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
 			$('#passwdCheck').toggleClass('is-invalid', $('#passwd').val() != $('#passwdCheck').val());
@@ -443,30 +453,29 @@ function pageinit(membershipCommand) {
 			if(this.querySelector('.is-invalid')) return;
 			
 			data["orderItemList"] = orderItemList;
-			postJSON('/membership',data, msg => {
-				Cookies.remove('FMID');
-				if(loggedin) 
-					alertModal(`${msg}\n'확인'을 누르면 로그아웃 됩니다.\n다시 로그인해 주세요.`, () => document.forms.logout.submit());
-				else
-					alertModal(`${msg}\n'확인'을 누르면 로그인 화면으로 이동합니다.`, () => location.assign('/auth/login'));
-				
-				//$('#done-info-modal').modal('hide');
-			}, '가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.');
+			submitter.disabled = true;
+			$.ajax({
+				url: '/membership', type: 'POST', data: JSON.stringify(data),
+				contentType: 'application/json',
+				success: msg => {
+					Cookies.remove('FMID');
+					if(loggedin) 
+						alertModal(`${msg}\n'확인'을 누르면 로그아웃 됩니다.\n다시 로그인해 주세요.`, () => document.forms.logout.submit());
+					else
+						alertModal(`${msg}\n'확인'을 누르면 로그인 화면으로 이동합니다.`, () => location.assign('/auth/login'));
+					
+					//$('#done-info-modal').modal('hide');
+				},
+				error: () => {
+					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', 
+						() => $('#done-info-moal').modal('hide')
+					);
+				},
+				complete: () => submitter.disabled = false
+			});
 		}
 	});
 	
 	document.querySelector('.membership-section').appendChild(createElement(donationModalJson));
 	document.querySelector('.tandem-layout-content-section').appendChild(createElement([desktopInfoMOdalJson, emailDuplicateModalJson]))
-}
-/**
-AJAX 전송 단축함수
-*/
-function postJSON(url, jsonCommand, callback, failMsg) {
-	$.ajax({
-		url: url, type: 'POST', data: JSON.stringify(jsonCommand),
-		contentType: 'application/json', success: callback,
-		error: () => {
-			alertModal(failMsg, () => $('#done-info-moal').modal('hide'));
-		}
-	});
 }
