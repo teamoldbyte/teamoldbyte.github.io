@@ -700,86 +700,16 @@
 			translateY: scrollDirectionNow > 0 ?'100%' : 0
 		})
 	});
-	let headerIntersectionObserber, slideResizeObserver;
-	const swiper = new Swiper('.swiper', {
-		breakpoints: {
-			576: {
-				enabled: false
-			}
-		},
-		autoHeight: true,
-		speed: 250,
-		navigation: {
-			prevEl: '.js-prev-sentence',
-			nextEl: '.js-next-sentence'
-		},
-		pagination: {
-			el: '.swiper-pagination',
-			clickable: true
-		},
-		spaceBetween: 30,
-		on : {
-			afterInit: function(s) {
-				headerIntersectionObserber = new IntersectionObserver((entries) => {
-					anime({targets: $topMenu.get(0), duration: 150, easing: 'linear', 
-						translateY: entries[0].intersectionRatio > 0 ? 0 : '-7rem'});
-				}, { rootMargin: `-${7*rem}px 0px ${0*rem}px 0px`});
-				headerIntersectionObserber.observe($('.workbook-cover-section').get(0));
-				
-				slideResizeObserver = new ResizeObserver((entries) => {
-					if(entries.find(entry => entry.target == s.slides[s.activeIndex])) {
-						s.update();
-					}
-				});
-				s.slides.forEach(slide => slideResizeObserver.observe(slide));
-				
-				let initialSlide = s.slides[0];
-				
-				const $firstNote = $(initialSlide).find('.collapse-section .note-section');
-				$firstNote.collapse('show');
-				collapseNote($firstNote);
-				$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active');
-				if(devSize.isPhone() && tts.autoEnabled()) {
-					if($('#loadingModal').is('.show')) {
-						$('#loadingModal').on('hidden.bs.modal', playFirst);
-					}else playFirst();
-					function playFirst() {
-						setTimeout(() => {
-							$('.js-tts-play-sentence').trigger('click');
-						}, 500);
-					}
-				}
-			},
-			slideChange: function() {
-				$(this.slides[this.activeIndex]).find('.note-section').collapse('show');
-				$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active')
-				.siblings('.sentence').removeClass('active');
-				
-				stopAllTTS();
-			},
-			slideChangeTransitionEnd: function(s) {
-				scrollTo(0, $results[0].offsetTop);
-				
-				if(!localStorage.getItem('fico-swipe-happened')) 
-					localStorage.setItem('fico-swipe-happened', true);
-				
-				setTimeout(() => {
-					$(s.slides[s.activeIndex]).find('.semantics-result:visible').each(function() {
-						tandem.correctMarkLine(this);
-					})
-					if(tts.autoEnabled()) {
-						$('.js-tts-play-sentence').trigger('click');
-					}
-				}, 500);
-			}
-		}
-	})
+	let headerIntersectionObserber, slideResizeObserver, swiper;
+	
+	
 	$(window).on('resize', function() {
+		console.log(this)
 		// 휴대폰 세로 사이즈가 아닐 경우
 		if(!devSize.isPhone()) {
-			slideResizeObserver.disconnect();
+			slideResizeObserver?.disconnect();
 			//swiper.slideTo(0, 0)
-			swiper.disable();
+			swiper?.disable();
 			$('.one-sentence-unit-section').removeClass(getSwiperClasses)
 				.parent('.result-section').removeClass(getSwiperClasses).attr('style','')
 					.parent().removeClass(getSwiperClasses)
@@ -791,10 +721,91 @@
 				}).parent().addClass(function() {
 					return ['swiper'].concat($(this).data('swiperClass'));
 				});
-			swiper.enable();
-			swiper.slides.forEach(slide => slideResizeObserver.observe(slide));
+			if(swiper) {
+				swiper.enable();
+				swiper.slides.forEach(slide => slideResizeObserver.observe(slide));
+			}else {
+				initializeSwiper();
+			}
 		}
-	})
+	}).trigger('resize');
+	
+	function initializeSwiper() {
+		swiper = new Swiper('.swiper', {
+			breakpoints: {
+				576: {
+					enabled: false
+				}
+			},
+			autoHeight: true,
+			speed: 250,
+			navigation: {
+				prevEl: '.js-prev-sentence',
+				nextEl: '.js-next-sentence'
+			},
+			pagination: {
+				el: '.swiper-pagination',
+				clickable: true
+			},
+			spaceBetween: 30,
+			on : {
+				afterInit: function(s) {
+					headerIntersectionObserber = new IntersectionObserver((entries) => {
+						anime({targets: $topMenu.get(0), duration: 150, easing: 'linear', 
+							translateY: entries[0].intersectionRatio > 0 ? 0 : '-7rem'});
+					}, { rootMargin: `-${7*rem}px 0px ${0*rem}px 0px`});
+					headerIntersectionObserber.observe($('.workbook-cover-section').get(0));
+					
+					slideResizeObserver = new ResizeObserver((entries) => {
+						if(entries.find(entry => entry.target == s.slides[s.activeIndex])) {
+							s.update();
+						}
+					});
+					s.slides.forEach(slide => slideResizeObserver.observe(slide));
+					
+					let initialSlide = s.slides[0];
+					
+					const $firstNote = $(initialSlide).find('.collapse-section .note-section');
+					$firstNote.collapse('show');
+					collapseNote($firstNote);
+					$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active');
+					if(devSize.isPhone() && tts.autoEnabled()) {
+						if($('#loadingModal').is('.show')) {
+							$('#loadingModal').on('hidden.bs.modal', playFirst);
+						}else playFirst();
+						function playFirst() {
+							setTimeout(() => {
+								$('.js-tts-play-sentence').trigger('click');
+							}, 500);
+						}
+					}
+				},
+				slideChange: function() {
+					$(this.slides[this.activeIndex]).find('.note-section').collapse('show');
+					$('.passage-sentence-nav .sentence').eq(this.activeIndex).addClass('active')
+					.siblings('.sentence').removeClass('active');
+					
+					stopAllTTS();
+				},
+				slideChangeTransitionEnd: function(s) {
+					scrollTo(0, $results[0].offsetTop);
+					
+					if(!localStorage.getItem('fico-swipe-happened')) 
+						localStorage.setItem('fico-swipe-happened', true);
+					
+					setTimeout(() => {
+						$(s.slides[s.activeIndex]).find('.semantics-result:visible').each(function() {
+							tandem.correctMarkLine(this);
+						})
+						if(tts.autoEnabled()) {
+							$('.js-tts-play-sentence').trigger('click');
+						}
+					}, 500);
+				}
+			}
+		})		
+	}
+	
 	function getSwiperClasses(_,name) {
 		const swiperClasses = name.match(/swiper[-\w]*/g);
 		$(this).data('swiperClass', swiperClasses);
