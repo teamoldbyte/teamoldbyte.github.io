@@ -920,6 +920,7 @@ u {
 	font-size: 1.25rem;
 	color: #fff;
 	background: none;
+	z-index: 1000;
 }
 .fico-modal .modal-body{
 	padding: 1rem 2rem;
