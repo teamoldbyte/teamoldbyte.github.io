@@ -419,8 +419,10 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	// [추가정보 입력 완료]---------------------------------------------------------
 	.on('submit', '#paymentForm', function(e) {
 		e.preventDefault();
+		const submitter = e.originalEvent.submitter;
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
+			submitter.disabled = true;
 			$('#modalDiv .modal').modal('hide');
 			data["orderItemList"] = orderItemList;
 			$.ajax({
@@ -428,13 +430,12 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				data: JSON.stringify(data),
 				contentType: 'application/json', 
 				success: () => {
-					alert('멤버십이 연장되었습니다.\n다시 로그인해 주세요.');
-					document.forms.logout.submit();
+					alertModal('멤버십이 연장되었습니다.\n다시 로그인해 주세요.', () => document.forms.logout.submit());
 				},
 				error: () => {
-					alert('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.');
-					$('#done-info-moal').modal('hide');
-				}
+					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'));
+				},
+				complete: () => submitter.disabled = false
 			})
 		}
 	});

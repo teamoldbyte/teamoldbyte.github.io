@@ -176,6 +176,7 @@ function pageinit(tray, normalNumber, goldNumber) {
 	
 	// 바우처 구매 완료
 	$(document).on('click', '#purchaseVoucher', function() {
+		this.disabled = true;
 		const $selectedVoucher = $('.gold-egg-voucher.selected');
 		const itemId = parseInt($selectedVoucher.find('input[name="iid"]').val());
 		$('#voucherForm [name=itemId]').val(itemId);
