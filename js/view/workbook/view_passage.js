@@ -358,14 +358,22 @@
 	
 	// [지문의 노트 추가]
 	$('.js-add-passage-note-btn').click(function() {
+		const btn = this;
 		const $addSection = $(this).closest('.add-section');
 		const $textInput = $addSection.find('.text-input');
 		const content = $textInput.val().trim();
 		const publicOpen = JSON.parse($addSection.find('.note-open-input').val());
 		if(content.length == 0) return;
 		
+		btn.disabled = true;
 		// 지문 노트 추가(ajax)--------------------------------------------------
-		addPassageNote({workbookId, passageId, memberId, content, publicOpen}, appendNote);
+		$.ajax({
+			url: '/workbook/passage/note/add', type: 'POST', contentType: 'application/json',
+			data: JSON.stringify({workbookId, passageId, memberId, content, publicOpen}),
+			success: appendNote,
+			error: () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'),
+			complete: () => btn.disabled = false
+		})
 		//--------------------------------------------------------------------
 		
 		function appendNote(note) {
@@ -1372,8 +1380,16 @@
 			jsonCommand.korTid = Number($transBlock.data('korTid'));
 		}
 		if(kor.length == 0) return;
+		
+		_this.disabled = true;
 		// 문장 해석 추가/수정(ajax)-------------------------
-		editSentenceTrans(jsonCommand, successEditTrans);
+		$.ajax({
+			url: '/workbook/sentence/kor/edit', type: 'POST', contentType: 'application/json',
+			data: JSON.stringify(jsonCommand),
+			success: successEditTrans,
+			error: () => alertModal('해석 등록/수정이 실패했습니다.'),
+			complete: () => _this.disabled = false
+		});
 		// ----------------------------------------------
 
 		function successEditTrans(tid){
@@ -1468,6 +1484,7 @@
 	})*/
 	// [문장의 노트 추가]-----------------------------------------------------------
 	.on('click', '.js-add-sentence-note-btn', function() {
+		const _this = this;
 		const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
 		const sentenceId = Number($sentenceSection.data('sentenceId'));
 		const $addSection = $(this).closest('.add-section');
@@ -1475,8 +1492,15 @@
 		const noteAccess = $addSection.find('.note-open-input').val();
 		if(content.length == 0) return;
 		
+		_this.disabled = true;
 		// 문장 노트 추가(ajax)----------------------------------------------------
-		addSentenceNote({workbookId, sentenceId, memberId, content, noteAccess}, appendNote);
+		$.ajax({
+			url: '/workbook/sentence/note/add', type: 'POST', contentType: 'application/json',
+			data: JSON.stringify({workbookId, sentenceId, memberId, content, noteAccess}),
+			success: appendNote,
+			error: () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'),
+			complete: () => _this.disabled = false
+		})
 		//----------------------------------------------------------------------
 		
 		function appendNote(note) {
@@ -1759,6 +1783,7 @@
 	})
 	
 	.on('click', '#addVoca,#appendVoca,#requestVoca', function() {
+		const _this = this;
 		const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
 		const wordId = parseInt($('#openVocaModal .word-id').val()),
 		 vocaType = $('input[name="vocaTypeCheck"]:checked').val(),
@@ -1793,7 +1818,7 @@
 		}
 		
 		
-		
+		_this.disabled = true;
 		$.ajax({ url,
 			 type: 'POST',
 			 data: { wordId: wordId ? wordId : 0, partType, appendMeaning, sentenceId, title, token, start, end},
@@ -1875,7 +1900,8 @@
 			 },
 			 error: () => {
 				 alertModal('등록에 실패했습니다.');
-			 }
+			 },
+			 complete: () => _this.disabled = false
 		});
 	})
 	
@@ -2069,10 +2095,12 @@
 	})
 	// [피코쌤 노트 신청]-----------------------------------------------------------
 	.on('click', '.js-request-note', function() {
+		const _this = this;
 		const $unitSection = $(this).closest('.one-sentence-unit-section');
 		const eng = $unitSection.find('.origin-sentence .sentence-text').text().trim();
 		const sentenceId = $unitSection.data('sentenceId');
 		confirmModal('<img class="align-baseline" src="https://static.findsvoc.com/images/icons/ssamnote.png" style="width: 5rem;">를 신청하시겠습니까?', function() {
+			_this.disabled = true;
 			$.ajax({
 				url: '/workbook/ssamnote/request',
 				type: 'POST',
@@ -2087,7 +2115,8 @@
 					}
 				}, error: function() {
 					alertModal('신청이 정상적으로 처리되지 못 했습니다.')
-				}
+				},
+				complete: () => _this.disabled = false
 			})
 		})
 	})
