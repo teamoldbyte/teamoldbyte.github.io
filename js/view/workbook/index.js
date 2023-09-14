@@ -89,12 +89,13 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					const bookDiv = s.clickedSlide||e.path.find(d=>d.matches('.book-unit'));
 					const workBookId = bookDiv.dataset.workBookId,
 							workBookId56 = ntoa(workBookId);
+					const classType = $overviewSection.closest('.protected-workbook-section').length > 0;
 					$('.book-section .book-unit').not(bookDiv).removeClass('active');
 					$(bookDiv).toggleClass('active');
 					if($(bookDiv).is('.active')) {
 						if(!$(bookDiv).data('overview')) {
 							// 개요 정보 가져오기(ajax)------------------------------
-							$.getJSON(`/workbook/overview/${ntoa(bookDiv.dataset.workBookId)}`, (overview) => {
+							$.getJSON(`/workbook/overview/${ntoa(bookDiv.dataset.workBookId)}`, { classType }, (overview) => {
 								$(bookDiv).data('overview', overview);
 								showOverview(overview);
 							})
@@ -108,22 +109,32 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					}
 					
 					// 개요 정보 표시
-					function showOverview({ title, description, price, sub, copy, imagePath, alias, aliasImage, passageDtoList, regDate}) {
+					function showOverview({ title, description, price, sub, copy, imagePath, alias, aliasImage, passageDtoList, regDate, ssamClassDto}) {
+						
+						// 작성자 및 퍼스나콘
 						$overviewSection.find('.writer-cover .alias').text(alias);
 						$overviewSection.find('.writer-cover .personacon img')
 										.css('background-image', aliasImage?.length > 0 
 										? (`url(/resource/profile/images/${aliasImage})`)
 										: 'var(--fc-logo-head)');
 						
-						
+						// 워크북 타이틀
 						$overviewSection.find('.title').text(title);
 						
+						// 쌤 클래스 타이틀
+						if(classType && ssamClassDto) {
+							$overviewSection.find('.class-name').text(ssamClassDto.className||'이름없음');
+						}
+						
+						// 워크북 소개
 						$overviewSection.find('.description').html(description);
 			
+						// 구독 가격
 						$overviewSection.find('.price').text(price > 0
-											? (price.toLocaleString() + ' fico')
+											? (price.toLocaleString() + ' gold eggs')
 											: '무료');
 						
+						// 구독버튼 토글
 						$overviewSection.find('.sub-btn').data('workBookId', workBookId)
 										.toggleClass('bg-secondary', sub)
 										.prop('disabled', sub)
@@ -131,21 +142,36 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 						
 						//$overviewSection.find('.subs-num').text(overview.numOfSubscriber);
 						
+						// 등록일
 						$overviewSection.find('.reg-date').text(new Date(regDate).toLocaleDateString());
 			
+						// 워크북 커버
 						$overviewSection.find('.book-cover').toggleClass('default', imagePath == null || imagePath.length == 0)
 										.find('img').attr('alt', title);
 						$overviewSection.find('.book-cover img')
 							.css('background-image', (imagePath?.length > 0) 
 								? `url(/resource/workbook/cover/${imagePath})`:'');
+						// 커버 띠지
 						$overviewSection.find('.book-title')
 							.text(title).toggle(imagePath == null || imagePath.length == 0);
 						
+						// 캐치프레이즈 설정
 						$overviewSection.find('.background-image')
 										.css('background-image', 'url(https://static.findsvoc.com/images/app/workbook/background/bg-'
 													+ (1 + Math.floor(Math.random() * 4)) + '.jpg)');
 						$overviewSection.find('.catch-phrase-section .message').html(copy.message);
 						$overviewSection.find('.catch-phrase-section .alias').text(copy.alias);
+						
+						// 쌤 클래스 엠블럼
+						if(classType && ssamClassDto) {
+							if(ssamClassDto.emblemImagePath)
+								$overviewSection.find('.emblem-image-section')
+								.css('background-image', `url(/resource/ssam/class/${ssamClassDto.emblemImagePath})`);
+							if(ssamClassDto.classUri)
+								$overviewSection.find('.emblem-image-section').on('click', () => {
+									location.assign(`${location.origin}/ssamclass/${ssamClassDto.classUri}`)
+								});
+						}
 						
 						const $passageSection = $overviewSection.find('.list-passage-section');
 						$passageSection.empty();
@@ -223,7 +249,7 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 			$dom.find('.workbook-type').addClass(`type-${book.workBookType}`);
 			$dom.find('.book-title').text(book.title);
 			$dom.find('.book-price').html(book.price > 0 
-					? (book.price.toLocaleString() + ' fico') : '멤버십 무료');
+					? (book.price.toLocaleString() + ' gold eggs') : '멤버십 무료');
 			DOMList.push($dom[0]);
 			container.appendChild($dom[0])
 		}
@@ -240,27 +266,31 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 	// [워크북 구독]---------------------------------------------------------------
 	$('.sub-btn').click(function() {
 		if(memberId == 0) {
-			if(confirm('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?')) location.assign('/auth/login');
+			confirmModal('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?', () => location.assign('/auth/login'));
 			return;
 		}
-		const $btn = $(this);
+		const _this = this;
 		const workBookId = $(this).data('workBookId');
 		
 		// 워크북 구독(ajax)-------------------------------
-		subscribeWorkbook(workBookId, subscribeCallback);
+		_this.disabled = true;
+		$.post('/workbook/subscription/' + workBookId, subscribeCallback)
+		.fail(() => alertModal('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'));
 		//----------------------------------------------
 		
 		function subscribeCallback(msg) {
 			switch(msg){
 			case 'success':
-				$btn.addClass('bg-secondary').prop('disabled', true).text('구독중');
-				if(confirm('나의 서재에 "구독 워크북"이 추가되었습니다.\n'
-					+'나의 서재로 이동하시겠습니까?')) location.assign('/workbook/mylibrary');
+				$(_this).addClass('bg-secondary').prop('disabled', true).text('구독중');
+				confirmModal('나의 서재에 "구독 워크북"이 추가되었습니다.\n'
+					+'나의 서재로 이동하시겠습니까?', () => location.assign('/workbook/mylibrary'));
 				break;
 			case 'duplicated':
+				$(_this).addClass('bg-secondary').prop('disabled', true).text('구독중');
 				alertModal('이미 구독한 워크북입니다.');
 				break;
 			case 'insufficient':
+				$(_this).removeClass('bg-secondary').text('구독').prop('disabled', false);
 				alertModal('잔여 gold egg가 부족합니다.');
 				break;
 			}		
