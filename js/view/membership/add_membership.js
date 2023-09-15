@@ -335,17 +335,18 @@ function pageinit(membershipCommand) {
 	});
 	
 	$(document).on('click', '#closeDonation', function() {
-		if(confirm('가입 진행을 취소하시겠습니까?\n진행 중이던 정보는 저장되지 않습니다.')) 
+		confirmModal('가입 진행을 취소하시겠습니까?\n진행 중이던 정보는 저장되지 않습니다.', () => {
 			$('#done-info-modal').modal('hide');
+		});
 	})
 	.on('click', '#cancelPayment', function() {
-		if(confirm('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?')) {
-			$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
-			clearTimeout(nextTimer);
-			$('#phase-1,#phase-2').collapse('toggle');
-			$('#done-info-modal').modal('hide');
-		} 
-	})
+		confirmModal('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?', () => {
+		   $('#phase-2 .progress-bar').attr('aria-valuenow', 0);
+		   clearTimeout(nextTimer);
+		   $('#phase-1,#phase-2').collapse('toggle');
+		   $('#done-info-modal').modal('hide');
+		}); 
+	 })
 	
 	// phase-1 시작
 	.on('show.bs.collapse', '#phase-1', function() {
