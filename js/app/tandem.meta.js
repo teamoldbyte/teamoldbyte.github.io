@@ -639,7 +639,7 @@
 			if (!hasKey(metaSet, 'name', role))
 				metaSet.push({ depth: depth + 1, name: role });
 			// '절'이 있으면 태그 추가
-			if (pos.includes('CLS') && !hasKey(metaSet, 'name', 'CLAUSE')) {
+			if (pos?.includes('CLS') && !hasKey(metaSet, 'name', 'CLAUSE')) {
 				metaSet.push({ depth: depth + 1, name: 'CLAUSE' });
 			}
 			// '분사'가 있으면 태그 추가
