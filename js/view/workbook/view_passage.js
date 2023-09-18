@@ -649,7 +649,7 @@
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
 				
 				// wordId, sentenceId, workbookId를 할당(단어모듈용)
-				$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId});
+				$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId, sentenceWordId: word.sentenceWordId});
 				
 				// 우선 복사 원본의 뜻 부분들을 삭제
 				$wordBlock.find('.one-part-unit-section').remove();
@@ -1441,6 +1441,7 @@
 			$transBlock.fadeOut(300, () => $transBlock.remove());
 		}
 	})
+	
 	// [인덱스 핑거 추가정보 열기/닫기]-------------------------------------------------
 	.on('click', '.js-finger-detail', async function(e) {
 		// 인덱스 핑거의 svoc 수정 버튼 혹은 수정 영역에서는 이벤트 취소
@@ -2555,6 +2556,54 @@
 				translations);
 		}
 	})
+	
+	
+	// [피코쌤 영역]
+	if(['A','S'].includes(memberRoleType)) {
+		const WORD_UNIT_CLASSNAME = 'one-word-unit-section',
+			WORD_UNIT_SELECTOR = `.${WORD_UNIT_CLASSNAME}`;
+		const delWordBtnJson = {
+			el: 'span', role: 'button', class: 'js-del-word fas fa-trash-alt', 
+			dataset: { bsToggle: 'tooltip', bsTitle: '삭제'}
+		}	
+		// -----------------------------단어 삭제---------------------------------
+		$(document)
+		// [.one-word-unit-section 블럭에 마우스를 올리면 버튼 표시]-----------------------
+		.on('mouseover', WORD_UNIT_SELECTOR, function() {
+			if($(this).find('.js-del-word').length > 0) return;
+			const delWordBtn = createElement(delWordBtnJson);
+			const $title = $(this).find('.title');
+			$(delWordBtn).insertAfter($title)
+		})
+		.on('mouseleave', WORD_UNIT_SELECTOR, function() {
+			$(this).find('.js-del-word').remove();
+		})
+		// [단어 삭제]----------------------------------------------------------------
+		.on('click', '.js-del-word', function(e) {
+			e.stopPropagation();
+			const $wordSection = $(this).closest(WORD_UNIT_SELECTOR)
+			
+			const { sentenceWordId } = $wordSection.data();
+			const title = $wordSection.find('.title').text().trim();
+			confirmModal(`이 문장에서 단어 ${title}을(를) 삭제하시겠습니까?`, () => {
+				$.ajax({
+					url: '/workbook/sentence/word/del',
+					type: 'POST', contentType: 'application/json',
+					data: JSON.stringify(sentenceWordId),
+					success: () => {
+						alertModal('단어가 삭제되었습니다.', () => {
+							$wordSection.slideUp(() => $wordSection.remove())
+						})
+					},
+					error: (jqxhr) => {
+						alertModal(jqxhr.responseText);
+					}
+				})
+			})
+			
+			
+		})		
+	}
 	
 /* ------------------------------ Embed functions --------------------------- */
 	// 노트 정보를 DOM으로 생성
