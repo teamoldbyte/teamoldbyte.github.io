@@ -1432,7 +1432,7 @@ async function pageinit(memberId, memberAlias, memberImage){
 /* ------------------------------ Embed functions --------------------------- */
 	// 노트 정보를 DOM으로 생성
 	function createNoteDOM(note) {
-		const $block = $(WORKBOOK_ELEMENTS).children('.note-block').clone(true);
+		const $block = $(WORKBOOK_ELEMENTS).children('.note-block.sentence-note').clone(true);
 		$block.data('noteId', note.noteId);
 		const $content = $block.find('.note.text-section');
 		// 내용
