@@ -86,6 +86,7 @@
 				editorCss.innerHTML = cssResult;
 				document.head.append(editorCss);
 			});
+//			await $.get('/fragment/tandem/editor_template.html', (result) => {
 			await $.get('https://static.findsvoc.com/fragment/tandem/editor_template.min.html', (result) => {
 				$svocEditor = $(result).find('#js-edit-toolbar');
 				$nclsComboBox = $(result).find('.cls-role-menu');
@@ -193,6 +194,14 @@
 						case 'comment':
 							$svocEditorHint.text('문법 코멘트를 추가할 요소를 선택하세요.');
 							sel.removeAllRanges();
+							break;
+						case 'cleft':
+							if(!sel.isCollapsed) {
+								$('.edit-svoc').trigger('mouseup', this.value).attr('data-mode', null);
+								$(this).removeClass('active');
+							}else {
+								$svocEditorHint.text('적용 텍스트를 드래그 하세요.(It is[was]부터 that까지 한 번에)');
+							}
 							break;
 						default:
 							break;
@@ -411,6 +420,65 @@
 						$('.edit-svoc').attr('data-mode', null);
 						$svocEditor.find('.active').removeClass('active');
 						$svocEditorHint.empty();
+					}
+				})
+				//=============================================================/
+				.on('mouseup', '.edit-svoc[data-mode="cleft"]', function(e) {
+					e.stopPropagation();
+					this.querySelector('.semantics-result').normalize();
+					let sel = getSelection();
+					if(!sel.isCollapsed){
+						const position = sel.anchorNode.compareDocumentPosition(sel.focusNode);
+						let backwards = false;
+						// position == 0 if nodes are the same
+						if (!position && sel.anchorOffset > sel.focusOffset || 
+						  position === Node.DOCUMENT_POSITION_PRECEDING)
+						  backwards = true; 
+			
+						if(backwards) {
+							sel.setBaseAndExtent(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset);
+						}
+						let { anchorNode, anchorOffset, focusNode, focusOffset} = sel;
+						// 양끝 공백이 있으면 제거합니다.
+						while (/^(\s|[.,?!'"])/.test(anchorNode.textContent.substring(anchorOffset))) {
+							anchorOffset++;
+						}
+						while (/(\s|'s|[.,?!'"])$/.test(focusNode.textContent.substring(0, focusOffset))) {
+							focusOffset--;
+						}
+						// 범위 바깥에 단어가 계속된다면 범위 확장
+						while(anchorOffset > 0 && /\w/.test(anchorNode.textContent[anchorOffset - 1])) {
+							anchorOffset--;
+						}
+						while(focusOffset < focusNode.textContent.length && /\w/.test(focusNode.textContent[focusOffset])) {
+							focusOffset++;
+						}
+						
+						sel.setBaseAndExtent(focusNode, focusOffset, anchorNode, anchorOffset);							
+						
+						const selMatch = sel.toString().trim()
+						.match(/^[iI]t( is| was|'s| had been| has been|'s been|'ll be|'ll have been| will be| will have been| can be| could be| could have been| would be| would have been) .+ that$/);
+						if(selMatch) {
+							
+							const cleftHead = 'It' + selMatch[1];
+							
+							const range1 = new Range();
+							range1.setStart(anchorNode, anchorOffset);
+							range1.setEnd(anchorNode, anchorOffset + cleftHead.length);
+							
+							range1.surroundContents(createElement({
+								el: 'span', class: 'sem cleft', dataset: { gc: '강조구문'}
+							}));
+							
+							const range2 = new Range();
+							range2.setStart(focusNode, focusOffset - 4);
+							range2.setEnd(focusNode, focusOffset);
+							range2.surroundContents(createElement({
+								el: 'span', class: 'sem cleft'
+							}));
+							
+							sel.removeAllRanges();
+						}
 					}
 				})
 				// ============================================================/
