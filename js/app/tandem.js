@@ -188,7 +188,7 @@
 		return btoa(ab2str(await deflateSvoc(encSvoc(JSON.stringify(svocList)))));
 	}
 	/* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
-	const markTypes = /\b(s|ss|v|o|po|to|go|ptco|c|oc|a|m|appo|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls)\b/;
+	const markTypes = /\b(s|ss|v|o|po|to|go|ptco|c|oc|a|m|appo|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls|cleft)\b/;
 	function svocDom2Arr(node, arr) {
 		svocDom2Arr.pos = arr ? svocDom2Arr.pos : 0;
 		arr = arr ? arr : [];
