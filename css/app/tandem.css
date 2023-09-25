@@ -238,7 +238,11 @@
 /* 분사 글자색 */
 /*.sem.ptc {color: #794865;}*/
 /* 강조구문 글자색 */
-.sem.cleft {color: #FA9E9E;}
+.sem.cleft {
+	color: #555;
+	font-weight: bold;
+	font-style: italic;	
+}
 
 /* 선행사 gcomment */
 .sem.rcm[data-gc]::after {
