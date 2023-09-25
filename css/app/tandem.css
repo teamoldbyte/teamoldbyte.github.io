@@ -237,6 +237,8 @@
 /*.sem.tor, .sem.ger {color: #795548;}*/
 /* 분사 글자색 */
 /*.sem.ptc {color: #794865;}*/
+/* 강조구문 글자색 */
+.sem.cleft {color: #FA9E9E;}
 
 /* 선행사 gcomment */
 .sem.rcm[data-gc]::after {
