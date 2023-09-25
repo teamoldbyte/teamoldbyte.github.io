@@ -310,10 +310,11 @@
 		"PHR_WITH_REGARD_TO", // 11404, "with regard to"
 		"PHR_WITHOUT", // 11410, "without"
 		"PHR_WITHIN", // 11420, "within"
-		"VERB_PHR" // 19000, "동사구"
+		"VERB_PHR", // 19000, "동사구"
+		"CLEFT_IT"	//2023.09.25 추가(광)
 	]
 	const TANDEM_TAGS = ['s', 'ss', 'v', 'o', 'po', 'c', 'a', 'oc', 'm', 'rcm', 'tor', 'to', 'ger', 'go', 'ptc', 'ptco', 'appo', 'conj',
-		'phr', 'adjphr', 'advphr', 'ptcphr', 'cls', 'ncls', 'acls', 'advcls', 'ccls', 'pcls'];
+		'phr', 'adjphr', 'advphr', 'ptcphr', 'cls', 'ncls', 'acls', 'advcls', 'ccls', 'pcls', 'cleft'];
 	const FORM_COMPONENT_ROLES = ['s', 'v', 'o', 'po', 'c', 'a', 'oc', 'm', 'to', 'go', 'ptco', 'appo']; // 문장형식 성분들
 	const RELATIVE_PRONOUNS = ['who', 'whose', 'whom', 'which', 'that']; // 관계대명사
 	// 부사절 접속사
@@ -715,6 +716,10 @@
 			// '의미상 주어'가 있으면 태그 추가
 			if(child.rc == SENSE_SUBJ) 
 				metaSet.push({ depth: depth + 1, name: 'SENSE_SUBJ'});
+			
+			// 'It that' 강조구문이 있으면 태그 추가	
+			if(child.role == 'cleft' && child.text.match(/^[iI]t/))
+				metaSet.push({ depth: depth + 1, name: 'CLEFT_IT'})
 
 			// 자식 태그들에 대해 다시 수행
 			if (child.children.length > 0) {
