@@ -11,6 +11,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
 	const MAX_SENTENCE_LENGTH = 500;
+	const MAX_PASSAGE_LENGTH = 3000;
 	const oneSentenceJSON = {
 		"el": "div", "class": "one-sentence-unit-section p-2 p-lg-4 mb-2 border-0",
 		"data-ordernum": "0", "data-sid": "0", "children": [
@@ -205,6 +206,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 		const section = this.closest('.edit-section, .add-section');
 		const submitBtn = section.querySelector('.js-edit, .js-add');
 		const invalidText = section.querySelector('.invalid-text');
+		const $orgSentence = $(section).closest('.one-sentence-unit-section').find('.sentence-text');
 
 		// Extract necessary information from input
 		const { input, inputCursor } = extractHighlightInfo(this.value, this.selectionStart);
@@ -212,6 +214,9 @@ function pageinit(sentenceList, memberId, isSsam) {
 		// Validate input
 		let isInvalid = false;
 		if (input.length === 0) {
+			isInvalid = true;
+		} else if(!isSsam && input.length + $('.one-sentence-unit-section .sentence-text').not($orgSentence).text().length > MAX_PASSAGE_LENGTH) {
+			invalidText.textContent = '한 지문에 들어가는 글자수가 너무 많습니다.';
 			isInvalid = true;
 		} else {
 			const sentences = tokenizer.sentences(input);
