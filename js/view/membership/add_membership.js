@@ -215,7 +215,7 @@ function pageinit(membershipCommand) {
 												{ el: 'select', className: 'form-select', name: 'birthYear', 'aria-describedby': 'birthHelpInline', required: !loggedin, children: 
 											[{ el: 'option', disabled: true, selected: true, value: '', textContent: '--선택--'}]
 											.concat(Array.from(new Array(88), (v,k) => {
-												const year = 1920 + k;
+												const year = new Date().getFullYear() - 101 + k;
 												return { el: 'option', value: year, textContent: year, selected: membershipCommand.birthYear == year}
 											}).reverse())}
 											]},
