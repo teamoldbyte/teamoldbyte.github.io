@@ -347,7 +347,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 	
 		// 지문 등록으로 이동
 		$('.js-add-passage-open').click(function() {
-			if(passageIdList.length >= 30) {
+			if(passageIdList.length >= 33) {
 				$('#passageLimitModal').modal('show');
 				return;
 			}
@@ -357,7 +357,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 		});
 		// 지문 타이틀 등록으로 이동
 		$('.js-add-passage-title').click(function() {
-			if(passageIdList.length >= 30) {
+			if(passageIdList.length >= 33) {
 				$('#passageLimitModal').modal('show');
 				return;
 			}		
