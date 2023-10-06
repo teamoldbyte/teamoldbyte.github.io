@@ -224,8 +224,8 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		})
 		// 지문 최대 갯수 도달. 워크북 추가로 이동
 		const passageIdList = JSON.parse(sessionStorage.getItem('passageIdList'));
-		if(passageIdList?.length >= 30) {
-			alertModal('워크북의 지문 수가 최대 30개에 도달했습니다.\n새 워크북 등록 화면으로 이동합니다.');
+		if(passageIdList?.length >= 33) {
+			alertModal('워크북의 지문 수가 최대 33개에 도달했습니다.\n새 워크북 등록 화면으로 이동합니다.');
 			location.assign('/workbook/mybook/add');
 		}
 	}
