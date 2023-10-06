@@ -92,7 +92,7 @@ function pageinit(workbookId, workbookCover, helloBook, isMyOwn, sampleCount, pa
 	}
 	else {
 	$('.js-add-passage-open').click(function() {
-		if(passageIdList.length >= 30) {
+		if(passageIdList.length >= 33) {
 			$('#passageLimitModal').modal('show');
 			return;
 		}
