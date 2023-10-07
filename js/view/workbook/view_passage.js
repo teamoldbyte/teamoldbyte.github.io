@@ -1783,7 +1783,6 @@
 	.on('change', '#openVocaModal .part-type', function() {
 		const $wordInList = $('#openVocaModal').data('sentenceUnit')
 			.find('.one-word-unit-section:visible').filter((_,w) => $(w).data('wordId') == parseInt($('#openVocaModal .word-id').val()||0));
-		console.log($wordInList)
 		// 단어목록에 있는 단어일 때 품사를 선택하면
 		if($wordInList.length > 0) {
 			// vi.와 vt.를 동시에 가지면 사실상 v.임
@@ -1951,7 +1950,6 @@
 					$partBlock.find('.part').text(partType).attr('title', partTypeMap[partType]);
 					$partBlock.find('.meaning').text(meaning);
 					
-					console.log(meaning)
 					$wordBlock.append($partBlock);
 					alertModal('품사를 변경했습니다\n등록창을 닫습니다.', () => $('#openVocaModal').modal('hide'));
 				}
