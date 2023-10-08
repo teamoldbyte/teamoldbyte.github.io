@@ -244,10 +244,16 @@ function pageinit() {
 	// 뜻 삭제
 	.on('click', '.js-del-meaning', function() {
 		const $partSection = $(this).closest('.one-part-unit-section');
-		const command = { wordId: parseInt($partSection.closest('.showup-word').get(0).dataset.wordId), 
-						showUpId: parseInt($partSection.get(0).dataset.sid) };
+		const command = {};
+		const _this = this;
+		if(this.closest('.showup-word')) {
+			command['wordId'] = parseInt($partSection.closest('.showup-word').get(0).dataset.wordId);
+			command['showUpId'] = parseInt($partSection.get(0).dataset.sid);
+		}else {
+			command['senseId'] = parseInt($partSection.get(0).dataset.sid);
+		}
 		$.ajax({
-			url: '/adminxyz/dictionary/showupsense/del',
+			url: `/adminxyz/dictionary/${_this.closest('.showup-word')?'showup':''}sense/del`,
 			type: 'POST',
 			data: command,
 			success: () => {
@@ -343,7 +349,7 @@ function pageinit() {
 				{ el: 'div', className: 'col-2',  children: [ 
 					{ el: 'button', type: 'button', className: 'js-edit-meaning btn btn-fico fas fa-check w-25', style: 'display:none;' },
 					{ el: 'button', type: 'button', className: 'js-edit-cancel btn btn-outline-fico fas fa-times w-25', style: 'display:none;' },
-					isPhrasalVerb ? { el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash w-25'} : ''
+					{ el: 'button', type: 'button', className: 'js-del-meaning btn btn-outline-fico fas fa-trash w-25'}
 				]}
 			]},
 			isPhrasalVerb ? [
