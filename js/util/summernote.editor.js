@@ -35,7 +35,7 @@
 			e.preventDefault();
 			// Firefox fix
 			setTimeout(function() {
-				$input.summernote('pasteHTML', bufferText.replaceAll(/\r?\n/g, '<br/>'));
+				$input.summernote('pasteHTML', bufferText.quoteNormalize().replaceAll(/\r?\n/g, '<br/>'));
 			}, 10);
 		}		
 	}
@@ -81,6 +81,9 @@
 			await $.cachedScript('https://cdn.jsdelivr.net/combine/npm/summernote@0.8.18/dist/summernote-lite.min.js,npm/summernote@0.8.18/lang/summernote-ko-KR.min.js');
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
 			/*await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');*/
+		}
+		if(typeof String.prototype.quoteNormalize == 'undefined') {
+			await $.cachedScript('https://static.findsvoc.com/js/util/text-util.min.js');
 		}
 		$input.summernote(Object.assign(options, {
 			callbacks: {
