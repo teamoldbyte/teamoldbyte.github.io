@@ -184,18 +184,18 @@
 .sem.inner[data-gc]::after {
 	position: absolute;
 	top: -0.625rem;
-	font-size: 0.625rem;
+	font-size: 0.71rem;
 }
 /* S,V,O,C 속의 S,V,O,C gcomment */
 .sem.outer .sem.inner[data-gc]::after {
-	font-size: 0.625rem;
+	font-size: 0.71rem;
 }
 /* 자식 S,V,O,C를 갖는 S,V,O,C의 gcomment */
 .sem.outer[data-gc]::after {
 	position: absolute;
 	top: -0.625rem; /*1.9rem;*/
 	width: 9.375rem;
-	font-size: 0.625rem;
+	font-size: 0.71rem;
 }
 .sem[data-gc][data-gc-lv="1"]::after {
 	top: -1.5rem;
