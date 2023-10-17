@@ -223,7 +223,7 @@
 }
 /* 입력창의 툴팁 */
 .demo-text-invalid .tooltip-inner {
-	font-size: 0.5rem;
+	font-size: 0.71rem;
 }
 .reset-textarea {
     position: absolute;
@@ -237,7 +237,7 @@
 }
 /* 입력칸의 글자수 카운트 */
 .demo-counter {
-	font-size: 0.5rem;
+	font-size: 0.71rem;
 	font-weight: 600;
 	color: #59bf9c;
 	position: absolute;
@@ -1066,7 +1066,7 @@
     top: -50px;
     left: calc(100% - 57px);
     font-family: -webkit-body;
-   	font-size: 0.5rem;
+   	font-size: 0.71rem;
 	font-weight: 600;
 }
 /* 프리미엄 서비스 추가 기능 소개 영역 */
