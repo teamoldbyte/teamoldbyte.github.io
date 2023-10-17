@@ -25,11 +25,11 @@ function pageinit(membershipCommand) {
 										{ el: 'label', htmlFor: 'inputName', className: 'col-form-label text-smd fw-bold', textContent: '후원자명' }
 									]},
 									{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-										{ el: 'input', type: 'text', id: 'inputName', name: 'remitter', maxLength: 10, value: membershipCommand.remitter, autocomplete: 'off', className: 'form-control', 'aria-describedby': 'nameHelpInline', required: true },
-										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;후원자명은 비울 수 없습니다.' }
+										{ el: 'input', type: 'text', id: 'inputName', name: 'remitter', maxLength: 10, value: membershipCommand.remitter, autocomplete: 'off', className: 'form-control', 'aria-describedby': 'nameHelpInline', pattern: '[가-힣]{2,}', required: true },
+										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;이름을 한글로 올바르게 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-										{ el: 'span', id: 'nameHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '송금 때 사용하실 송금자명과 동일한 이름으로 입력해 주세요.' }
+										{ el: 'span', id: 'nameHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '송금 때 사용하실 송금자명과 동일한 이름으로 입력해 주십시오.' }
 									]}
 								]},
 								{ el : 'div', className: 'input-phone row g-3 align-items-center mb-3', children: [
@@ -41,7 +41,7 @@ function pageinit(membershipCommand) {
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 전화번호를 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-										{ el: 'span', id: 'phoneHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '전화번호는 암호화 되니 반드시 숫자로 입력해 주세요.' }
+										{ el: 'span', id: 'phoneHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '전화번호는 암호화 되니 반드시 숫자로 입력해 주십시오.' }
 									]}
 								]},
 								{ el: 'div', className: 'input-email row g-3 align-items-center mb-3', children: [
@@ -57,7 +57,7 @@ function pageinit(membershipCommand) {
 										{ el: 'button', type: 'button', className: 'check-email-btn btn btn-outline-fico', disabled: true, textContent: '중복 검사' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-										{ el: 'span', id: 'emailHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '생성될 계정의 이메일을 입력해 주세요.' }
+										{ el: 'span', id: 'emailHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '생성될 계정의 이메일을 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'd-block d-md-none col-9 text-end mb-auto ms-auto mt-1', children: [
 										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxLength: 100},
@@ -132,7 +132,7 @@ function pageinit(membershipCommand) {
 							{ el: 'div', className: 'button-section text-center position-relative pt-3', children: [
 								{ el: 'button', type: 'button', id: 'cancelPayment', className: 'btn btn-outline-fico position-absolute top-2 start-0', textContent: '취소' },
 								{ el: 'span', className: 'waiting-msg placeholder-wave', textContent: '결제 대기 및 처리 중입니다...' },
-								{ el: 'span', className: 'd-block text-danger text-sm', innerHTML: '입금을 하시고 나면<br> 창을 끄지 말고 \'다음\'을 눌러주세요.' },
+								{ el: 'span', className: 'd-block text-danger text-sm', innerHTML: '입금을 하시고 나면<br> 창을 끄지 말고 \'다음\'을 눌러주십시오.' },
 								{ el: 'button', type: 'button', className: 'btn btn-fico position-absolute top-2 end-0', 'data-bs-toggle': 'collapse', 'data-bs-target': '#phase-2,#phase-3', disabled: true, textContent: '다음' }
 							]}
 						]},
@@ -162,7 +162,7 @@ function pageinit(membershipCommand) {
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-												{ el: 'span', id: 'passwordHelpInline', className: 'form-text ms-2', textContent: '생성될 계정의 비밀번호를 입력해 주세요.' }
+												{ el: 'span', id: 'passwordHelpInline', className: 'form-text ms-2', textContent: '생성될 계정의 비밀번호를 입력해 주십시오.' }
 											]}
 										]},
 										{ el: 'div', className: 'input-password-check row g-3 align-items-center mb-3', children: [
@@ -174,7 +174,7 @@ function pageinit(membershipCommand) {
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;위에서 입력한 비밀번호와 맞지 않습니다.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-												{ el: 'span', id: 'passwdCheckHelpInline', className: 'form-text ms-2', textContent: '위에서 입력한 비밀번호를 한번 더 입력해 주세요.'}
+												{ el: 'span', id: 'passwdCheckHelpInline', className: 'form-text ms-2', textContent: '위에서 입력한 비밀번호를 한번 더 입력해 주십시오.'}
 											]}
 										]},
 										{ el: 'div', className: 'input-name row g-3 align-items-center mb-3', children: [
@@ -182,11 +182,11 @@ function pageinit(membershipCommand) {
 												{ el: 'label', className: 'col-form-label text-smd fw-bold', textContent: '이름' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'text', name: 'name', value: membershipCommand.name, className: 'form-control', 'aria-describedby': 'nameHelpInline', required: !loggedin, maxLength: 10},
-												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;이름은 비울 수 없습니다.' }
+												{ el: 'input', type: 'text', name: 'name', value: membershipCommand.name, className: 'form-control', 'aria-describedby': 'nameHelpInline', required: !loggedin, maxLength: 10, pattern: '[가-힣]{2,}'},
+												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;이름을 한글로 올바르게 입력해 주십시오.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-												{ el: 'span', id: 'nameHelpInline', className: 'form-text ms-2', textContent: '계정 소유자의 이름을 입력하세요.' }
+												{ el: 'span', id: 'nameHelpInline', className: 'form-text ms-2', textContent: '계정 소유자의 이름을 입력하십시오.' }
 											]}
 										]},
 										{ el: 'div', className: 'input-email row g-3 align-items-center mb-3', children: [
@@ -200,11 +200,11 @@ function pageinit(membershipCommand) {
 													{ el: 'label', htmlFor: `sexCheck${k}`, className: 'form-check-label', textContent: v[1]}
 												]};
 											}).concat([
-												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;성별을 선택해 주세요.'}
+												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;성별을 선택해 주십시오.'}
 											])
 											},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-												{ el: 'span', id: 'sexHelpInline', className: 'form-text ms-2', textContent: '성별을 선택해 주세요.'}
+												{ el: 'span', id: 'sexHelpInline', className: 'form-text ms-2', textContent: '성별을 선택해 주십시오.'}
 											]}
 										]},
 										{ el: 'div', className: 'input-birth row g-3 align-items-center mb-3', children: [
@@ -220,7 +220,7 @@ function pageinit(membershipCommand) {
 											}).reverse())}
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
-												{ el: 'span', id: 'birthHelpInline', className: 'form-text ms-2', textContent: '학습 컨텐츠 추천을 위해 출생연도를 입력해 주세요.'}
+												{ el: 'span', id: 'birthHelpInline', className: 'form-text ms-2', textContent: '학습 컨텐츠 추천을 위해 출생연도를 입력해 주십시오.'}
 											]}
 										]},
 										// 동의 체크
@@ -335,18 +335,17 @@ function pageinit(membershipCommand) {
 	});
 	
 	$(document).on('click', '#closeDonation', function() {
-		confirmModal('가입 진행을 취소하시겠습니까?\n진행 중이던 정보는 저장되지 않습니다.', () => {
-			$('#done-info-modal').modal('hide');
-		});
+		confirmModal('가입 진행을 취소하시겠습니까?\n진행 중이던 정보는 저장되지 않습니다.', 
+		() => $('#done-info-modal').modal('hide'));
 	})
 	.on('click', '#cancelPayment', function() {
 		confirmModal('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?', () => {
-		   $('#phase-2 .progress-bar').attr('aria-valuenow', 0);
-		   clearTimeout(nextTimer);
-		   $('#phase-1,#phase-2').collapse('toggle');
-		   $('#done-info-modal').modal('hide');
-		}); 
-	 })
+			$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
+			clearTimeout(nextTimer);
+			$('#phase-1,#phase-2').collapse('toggle');
+			$('#done-info-modal').modal('hide');
+		});
+	})
 	
 	// phase-1 시작
 	.on('show.bs.collapse', '#phase-1', function() {
