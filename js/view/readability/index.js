@@ -60,8 +60,8 @@
 			}
 			checkingPos += tempSentence.length + (i<len-1?1:0);
 		}
-		confirmModal('입력된 텍스트는 아래 문장들로 구분됩니다.\n문장 구분이 잘못된 경우 \'취소\'를 누르고 구두점을 추가해 주세요.\n\n'
-			.concat(Array.from(sentences, (sentence, i) => `[${i+1}] ${sentence}`).join('\n')),
+		confirmModal('입력된 텍스트는 아래 문장들로 구분됩니다.\n문장 구분이 잘못된 경우 \'취소\'를 누르고 구두점을 추가해 주세요.\n\n<ol style="text-align: left;">'
+			.concat(Array.from(sentences, sentence => `<li>${sentence}</li>`).join('')).concat('</ol>'),
 			() => $('#textForm').submit());
 		
 	})
