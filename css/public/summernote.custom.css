@@ -27,7 +27,7 @@
     content: "모바일 경계선";
     position: absolute;
     color: #bbb;
-    font-size: 5px;
+    font-size: 10px;
     left: 294px;
     top: 0;
     transform: translateX(-50%);
@@ -39,7 +39,7 @@
   right: 20px;
   top: 0;
   content:attr(data-char-count);
-  font-size: 5px;
+  font-size: 10px;
 }
 /* 글자수 제한 초과 시 빨간 글자로 경고 표시*/
 .note-editable.note-overlimit::after{
