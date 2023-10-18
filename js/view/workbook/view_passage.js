@@ -1645,6 +1645,10 @@
 		$('#addVoca,#appendVoca,#requestVoca,#changeVoca').prop('disabled', true);
 	})
 	.on('click', '#searchVoca', function() {
+		if(!$('#openVocaModal .text-in-sentence').val()) {
+			alertModal('문장 내에서 어휘를 먼저 드래그해 주세요.');
+			return;
+		}
 		const $lemma = $('#openVocaModal .lemma');
 		const text = $lemma.val().trim();
 		const vocaType = $('input[name="vocaTypeCheck"]:checked').val();
