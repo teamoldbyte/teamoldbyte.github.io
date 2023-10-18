@@ -405,19 +405,17 @@ function pageinit(membershipCommand) {
 		$('#done-info-modal .btn-close').hide();
 		$('#donationModalLabel').text('송금을 진행해주세요.');
 		clearInterval(nextTimer);
-		let progress = Number($('#phase-2 .progress-bar').attr('aria-valuenow'));
-		if(progress < 100) {
-			nextTimer = setInterval(() => {
-				if(progress < 100) {
-					progress++;
-					$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
-											.width(`${progress}%`);
-					$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', true);
-				}else {
-					$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', false);
-				}
-			}, 1000);
-		}
+		let progress = 0;
+		const startTime = Date.now();
+		nextTimer = setInterval(() => {
+			progress = Math.min(100, (Date.now() - startTime) / 1000);
+			$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
+									.width(`${progress}%`);
+			$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', progress < 100);
+			if(progress >= 100) {
+				clearInterval(nextTimer);
+			}
+		}, 500);
 	})
 	// phase-2 완료
 	
