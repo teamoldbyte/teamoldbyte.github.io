@@ -604,7 +604,7 @@
 		trimTextContent(div);
 
 		// 괄호 적용 대상 선정
-		$(div).find('.acls, .ncls, .advcls, .cls, .ccls, .pcls, .phr, .adjphr, .advphr, .ptcphr, .conj, .sem[data-lv]:not(:only-child), .ptc > .sem[data-lv], .tor > .sem[data-lv]')
+		$(div).find('.acls, .ncls, .advcls, .cls, .ccls, .pcls, .phr, .adjphr, .advphr, .ptcphr, .conj, .sem[data-lv]:not(:only-child), .ptc > .sem[data-lv], .tor > .sem[data-lv], .ger > .sem[data-lv]')
 			.get().reverse().forEach(function(el) {
 				
 				// 괄호 타입과 모양 결정
