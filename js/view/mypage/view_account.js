@@ -384,6 +384,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	$(document)
 	// [가입연장 모달 실행]---------------------------------------------------------
 	.on('show.bs.modal', '#done-info-modal', function() {
+		clearInterval(nextTimer);
 		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
 	})
 	// [상품 선택 완료]------------------------------------------------------------
@@ -420,13 +421,14 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 										.width(progress + '%');
 				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
 			}else {
+				clearInterval(nextTimer);
 				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', false).trigger('click');
 			}
 		}, 1000);
 	})
-	.on('hide.bs.collapse', '#modalDiv #phase-2', function() {
-		clearInterval(nextTimer);
-		$('#donationModalLabel').text('회원가입 정보')
+	// [가입정보 확인 및 수정]-------------------------------------------------------
+	.on('show.bs.collapse', '#modalDiv #phase-3', function() {
+		$('#donationModalLabel').text('회원가입 정보');
 	})
 	// [추가정보 입력 완료]---------------------------------------------------------
 	.on('submit', '#paymentForm', function(e) {
