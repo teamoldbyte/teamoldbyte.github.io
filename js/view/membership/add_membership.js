@@ -132,7 +132,7 @@ function pageinit(membershipCommand) {
 							{ el: 'div', className: 'button-section text-center position-relative pt-3', children: [
 								{ el: 'button', type: 'button', id: 'cancelPayment', className: 'btn btn-outline-fico position-absolute top-2 start-0', textContent: '취소' },
 								{ el: 'span', className: 'waiting-msg placeholder-wave', textContent: '결제 대기 및 처리 중입니다...' },
-								{ el: 'span', className: 'd-block text-danger text-sm', innerHTML: '입금을 하시고 나면<br> 창을 끄지 말고 \'다음\'을 눌러주십시오.' },
+								{ el: 'span', className: 'd-block text-warning text-sm', innerHTML: '처리가 완료될 때까지 이 창을 닫지 마십시오' },
 								{ el: 'button', type: 'button', className: 'btn btn-fico position-absolute top-2 end-0', 'data-bs-toggle': 'collapse', 'data-bs-target': '#phase-2,#phase-3', disabled: true, textContent: '다음' }
 							]}
 						]},
@@ -414,6 +414,7 @@ function pageinit(membershipCommand) {
 			$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', progress < 100);
 			if(progress >= 100) {
 				clearInterval(nextTimer);
+				$('#phase-2 [data-bs-toggle=collapse]').trigger('click');
 			}
 		}, 500);
 	})
