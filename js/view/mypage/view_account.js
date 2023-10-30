@@ -413,18 +413,18 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
 		clearInterval(nextTimer);
 		$('#phase-2 .progress-bar').attr('aria-valuenow', 0).width(0);
-		let progress = 0
+		let progress = 0;
+		const startTime = Date.now();
 		nextTimer = setInterval(() => {
-			if(progress < 100) {
-				progress++;
-				$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
-										.width(progress + '%');
-				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
-			}else {
+			progress = Math.min(100, (Date.now() - startTime) / 1000);
+			$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
+									.width(`${progress}%`);
+			$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', progress < 100);
+			if(progress >= 100) {
 				clearInterval(nextTimer);
-				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', false).trigger('click');
+				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').trigger('click');
 			}
-		}, 1000);
+		}, 500);
 	})
 	// [가입정보 확인 및 수정]-------------------------------------------------------
 	.on('show.bs.collapse', '#modalDiv #phase-3', function() {
