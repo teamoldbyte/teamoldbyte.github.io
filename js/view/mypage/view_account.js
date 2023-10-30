@@ -381,8 +381,13 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	});
 	let nextTimer; 
 	let orderItemList = [];
+	$(document)
+	// [가입연장 모달 실행]---------------------------------------------------------
+	.on('show.bs.modal', '#done-info-modal', function() {
+		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
+	})
 	// [상품 선택 완료]------------------------------------------------------------
-	$(document).on('submit', '#selectItemForm', function() {
+	.on('submit', '#selectItemForm', function() {
 		if(this.checkValidity()) {
 			event.preventDefault();
 			const $item = $('#phase-1 [name=orderItem]:checked');
@@ -396,8 +401,14 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			$('#phase-1,#phase-2').collapse('toggle');
 		}
 	})
+	// [멤버십 선택]---------------------------------------------------------------
+	.on('show.bs.collapse', '#modalDiv #phase-1', function() {
+		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
+	})
 	// [결제 대기]----------------------------------------------------------------
 	.on('show.bs.collapse', '#modalDiv #phase-2', function() {
+		
+		$('#donationModalLabel').text('송금을 진행해 주세요.');
 		$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
 		clearInterval(nextTimer);
 		$('#phase-2 .progress-bar').attr('aria-valuenow', 0).width(0);
@@ -409,12 +420,13 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 										.width(progress + '%');
 				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
 			}else {
-				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', false);
+				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', false).trigger('click');
 			}
 		}, 1000);
 	})
 	.on('hide.bs.collapse', '#modalDiv #phase-2', function() {
 		clearInterval(nextTimer);
+		$('#donationModalLabel').text('회원가입 정보')
 	})
 	// [추가정보 입력 완료]---------------------------------------------------------
 	.on('submit', '#paymentForm', function(e) {
@@ -438,7 +450,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				complete: () => submitter.disabled = false
 			})
 		}
-	});
+	})
 	// 모바일 화면일 경우 에그 내역 페이지네이션을 작게
 	function fitWindowSize() {
 		$('#accountEventPagination').toggleClass('pagination-sm', devSize.isPhone());
