@@ -300,7 +300,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 			$(this).siblings('.invalid-tooltip').text('문장의 끝은 구두점(. ? !) 혹은 따옴표(" \')여야 합니다.');
 			$(this).addClass('is-invalid');
 		}else $(this).removeClass('is-invalid');
-		$('#addBtn').prop('disabled', $('#passageForm .is-invalid').length > 0);
+	//	$('#addBtn').prop('disabled', $('#passageForm .is-invalid').length > 0);
 	})
 	// [(공통)단위 문장 삭제]
 	.on('click', '.js-delete-sentence-btn', function() {
