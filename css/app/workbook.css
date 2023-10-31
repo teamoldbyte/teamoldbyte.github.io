@@ -515,9 +515,9 @@
 .workbook-menu-section .workbook-add{
 	width: 50px;
 }
-.workbook-menu-section .menu-icon-section ul li a .add-icon{
+/* .workbook-menu-section .menu-icon-section ul li a .add-icon{
 	transform: translateY(0);
-}
+} */
 .workbook-menu-section .add-icon .book-icon{
 	font-size: 1.75rem;
 	position: relative;
