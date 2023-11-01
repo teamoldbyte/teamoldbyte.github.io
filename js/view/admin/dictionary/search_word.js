@@ -289,7 +289,12 @@ function pageinit() {
 							{ el: 'option', value: 'ordi.', textContent: '서수'},
 							{ el: 'option', value: 'int.', textContent: '감탄사'},
 							{ el: 'option', value: 'det.', textContent: '한정사'},
-							{ el: 'option', value: 'phrasal-v.', textContent: '구동사', selected: isPhrasalVerb}
+							{ el: 'option', value: 'NN.', textContent: '명사구'},
+							{ el: 'option', value: 'PP.', textContent: '전치사구'},
+							{ el: 'option', value: 'ADP.', textContent: '부사구'},
+							{ el: 'option', value: 'AJP.', textContent: '형용사구'},
+							{ el: 'option', value: 'phrasal-v.', textContent: '구동사', selected: isPhrasalVerb},
+							{ el: 'option', value: 'VP.', textContent: '동사구'}
 						]},
 					]},
 					{ el: 'div', className: 'col-8', children: [
