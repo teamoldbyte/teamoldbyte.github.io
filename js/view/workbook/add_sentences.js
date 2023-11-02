@@ -50,14 +50,15 @@ function pageinit(memberId, isSsam) {
 	let searchSentence = '', searchingSentenceDone = false, cachedCompletes = {};
 	const autocompleteInstance = $('#newPassageText').autocomplete({
 		position: {my: 'left+10 top-10'},
-    	delay: 300,
+    	delay: 500,
     	search: function() {
 			const text = this.value.sentenceNormalize(), textLen = text.length;
 			// 입력어가 5자 미만 혹은 최대길이를 초과하거나,
 			// 특수문자를 포함, 혹은 이전 검색어(입력란의 첫번째 문장)와 차이가 없으면 검색 X
-			return !(textLen < 5 || textLen > maxChars
+			return textLen > 4;
+			/*return !(textLen < 5 || textLen > maxChars
 			|| text.match(invalidEnglishRegex)
-			|| searchSentence == tokenizer.sentences(text)[0]);
+			|| searchSentence == tokenizer.sentences(text)[0]);*/
 		},
     	source: (request, response) => {
 			searchSentence = tokenizer.sentences(request.term.sentenceNormalize())[0];
@@ -358,6 +359,8 @@ function pageinit(memberId, isSsam) {
 				}
 			}
 			$('.search-sentence').text(eng);
+			let sameIndex = -1; // 입력값과 완전히 동일한 결과의 인덱스 번호.
+			let $sameItem;
 			// 지문 검색(ajax)--------------------------------------------
 			$.getJSON('/workbook/passage/search', {eng}, displayDtoList)
 			.fail(() => alertModal('검색을 할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
@@ -372,14 +375,23 @@ function pageinit(memberId, isSsam) {
 				// 지문 검색결과 출력
 				const $passageList = $('.passage-result').empty();
 				if($passageList.data('masonry')) $passageList.masonry('destroy');
+				// 입력 지문과 동일한 지문의 인덱스
+				sameIndex = passageDtoList.findIndex(psg => psg.text == total.join(' '));
 				for(let i = 0, len = passageDtoList.length; i < len; i++){
-					const $item = $('#hiddenDivs .list-group-item').clone();
 					const searchedSentence = passageDtoList[i];
+					
+					// 이미 입력 지문과 동일한 지문이 나온 뒤 검색결과는 입력 지문을 포함하는 더 긴 지문만 표시
+					if(sameIndex > -1 && i != sameIndex
+					&& !(searchedSentence.text.length > total.join(' ').length 
+						&& searchedSentence.text.includes(total.join(' ')))) continue;
+					const $item = $('#hiddenDivs .list-group-item').clone();
 					$item.data('passageId', passageDtoList[i].passageId)
 						 .html(searchedSentence.text.replaceAll(new RegExp(total.join('|').replaceAll(/[\(\)\{\}\[\]]/gm,'\\$&'),'gm'),
 											'<span class="bg-fc-yellow">$&</span>'));
 					$passageList.append($item);
+					if(i == sameIndex) $sameItem = $item.addClass('same-content');
 				}
+				
 				// 한 문장만 입력했을 경우 문장 검색결과도 출력)
 				if(total.length == 1) {
 					for(let i = 0, len = sentenceDtoList.length; i < len; i++){
@@ -406,6 +418,10 @@ function pageinit(memberId, isSsam) {
 						$('#jumpTo3').trigger('click');
 					} else {
 						$passageList.masonry(masonryOptsForPassages);
+						// 검색결과가 입력내용과 동일한 지문 하나로 유일하면 자동 선택
+						if(sameIndex > -1 && $passageList.find('.list-group-item').length == 1) {
+							$sameItem?.trigger('click');
+						}
 					}
 				});
 				$('.step-1 .collapse, .step-2 .collapse').collapse('toggle');
