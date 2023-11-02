@@ -83,9 +83,9 @@ function pageinit() {
 		$(this).closest('.edit-button-section');
 	})
 	
-	$('.level').on('click', function() {
-		$('#searchResult').find('.level, .level-input, .js-level-edit, .js-level-cancel').toggle();
-		$('#searchResult .level-input').val($(this).text()).focus();
+	$('.level, .level-edit-open-btn').on('click', function() {
+		$('#searchResult').find('.level, .level-edit-open-btn, .level-input, .js-level-edit, .js-level-cancel').toggle();
+		$('#searchResult .level-input').val($('#searchResult .level').text()).focus();
 	})
 	
 	$('.js-level-edit').on('click', function() {
@@ -108,7 +108,7 @@ function pageinit() {
 			success: function() {
 				alertModal('단어 난이도가 수정되었습니다.');
 				$levelText.text(inputValue);
-				$('#searchResult').find('.level, .level-input, .js-level-edit, .js-level-cancel').toggle();
+				$('#searchResult').find('.level, .level-edit-open-btn, .level-input, .js-level-edit, .js-level-cancel').toggle();
 			},
 			error: function() {
 				alertModal('에러가 발생했습니다.\n'+xhr.responseJSON.exception);
@@ -117,7 +117,7 @@ function pageinit() {
 	});
 	
 	$('.js-level-cancel').on('click', function() {
-		$('#searchResult').find('.level, .level-input, .js-level-edit, .js-level-cancel').toggle();
+		$('#searchResult').find('.level, .level-edit-open-btn, .level-input, .js-level-edit, .js-level-cancel').toggle();
 	});
 	
 	// 단어 등록 예약
