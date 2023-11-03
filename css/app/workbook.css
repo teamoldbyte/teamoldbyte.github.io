@@ -2256,6 +2256,7 @@
 		position:absolute;
 		right: 0.75rem;
 		bottom: 2.5rem;
+		width: auto;
 	}
 
 	.view-passage-section .note-section .note-text p,
