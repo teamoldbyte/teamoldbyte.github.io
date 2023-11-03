@@ -1333,15 +1333,13 @@
 	})
 	
 	// [프린트 버튼 클릭]------------------------------------------------------
-	/* $(".js-print-button").click(function(){
-		printPreview({
-			template: $('#printTemplate')[0],
-			obj2print: '.one-sentence-unit-section',
-			width: window.outerWidth,
-			height: window.outerHeight,
-			style: '<style>:root{font-size:12px;}</style>'
-		});
-	}); */
+	$(".js-print-button").on('click', function(){
+		const workBookTitle = $('.workbook-title-section:eq(0)').text().trim();
+		const passageTitle = $('.passage-title-text:eq(0)').text().trim();
+		window._printModel = { workBookTitle, passageTitle, memberAlias, sentenceList };
+		window.open('/sample/workbook/print_passage.html');
+
+	}); 
 
 	// [그래프 영역 펼치고 접기]------------------------------------------------------
 	/* $(".token-tree-section .btn-area").click(function(){
@@ -1685,7 +1683,10 @@
 					})));
 			}else {
 				$('#openVocaModal .part-type option').each((_,el) => {
-					if(legacyTypes.has(el.value)) el.style.background = 'var(--fc-yellow)';
+					if(legacyTypes.has(el.value)) {
+						el.style.background = 'var(--fc-yellow)';
+						if(legacyTypes.size == 1) el.selected = true;
+					}
 				})
 			}
 	
