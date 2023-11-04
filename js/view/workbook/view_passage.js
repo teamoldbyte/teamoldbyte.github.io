@@ -2101,7 +2101,7 @@
 				$noteSection.find('.note').toggleClass('overflow-hidden mb-4');
 			}
 			$textSection.find('.note-editor').hide();
-			$textSection.find('.note-open-input').val(note.noteAccess||note.publicOpen);
+			$textSection.find('.note-open-input').val((note.noteAccess||note.publicOpen).toString());
 			$textSection.find('.note-text').html(note.content).show();
 			$noteSection.find('.updatedate').text(new Date().toLocaleDateString());
 			$noteSection.find('.note-mdf-btns, .updatedate').show();
