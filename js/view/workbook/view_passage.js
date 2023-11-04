@@ -2826,7 +2826,9 @@
 			update: anim => {
 				if(anim.progress > 50)
 					anim.animatables.forEach(animatable => {
-						animatable.target.style.zIndex = animatable.target.id == idToShow ? 0 : -1;
+						const isTargetToShow = animatable.target.id == idToShow;
+						animatable.target.style.zIndex = isTargetToShow ? 0 : -1;
+						animatable.target.disabled = !isTargetToShow;
 					})
 			}
 		});
