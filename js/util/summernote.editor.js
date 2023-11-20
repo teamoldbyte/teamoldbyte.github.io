@@ -23,11 +23,13 @@
 				['table', ['table']],
 				['insert', ['link', 'picture', 'video']],
 				['view', ['help','codeview']],
+				['extsymbols', ['extSymbols']]
 				/*['grammar', ['subjectrole','actionrole','objectrole','empMod-f','empMod-b','empAdv','hinteraser']]*/],
 			styleTags: [ 'p', { title: '제목', tag: 'h4', value: 'h4' } ],
 			fontNames: ['RIDIBatang', 'HCRDotum'],
 			fontSizes: ['10', '12', '14', '16', '18', '24', '36'],
-			lang: 'ko-KR'};
+			lang: 'ko-KR',
+			};
 	
 	function onPaste($input, e) {
 		let bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
@@ -80,13 +82,16 @@
 			}]))
 			await $.cachedScript('https://cdn.jsdelivr.net/combine/npm/summernote@0.8.18/dist/summernote-lite.min.js,npm/summernote@0.8.18/lang/summernote-ko-KR.min.js');
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
-			/*await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');*/
+			//await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');
 		}
 		if(typeof String.prototype.quoteNormalize == 'undefined') {
 			await $.cachedScript('https://static.findsvoc.com/js/util/text-util.min.js');
 		}
 		$input.summernote(Object.assign(options, {
 			callbacks: {
+				onInit: function() {
+					$.extend($.summernote.options.tooltip, { container: 'body' });
+				},
 				onPaste: function(e) { onPaste($input, e); },
 				onChange: function(contents, $editable) { 
 					onChange(contents, this.maxLength, $editable); },
