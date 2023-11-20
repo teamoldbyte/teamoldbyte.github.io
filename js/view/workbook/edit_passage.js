@@ -7,6 +7,8 @@ function pageinit(sentenceList, memberId, isSsam) {
 	let workbookId56;
 	if(document.referrer) {
 		workbookId56 = new URL(document.referrer).pathname?.match(/(\/mybook\/edit\/|\/workbook\/study\/overview\/|\/workbook\/passage\/)(\w+)/)?.[2];
+	}else if(sessionStorage.getItem('workbookId')) {
+		workbookId56 = ntoa(sessionStorage.getItem('workbookId'));
 	}
 	const LIST_SENTENCE_SELECTOR = '.list-sentence-section',
 		ONE_SENTENCE_SELECTOR = '.one-sentence-unit-section';
