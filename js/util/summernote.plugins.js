@@ -19,6 +19,32 @@
 	});
 	// use <br> instead of <p> when 'Enter' pressed.
 	$.extend($.summernote.plugins, {
+		'extraButtons': function(context){
+			const arrows = ['🡆', '→', '▮', '•', '·', '※', '≠'];
+			// 편의기호 드롭다운 표시
+			context.memo('button.extSymbols', function() {
+
+				// Create button
+				var dropdownbutton = $.summernote.ui.dropdownButton({
+					title: '※',
+					items: Array.from(arrows, arrow => `<button type="button" class="note-btn">${arrow}</button>`), // list of arrows
+				}, function(items) {
+						$(items).each(function() {
+							$(this).find('.note-btn').on('click', function(e) {
+								context.invoke('editor.insertText', $(this).text());
+								e.preventDefault();
+							}).unwrap('a');
+						});
+					});
+				new bootstrap.Tooltip(dropdownbutton[0].querySelector('.dropdown-toggle'), {
+					template: '<div class="note-tooltip bottom in"><div class="note-tooltip-arrow"></div><div class="tooltip-inner note-tooltip-content"></div></div>',
+					title: '특수기호 프리셋',
+					placement: 'bottom',
+					trigger: 'hover'
+				});
+				return dropdownbutton;
+			})
+		},
         'brenter': function () {
             this.events = {
 				// Bind on ENTER
