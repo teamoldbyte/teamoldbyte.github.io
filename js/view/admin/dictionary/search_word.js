@@ -160,7 +160,8 @@ function pageinit() {
 				node.previousSibling.remove();
 			}
 			node = node.nextSibling;
-		}		
+		}
+		this.closest('.one-part-unit-section').querySelector('.input-meaning').dispatchEvent(new InputEvent('input'));
 	})
 	// 뜻 수정
 	.on('click', '.js-edit-meaning', function() {
