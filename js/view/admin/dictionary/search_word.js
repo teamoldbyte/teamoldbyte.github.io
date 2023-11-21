@@ -367,7 +367,10 @@ function pageinit() {
 						{ el: 'div', className: 'input-example-eng eng form-control text-sm text-start', contentEditable: 'plaintext-only', innerHTML: sense.eng||'',
 						'data-org': sense.eng||'', placeholder: '500자 이내의 예문 입력', oninput: function() {
 							$(this).closest('.one-part-unit-section').find('.js-edit-meaning,.js-edit-cancel').show();
-						}}
+						}},
+						{ el: 'div', className: 'ms-2 p-1 text-start fs-7 text-fc-red', 
+							textContent: '범위를 선택하고 우클릭하면 강조표시됩니다. (강조된 표시는 우클릭으로 다시 강조해제)'
+						}
 					]}, 
 					{ el: 'div', className: 'col-2'}
 				]},
