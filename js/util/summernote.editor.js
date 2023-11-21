@@ -22,8 +22,8 @@
 				['para', ['ul', 'ol', 'paragraph']],
 				['table', ['table']],
 				['insert', ['link', 'picture', 'video']],
+				['extsymbols', ['extSymbols']],
 				['view', ['help','codeview']],
-				['extsymbols', ['extSymbols']]
 				/*['grammar', ['subjectrole','actionrole','objectrole','empMod-f','empMod-b','empAdv','hinteraser']]*/],
 			styleTags: [ 'p', { title: '제목', tag: 'h4', value: 'h4' } ],
 			fontNames: ['RIDIBatang', 'HCRDotum'],
