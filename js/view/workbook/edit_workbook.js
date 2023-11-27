@@ -488,6 +488,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			const passageId = Number(this.closest('.passage').dataset.pid);
 			const passageTitle = this.closest('.passage').querySelector('.passage-title').title;
 			sessionStorage.setItem('workbookId', workbookId);
+			sessionStorage.setItem('workbookType',workBookType);
 			sessionStorage.setItem('workbookCover', workbookCover);
 			sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));		
 			sessionStorage.setItem('editingPassageId', passageId);
