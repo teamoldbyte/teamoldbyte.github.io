@@ -118,7 +118,7 @@ function alertModal(msg, callback) {
 						]}
 		]}]}]});
 		document.body.appendChild(modal);
-		modal.addEventListener('shown.bs.modal', function() {
+		modal.addEventListener('show.bs.modal', function() {
 			modal.querySelector('.modal-footer button[data-bs-dismiss]').focus();
 		});		
 	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
@@ -158,7 +158,7 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 						]}						
 		]}]}]});
 		document.body.appendChild(modal);
-		modal.addEventListener('shown.bs.modal', function() {
+		modal.addEventListener('show.bs.modal', function() {
 			modal.querySelector('.modal-footer button').focus();
 		})
 		modal.addEventListener('hidden.bs.modal', onHide);
