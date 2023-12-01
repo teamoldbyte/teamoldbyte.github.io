@@ -125,7 +125,7 @@ function alertModal(msg, callback) {
 	modal.addEventListener('hidden.bs.modal', onHidden);
 	
 	function onEnter(event) {
-		if((event.key = 'Enter' || event.key == ' ') && modal.matches('.showing')) {
+		if((event.key == 'Enter' || event.key == ' ') && modal.matches('.showing')) {
 			window.removeEventListener('keydown', onEnter);
 			bootstrap?.Modal?.getInstance(modal).hide();
 		}
@@ -183,7 +183,7 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 	modal.addEventListener('hidden.bs.modal', onHide);
 	
 	function onEnter(event) {
-		if((event.key = 'Enter' || event.key == ' ') && modal.matches('.showing')) {
+		if((event.key == 'Enter' || event.key == ' ') && modal.matches('.showing')) {
 			window.removeEventListener('keydown', onEnter);
 			modal.querySelector('.modal-footer button').dispatchEvent(new MouseEvent('click'));
 		}
