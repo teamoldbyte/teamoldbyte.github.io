@@ -139,7 +139,6 @@ function alertModal(msg, callback) {
 		if(callback) callback();
 		
 		window.removeEventListener('keydown', onEnter);
-		modal.removeEventListener('shown.bs.modal', onShown);
 		modal.removeEventListener('hidden.bs.modal', onHidden);
 	}
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
@@ -205,7 +204,6 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 				deniedCallback();
 			}
 		}
-		modal.removeEventListener('shown.bs.modal', onShown);
 		modal.removeEventListener('hidden.bs.modal', onHide)
 	}
 	
