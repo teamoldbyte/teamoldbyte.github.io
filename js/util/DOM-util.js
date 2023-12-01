@@ -98,6 +98,7 @@ function parseHTML(html) {
 
 // alert를 대신하여 BootStrap Modal을 생성해서 표시
 function alertModal(msg, callback) {
+	document.activeElement.blur();
 	let modal = document.getElementById('alertModal');
 	if(!modal) {
 		modal = createElement({
@@ -118,19 +119,34 @@ function alertModal(msg, callback) {
 						]}
 		]}]}]});
 		document.body.appendChild(modal);
-		modal.addEventListener('shown.bs.modal', function() {
-			modal.querySelector('.modal-footer button[data-bs-dismiss]').focus();
-		});		
+		modal.addEventListener('shown.bs.modal', onShown);	
 	}else modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
+	window.addEventListener('keydown', onEnter);
 	modal.addEventListener('hidden.bs.modal', onHidden);
+	
+	function onEnter(event) {
+		if((event.key = 'Enter' || event.key == ' ') && modal.matches('.showing')) {
+			window.removeEventListener('keydown', onEnter);
+			bootstrap?.Modal?.getInstance(modal).hide();
+		}
+	}
+	
+	function onShown() {
+		modal.querySelector('.modal-footer button[data-bs-dismiss]').focus();
+	}
+	
 	function onHidden() {
 		if(callback) callback();
+		
+		window.removeEventListener('keydown', onEnter);
+		modal.removeEventListener('shown.bs.modal', onShown);
 		modal.removeEventListener('hidden.bs.modal', onHidden);
 	}
 	bootstrap?.Modal?.getOrCreateInstance(modal).show();
 }
 // window.confirm을 대신하여 Bootstrap Modal을 생성해서 표시. '확인'을 누르면 callback 실행
 function confirmModal(msg, confirmedCallback, deniedCallback) {
+	document.activeElement.blur();
 	let modal = document.getElementById('confirmModal');
 	if(!modal) {
 		modal = createElement({
@@ -158,14 +174,24 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 						]}						
 		]}]}]});
 		document.body.appendChild(modal);
-		modal.addEventListener('shown.bs.modal', function() {
-			modal.querySelector('.modal-footer button').focus();
-		})
-		modal.addEventListener('hidden.bs.modal', onHide);
+		modal.addEventListener('shown.bs.modal', onShown);
 	}else {
 		modal.dataset.bsReturn = 0;
 		modal.querySelector('.text-section').innerHTML = msg.replace(/\n/g,'<br>');
-		modal.addEventListener('hidden.bs.modal', onHide);
+	}
+	window.addEventListener('keydown', onEnter);
+	
+	modal.addEventListener('hidden.bs.modal', onHide);
+	
+	function onEnter(event) {
+		if((event.key = 'Enter' || event.key == ' ') && modal.matches('.showing')) {
+			window.removeEventListener('keydown', onEnter);
+			modal.querySelector('.modal-footer button').dispatchEvent(new MouseEvent('click'));
+		}
+	}	
+	
+	function onShown() {
+		modal.querySelector('.modal-footer button').focus();
 	}
 
 	function onHide(event) {
@@ -179,6 +205,7 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 				deniedCallback();
 			}
 		}
+		modal.removeEventListener('shown.bs.modal', onShown);
 		modal.removeEventListener('hidden.bs.modal', onHide)
 	}
 	
