@@ -15,6 +15,9 @@
 			tabSize: 4,
 			minHeight: 200,
 			colorButton: { foreColor: '#FF0000', backColor: '#FFFF00' },
+			popover: {
+				table: [ ['total', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight', 'deleteRow', 'deleteCol', 'deleteTable']]]
+			},
 			toolbar: [ ['style', ['style']],
 				['font', ['bold', 'italic', 'underline', 'clear']],
 				['fontname', ['fontsize']],
@@ -91,6 +94,7 @@
 			callbacks: {
 				onInit: function() {
 					$.extend($.summernote.options.tooltip, { container: 'body' });
+					$input.data('summernote').layoutInfo.editor.find('.note-table-popover .note-btn-group').addClass('d-inline-flex');
 				},
 				onPaste: function(e) { onPaste($input, e); },
 				onChange: function(contents, $editable) { 

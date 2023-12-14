@@ -32,6 +32,13 @@
     top: 0;
     transform: translateX(-50%);
   }
+  /* 테이블 팝오버 메뉴가 항상 한 줄로 표현되려면 팝오버 위치를 왼쪽으로 밀어야 함. 동적인 위치 설정이 안되기 때문*/
+  .note-table-popover {
+    transform: translateX(-106px);
+  }
+  .note-table-popover .note-popover-arrow {
+    transform: translateX(106px);
+  }
 }
 /* 현재 입력한 글자수를 pseudo element로 표현 */
 .note-editable::after{

@@ -492,11 +492,36 @@ function pageinit(sentenceList, memberId, isSsam) {
 
 	// 전체 문장을 orderNum을 기준으로 재정렬
 	function arrangeSentences() {
-		$(LIST_SENTENCE_SELECTOR).html(
-			$(ONE_SENTENCE_SELECTOR)
-				.sort((a, b) => a.dataset.ordernum - b.dataset.ordernum)
-				.each((i, el) => $(el).find('.numbering-text').text(i + 1))
-		);
+		
+		if($(ONE_SENTENCE_SELECTOR).length == 0) {
+			const workbookType = sessionStorage.getItem('workbookType');
+			if(['C','T'].includes(workbookType)) {
+				alertModal('지문이 완전히 비었습니다.\n워크북 수정 화면으로 이동합니다.', () => {
+					location.replace(`/workbook/mybook/edit/${workbookId56}`);
+				});
+			}else {
+				const workbookId = Number(sessionStorage.getItem('workbookId')||0);
+				
+				if(workbookId != 0 && passageId != 0) {
+					deletePassage({workbookId, passageId}, () => {
+						alertModal('지문이 완전히 비어 삭제됩니다.\n워크북 수정 화면에서 새 지문을 등록하세요.', () => {
+							location.replace(`/workbook/mybook/edit/${workbookId56}`);
+						})
+					})
+				}else {
+					alertModal('지문이 완전히 비었습니다.\n워크북 수정 화면으로 이동합니다.', () => {
+						location.replace(`/workbook/mybook/edit/${workbookId56}`);
+					});
+				}
+			}
+		}else {
+			$(LIST_SENTENCE_SELECTOR).html(
+				$(ONE_SENTENCE_SELECTOR)
+					.sort((a, b) => a.dataset.ordernum - b.dataset.ordernum)
+					.each((i, el) => $(el).find('.numbering-text').text(i + 1))
+			);
+		}
+		
 	}
 
 	/** 전체 문장의 길이 계산하여 문장 추가 버튼과 지문 추가 버튼 토글하기

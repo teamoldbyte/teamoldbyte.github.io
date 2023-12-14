@@ -37,9 +37,9 @@
 						});
 					});
 				new bootstrap.Tooltip(dropdownbutton[0].querySelector('.dropdown-toggle'), {
-					template: '<div class="note-tooltip bottom in"><div class="note-tooltip-arrow"></div><div class="tooltip-inner note-tooltip-content"></div></div>',
-					title: '특수기호 프리셋',
-					placement: 'bottom',
+					template: '<div class="note-tooltip top in"><div class="note-tooltip-arrow"></div><div class="tooltip-inner note-tooltip-content"></div></div>',
+					title: '특수기호 모음',
+					placement: 'top',
 					trigger: 'hover'
 				});
 				return dropdownbutton;
