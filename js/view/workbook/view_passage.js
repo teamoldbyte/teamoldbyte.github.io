@@ -1614,7 +1614,13 @@
 			}
 			
 			sel.setBaseAndExtent(focusNode, focusOffset, anchorNode, anchorOffset);
-
+			
+			// '단어'는 공백을 포함하면 안됨.
+			if(!$('input[name="vocaTypeCheck"]:checked').val() && sel.toString().includes(' ',1)) {
+				alertModal('공백을 포함한 경우는 \'구\'로 등록해 주세요.');
+				return;
+			}
+			
 			const offsets = [sel.anchorOffset,sel.focusOffset].sort((a,b) => a - b);
 			const $nextPhase = $(this).closest('.voca-reg-phase').next('.voca-reg-phase').slideDown();
 			$nextPhase.find('.word-start').val(offsets[0]);
@@ -1856,21 +1862,20 @@
 			return;
 		}
 		let command;
-		switch(_this.id) {
-			case 'changeVoca':
-				command = { sentenceWordId: $sentenceUnit.find('.one-word-unit-section:visible').filter((_,w) => $(w).data('wordId') == wordId).data('sentenceWordId')
+		
+		if(_this.id == 'changeVoca') {
+			command = { 
+				sentenceWordId: $sentenceUnit.find('.one-word-unit-section:visible').filter((_,w) => $(w).data('wordId') == wordId).data('sentenceWordId')
 				, newPartType: partType };
-				if(appendMeaning?.length > 0) {
-					await $.ajax({
-						url, type: 'POST', data: command
-					});
-					url = '/openvocas/append/meaning';
-				}else {
-					break;
-				}
-			default:
-				command = { wordId: wordId ? wordId : 0, partType, appendMeaning, sentenceId, title, token, start, end }
-				break;
+			if(appendMeaning?.length > 0) {
+				await $.ajax({
+					url, type: 'POST', data: command
+				});
+				url = '/openvocas/append/meaning';
+				command = { wordId: wordId || 0, partType, appendMeaning, sentenceId, title, token, start, end };
+			}		
+		}else {
+			command = { wordId: wordId || 0, partType, appendMeaning, sentenceId, title, token, start, end };
 		}
 		
 		_this.disabled = true;
@@ -1882,7 +1887,7 @@
 						const $wordBlock = $wordCopySection.clone();
 						
 						// wordId, sentenceId, workbookId를 할당(단어모듈용)
-						$wordBlock.data({wordId: word.wid, sentenceId, workbookId, sentenceWordId: word.sentenceWordId });
+						$wordBlock.data({wordId: word.wid||wordId, sentenceId, workbookId, sentenceWordId: word.sentenceWordId });
 						
 						// 우선 복사 원본의 뜻 부분들을 삭제
 						$wordBlock.find('.one-part-unit-section').remove();
@@ -1918,8 +1923,8 @@
 								senseList.push({ partType, meaning: meaningChoice.substring(partType.length + 1)})
 							}
 							
-							for(let k = 0; k < senseList.length; k++) {
-								const sense = senseList[k], $partBlock = $partCopySection.clone();
+							for(const element of senseList) {
+								const sense = element, $partBlock = $partCopySection.clone();
 								
 								$wordBlock.append($partBlock);
 								$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
@@ -1931,7 +1936,7 @@
 					}
 					// 의미 및 품사 추가만 한 경우
 					else {
-						const $wordBlock = $wordSection.find('.one-word-unit-section').filter((_,el) => $(el).data('wordId') == word.wid);
+						const $wordBlock = $wordSection.find('.one-word-unit-section').filter((_,el) => $(el).data('wordId') == wordId);
 						
 						$wordBlock.find('.one-part-unit-section').remove();
 						const senseList = word.senseList;
