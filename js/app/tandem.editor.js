@@ -425,7 +425,8 @@
 				//=============================================================/
 				.on('mouseup', '.edit-svoc[data-mode="cleft"]', function(e) {
 					e.stopPropagation();
-					this.querySelector('.semantics-result').normalize();
+					const semanticsResult = this.querySelector('.semantics-result');
+					semanticsResult.normalize();
 					let sel = getSelection();
 					if(!sel.isCollapsed){
 						const position = sel.anchorNode.compareDocumentPosition(sel.focusNode);
@@ -457,27 +458,42 @@
 						sel.setBaseAndExtent(focusNode, focusOffset, anchorNode, anchorOffset);							
 						
 						const selMatch = sel.toString().trim()
-						.match(/^[iI]t( is| was|'s| had been| has been|'s been|'ll be|'ll have been| will be| will have been| can be| could be| could have been| would be| would have been) .+ that$/);
+						.match(/^[iI]t( is| was|'s| had been| has been|'s been|'ll be|'ll have been| will be| will have been| can be| could be| could have been| would be| would have been) .+\S$/);
 						if(selMatch) {
+							
+							// 이전 상태 히스토리 저장
+							pushEditHistory(semanticsResult);
 							
 							const cleftHead = 'It' + selMatch[1];
 							
-							const range1 = new Range();
-							range1.setStart(anchorNode, anchorOffset);
-							range1.setEnd(anchorNode, anchorOffset + cleftHead.length);
+							// 선택범위 끝에 that이 있으면 that에도 강조구문 처리.
+							if(selMatch[0].endsWith('that')) {
+								const range2 = new Range();
+								range2.setStart(focusNode, focusOffset - 4);
+								range2.setEnd(focusNode, focusOffset);
+								range2.surroundContents(createElement({
+									el: 'span', class: 'sem cleft'
+								}));
+							}
+							try{
+								const range1 = new Range();
+								range1.setStart(anchorNode, anchorOffset);
+								range1.setEnd(anchorNode, anchorOffset + cleftHead.length);
+								
+								range1.surroundContents(createElement({
+									el: 'span', class: 'sem cleft', dataset: { gc: '강조구문'}
+								}));
+							}catch(e) {
+								alertModal('선택 범위 내의 다른 마킹을 지워주세요.');
+								$(semanticsResult).html(undoList.pop());
+								return;
+							}
 							
-							range1.surroundContents(createElement({
-								el: 'span', class: 'sem cleft', dataset: { gc: '강조구문'}
-							}));
 							
-							const range2 = new Range();
-							range2.setStart(focusNode, focusOffset - 4);
-							range2.setEnd(focusNode, focusOffset);
-							range2.surroundContents(createElement({
-								el: 'span', class: 'sem cleft'
-							}));
 							
 							sel.removeAllRanges();
+						}else {
+							alertModal('"It + be동사 + 강조대상 + that(생략가능)"까지 선택하세요.');
 						}
 					}
 				})
@@ -526,7 +542,7 @@
 				.on('click', '.cls-conj-menu button', function() {
 					const conj = this.value;
 					const $clause = $nclsComboBox2.data('range'); 
-					$clause.attr('data-gc', gcomments.ncls[conj] );
+					$clause.attr('data-gc', gcomments.ncls[conj]||$clause.attr('data-gc') );
 					
 					getSelection().removeAllRanges();
 					$nclsComboBox2.data('range', null).detach();
