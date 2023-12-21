@@ -22,6 +22,7 @@
 		"FORM_TWO_NCLS_COMP", // 42500, "2형식_명사절_주격보어", true
 		"FORM_THREE", // 43000, "3형식"
 //		"FORM_THREE_VI_PREP", // 43100, "3형식_전치사_목적어", true
+		"FORM_THREE_ADV", // 43150, "3A형식" 2023.12.21. 이광민
 		"FORM_THREE_NOUN_OBJ", // 43200, "3형식_명사_목적어", true
 		"FORM_THREE_GER_OBJ", // 43300, "3형식_동명사_목적어", true
 		"FORM_THREE_TO_OBJ", // 43500, "3형식_to부정사_목적어", true
@@ -584,9 +585,9 @@
 			else if (hasKey(semantics, 'rc', 'i.o.')) {
 				formType = 'FORM_FOUR';
 			}
-			// o가 1개 있으면 3형식
+			// o가 1개 있으면 3형식(a가 있으면 3a형식)
 			else if (hasKey(semantics, 'role', 'o')) {
-				formType = 'FORM_THREE';
+				formType = `FORM_THREE${hasKey(semantics, 'role', 'a') ? '_ADV' : ''}`;
 			}
 			// c가 있으면 2형식
 			else if (hasKey(semantics, 'role', 'c')) {
