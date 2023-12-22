@@ -16,7 +16,22 @@
 			minHeight: 200,
 			colorButton: { foreColor: '#FF0000', backColor: '#FFFF00' },
 			popover: {
-				table: [ ['total', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight', 'deleteRow', 'deleteCol', 'deleteTable']]]
+				image: [
+					['image', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+					['float', ['floatLeft', 'floatRight', 'floatNone']],
+					['remove', ['removeMedia']]
+				],
+				link: [
+					['link', ['linkDialogShow', 'unlink']]
+				],
+				table: [ ['total', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight', 'deleteRow', 'deleteCol', 'deleteTable']]],
+				air: [
+					['color', ['color']],
+					['font', ['bold', 'underline', 'clear']],
+					['para', ['ul', 'paragraph']],
+					['table', ['table']],
+					['insert', ['link', 'picture']]
+				]
 			},
 			toolbar: [ ['style', ['style']],
 				['font', ['bold', 'italic', 'underline', 'clear']],
@@ -85,7 +100,8 @@
 			}]))
 			await $.cachedScript('https://cdn.jsdelivr.net/combine/npm/summernote@0.8.18/dist/summernote-lite.min.js,npm/summernote@0.8.18/lang/summernote-ko-KR.min.js');
 			await $.cachedScript('https://static.findsvoc.com/js/util/summernote.plugins.min.js');
-			//await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');
+//			await $.cachedScript('/js/util/summernote.plugins.js');
+//			await $.cachedScript('/js/util/summernote.plugins.ssamnote.js');
 		}
 		if(typeof String.prototype.quoteNormalize == 'undefined') {
 			await $.cachedScript('https://static.findsvoc.com/js/util/text-util.min.js');
