@@ -286,12 +286,16 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					+'나의 서재로 이동하시겠습니까?', () => location.assign('/workbook/mylibrary'));
 				break;
 			case 'duplicated':
-				$(_this).addClass('bg-secondary').prop('disabled', true).text('구독중');
+				$(_this).addClass('bg-secondary').text('구독중').prop('disabled', true);
 				alertModal('이미 구독한 워크북입니다.');
 				break;
 			case 'insufficient':
 				$(_this).removeClass('bg-secondary').text('구독').prop('disabled', false);
 				alertModal('잔여 gold egg가 부족합니다.');
+				break;
+			case 'unauthorized':
+				$(_this).addClass('bg-secondary').text('구독').prop('disabled', true);
+				alertModal('구독할 권한이 없는 워크북입니다.');
 				break;
 			}		
 		}
