@@ -136,8 +136,8 @@ function delNote(part, noteId, callback) {
 }
 
 /* 문장 구문분석 추가 및 편집 */
-function editSvoc(svocCommand, callback) {
-	postJSON('/workbook/sentence/svoc/edit', svocCommand, callback, () => alertModal('구문분석 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+function editSvoc(svocCommand, callback, errCallback) {
+	postJSON('/workbook/sentence/svoc/edit', svocCommand, callback, errCallback?? (() => alertModal('구문분석 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.')));
 }
 /* 문장 구문분석 삭제 */
 function delSvoc(svocId, callback) {
