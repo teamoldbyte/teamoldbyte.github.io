@@ -1196,7 +1196,9 @@
 	}
 	
 	// [분석 결과 추가/편집]--------------------------------------------------------
+	const unauthorizedBtns = [];
 	$(document).on('click', '.js-add-svoc, .js-edit-svoc', async function() {
+		const editorOpenBtn = this;
 		let forNew = $(this).is('.js-add-svoc');
 		const isIndexFinger = !!this.closest('.js-finger-detail');
 		const sentenceId = parseInt(isIndexFinger 
@@ -1256,13 +1258,9 @@
 				svocCommand.svocId = svocId;
 			}
 			// 편집 저장(ajax)-------------------
-			editSvoc(svocCommand, successSave);
+			// tandem.editor.js에서 리턴 받아서 처리
+			return editSvoc(svocCommand, successSave, failSave);
 			// --------------------------------
-			// gramMeta도 같이 저장(ajax)---------------------------------------
-			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'workbook');
-			// --------------------------------------------------------------
-			if(!isIndexFinger)
-				metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),getMetaStatusExpression('S'));
 		}
 		
 		// 편집 저장 콜백(신규 분석 표식 해제 및 svocId 할당. 분석 접기/펼치기 대상 재정의)
@@ -1274,17 +1272,40 @@
 				$semantics.closest('.svoc-section').nextAll('.svoc-section').collapse('show');
 			}
 			$semantics.closest('.svoc-section').find('.svoc-mdf-btns').show();
-			$('.js-add-svoc').prop('disabled', false);
+			_restoreSvocAddBtns();
+			// gramMeta도 같이 저장(ajax)---------------------------------------
+			window['tandem']?.meta?.saveGramMetaFromDOM(sentenceId, $semantics[0], true, 'workbook');
+			if(!isIndexFinger)
+				metaStatusCallback($semantics.closest('.one-sentence-unit-section').find('.meta-status'),getMetaStatusExpression('S'));
+			// --------------------------------------------------------------
+		}
+		
+		// 저장 실패(편집기 닫고 분석 추가버튼도 비활성화)
+		function failSave() {
+			unauthorizedBtns.push(editorOpenBtn);
+			_restoreSvocAddBtns();
+			alertModal('이 문장의 구분분석을\n등록/수정할 권한이 없습니다.\n저장된 분석을 지우고 에디터를 닫습니다.');
 		}
 		
 		// 편집 취소(분석 조작 버튼 재활성화, 신규 추가폼 삭제)
 		function cancelCallback() {
-			$('.js-add-svoc').prop('disabled', false);
+			_restoreSvocAddBtns();
 			if(forNew) {
 				$semantics.closest('.new-svoc-form').remove();
 			}else {
 				$semantics.closest('.svoc-section').find('.svoc-mdf-btns').show();
 			}
+		}
+		
+		// 하나의 편집기를 열면서 비활성화했던 다른 편집열기 버튼들 원상태로
+		function _restoreSvocAddBtns() {
+			$('.js-add-svoc').each(function() {
+				const addSvocBtn = this;
+				// 저장 실패했던 버튼들 계속 비활성화
+				$(this).prop('disabled', unauthorizedBtns.some(unauthBtn => {
+					return (unauthBtn === addSvocBtn);
+				}));
+			});			
 		}
 	})
 	// [구문분석 삭제]-------------------------------------------------------------
