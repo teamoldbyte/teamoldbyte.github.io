@@ -200,7 +200,7 @@
 								$('.edit-svoc').trigger('mouseup', this.value).attr('data-mode', null);
 								$(this).removeClass('active');
 							}else {
-								$svocEditorHint.text('적용 텍스트를 드래그 하세요.(It is[was]부터 that까지 한 번에)');
+								$svocEditorHint.text('적용 텍스트를 드래그 하세요.(It is[was]부터 that까지 한 번에)\nthat 대신 who,where 등 가능');
 							}
 							break;
 						default:
@@ -467,9 +467,10 @@
 							const cleftHead = 'It' + selMatch[1];
 							
 							// 선택범위 끝에 that이 있으면 that에도 강조구문 처리.
-							if(selMatch[0].endsWith('that')) {
+							const conjMatch = selMatch[0].match(/(that|wh(o(se|m)?|e(n|re)|y|at|ich)|how)$/i);
+							if(conjMatch) {
 								const range2 = new Range();
-								range2.setStart(focusNode, focusOffset - 4);
+								range2.setStart(focusNode, focusOffset - conjMatch[0].length);
 								range2.setEnd(focusNode, focusOffset);
 								range2.surroundContents(createElement({
 									el: 'span', class: 'sem cleft'
@@ -493,7 +494,7 @@
 							
 							sel.removeAllRanges();
 						}else {
-							alertModal('"It + be동사 + 강조대상 + that(생략가능)"까지 선택하세요.');
+							alertModal('"It + be동사 + 강조대상 + that(생략 가능. that 대신 who,where 등 가능)"까지 선택하세요.');
 						}
 					}
 				})
@@ -953,20 +954,37 @@
 			undoList = []; redoList = [];
 			$svocEditor.find('[value="undo"], [value="redo"]').prop('disabled', true);
 			
-			settings.saveCallback(encSvocText);
-			$('.svoc-editor-badge').html('<i class="fas fa-check"></i> 저장됨');
-			setTimeout(() => {
-				$svocEditorHint.text('');
-				$(div).unwrap();
-				$svocEditor.find('[value="undo"], [value="redo"]').prop('disabled', true);
-				$svocEditor.find('button').removeClass('active').each((_i,btn) => {
-					bootstrap?.Tooltip?.getInstance(btn)?.hide();
-				});
-				$('.js-edit-svoc,.js-del-svoc,.js-add-svoc').prop('disabled', false);
-				$('.svoc-editor-badge,.svoc-editor-emblem').remove();
-				$svocEditor.detach();
-				$svocEditorHint.detach();
-			}, 2000);
+			// 인코딩된 결과값을 전송
+			const saveResult = settings.saveCallback(encSvocText);
+			
+			if(saveResult && saveResult.then && saveResult.fail) {
+				saveResult.then(function() {
+					$('.svoc-editor-badge').html('<i class="fas fa-check"></i> 저장됨');
+					_resetEditor();
+				}).fail(function() {
+					$('.svoc-editor-badge').html('<i class="fas fa-ban"></i> 저장실패');
+					closeEditor($(div));
+				})
+			}else {
+				$('.svoc-editor-badge').html('<i class="fas fa-check"></i> 저장됨');
+				_resetEditor();
+			}
+			
+			// 에디터를 초기화하고 실패콜백 호출
+			function _resetEditor(callback) {
+				setTimeout(() => {
+					$svocEditorHint.text('');
+					$(div).unwrap();
+					$svocEditor.find('[value="undo"], [value="redo"]').prop('disabled', true);
+					$svocEditor.find('button').removeClass('active').each((_i,btn) => {
+						bootstrap?.Tooltip?.getInstance(btn)?.hide();
+					});
+					$('.svoc-editor-badge,.svoc-editor-emblem').remove();
+					$svocEditor.detach();
+					$svocEditorHint.detach();
+					callback?.call();
+				}, 2000);
+			}
 		});
 	}
 	
