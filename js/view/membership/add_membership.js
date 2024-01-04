@@ -382,10 +382,10 @@ function pageinit(membershipCommand) {
 	// 후원자 정보 임시전송
 	.on('submit', '#phase-1 form', function(e) {
 		e.preventDefault();
-		const submitter = e.originalEvent.submitter;
+		const $submitter = $(this).find(':submit');
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
-			submitter.disabled = true;
+			$submitter.prop('disabled', true);
 			$.ajax({
 				url: '/temp/membership', type: 'POST', data: JSON.stringify(data),
 				contentType: 'application/json',
@@ -395,7 +395,7 @@ function pageinit(membershipCommand) {
 				error: () => {
 					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'))
 				},
-				complete: () => submitter.disabled = false
+				complete: () => $submitter.prop('disabled', false)
 			});				
 		}
 	})
@@ -443,8 +443,7 @@ function pageinit(membershipCommand) {
 	})
 	// phase-3 완료
 	.on('submit', '#membershipForm', function(e) {
-		e.preventDefault();
-		const submitter = e.originalEvent.submitter;
+		const $submitter = $(this).find(':submit');
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
 			$('#passwdCheck').toggleClass('is-invalid', $('#passwd').val() != $('#passwdCheck').val());
@@ -452,7 +451,7 @@ function pageinit(membershipCommand) {
 			if(this.querySelector('.is-invalid')) return;
 			
 			data["orderItemList"] = orderItemList;
-			submitter.disabled = true;
+			$submitter.prop('disabled', true);
 			$.ajax({
 				url: '/membership', type: 'POST', data: JSON.stringify(data),
 				contentType: 'application/json',
@@ -470,9 +469,10 @@ function pageinit(membershipCommand) {
 						() => $('#done-info-moal').modal('hide')
 					);
 				},
-				complete: () => submitter.disabled = false
+				complete: () => $submitter.prop('disabled', false)
 			});
 		}
+		e.preventDefault();
 	});
 	
 	document.querySelector('.membership-section').appendChild(createElement(donationModalJson));
