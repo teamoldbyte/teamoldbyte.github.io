@@ -388,9 +388,9 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
 	})
 	// [상품 선택 완료]------------------------------------------------------------
-	.on('submit', '#selectItemForm', function() {
+	.on('submit', '#selectItemForm', function(e) {
 		if(this.checkValidity()) {
-			event.preventDefault();
+			e.preventDefault();
 			const $item = $('#phase-1 [name=orderItem]:checked');
 			const itemName = $item.data('itemname');
 			const price = $item.next('.membership-block').find('.price').text();
