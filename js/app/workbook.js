@@ -54,30 +54,59 @@ function addWorkbook(command) {
 	title, price, workBookType, description
  */
 function editWorkbookPlainInfo(url, json, callback) {
-	postJSON(url, json, callback, (xhr) => {
-		alertModal(url.match(/\/edit\/type/)?`워크북 공개를 위한 최소 문장수는 50개이며 ${50 - xhr.responseJSON}개가 부족합니다.`:'수정에 실패했습니다.')	
+	postJSON(url, json, callback, (jqxhr) => {
+		if(jqxhr.status == 403) {
+			location.assign('/membership/expired');
+		}else {
+			alertModal(url.match(/\/edit\/type/)?`워크북 공개를 위한 최소 문장수는 50개이며 ${50 - xhr.responseJSON}개가 부족합니다.`:'수정에 실패했습니다.')	
+		}			
 	});
 }
 /** 워크북의 멀티파트 타입 정보 수정
  */
 function editWorkbookMultiInfo(url, form, callback) {
-	postForm(url, form, callback, () => alertModal('수정에 실패했습니다.'));
+	postForm(url, form, callback, (jqxhr) => {
+		if(jqxhr.status == 403) {
+			location.assign('/membership/expired');
+		}else {
+			alertModal('수정에 실패했습니다.')
+		}
+	});
 }
 /** 지문 제목 수정
  */
 function editPassageTitle(command, callback, failback) {
-	$.ajax({type: 'post', url:'/workbook/passage/title/edit', data: command, success: callback, error:failback});
+	$.ajax({type: 'post', url:'/workbook/passage/title/edit', data: command, success: callback, error: (jqxhr) => {
+		if(jqxhr.status == 403) {
+			location.assign('/membership/expired');
+		}else{
+			failback();
+		}
+		}
+	});
 }
 /** 지문 삭제
  */
 function deletePassage(command, callback) {
-	postJSON('/workbook/mybook/del/passage', command, callback, () => alertModal('지문삭제에 실패했습니다.'));
+	postJSON('/workbook/mybook/del/passage', command, callback, (jqxhr) => {
+		if(jqxhr.status == 403) {
+			location.assign('/membership/expired');
+		}else{
+			alertModal('지문삭제에 실패했습니다.')
+		}
+	});
 }
 
 /** 지문의 샘플정보 변경
  */
 function editPassageSample(command, callback) {
-	postJSON('/workbook/mybook/edit/passage/sample', command, callback, () => alertModal('샘플정보 변경에 실패했습니다.'));
+	postJSON('/workbook/mybook/edit/passage/sample', command, callback, (jqxhr) => {
+		if(jqxhr.status == 403) {
+			location.assign('/membership/expired');
+		}else{
+			alertModal('샘플정보 변경에 실패했습니다.')
+		}		
+	});
 }
 /*------------------------------------------------------------------------------
 							edit_passage.html
