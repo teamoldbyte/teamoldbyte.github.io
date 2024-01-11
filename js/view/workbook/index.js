@@ -295,7 +295,7 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 				break;
 			case 'unauthorized':
 				$(_this).addClass('bg-secondary').text('구독').prop('disabled', true);
-				alertModal('구독할 권한이 없는 워크북입니다.');
+				alertModal('골드 멤버십 워크북입니다.\n자신의 학습자료를 워크북으로 만들어 보세요.');
 				break;
 			}		
 		}
