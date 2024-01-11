@@ -232,7 +232,11 @@ async function pageinit(memberId, memberRoleType) {
 		$.ajax({
 			url: `/craft/battlebook/${listBookType}/list`,
 			success: bookList => {
-				if(!bookList || !bookList?.pageable) {
+				if(bookList == 'unauthorized') {
+					alertModal('골드 멤버십 서비스입니다.\n문장 구조와 표현을 확인할 수 있는 \n다양한 테스트를 통해 문장을 완전히 파악해 보세요.')
+					return;
+				}
+				else if(!bookList || !bookList?.pageable) {
 					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
 					return;
 				}
@@ -265,7 +269,11 @@ async function pageinit(memberId, memberRoleType) {
 			url: `/craft/battlebook/${bookType}/list`,
 			data: { pageNum },
 			success: bookList => {
-				if(!bookList || !bookList?.pageable) {
+				if(bookList == 'unauthorized') {
+					alertModal('골드 멤버십 서비스입니다.\n문장 구조와 표현을 확인할 수 있는 \n다양한 테스트를 통해 문장을 완전히 파악해 보세요.')
+					return;
+				}
+				else if(!bookList || !bookList?.pageable) {
 					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
 					return;
 				}
@@ -468,6 +476,9 @@ async function pageinit(memberId, memberRoleType) {
 	         	break;
 			case 'insufficient':
 				alertModal('잔여 fico 코인이 부족합니다.');
+				break;
+			case 'unauthorized':
+				alertModal('골드 멤버십 서비스입니다.\n문장 구조와 표현을 확인할 수 있는 \n다양한 테스트를 통해 문장을 완전히 파악해 보세요.')
 				break;
 			}		
 		})
