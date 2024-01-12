@@ -251,6 +251,8 @@ async function pageinit(memberId, memberRoleType) {
 			error: (xhr) => {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
+				}else if(xhr.status == 403){
+					location.assign('/membership/expired');
 				}else {
 					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
 				}
@@ -286,6 +288,8 @@ async function pageinit(memberId, memberRoleType) {
 			error: (xhr) => {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
+				}else if(xhr.status == 403){
+					location.assign('/membership/expired');
 				}else {
 					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
 				}
