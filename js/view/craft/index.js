@@ -132,6 +132,7 @@ async function pageinit(memberId, memberRoleType) {
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
+	const GOLD_MEMBERSHIP_SERVICE_MESSAGE = '<span style="color: gold;text-shadow:0 0 1px darkgoldenrod">골드 멤버십 서비스</span>입니다.\n문장 구조와 표현을 확인할 수 있는 \n<b>다양한 테스트</b>를 통해 문장을 완전히 파악해 보세요.';
 	// 무료회원 설정
 	if(memberId == 0 && Cookies.get('FMID')) {
 		$('.record-stat .alias').text(localStorage.getItem('FM_NAME'));
@@ -232,11 +233,7 @@ async function pageinit(memberId, memberRoleType) {
 		$.ajax({
 			url: `/craft/battlebook/${listBookType}/list`,
 			success: bookList => {
-				if(bookList == 'unauthorized') {
-					alertModal('골드 멤버십 서비스입니다.\n문장 구조와 표현을 확인할 수 있는 \n다양한 테스트를 통해 문장을 완전히 파악해 보세요.')
-					return;
-				}
-				else if(!bookList || !bookList?.pageable) {
+				if(!bookList?.pageable) {
 					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
 					return;
 				}
@@ -252,7 +249,7 @@ async function pageinit(memberId, memberRoleType) {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
 				}else if(xhr.status == 403){
-					location.assign('/membership/expired');
+					alertModal(GOLD_MEMBERSHIP_SERVICE_MESSAGE);
 				}else {
 					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
 				}
@@ -271,11 +268,7 @@ async function pageinit(memberId, memberRoleType) {
 			url: `/craft/battlebook/${bookType}/list`,
 			data: { pageNum },
 			success: bookList => {
-				if(bookList == 'unauthorized') {
-					alertModal('골드 멤버십 서비스입니다.\n문장 구조와 표현을 확인할 수 있는 \n다양한 테스트를 통해 문장을 완전히 파악해 보세요.')
-					return;
-				}
-				else if(!bookList || !bookList?.pageable) {
+				if(!bookList?.pageable) {
 					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
 					return;
 				}
@@ -289,7 +282,7 @@ async function pageinit(memberId, memberRoleType) {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
 				}else if(xhr.status == 403){
-					location.assign('/membership/expired');
+					alertModal(GOLD_MEMBERSHIP_SERVICE_MESSAGE);
 				}else {
 					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
 				}
@@ -481,12 +474,18 @@ async function pageinit(memberId, memberRoleType) {
 			case 'insufficient':
 				alertModal('잔여 fico 코인이 부족합니다.');
 				break;
-			case 'unauthorized':
-				alertModal('골드 멤버십 서비스입니다.\n문장 구조와 표현을 확인할 수 있는 \n다양한 테스트를 통해 문장을 완전히 파악해 보세요.')
-				break;
 			}		
 		})
-		.fail(() => alertModal('배틀북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'))
+		.fail(jqxhr => {
+			switch(jqxhr.status) {
+				case 403:
+					alertModal(GOLD_MEMBERSHIP_SERVICE_MESSAGE)
+					break;
+				default:
+					alertModal('배틀북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.');
+					break;
+			}
+		});
 	})
 	
 	// 배틀 플레이 버튼 동작
