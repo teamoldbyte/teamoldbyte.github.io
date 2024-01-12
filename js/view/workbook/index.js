@@ -275,7 +275,12 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 		// 워크북 구독(ajax)-------------------------------
 		_this.disabled = true;
 		$.post('/workbook/subscription/' + workBookId, subscribeCallback)
-		.fail(() => alertModal('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'));
+		.fail((xhr) => {
+			if(xhr.status == 403) {
+				location.assign('/membership/expired');
+				return;
+			}
+			alertModal('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.')});
 		//----------------------------------------------
 		
 		function subscribeCallback(msg) {
