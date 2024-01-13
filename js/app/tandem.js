@@ -270,12 +270,22 @@
 		return await callPakoFunc(() => pako.deflate(svoc));
 	}
 	async function callPakoFunc(func) {
-		const pakoModule = await (typeof pako !== 'undefined' ? Promise.resolve(pako) : Promise.any([
-			import('pako'),
-			import('https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js').catch(() => { }),
-			import('https://static.findsvoc.com/js/public/pako.min.js').catch(() => { })
-		]));
-		return func.call(this, pakoModule);
+		const modulesToTry = [
+			'pako',
+			'https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js',
+			'https://static.findsvoc.com/js/public/pako.min.js'
+		];
+
+		let pakoModule = null;
+
+		for (const module of modulesToTry) {
+			try {
+				pakoModule = await import(module);
+				break;
+			} catch (error) { }
+		}
+
+		return pakoModule ? func.call(this, pakoModule) : console.error('Failed to load pako module.');
 	}
 
 
