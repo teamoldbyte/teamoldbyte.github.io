@@ -214,6 +214,7 @@
 		</div>
 	</div>	
  */	
+	// 페이지를 떠나면 떠있는 로딩모달(분석중임을 알리는 모달)을 닫는다.
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	
 	// 현재 페이지에서만 로고에 글래스 효과 추가 
@@ -231,6 +232,7 @@
 		try {
 			const referrerPath = new URL(document.referrer).pathname;
 			
+			// 지문 등록을 통해 온 경우
 			if(referrerPath.includes('/workbook/passage/add')
 			|| referrerPath.includes('/workbook/passage/new')) {
 				// passageId 추가
@@ -238,7 +240,8 @@
 					passageIdList.push(passageId);
 					sessionStorage.setItem('passageIdList', JSON.stringify(passageIdList));
 				}
-				// 지문 추가에서 왔을 경우 모든 수정 관련 버튼 표시
+				// 지문 추가에서 왔을 경우 지문 갯수가 제한갯수보다 많으면 지문 추가 버튼 삭제
+				// 이외의 모든 수정 관련 버튼 표시
 				if(passageIdList.length >= 33) $('#addPassageBtn').remove();
 			}else if(referrerPath.includes('/workbook/mybook/edit') || referrerPath.includes('/workbook/passage/sentence/add')) {
 				// 워크북 수정, 지문 수정, 지문 문장추가(클래스워크북)에서 왔을 경우 '지문추가'버튼 빼고 표시
@@ -282,7 +285,7 @@
 		const $targetSentence = $('#sentence' + this.dataset.sno + ' .origin-sentence-section');
 		$targetSentence.trigger('click');
 	});
-		// [지문 타이틀 수정]-----------------------------------------------------------
+	// [지문 타이틀 수정]-----------------------------------------------------------
 	$('.passage-title-block').on('click', '.display-block', function() {
 		if($(this).siblings('.edit-block').length > 0) {
 			const isShown = $(this).is('.show');
@@ -371,7 +374,12 @@
 			url: '/workbook/passage/note/add', type: 'POST', contentType: 'application/json',
 			data: JSON.stringify({workbookId, passageId, memberId, content, publicOpen}),
 			success: appendNote,
-			error: () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'),
+			error: (jqxhr) => {
+				if(jqxhr.status == 403)
+					location.assign('/membership/expired');
+				else
+					alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.')
+			},
 			complete: () => btn.disabled = false
 		})
 		//--------------------------------------------------------------------
@@ -380,9 +388,10 @@
 			note['memberInfo'] = {memberId, alias: memberAlias};
 			const $noteList = $addSection.closest('.note-section').find('.note-list').show();
 			$noteList.each((_,el) => {
-						   //------------------
-				$(el).prepend(createNoteDOM(note));
-						   //------------------
+						   //-----------------------
+				const newNote = createNoteDOM(note);
+						   //-----------------------
+				$(newNote).appendTo($(el))[0].focus();
 			})
 			$textInput.val('');
 			$addSection.toggle(300, function() {
@@ -423,7 +432,7 @@
 		}
 	});
 	// [지문의 질문 추가]----------------------------------------------------------
-	$('.js-add-passage-qna-btn').click(function() {
+/*	$('.js-add-passage-qna-btn').click(function() {
 		const $addSection = $(this).closest('.add-section');
 		const $content = $addSection.find('.text-input');
 		const title = $addSection.find('.q-title').val().trim();
@@ -453,7 +462,7 @@
 				$noteSection.find('.empty-list').hide();
 			})
 		}		
-	});
+	});*/
 	
 /* ------------------------------- 문장 관련 ---------------------------------- */	
 
@@ -1406,7 +1415,12 @@
 			url: '/workbook/sentence/kor/edit', type: 'POST', contentType: 'application/json',
 			data: JSON.stringify(jsonCommand),
 			success: successEditTrans,
-			error: () => alertModal('해석 등록/수정이 실패했습니다.'),
+			error: (jqxhr) => {
+				if(jqxhr.status == 403)
+					location.assign('/membership/expired');
+				else
+					alertModal('해석 등록/수정이 실패했습니다.');
+			},
 			complete: () => _this.disabled = false
 		});
 		// ----------------------------------------------
@@ -1518,7 +1532,12 @@
 			url: '/workbook/sentence/note/add', type: 'POST', contentType: 'application/json',
 			data: JSON.stringify({workbookId, sentenceId, memberId, content, noteAccess}),
 			success: appendNote,
-			error: () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'),
+			error: (jqxhr) => {
+				if(jqxhr.status == 403)
+					location.assign('/membership/expired');
+				else
+					alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.')
+			},
 			complete: () => _this.disabled = false
 		})
 		//----------------------------------------------------------------------
