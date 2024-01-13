@@ -34,7 +34,12 @@ function postForm(url, command, callback, errCallback) {
 ------------------------------------------------------------------------------*/
 function subscribeWorkbook(workbookId, callback) {
 	$.post('/workbook/subscription/' + workbookId, callback)
-	.fail(() => alertModal('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.'));
+	.fail((jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('워크북 구독에 실패했습니다. 화면 새로고침 후 다시 시도해 주세요.');
+	});
 }
 
 /*------------------------------------------------------------------------------
@@ -77,11 +82,11 @@ function editWorkbookMultiInfo(url, form, callback) {
  */
 function editPassageTitle(command, callback, failback) {
 	$.ajax({type: 'post', url:'/workbook/passage/title/edit', data: command, success: callback, error: (jqxhr) => {
-		if(jqxhr.status == 403) {
-			location.assign('/membership/expired');
-		}else{
-			failback();
-		}
+			if(jqxhr.status == 403) {
+				location.assign('/membership/expired');
+			}else{
+				failback();
+			}
 		}
 	});
 }
@@ -130,38 +135,74 @@ function delPassageSentence(command, callback) {
  * 문장 해석 추가/수정
  */
 function editSentenceTrans(korCommand, callback) {
-	postJSON('/workbook/sentence/kor/edit', korCommand, callback, () => alertModal('해석 등록/수정이 실패했습니다.'));
+	postJSON('/workbook/sentence/kor/edit', korCommand, callback, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('해석 등록/수정이 실패했습니다.');
+		}
+	);
 }
 /**
  * 문장 해석 삭제
  */
 function delSentenceTrans(korTid, callback) {
-	postJSON('/workbook/sentence/kor/del', korTid, callback, () => alertModal('삭제 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/sentence/kor/del', korTid, callback, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('삭제 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.');
+		}
+	);
 }
 
 /**
  * 지문 노트 추가
  */
 function addPassageNote(noteCommand, callback) {
-	postJSON('/workbook/passage/note/add', noteCommand, callback, () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/passage/note/add', noteCommand, callback, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.');
+		}
+	);
 }
 /**
  * 문장 노트 추가
  */
 function addSentenceNote(noteCommand, callback) {
-	postJSON('/workbook/sentence/note/add', noteCommand, callback, () => alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/sentence/note/add', noteCommand, callback, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.');
+		}
+	);
 }
 /**
  * 지문/문장 노트 수정
  */
 function editNote(part, noteCommand, callback) {
-	postJSON('/workbook/' + part + '/note/edit', noteCommand, callback, () => alertModal('수정할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.'));
+	postJSON('/workbook/' + part + '/note/edit', noteCommand, callback, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('수정할 수 없습니다. 페이지 새로고침 후 다시 시도해 주세요.');
+		}
+	);
 }
 /**
  * 지문/문장 노트 삭제
  */
 function delNote(part, noteId, callback) {
-	postJSON('/workbook/'+ part +'/note/del', noteId, () => { alertModal('삭제되었습니다.'); callback();}, () => alertModal('삭제 실패했습니다.'));
+	postJSON('/workbook/'+ part +'/note/del', noteId, () => { alertModal('삭제되었습니다.'); callback();}, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('삭제 실패했습니다.');
+		}
+	);
 }
 
 /* 문장 구문분석 추가 및 편집 */
@@ -170,5 +211,11 @@ function editSvoc(svocCommand, callback, errCallback) {
 }
 /* 문장 구문분석 삭제 */
 function delSvoc(svocId, callback) {
-	postJSON('/workbook/sentence/svoc/del', svocId, callback, () => alertModal('삭제 실패했습니다.'));
+	postJSON('/workbook/sentence/svoc/del', svocId, callback, (jqxhr) => {
+		if(jqxhr.status == 403)
+			location.assign('/membership/expired');
+		else
+			alertModal('삭제 실패했습니다.');
+		}
+	);
 }
