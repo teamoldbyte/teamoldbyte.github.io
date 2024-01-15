@@ -132,7 +132,7 @@ async function pageinit(memberId, memberRoleType) {
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
-	const GOLD_MEMBERSHIP_SERVICE_MESSAGE = '<span style="color: gold;text-shadow:0 0 1px darkgoldenrod">골드 멤버십 서비스</span>입니다.\n문장 구조와 표현을 확인할 수 있는 \n<b>다양한 테스트</b>를 통해 문장을 완전히 파악해 보세요.';
+	const GOLD_MEMBERSHIP_SERVICE_MESSAGE = '<span style="color: #ffc107;font-weight: bold;">골드 멤버십 서비스</span>입니다.\n문장 구조와 표현을 확인할 수 있는 \n<b>다양한 테스트</b>를 통해 문장을 완전히 파악해 보세요.';
 	// 무료회원 설정
 	if(memberId == 0 && Cookies.get('FMID')) {
 		$('.record-stat .alias').text(localStorage.getItem('FM_NAME'));
