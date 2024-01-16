@@ -263,6 +263,9 @@ a:hover {
 .h-400px{
 	height:400px!important;
 }
+.h-fit-content{
+	height: fit-content!important;
+}
 /**********************************************************
  *				min-height  
  **********************************************************/
@@ -838,7 +841,7 @@ u {
  *					badge
  **********************************************************/
 .beta-badge{
-	font-size: 0.71rem;
+	font-size: 0.5rem;
 }
 @media (min-width: 767px) {
 	.workbook-menu-section .menu-icon-section ul li:hover a .beta-badge{
@@ -857,6 +860,11 @@ u {
 	}
 }
 
+@media (min-width: 767px) {
+	.workbook-menu-section .partners-block .app-name-text{
+		color: white;
+	}
+}
 
 /**********************************************************
  *					menu icon
