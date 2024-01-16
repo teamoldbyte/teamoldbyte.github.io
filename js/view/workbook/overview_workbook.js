@@ -4,6 +4,30 @@
 function pageinit(workbookId, workbookCover, passageIdList, publicOpenWorkBooks, protectedOpenWorkBooks) {
 	const isMobile = window.visualViewport.width < 768;
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
+
+	// 워크북 소개글이 길 경우 접고 펼치기 버튼 제공
+	$(document).on('click', '.text-roll-end .fold-icon', function() {
+		const $desc = $(this).closest('.description-section');
+		const toExpand = $desc.is('.shrink');
+		const newMaxHeight = toExpand ? '100em' : '13.5em';
+		if(toExpand) {
+			$desc.removeClass('shrink');
+		}
+		anime({
+			targets: $desc[0],
+			duration: 500,
+			delay: 0,
+			maxHeight: newMaxHeight,
+			easing: 'linear',
+			complete: () => {
+				$(this).toggleClass('expanded');
+				if(!toExpand) {
+					$desc.addClass('shrink');
+				}
+			}
+		});
+	})		
+	
 	// [지문 레이아웃 정렬]--------------------------------------------
 	$('.list-passage-section').masonry({
 		// options
