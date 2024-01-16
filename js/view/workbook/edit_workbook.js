@@ -5,6 +5,30 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 	const workbookRegDate = new Date($('.workbook-info-section .reg-date').text());
 	const workBookType = $('#workBookType').val();
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
+	
+	// 워크북 소개글이 길 경우 접고 펼치기 버튼 제공
+	$(document).on('click', '.text-roll-end .fold-icon', function() {
+		const $desc = $(this).closest('.description-section');
+		const toExpand = $desc.is('.shrink');
+		const newMaxHeight = toExpand ? '100em' : '13.5em';
+		if(toExpand) {
+			$desc.removeClass('shrink');
+		}
+		anime({
+			targets: $desc[0],
+			duration: 500,
+			delay: 0,
+			maxHeight: newMaxHeight,
+			easing: 'linear',
+			complete: () => {
+				$(this).toggleClass('expanded');
+				if(!toExpand) {
+					$desc.addClass('shrink');
+				}
+			}
+		});
+	});
+		
 	// 모바일 툴팁 (워크북 타입)
 	if(document.querySelector('.type-tooltip')) {
 		const typeTooltip = new bootstrap.Tooltip(document.querySelector('.type-tooltip'),{trigger:'hover focus'});
@@ -461,9 +485,15 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 							data: JSON.stringify(command),
 							contentType: 'application/json',
 							success: () => alertModal('지문 순서가 성공적으로 변경되었습니다.'),
-							error: () => alertModal('지문 순서 변경이 실패했습니다.', () => {
-								$listSection.sortable('cancel');
-							})
+							error: (xhr) => {
+								if(xhr.status == 403) {
+									location.assign('/membership/expired');
+									return;
+								}
+								alertModal('지문 순서 변경이 실패했습니다.', () => {
+									$listSection.sortable('cancel');
+								})
+							}
 						})
 	
 					} else {
