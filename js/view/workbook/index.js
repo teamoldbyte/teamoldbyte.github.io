@@ -92,6 +92,8 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					const classType = $overviewSection.closest('.protected-workbook-section').length > 0;
 					$('.book-section .book-unit').not(bookDiv).removeClass('active');
 					$(bookDiv).toggleClass('active');
+					// 워크북 소개글은 기본적으로 '접힘' 상태로. (길지 않은 소개글에선 펼치기 버튼 안나타남.)
+					$overviewSection.find('.description-section').addClass('shrink').css('max-height', '13.5rem');
 					if($(bookDiv).is('.active')) {
 						if(!$(bookDiv).data('overview')) {
 							// 개요 정보 가져오기(ajax)------------------------------
@@ -257,6 +259,29 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 	$('.workbook-overview-section').on('shown.bs.collapse', function() {
 		this.scrollIntoView();
 		$(this).find('.list-passage-section').masonry(masonryOptsForPassages);
+	})
+	
+	// 워크북 소개글이 길 경우 접고 펼치기 버튼 제공
+	$(document).on('click', '.text-roll-end .fold-icon', function() {
+		const $desc = $(this).closest('.description-section');
+		const toExpand = $desc.is('.shrink');
+		const newMaxHeight = toExpand ? '100em' : '13.5em';
+		if(toExpand) {
+			$desc.removeClass('shrink');
+		}
+		anime({
+			targets: $desc[0],
+			duration: 500,
+			delay: 0,
+			maxHeight: newMaxHeight,
+			easing: 'linear',
+			complete: () => {
+				$(this).toggleClass('expanded');
+				if(!toExpand) {
+					$desc.addClass('shrink');
+				}
+			}
+		});
 	})
 	
 	// [튜토리얼 확인하기 버튼 클릭]---------------------------------------------------------------
