@@ -263,6 +263,9 @@ a:hover {
 .h-400px{
 	height:400px!important;
 }
+.h-fit-content{
+	height: fit-content!important;
+}
 /**********************************************************
  *				min-height  
  **********************************************************/
