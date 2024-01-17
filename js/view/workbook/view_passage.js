@@ -655,7 +655,7 @@
 //				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
 				$wordSection = $sectionClone.find('.collapse-section .word-section, .sentence-ext-section .word-section .one-block').empty();
 			// 사용자 등록 어휘가 있으면 has-user-vocas 클래스 추가
-			$wordSection.toggleClass('has-user-vocas', wordList.some(w => w.userVocas));
+			$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.userVocas));
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
