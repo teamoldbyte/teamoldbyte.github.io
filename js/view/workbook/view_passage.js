@@ -654,8 +654,8 @@
 			const wordListLen = wordList.length,
 //				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
 				$wordSection = $sectionClone.find('.collapse-section .word-section, .sentence-ext-section .word-section .one-block').empty();
-			// 사용자 등록 어휘가 있으면 has-user-vocas 클래스 추가
-			$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.userVocas));
+			// 구 형태의 어휘가 있으면 has-user-vocas 클래스 추가
+			$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.senseList.some(s=>/[A-Z]/.test(s.partType))));
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
@@ -667,7 +667,7 @@
 				$wordBlock.find('.one-part-unit-section').remove();
 				
 				// 단어의 품사별 뜻 새로 표시
-				$wordBlock.find('.title').toggleClass('user-vocas-word', word.userVocas).text(word.title).attr('data-playing','off').click(function(e){
+				$wordBlock.find('.title').toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]/.test(s.partType))).text(word.title).attr('data-playing','off').click(function(e){
 						e.stopPropagation();
 						const on = this.dataset.playing == 'on';
 						if(on) {
