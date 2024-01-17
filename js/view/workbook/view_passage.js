@@ -660,6 +660,9 @@
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
 				
+				// 구 형태의 파트타입을 가지면 user-vocas-word 클래스 추가
+				$wordBlock.toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]/.test(s.partType)))
+				
 				// wordId, sentenceId, workbookId를 할당(단어모듈용)
 				$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId, sentenceWordId: word.sentenceWordId});
 				
@@ -667,7 +670,7 @@
 				$wordBlock.find('.one-part-unit-section').remove();
 				
 				// 단어의 품사별 뜻 새로 표시
-				$wordBlock.find('.title').toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]/.test(s.partType))).text(word.title).attr('data-playing','off').click(function(e){
+				$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
 						e.stopPropagation();
 						const on = this.dataset.playing == 'on';
 						if(on) {
