@@ -1927,10 +1927,17 @@
 		_this.disabled = true;
 		$.ajax({ url, type: 'POST', data: command,
 			 success: word => {
+				if(/[A-Z]/.test(partType)) {
+					$sentenceUnit.find('.word-list-section').addClass('has-user-vocas');
+				}
 				if(!!word && Object.getOwnPropertyNames(word).includes('senseList')) {
 					const $wordSection = $sentenceUnit.find('.word-section>.one-block');
 					if(adding) {
 						const $wordBlock = $wordCopySection.clone();
+						
+						if(/[A-Z]/.test(partType)) {
+							$wordBlock.addClass('user-vocas-word');
+						}
 						
 						// wordId, sentenceId, workbookId를 할당(단어모듈용)
 						$wordBlock.data({wordId: word.wid||wordId, sentenceId, workbookId, sentenceWordId: word.sentenceWordId });
@@ -2706,6 +2713,8 @@
 					data: JSON.stringify(sentenceWordId),
 					success: () => {
 						alertModal('단어가 삭제되었습니다.', () => {
+							const $wordListSection = $wordSection.closest('.word-list-section');
+							$wordListSection.toggleClass('has-user-vocas', $wordListSection.find('.part').get().some(p => /[A-Z]/.test(p.textContent)));
 							$wordSection.slideUp(() => $wordSection.remove())
 						})
 					},
