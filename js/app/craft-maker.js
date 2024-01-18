@@ -127,16 +127,13 @@
 			this.value = null;
 			$bookSelect.empty();
 			return;
-		}else {
-			if(battleBooksMap[bookType]) {
+		}else if(battleBooksMap[bookType]) {
 				setBookList();
-			}else {
-				$.getJSON(`/craft/battlebook/my/${this.value}/list`, bookList => {
-					battleBooksMap[bookType] = bookList;
-					setBookList();
-				})
-			}
-			
+		}else {
+			$.getJSON(`/craft/battlebook/my/${this.value}/list`, bookList => {
+				battleBooksMap[bookType] = bookList;
+				setBookList();
+			})
 		}
 		function setBookList() {
 			$bookSelect[0].replaceChildren(createElement(Array.from(battleBooksMap[bookType], book => {
@@ -2299,10 +2296,11 @@
 				return { el: 'option', value: book.battleBookId, textContent: book.title || '제목 없음' }
 			})))
 			addSection.querySelector('select.select-book').value = battlebook_selection.bookId;
+			$(addSection).find('select.select-book').trigger('change');
 		}else {
 			addSection.querySelector('.select-book-type').value = '';
+			addSection.querySelector('.select-book-type').focus();
 		}
-		addSection.querySelector('.select-book-type').focus();
 	}	
 	window['craft'] = Object.assign({}, window['craft'], { openBattleMakerPanel, appendToolbar,  getAsks, previewBattle, combineAsk, createAskOptions, createRangedSentenceBlock, calcDiffSpecific, findPositions, appendContext });
 })(jQuery, window, document);
