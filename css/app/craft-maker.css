@@ -211,16 +211,18 @@
 	background-color: #fff;
 }
 .add-craft-section .battle-type-guide-block-list .battle-type-guide-block .detailed-guide-text .step{
-	display: block;
+	/* display: block; */
 	margin-bottom: 0.25rem;
 }
 .add-craft-section .battle-type-guide-block-list .battle-type-guide-block .detailed-guide-text .step .sub{
 	display: block;
-	margin-left: 1rem;
+	/* margin-left: 1rem; */
 	font-size: 0.8rem;
 	color: gray;
  }
-
+ .add-craft-section .battle-type-guide-block-list .battle-type-guide-block .detailed-guide-text .step .number{
+	margin-right: 0.25rem;
+}
 
 /**********************************************************
  *				배틀 문제 생성 영역 
