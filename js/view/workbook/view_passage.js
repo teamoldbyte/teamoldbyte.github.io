@@ -655,13 +655,13 @@
 //				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
 				$wordSection = $sectionClone.find('.collapse-section .word-section, .sentence-ext-section .word-section .one-block').empty();
 			// 구 형태의 어휘가 있으면 has-user-vocas 클래스 추가
-			$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.senseList.some(s=>/[A-Z]/.test(s.partType))));
+			$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.senseList.some(s=>/[A-Z]|phrasal-v/.test(s.partType))));
 			
 			for(let j = 0; j < wordListLen; j++) {
 				const word = wordList[j], $wordBlock = $wordCopySection.clone();
 				
 				// 구 형태의 파트타입을 가지면 user-vocas-word 클래스 추가
-				$wordBlock.toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]/.test(s.partType)))
+				$wordBlock.toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]|phrasal-v/.test(s.partType)))
 				
 				// wordId, sentenceId, workbookId를 할당(단어모듈용)
 				$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId, sentenceWordId: word.sentenceWordId});
@@ -1927,7 +1927,7 @@
 		_this.disabled = true;
 		$.ajax({ url, type: 'POST', data: command,
 			 success: word => {
-				if(/[A-Z]/.test(partType)) {
+				if(/[A-Z]|phrasal-v/.test(partType)) {
 					$sentenceUnit.find('.word-list-section').addClass('has-user-vocas');
 				}
 				if(!!word && Object.getOwnPropertyNames(word).includes('senseList')) {
@@ -1935,7 +1935,7 @@
 					if(adding) {
 						const $wordBlock = $wordCopySection.clone();
 						
-						if(/[A-Z]/.test(partType)) {
+						if(/[A-Z]|phrasal-v/.test(partType)) {
 							$wordBlock.addClass('user-vocas-word');
 						}
 						
@@ -2714,7 +2714,7 @@
 					success: () => {
 						alertModal('단어가 삭제되었습니다.', () => {
 							const $wordListSection = $wordSection.closest('.word-list-section');
-							$wordListSection.toggleClass('has-user-vocas', $wordListSection.find('.part').get().some(p => /[A-Z]/.test(p.textContent)));
+							$wordListSection.toggleClass('has-user-vocas', $wordListSection.find('.part').get().some(p => /[A-Z]|phrasal-v/.test(p.textContent)));
 							$wordSection.slideUp(() => $wordSection.remove())
 						})
 					},
