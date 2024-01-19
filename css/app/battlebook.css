@@ -75,6 +75,7 @@
 	}
  }
  .battlebook-index-section .book-list-section .book-cover img{
+	width: 100%;
 	height: -webkit-fill-available;
  }
 /* 북커버 뒤쪽 배경색 */ 
