@@ -300,7 +300,7 @@ async function pageinit(memberId, memberRoleType) {
 		return createElement(Array.from(bookList?.content, 
 				({battleBookId, bbid, title, bookType, description, imagePath, completed, price, openType},i) => {
 					const titleText = { el: 'span', className: 'title-text', textContent: title };
-					const bookCoverClass = `book-cover${!!imagePath?'':' default'}`;
+					const bookCoverClass = `book-cover${!!imagePath?'':' default'}${completed?' pe-none':''}`;
 					const bookCoverStyle = !!imagePath ? {backgroundImage: `url(/resource/battlebook/cover/${imagePath})`} : {};
 					return  listType == 'subscription' 
 					// 구독 배틀북
