@@ -49,10 +49,15 @@
 	margin-bottom: 0.5rem;
  }
  .battlebook-index-section .book-list-section .book-cover{
-	max-width: calc((((1400px)/2) - 10rem - 5rem) / 5);
+	/* max-width: calc((((1400px)/2) - 10rem - 5rem) / 5);
 	width: calc((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5);
 	height: calc(((((100vw - 120px - 6rem)/2) - 7rem - 7rem) / 5) * 1.5);
-	max-height: calc(((((1400px)/2) - 10rem - 5rem) / 5) * 1.5);
+	max-height: calc(((((1400px)/2) - 10rem - 5rem) / 5) * 1.5); */
+
+	max-width: calc((((1400px)/ 2) - 10rem - 5rem)/ 5 + .7rem);
+	width: calc((((1400px)/ 2) - 10rem - 5rem)/ 5 + .7rem);
+	height: calc(((((1400px)/ 2) - 10rem - 5rem)/ 5 + .7rem) * 1.5);
+	max-height: calc(((((1400px)/ 2) - 10rem - 5rem)/ 5 + .7rem) * 1.5);
  }
  @media(min-width: 1960px){
 	.battlebook-index-section .book-list-section .book-cover{
@@ -80,25 +85,29 @@
  }
 /* 북커버 뒤쪽 배경색 */ 
 .battlebook-index-section .book-list-section .book-cover-bg{
-	padding: 0.7rem;
-	background: linear-gradient(to bottom, #e5e3ed 70%, #546177);
+	/* padding: 0.7rem; */
+	/* background: linear-gradient(to bottom, #e5e3ed 70%, #546177); */
 	display: inline-block;
 }
  .battlebook-index-section .book-list-section .book-title-section{
-	 text-align: center;
-	 margin-top: 0.25rem;
 	 /* width: 8.125rem; */
 	 /* max-width: calc((((1400px)/2) - 2.5rem) / 5);
 	 width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 2.5rem) / 5) + 1.4rem); */
 
-	 width: 100%;
 	 /* max-width: calc((((1400px)/2) - 5rem) / 5); */
-	 max-width: calc((((1400px)/ 2) - 10rem - 5rem)/ 5 + 0.7rem);
 	 /* width : calc(((((100vw - 120px - 6rem)/2) - 7rem - 5rem) / 5) + 1.4rem); */
 
-	 overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	text-align: center;
+	margin-top: .25rem;
+	width: 100%;
+	max-width: calc((((1400px)/ 2) - 10rem - 5rem)/ 5 + .7rem);
+	overflow: hidden;
+	height: 3rem;
+	margin-bottom: 0;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
  }
 
  @media(max-width: 992px) {
