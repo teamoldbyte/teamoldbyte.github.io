@@ -11,6 +11,7 @@
 	};	
 	
 	const options = {
+			dialogsInBody: true,
 			tabDisable: true,
 			tabSize: 4,
 			minHeight: 200,
