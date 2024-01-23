@@ -636,6 +636,7 @@ async function pageinit(memberId, memberAlias, memberImage){
 		
 		// 편집 저장 콜백(신규 분석 표식 해제 및 svocId 할당. 분석 접기/펼치기 대상 재정의)
 		function successSave(newSvocId) {
+			$('.js-add-svoc').prop('disabled', false);
 			if(forNew && newSvocId != null) {
 				$semantics.closest('.new-svoc-form').removeClass('new-svoc-form');
 				$semantics.data('svocId', newSvocId);
