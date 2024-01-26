@@ -115,9 +115,8 @@ async function pageinit(myWorkBookPage) {
 						const type = s.el.dataset.listType;				
 						s.isLoading = true;
 						// 온전히 한 페이지를 넘기기 위해 추가로 필요한 슬라이드 수
-						const requiredNum = getBookCountPerView() * 2 - (s.slides.length - s.visibleSlidesIndexes.slice(-1))%(getBookCountPerView() * 2);
+						const requiredNum = getBookCountPerView() * 2 - (s.slides.length - s.visibleSlidesIndexes.slice(-1) - 1)%(getBookCountPerView() * 2);
 						const cachedList = workBooksTobeRendered[type].splice(0,requiredNum);
-						console.log(requiredNum, cachedList.length)
 						// 캐쉬된 것으로도 렌더링하기에 모자라면 서버로부터 로드
 						if(cachedList.length < requiredNum) {
 							$.getJSON(`/workbook/library/${type}/list`, {pageNum:s.pageNum++},  function(bookPage) {
