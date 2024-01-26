@@ -1,22 +1,34 @@
 /** workbook/mylibrary.html
  * @author LGM
  */
-function pageinit(myWorkBookList) {
-	
-	if(myWorkBookList.empty) {
+async function pageinit(myWorkBookPage) {
+	// 슬라이드 이동거리를 일정하게 유지하기 위해 렌더링하지 않고 보관중인 워크북 목록
+	const workBooksTobeRendered = { study: [], open: [], working: [], coworking: [] };
+	if(myWorkBookPage.empty) {
 		$('.book-section[data-list-type="study"]').prepend(createElement({
-			  el: 'span', className: 'default-message', children: [
-				 '다른 사람이 만든 워크북을 보고 싶다면?',
-				 { el: 'br'},
-				 '워크북 구독을 하면 여기서 볼 수 있습니다.'
-			  ]
-		   })).find('.list-inline').css('height', 'auto');
-	 }else {
-		appendList(myWorkBookList, $('.book-section[data-list-type="study"] .list-inline'));
-	 }
+				el: 'span', className: 'default-message', children: [
+					'다른 사람이 만든 워크북을 보고 싶다면?',
+					{ el: 'br'},
+					'워크북 구독을 하면 여기서 볼 수 있습니다.'
+				]
+			})).find('.list-inline').css('height', 'auto');
+	}else {
+		workBooksTobeRendered['study'] = myWorkBookPage.content;
+		let isLast = true, pageNum = 1;
+		if(myWorkBookPage.numberOfElements > getBookCountPerView() && !myWorkBookPage.last) {
+			await $.getJSON('/workbook/library/study/list', {pageNum:2},  function(bookPage) {
+				workBooksTobeRendered['study'] = workBooksTobeRendered['study'].concat(bookPage.content);
+				isLast = bookPage.last;
+				pageNum++;
+			})		
+		}
+		const myFirstSubscriptionList = workBooksTobeRendered['study'].splice(0, getBookCountPerView() * 2);
+		appendList(myFirstSubscriptionList, $('.book-section[data-list-type="study"] .list-inline'))
+		initializeSwiper($('#studyWorkbookSection .swiper')[0], myFirstSubscriptionList, pageNum, isLast);
+	}
 
-	function initializeSwiper(swiperEl, page) {
-		const contentLength = page.numberOfElements;
+	function initializeSwiper(swiperEl, list, pageNum, last) {
+		const contentLength = list.length;
 		const deviceSizeNumber = (matchMedia('(max-width: 575.8px)').matches) ? 0
 			: (matchMedia('(max-width: 675.8px)').matches) ? 1
 			: (matchMedia('(max-width: 991.8px)').matches) ? 2
@@ -81,8 +93,8 @@ function pageinit(myWorkBookList) {
 			},
 			on : {
 				beforeInit: function(s) {
-					s.isLast =  page.last;
-					if(!page.last) s.pageNum = 2;
+					s.isLast =  last;
+					if(!last) s.pageNum = pageNum + 1;
 				},
 				afterInit: function(s) {
 					if(!freeMode) s.lazy.load();
@@ -97,31 +109,43 @@ function pageinit(myWorkBookList) {
 					location.assign(`/workbook/${$section.is('#studyWorkbookSection')?'study/overview':'mybook/edit'}/${workbookId56}`);
 					//----------------------------------------------------------------				
 				},
-				reachEnd: function(s) {
+				slideNextTransitionStart: function(s) {
 					if(s.isLast || s.isLoading) return;
 					else {
 						const type = s.el.dataset.listType;				
 						s.isLoading = true;
-						$.getJSON(`/workbook/library/${type}/list`, {pageNum:s.pageNum++},  function(bookPage) {
-							delete s.isLoading;
-							if(bookPage.first && bookPage.empty) {
-								s.el.classList.add('h-auto');
-								s.wrapperEl.remove();
-								s.destroy();
-							}else {
-								$(s.el).find('.default-message').remove();
-								//appendList(bookPage, $(s.wrapperEl));
-								s.appendSlide(Array.from(bookPage.content, book => createBookDOM(book)));
-								s.update();
-								if(bookPage.first) {
-									s.lazy.load();
-								}/*else {
-									s.slideNext();
-								}*/
-								if(bookPage.last) s.isLast = true;
-							}
-						})
-						.fail( () => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+						// 온전히 한 페이지를 넘기기 위해 추가로 필요한 슬라이드 수
+						const requiredNum = getBookCountPerView() * 2 - (s.slides.length - s.visibleSlidesIndexes.slice(-1))%(getBookCountPerView() * 2);
+						const cachedList = workBooksTobeRendered[type].splice(0,requiredNum);
+						console.log(requiredNum, cachedList.length)
+						// 캐쉬된 것으로도 렌더링하기에 모자라면 서버로부터 로드
+						if(cachedList.length < requiredNum) {
+							$.getJSON(`/workbook/library/${type}/list`, {pageNum:s.pageNum++},  function(bookPage) {
+								delete s.isLoading;
+								// 첫 로드 결과가 비었으면 목록을 한줄로 변경하고 스와이프 해제
+								if(bookPage.first && bookPage.empty) {
+									s.el.classList.add('h-auto');
+									s.wrapperEl.remove();
+									s.destroy();
+								}else {
+									$(s.el).find('.default-message').remove();
+									
+									workBooksTobeRendered[type] = workBooksTobeRendered[type].concat(bookPage.content);
+									s.appendSlide(Array.from(workBooksTobeRendered[type].splice(0,requiredNum - cachedList.length), book => createBookDOM(book)));
+									s.update();
+									if(bookPage.first) {
+										s.lazy.load();
+									}/*else {
+										s.slideNext();
+									}*/
+									if(bookPage.last) s.isLast = true;
+								}
+							})
+							.fail( () => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+						}else {
+							s.appendSlide(Array.from(workBooksTobeRendered[type].splice(0,requiredNum - cachedList.length), book => createBookDOM(book)));
+							s.update();
+						}
 					}
 				}
 			}
@@ -132,8 +156,8 @@ function pageinit(myWorkBookList) {
 		const listType = this.dataset.listType;
 		switch(listType) {
 			case 'study': {
-				//if(myWorkBookList.numberOfElements > (devSize.isDesktop() ? 7 : devSize.isPhone() ? 3 : 5)) {
-					initializeSwiper(swiperEl, myWorkBookList);
+				//if(myWorkBookPage.numberOfElements > (devSize.isDesktop() ? 7 : devSize.isPhone() ? 3 : 5)) {
+
 				//}else {
 					//$(swiperEl).find('.swiper-button-prev,.swiper-button-next').remove();
 				//}
@@ -143,27 +167,23 @@ function pageinit(myWorkBookList) {
 				$.getJSON(`/workbook/library/${listType}/list`, {pageNum: 1},  function(bookPage) {
 					if(!bookPage.empty) {
 						$(swiperEl).find('.default-message').remove();
-						appendList(bookPage, $(swiperEl).find('.swiper-wrapper'));
-						/*if(bookPage?.numberOfElements > (devSize.isDesktop() ? 7 : devSize.isPhone() ? 3 : 5)) {*/
-							initializeSwiper(swiperEl, bookPage)
-						/*}else {
-							$(swiperEl).on('click', '.book-unit', function() {
-								const $section = $(this).closest('.workbook-block');
-								const workbookId56 = ntoa(this.dataset.workBookId);
-								
-								// 내가 작성한 워크북 여부에 따라 다른 새 페이지를 띄움-----------------------
-								location.assign(`/workbook/${$section.is('#studyWorkbookSection')?'study/overview':'mybook/edit'}/${workbookId56}`);
-								//----------------------------------------------------------------		
-							})
-							$(swiperEl).find('.swiper-lazy-preloader').remove();
-							$(swiperEl).find('.swiper-lazy').each(function() {
-								this.classList.remove('swiper-lazy');
-								this.style.backgroundImage = `url(${this.dataset.background})`;
-							})
-							$(swiperEl).siblings('.swiper-button-section').find('.swiper-button-prev,.swiper-button-next').remove();
-						}*/
+						workBooksTobeRendered[listType] = bookPage.content;
+						let isLast = bookPage.last, pageNum = 1;
+						if(!isLast && bookPage.numberOfElements < getBookCountPerView() * 2) {
+							$.getJSON(`/workbook/library/${listType}/list`, {pageNum: 2},  function(bookPage2) {
+								isLast = bookPage2.last;
+								pageNum = 2;
+								workBooksTobeRendered[listType] = workBooksTobeRendered[listType].concat(bookPage2.content);
+								const renderList = workBooksTobeRendered[listType].splice(0, getBookCountPerView() * 2);
+								appendList(renderList, $(swiperEl).find('.swiper-wrapper'));
+								initializeSwiper(swiperEl, renderList, pageNum, isLast);
+							});
+						}else {
+							const renderList = workBooksTobeRendered[listType].splice(0, getBookCountPerView() * 2);
+							appendList(renderList, $(swiperEl).find('.swiper-wrapper'));
+							initializeSwiper(swiperEl, renderList, pageNum, isLast);
+						}
 					}else {
-						$(swiperEl).find('.list-inline').css('height', 'auto');
 						$(swiperEl).on('click', '.book-unit', function() {
 							const $section = $(this).closest('.workbook-block');
 							const workbookId56 = ntoa(this.dataset.workBookId);
@@ -193,8 +213,8 @@ function pageinit(myWorkBookList) {
 	// 추가 로드된 워크북 표시. 마지막일 경우 lastloaded 클래스 추가.
 	function appendList(list, $container) {
 		let DOMList = [];
-		for(let i = 0,len = list.content?.length; i < len; i++) {
-			const book = list.content[i];
+		for(let i = 0,len = list.length; i < len; i++) {
+			const book = list[i];
 			DOMList.push(createBookDOM(book));
 		}
 		$container.append(DOMList);
@@ -225,5 +245,13 @@ function pageinit(myWorkBookList) {
 		}
 		
 		return $dom[0];
+	}
+	
+	function getBookCountPerView() {
+		return matchMedia('(min-width: 992px)').matches ? 14
+			: matchMedia('(min-width: 768px)').matches ? 8
+			: matchMedia('(min-width: 676px)').matches ? 10
+			: matchMedia('(min-width: 576px)').matches ? 8
+			: 9
 	}
 }
