@@ -1852,7 +1852,7 @@
 			// 단어목록에 표시된 품사가 아닌 경우 등록 버튼을 '품사 변경'으로 수정
 			if(!orgPartTypes.has(this.value)) {
 				$('#changeVoca').text($('#openVocaModal .additional-meaning').val().trim().length > 0 ?'품사 변경 및 뜻 추가' : '품사 변경');
-				$('#changeVoca').prop('disabled', false);
+				$('#changeVoca,#addPartVoca').prop('disabled', false);
 				toggleOpenVocaBtns('#changeVoca,#addPartVoca');
 			}else {
 				$('#appendVoca').prop('disabled', false);
@@ -1872,7 +1872,7 @@
 		})
 		
 		$('#addVoca,#appendVoca').prop('disabled', !this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
-		$('#changeVoca').prop('disabled', !!this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
+		$('#changeVoca,#addPartVoca').prop('disabled', !!this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
 	})
 	
 	.on('click', OPENVOCAS_SUBMIT_BUTTONS_SELECTOR, async function() {
@@ -2882,7 +2882,7 @@
 	
 	function toggleOpenVocaBtns(selectorToShow) {
 		anime({
-			targets: $('#addVoca,#appendVoca,#requestVoca,#changeVoca,#addPartVoca').get(),
+			targets: $(OPENVOCAS_SUBMIT_BUTTONS_SELECTOR).get(),
 			rotateX: (el) => el.matches(selectorToShow) ? '0deg' : '180deg',
 			duration: 400,
 			easing: 'linear',
