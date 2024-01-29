@@ -1563,9 +1563,10 @@
 				$noteSection.find('.empty-list').hide();
 			})
 		}
-	})
+	});
 	// [문장의 오픈보카 폼]---------------------------------------------------------
-	.on('click', '.js-open-voca-form', function() {
+	const OPENVOCAS_SUBMIT_BUTTONS_SELECTOR = '#addVoca,#appendVoca,#requestVoca,#changeVoca,#addPartVoca';
+	$(document).on('click', '.js-open-voca-form', function() {
 		const $sentenceUnit = $(this).closest('.one-sentence-unit-section');
 		
 		// 대상 문장 텍스트 세팅
@@ -1598,14 +1599,14 @@
 		
 		// 등록 버튼 비활성화
 		$('#addVoca').prop('disabled', true);
-		toggleOpenVocaBtns('addVoca');
+		toggleOpenVocaBtns('#addVoca');
 	})
 	// [오픈보카 유형 선택]---------------------------------------------------------
 	.on('change', 'input[name="vocaTypeCheck"]', function() {
 		$('#openVocaModal .original-sentence-background').text($('#openVocaModal .original-sentence').text());
 		$('#openVocaModal').find('.text-in-sentence,.lemma,.additional-meaning').empty().val('').removeClass('is-valid is-invalid');
 		$('#openVocaModal .meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>')
-		$('#addVoca,#appendVoca,#requestVoca,#changeVoca,.part-type,.additional-meaning').prop('disabled', true);
+		$([OPENVOCAS_SUBMIT_BUTTONS_SELECTOR,'.part-type,.additional-meaning'].join(',')).prop('disabled', true);
 		if(this.value) {
 			$('#openVocaModal .part-type').empty().append(`<option value="${this.value}" selected>${this.value} ${partTypeMap[this.value]}</option>`)
 		}else {
@@ -1675,7 +1676,7 @@
 			$nextPhase.find('.additional-meaning').empty().val('')
 			$nextPhase.find('.part-type,.additional-meaning').prop('disabled', true);
 			$nextPhase.find('.meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>')
-			$('#addVoca,#appendVoca,#requestVoca,#changeVoca').prop('disabled', true);
+			$(OPENVOCAS_SUBMIT_BUTTONS_SELECTOR).prop('disabled', true);
 			$nextPhase.find('.lemma').trigger('input').focus();
 			
 			const backface = $('#openVocaModal .original-sentence-background').get(0).firstChild;
@@ -1692,7 +1693,7 @@
 			.siblings('.uppercase-feedback').toggle(this.value.trim().toLowerCase() != this.value.trim());
 		$('#openVocaModal .meaning').html('<p class="p-2">등록하고자 하는 표제어가 기본형이 맞는지 확인 후 OK를 눌러 검색해 주세요.</p>');
 		$('#openVocaModal .word-id').val(0);
-		$('#addVoca,#appendVoca,#requestVoca,#changeVoca').prop('disabled', true);
+		$(OPENVOCAS_SUBMIT_BUTTONS_SELECTOR).prop('disabled', true);
 	})
 	.on('click', '#searchVoca', function() {
 		if(!$('#openVocaModal .text-in-sentence').val()) {
@@ -1709,7 +1710,7 @@
 		$('#openVocaModal .word-id').val(0);
 		$.getJSON('/openvocas/search/word', { text, partType: searchPartType }, vocaInfoList => {
 			$('#openVocaModal').find('.part-type,.additional-meaning').prop('disabled', false);
-			$('#addVoca, #appendVoca,#requestVoca,#changeVoca').prop('disabled', false);
+			$(OPENVOCAS_SUBMIT_BUTTONS_SELECTOR).prop('disabled', false);
 			
 			const dbWord = searchPartType == 'pv' ? vocaInfoList.find(voca => voca.title == text)
 												: vocaInfoList[0]; // 커맨드에 wordId는 하나만 할당할 수 있으므로 하나만 찾는다. 
@@ -1781,7 +1782,7 @@
 						return { el: 'option', selected: i == 0, value: part, textContent: partTypeMap[part]};
 					})));*/
 					$('#appendVoca').prop('disabled', false);
-					toggleOpenVocaBtns('appendVoca');
+					toggleOpenVocaBtns('#appendVoca');
 				}
 				// 사전으로는 등록됐지만 문장 단어 리스트에 없는 경우
 				else {
@@ -1801,7 +1802,7 @@
 						})));
 					}*/
 					$('#addVoca').prop('disabled', false);
-					toggleOpenVocaBtns('addVoca');
+					toggleOpenVocaBtns('#addVoca');
 				}					
 			}
 			// 사전으로 등록되지 않은 단어
@@ -1811,7 +1812,7 @@
 					$('#openVocaModal .uppercase-feedback').hide();
 					$('.part-type,.additional-meaning').prop('disabled', true);
 					$('#requestVoca').prop('disabled', false);
-					toggleOpenVocaBtns('requestVoca');
+					toggleOpenVocaBtns('#requestVoca');
 				}else {
 					$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
 				/*if(!/\s/.test(text)) {
@@ -1822,7 +1823,7 @@
 						})));
 				}*/
 					$('#addVoca').prop('disabled', false);
-					toggleOpenVocaBtns('addVoca');
+					toggleOpenVocaBtns('#addVoca');
 				}
 			}
 		})
@@ -1852,27 +1853,29 @@
 			if(!orgPartTypes.has(this.value)) {
 				$('#changeVoca').text($('#openVocaModal .additional-meaning').val().trim().length > 0 ?'품사 변경 및 뜻 추가' : '품사 변경');
 				$('#changeVoca').prop('disabled', false);
-				toggleOpenVocaBtns('changeVoca');
+				toggleOpenVocaBtns('#changeVoca,#addPartVoca');
 			}else {
 				$('#appendVoca').prop('disabled', false);
-				toggleOpenVocaBtns('appendVoca');
+				toggleOpenVocaBtns('#appendVoca');
 			}
 		}else {
 			$('#addVoca').prop('disabled', false);
-			toggleOpenVocaBtns('addVoca');
+			toggleOpenVocaBtns('#addVoca');
 		}
 	})
 	.on('input', '#openVocaModal .additional-meaning', function() {
-		const $btn = $('#addVoca,#appendVoca,#requestVoca,#changeVoca').filter((_,b) => b.style.zIndex == 0);
-		if($btn.is('#changeVoca')) {
-			$btn.text(this.value.trim().length > 0 ? '품사 변경 및 뜻 추가' : '품사 변경')
-		}
+		const $btn = $(OPENVOCAS_SUBMIT_BUTTONS_SELECTOR).filter((_,b) => b.style.zIndex == 0);
+		$btn.each((_,btn) => {
+			if($(btn).is('#changeVoca')) {
+				$(btn).text(this.value.trim().length > 0 ? '품사 변경 및 뜻 추가' : '품사 변경')
+			}
+		})
 		
 		$('#addVoca,#appendVoca').prop('disabled', !this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
 		$('#changeVoca').prop('disabled', !!this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
 	})
 	
-	.on('click', '#addVoca,#appendVoca,#requestVoca,#changeVoca', async function() {
+	.on('click', OPENVOCAS_SUBMIT_BUTTONS_SELECTOR, async function() {
 		const _this = this;
 		const $sentenceUnit = $('#openVocaModal').data('sentenceUnit');
 		const wordId = parseInt($('#openVocaModal .word-id').val()),
@@ -1885,7 +1888,7 @@
 		 start = parseInt($('#openVocaModal .word-start').val()),
 		 end = parseInt($('#openVocaModal .word-end').val());
 		
-		const adding = $(this).is('#addVoca,#requestVoca');
+		const adding = $(this).is('#addVoca,#requestVoca,#addPartVoca');
 		const requesting = $(this).is('#requestVoca');
 		let url = adding ? `/openvocas/new/${vocaType? 'phrase':'word'}`
 			: $(this).is('#changeVoca')? '/workbook/sentence/word/change-part'
@@ -2877,16 +2880,16 @@
 	}
 */		
 	
-	function toggleOpenVocaBtns(idToShow) {
+	function toggleOpenVocaBtns(selectorToShow) {
 		anime({
-			targets: $('#addVoca,#appendVoca,#requestVoca,#changeVoca').get(),
-			rotateX: (el) => el.id === idToShow ? '0deg' : '180deg',
+			targets: $('#addVoca,#appendVoca,#requestVoca,#changeVoca,#addPartVoca').get(),
+			rotateX: (el) => el.matches(selectorToShow) ? '0deg' : '180deg',
 			duration: 400,
 			easing: 'linear',
 			update: anim => {
 				if(anim.progress > 50)
 					anim.animatables.forEach(animatable => {
-						const isTargetToShow = animatable.target.id == idToShow;
+						const isTargetToShow = animatable.target.matches(selectorToShow);
 						animatable.target.style.zIndex = isTargetToShow ? 0 : -1;
 						animatable.target.disabled = !isTargetToShow;
 					})
