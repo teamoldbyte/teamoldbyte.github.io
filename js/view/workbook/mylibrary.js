@@ -205,6 +205,7 @@ async function pageinit(myWorkBookPage) {
 							location.assign(`/workbook/${$section.is('#studyWorkbookSection')?'study/overview':'mybook/edit'}/${workbookId56}`);
 							//----------------------------------------------------------------		
 						})
+						$(swiperEl).find('.swiper-wrapper').remove();
 						$(swiperEl).siblings('.swiper-button-section').find('.swiper-button-prev,.swiper-button-next').remove();
 					}
 				})
