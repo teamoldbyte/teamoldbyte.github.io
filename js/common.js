@@ -1,5 +1,5 @@
 /**
- * HTML5 기능인 canvas.measureText를 사용하여 주어진 텍스트의 가로길이(px단위)를 계산하여 반환
+ * HTML5 기능인 canvas.measure  Text를 사용하여 주어진 텍스트의 가로길이(px단위)를 계산하여 반환
  * (예: 글자수에 따른 단어 선택지 크기를 계산하여 표시할 갯수 지정.)
  * 
  * @param {String} text 화면에 표시할 텍스트 내용
