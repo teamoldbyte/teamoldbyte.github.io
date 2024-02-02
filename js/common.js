@@ -6,6 +6,7 @@
  * @param {String} font 텍스트에 지정된 폰트 css (e.g. "19px Nunito Sans").
  * 
  * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+ * test?
  */
 window.getTextWidth = function(text, font) {
     // getTextWidth.canvas가 없으면 생성, 있으면 재사용
