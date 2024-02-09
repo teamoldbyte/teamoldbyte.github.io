@@ -180,12 +180,12 @@
 	}
 	/* svoc인코딩 문자열을 MarkingTag[]로 반환*/
 	async function svocText2Arr(svocText) {
-		return JSON.parse(decSvoc(await inflateSvoc(str2ab(atob(svocText)))));
+		return JSON.parse(decSvoc(await callPakoFunc(() => pako.inflate(new Uint16Array(str2ab(atob(svocText))), { to: 'string' }))));
 	}
 	
 	/* MarkingTag[]를 svoc인코딩 문자열로 반환 */
 	async function svocArr2Text(svocList) {
-		return btoa(ab2str(await deflateSvoc(encSvoc(JSON.stringify(svocList)))));
+		return btoa(ab2str(await callPakoFunc(() => pako.deflate(encSvoc(JSON.stringify(svocList))))));
 	}
 	/* .semantics-result DOM 내용을 MarkingTag[]로 반환*/
 	const markTypes = /\b(s|ss|v|o|po|to|go|ptco|c|oc|a|m|appo|rcm|tor|ger|ptc|conj|phr|adjphr|advphr|ptcphr|cls|ncls|acls|advcls|ccls|pcls|cleft)\b/;
@@ -248,46 +248,6 @@
 		const regex = new RegExp(keys.join('|'), 'g');
 		return svoc.replace(regex, match => keywordTable[match]);
 	}
-	/* 문자열을 byte[]로 변환 */
-	function str2ab(str) {
-		let buf = new ArrayBuffer(str.length * 1); // 1 bytes for each char(2 for Uint16Array)
-		let bufView = new Uint8Array(buf);
-		for (let i = 0, strLen = str.length; i < strLen; i++) {
-			bufView[i] = str.charCodeAt(i);
-		}
-		return bufView;
-	}
-	/* byte[]를 문자열로 변환 */
-	function ab2str(buf) {
-		return String.fromCharCode.apply(null, new Uint8Array(buf));
-	}
-	/* svoc byte[] 압축해제(문자열로)*/
-	async function inflateSvoc(svoc) {
-		return await callPakoFunc(() => pako.inflate(new Uint16Array(svoc), { to: 'string' }));
-	}
-	/* svoc 문자열 압축(byte[]로) */
-	async function deflateSvoc(svoc) {
-		return await callPakoFunc(() => pako.deflate(svoc));
-	}
-	async function callPakoFunc(func) {
-		const modulesToTry = [
-			'pako',
-			'https://cdn.jsdelivr.net/npm/pako/dist/pako.min.js',
-			'https://static.findsvoc.com/js/public/pako.min.js'
-		];
-
-		let pakoModule = null;
-
-		for (const module of modulesToTry) {
-			try {
-				pakoModule = await import(module);
-				break;
-			} catch (error) { }
-		}
-
-		return pakoModule ? func.call(this, pakoModule) : console.error('Failed to load pako module.');
-	}
-
 
 	/**
 	 * 전달된 sentence 정보를 div 속에 그림.
