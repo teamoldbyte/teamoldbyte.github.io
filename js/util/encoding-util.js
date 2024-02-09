@@ -50,33 +50,37 @@ async function callPakoFunc(func) {
 	return pakoModule ? func.call(this, pakoModule) : console.error('Failed to load pako module.');
 }
 
-/**
-public static String shitfDecode(String encoded) {
-	  char[] encBytes = encoded.toCharArray();
-	  byte[] pBytes = new byte[encBytes.length];
-	  int i = encBytes.length;
-	  int shift = 0;
-	  for (char c : encBytes) {
-		 shift = (c - 17) >= 0 ? (c - 17) : (c - 17) + 127;
-		 pBytes[i - 1] = (byte) shift;
-		 i--;
-	  }
-	  return new String(pBytes);
-   }
+/** 문자열을 바이트배열로 변환 (: String To Array of Bytes) 
+ * 
  */
+function str2ab(str) {
+	let buf = new ArrayBuffer(str.length * 1); // 1 bytes for each char(2 for Uint16Array)
+	let arr = new Uint8Array(buf);
+	for (let i = 0, strLen = str.length; i < strLen; i++) {
+		arr[i] = str.charCodeAt(i);
+	}
+	return arr;
+}
+
+/** 바이트배열,숫자배열을 문자열로 변환 (: Array of Bytes To String) 
+ */
+function ab2str(arr) {
+	return String.fromCharCode.apply(null, arr);
+}
+
 /**
  * 아스키코드문자열을 숫자문자열로 디코딩 (:ASCII To Numbers) 
  * (ntoa와 대치되지 않음.)
  */
 async function aton(a) {
 	return await callPakoFunc(() => {
-		const pBytes = new Uint8Array(new ArrayBuffer(a.length * 1));
+		const pBytes = new Array(a.length);
 		for (let i = 0; i < a.length; i++) {
 			const c = a.charCodeAt(i);
 			let shift = c >= 17 ? (c - 17) : (c - 17 + 127);
 			pBytes[a.length - i - 1] = shift;
 		}
-		const inflated = String.fromCharCode.apply(null, pBytes);
+		const inflated = ab2str(null, pBytes);
 		return inflated;
 	});
 }
