@@ -1114,10 +1114,10 @@
 		if(battleType == 7) {
 			const kor = prompt('선택한 구간의 해석을 입력하세요.');
 			if(kor) {
-				const custom = maker.querySelector('.select-kor .custom-trans') || maker.querySelector('.select-kor').appendChild(createElement({el: 'option', className: 'custom-trans', selected: true, children: ['(출제자 해석) ', {el: 'span', className: 'custom-input'}]}))
-				custom.value = kor;
-				custom.dataset.trans = kor;
-				custom.querySelector('.custom-input').textContent = kor;
+			//	const custom = maker.querySelector('.select-kor .custom-trans') || maker.querySelector('.select-kor').appendChild(createElement({el: 'option', className: 'custom-trans', selected: true, children: ['(출제자 해석) ', {el: 'span', className: 'custom-input'}]}))
+			//	custom.value = kor;
+			//	custom.dataset.trans = kor;
+			//	custom.querySelector('.custom-input').textContent = kor;
 				maker.querySelector('.kor-answer').value = kor;
 			}else {
 				context.innerHTML = undoList.pop();
