@@ -295,7 +295,9 @@ function pageinit() {
 							{ el: 'option', value: 'ADP.', textContent: '부사구'},
 							{ el: 'option', value: 'AJP.', textContent: '형용사구'},
 							{ el: 'option', value: 'phrasal-v.', textContent: '구동사', selected: isPhrasalVerb},
-							{ el: 'option', value: 'VP.', textContent: '동사구'}
+							{ el: 'option', value: 'VP.', textContent: '동사구'},
+							{ el: 'option', value: 'CP.', textContent: '연어'}, 
+							{ el: 'option', value: 'IP.', textContent: '관용어'}
 						]},
 					]},
 					{ el: 'div', className: 'col-8', children: [
