@@ -1,0 +1,877 @@
+/*------------------------------------------------------------------------------
+                    partners_submenu.html
+ -----------------------------------------------------------------------------*/
+.sub-menu-section{
+	border-right: 1px solid #dee2e6;
+}
+.sub-menu-section .sub-menu a{
+	/*color: rgb(153, 153, 153);*/
+	/* color: #5c5c5c; */
+	/* color: #302b63; */
+	color: var(--fc-purple);
+}
+.sub-menu-section .sub-menu li{
+	list-style: square;
+}
+.sub-menu-section .sub-menu li::before{
+	color: var(--fc-purple);
+}
+
+
+
+/* .sub-menu-section .sub-menu .fas{
+	margin-right: 0.25rem;
+}
+.sub-menu-section .sub-menu .col-md-auto{
+	padding: 1rem;
+	margin-bottom: 1rem;
+	border-radius: 0.5rem;
+} */
+
+
+/*------------------------------------------------------------------------------
+                    intro_
+ -----------------------------------------------------------------------------*/
+@font-face {
+	font-family: 'KimjungchulGothic-Bold';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/KimjungchulGothic-Bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+}
+/* */
+.app-menu-slide > .row {
+	padding: 6rem 0.5rem;
+	max-width: 1250px;
+	margin: auto;
+}
+
+/* 이동 링크 카드 모양 */
+.app-menu-block .card-block{
+	min-height: 15rem;
+	border-radius: 0.5rem;
+}
+.app-menu-block .icon-section{
+	height: calc(15rem * 0.5);
+	padding: 1rem;
+}
+.app-menu-block .icon-section .icon{
+	font-size: 3rem;
+}
+/* 블럭 아이콘별 색상 */
+.app-menu-slide .app-menu-block:nth-child(2) .icon-section .icon{
+	color: burlywood;
+}
+.app-menu-slide .app-menu-block:nth-child(2).active .card-block{
+	box-shadow: 0 0 0 5px burlywood inset;
+}
+.app-menu-slide .app-menu-block:nth-child(3) .icon-section .icon{
+	color: cadetblue;
+}
+.app-menu-slide .app-menu-block:nth-child(3).active .card-block{
+	box-shadow: 0 0 0 5px cadetblue inset;
+}
+.app-menu-slide .app-menu-block:nth-child(4) .icon-section .icon{
+	color: brown;
+}
+.app-menu-slide .app-menu-block:nth-child(4).active .card-block{
+	box-shadow: 0 0 0 5px brown inset;
+}
+
+.app-menu-block .text-section{
+	height: calc(15rem * 0.5);
+	text-align: left;
+}
+.app-menu-block .text-section .title{
+	font-weight: bold;
+}
+.app-menu-block .text-section .text{
+	color: gray;
+}
+/**/
+.message-block h3{
+	font-family: 'KimjungchulGothic-Bold';
+	color:#333;
+}
+/* 메세지 블럭의 타이틀 앞 숫자 */
+.message-block .number{
+	margin-right: 0.5rem;
+	background-color: var(--fc-purple);
+	color: #fff;
+	border-radius: 5px;
+	padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+	/* vertical-align: text-bottom; */
+}
+
+/* */
+.app-name-tag{
+	display: none;
+}
+.app-name-tag.active{
+	display: block;
+}
+
+
+
+
+/* fico쌤 텍스트 스타일 */
+.fico-ssam-text{
+	color: var(--fc-purple);
+}
+.fico-ssam-text .app-name-text{
+	margin-right: 0.0625em;
+}
+
+
+/*------------------------------------------------------------------------------
+                    상단 메뉴
+ -----------------------------------------------------------------------------*/
+ /* 상단 파트너스 메뉴 영역 */
+.partners-menu-section{
+	padding: 0.25rem 0.5rem;
+	max-width: 1250px;
+	margin: auto;
+}
+.partners-menu-section .menu{
+	display: inline-block;
+	text-align: right;
+	margin-right: 2rem;
+	font-weight: bold;
+}
+.partners-menu-section .menu:last-child{
+	margin-right: 0;
+}
+.partners-menu-section .menu a{
+	/* color: black; */
+	color: rgb(79,79,79);
+}
+.partners-menu-section .menu a:hover{
+	color: #0a58ca;
+}
+.partners-menu-section .menu .icon{
+	margin-right: 0.25rem;
+	color: var(--fc-purple);
+}
+
+
+
+
+
+
+
+
+
+/**********************************************************
+*				intro_class_membership.html
+**********************************************************/
+.intro-class-membership-section .message-block > div{
+	min-height: 20rem;
+}
+/* 1.클래스 멤버십이란? 블럭 */
+.intro-class-membership-section .block-1 .ssam-icon{
+	position: absolute;
+	top: 25%;
+	left: 30%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: #585174;
+}
+.intro-class-membership-section .block-1 .money-icon{
+	position: absolute;
+	top: 45%;
+	left: 70%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: green;
+}
+.intro-class-membership-section .block-1 .no-icon{
+	position: absolute;
+	top: 50%;
+	left: calc(70% + 2.5rem);
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color:brown;
+}
+.intro-class-membership-section .block-1 .member-icon{
+	position: absolute;
+	top: 75%;
+	left: 40%;
+	transform: translate(-50%, -50%);
+	font-size: 6rem;
+	color: cadetblue;
+}
+/* 2.fico클래스 멤버십에 가입하려면? 블럭 */
+.intro-class-membership-section .block-2 .ssam-icon{
+	position: absolute;
+	top: 25%;
+	left: 40%;
+	transform: translate(-50%, -50%);
+	color: #585174;
+	font-size: 6rem;
+}
+.intro-class-membership-section .block-2 .partners-text{
+	position: absolute;
+	top: 15%;
+	left: 65%;
+	transform: translate(-50%, -50%);
+	color: #585174;
+	font-size: 2.5rem;
+	font-family: "Do Hyeon", sans-serif;
+}
+.intro-class-membership-section .block-2 .down-icon{
+	position: absolute;
+	top: 55%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #aaa;
+	font-size: 3rem;
+}
+.intro-class-membership-section .block-2 .member-icon{
+	position: absolute;
+	top: 85%;
+	transform: translate(-50%, -50%);
+	color: brown;
+	font-size: 4rem;
+}
+.intro-class-membership-section .block-2 .member-icon:nth-child(4){
+	left: 35%;
+}
+.intro-class-membership-section .block-2 .member-icon:nth-child(5){
+	left: 50%;
+}
+.intro-class-membership-section .block-2 .member-icon:nth-child(6){
+	left: 65%;
+}
+
+/* 3번째 블럭 */
+.intro-class-membership-section .block-3 .gold-member-icons .gold-icon{
+	position: absolute;
+	top: 10%;
+	left: 15%;
+	transform: translate(-50%, -50%);
+	color: #ffc107;
+	font-size: 3rem;
+}
+.intro-class-membership-section .block-3 .gold-member-icons .member-icon{
+	position: absolute;
+	top: 20%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	color: burlywood;
+	font-size: 5rem;
+}
+.intro-class-membership-section .block-3 .gold-member-icons .down-icon{
+	position: absolute;
+	top: 50%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	color: #aaa;
+	font-size: 3.5rem;
+}
+.intro-class-membership-section .block-3 .gold-member-icons .pen-icon{
+	position: absolute;
+	top: 50%;
+	left: calc(25% + 2.5rem);
+	transform: translate(-50%, -50%);
+	color: darkkhaki;
+	font-size: 1.5rem;
+}
+.intro-class-membership-section .block-3 .gold-member-icons .book-icon{
+	position: absolute;
+	top: 75%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	color: coral;
+	font-size: 3rem;
+}
+.intro-class-membership-section .block-3 .gold-member-icons .book-icon:nth-child(5){
+	left: calc(25% - 5rem);
+}
+.intro-class-membership-section .block-3 .gold-member-icons .book-icon:nth-child(6){
+	left: 25%;
+}
+.intro-class-membership-section .block-3 .gold-member-icons .book-icon:nth-child(7){
+	left: calc(25% + 5rem);
+}
+.intro-class-membership-section .block-3 .divide-line{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 1rem;
+	height: 20rem;
+	background-color: var(--fc-purple);
+	opacity: 0.25;
+	border-radius: 5px;
+}
+.intro-class-membership-section .block-3 .class-member-icons .fico-logo{
+	position: absolute;
+	top: 15%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	width: 8rem;
+}
+.intro-class-membership-section .block-3 .class-member-icons .down-icon:nth-child(2){
+	position: absolute;
+	top: calc(50% - 3.5rem);
+	left: 75%;
+	transform: translate(-50%, -50%);
+	color: #aaa;
+	font-size: 2rem;
+}
+.intro-class-membership-section .block-3 .class-member-icons .pen-icon:nth-child(3){
+	position: absolute;
+	top: calc(50% - 3.5rem);
+	left: calc(75% + 1.5rem);
+	transform: translate(-50%, -50%);
+	color: darkkhaki;
+	font-size: 1rem;
+}
+.intro-class-membership-section .block-3 .class-member-icons .book-icon{
+	position: absolute;
+	top: 50%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	color: #ffc107;
+	font-size: 3rem;
+}
+.intro-class-membership-section .block-3 .class-member-icons .book-icon:nth-child(4){
+	left: calc(75% - 5rem);
+}
+.intro-class-membership-section .block-3 .class-member-icons .book-icon:nth-child(5){
+	left: 75%;
+}
+.intro-class-membership-section .block-3 .class-member-icons .book-icon:nth-child(6){
+	left: calc(75% + 5rem);
+}
+.intro-class-membership-section .block-3 .class-member-icons .down-icon:nth-child(7){
+	position: absolute;
+	top: calc(50% + 3.5rem);
+	left: 75%;
+	transform: translate(-50%, -50%);
+	color: #aaa;
+	font-size: 2rem;
+}
+.intro-class-membership-section .block-3 .class-member-icons .pen-icon:nth-child(8){
+	position: absolute;
+	top: calc(50% + 3.5rem);
+	left: calc(75% + 1.5rem);
+	transform: translate(-50%, -50%);
+	color: darkkhaki;
+	font-size: 1rem;
+}
+.intro-class-membership-section .block-3 .class-member-icons .ssam-icon{
+	position: absolute;
+	top: 85%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	color: var(--fc-purple);
+	font-size: 3rem;
+}
+/**/
+.intro-class-membership-section .block-4 .fico-logo{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: auto;
+	height: 15rem;
+}
+.intro-class-membership-section .block-4 .mail-icon{
+	position: absolute;
+	top: 80%;
+	left: calc(50% + 4rem);
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: tomato;
+	background-color: white;
+	line-height: 2rem;
+}
+
+
+/**********************************************************
+*				intro_class_workbook.html
+**********************************************************/
+.intro-class-workbook-section .message-block > div{
+	min-height: 20rem;
+}
+
+.intro-class-workbook-section .block-1 .book-icon{
+	position: absolute;
+	top: 50%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: cornflowerblue;
+}
+.intro-class-workbook-section .block-1 .book-title{
+	font-family: "Poppins", sans-serif;
+	position: absolute;
+	top: calc(50% - 1rem);
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 1.65rem;
+	background-color: #ffc107;
+	border-radius: 0.5rem;
+	line-height: 100%;
+	padding: 2px 2px 0 2px;
+	font-weight: bold;
+	color: #666;
+}
+.intro-class-workbook-section .block-1 .certi-icon{
+	position: absolute;
+	top: calc(50% - 3rem);
+	left: calc(25% - 3rem);
+	transform: translate(-50%, -50%);
+	font-size: 2.5rem;
+	color: #ffc107;
+}
+.intro-class-workbook-section .block-1 .pen-icon:nth-child(4){
+	position: absolute;
+	top: 25%;
+	left: calc(50% + 3rem);
+	transform: translate(-50%, -50%);
+	font-size: 2.5rem;
+	color: yellowgreen;
+}
+.intro-class-workbook-section .block-1 .pen-icon:nth-child(5){
+	position: absolute;
+	top: 25%;
+	left: calc(50% + 5.5rem);
+	transform: translate(-50%, -50%);
+	font-size: 2.5rem;
+	color: skyblue;
+}
+.intro-class-workbook-section .block-1 .left-icon{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: #ddd;
+}
+.intro-class-workbook-section .block-1 .ssam-icon{
+	position: absolute;
+	top: 50%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	font-size: 6rem;
+	color: turquoise;
+}
+/* 2번 블럭 */
+.intro-class-workbook-section .block-2 .tool-icon{
+	position: absolute;
+	top: 30%;
+	left: 23%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: brown;
+}
+.intro-class-workbook-section .block-2 .test-icon{
+	position: absolute;
+	top: 25%;
+	left: 35%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: burlywood;
+}
+.intro-class-workbook-section .block-2 .divide-line{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) rotate(45deg);
+	width: 1rem;
+	height: 20rem;
+	background-color: var(--fc-purple);
+	opacity: 0.25;
+	border-radius: 5px;
+}
+.intro-class-workbook-section .block-2 .note-icon{
+	position: absolute;
+	top: 75%;
+	left: 65%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: #ffc107;
+}
+.intro-class-workbook-section .block-2 .comment-icon{
+	position: absolute;
+	top: 45%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	font-size: 9rem;
+	color: coral;
+}
+.intro-class-workbook-section .block-2 .comment-line.line-1{
+	position: absolute;
+	top: 45%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	width: 6rem;
+	height: 1rem;
+	border-bottom: 0.5rem solid coral;
+	color: coral;
+}
+.intro-class-workbook-section .block-2 .comment-line.line-2{
+	position: absolute;
+	top: calc(45% - 1rem);
+	left: 75%;
+	transform: translate(-50%, -50%);
+	width: 6rem;
+	height: 1rem;
+	border-bottom: 0.5rem solid coral;
+	color: coral;
+}
+.intro-class-workbook-section .block-2 .comment-line.line-3{
+	position: absolute;
+	top: calc(45% - 2rem);
+	left: 75%;
+	transform: translate(-50%, -50%);
+	width: 6rem;
+	height: 1rem;
+	border-bottom: 0.5rem solid coral;
+	color: coral;
+}
+.intro-class-workbook-section .block-2 .member-icon{
+	position: absolute;
+	top: 90%;
+	left: 80%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: darkcyan;
+}
+.intro-class-workbook-section .block-2 .star-icon{
+	position: absolute;
+	top: 80%;
+	left: 85%;
+	transform: translate(-50%, -50%);
+	font-size: 2rem;
+	color: #ffc107;
+}
+
+
+.intro-class-workbook-section .block-3 .book-icon{
+	position: absolute;
+	top: 50%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: cornflowerblue;
+}
+.intro-class-workbook-section .block-3 .book-title{
+	font-family: "Poppins", sans-serif;
+	font-weight: bold;
+	position: absolute;
+	top: calc(50% - 1rem);
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 1.65rem;
+	background-color: #ffc107;
+	border-radius: 0.5rem;
+	line-height: 100%;
+	padding: 2px 2px 0 2px;
+	color: #666;
+}
+.intro-class-workbook-section .block-3 .left-icon{
+	position: absolute;
+	top: 50%;
+	left: 45%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: #ddd;
+}
+.intro-class-workbook-section .block-3 .title-text{
+	position: absolute;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	font-size: 1.5rem;
+	font-weight: bold;
+	background-color: #fff;
+	border-radius: 0.5rem;
+	width: 10rem;
+	text-align: center;
+}
+.intro-class-workbook-section .block-3 .title-text.cut-off{
+	font-family: "Do Hyeon", sans-serif;
+	top: 0%;
+	color: cornflowerblue;
+}
+.intro-class-workbook-section .block-3 .table-icon{
+	position: absolute;
+	top: 30%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	width: 15rem;
+	height: 5rem;
+	border: 2px solid #ddd;
+	border-radius: 0.5rem;
+}
+.intro-class-workbook-section .block-3 .plus-icon{
+	position: absolute;
+	top: 50%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	font-size: 2.5rem;
+	color: rebeccapurple;
+	opacity: 0.25;
+	z-index: 10;
+}
+.intro-class-workbook-section .block-3 .title-text.open-vocas{
+	top:60%;
+	font-family: "Poppins", sans-serif;
+	z-index: 5;
+}
+.intro-class-workbook-section .block-3 .open-vocas-border{
+	position: relative;
+	top: 60%;
+	left: calc(75% - 7.5rem);
+	border: 2px solid #ddd;
+	border-radius: 0.5rem;
+	width: 15rem;
+	height: 7.5rem;
+}
+.intro-class-workbook-section .block-3 .open-vocas-text{
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 1.125rem;
+}
+.intro-class-workbook-section .block-3 .open-vocas-text.text-1{
+	top: 25%;
+}
+.intro-class-workbook-section .block-3 .open-vocas-text.text-2{
+	top: 50%;
+}
+.intro-class-workbook-section .block-3 .open-vocas-text.text-3{
+	top: 75%;
+}
+
+.intro-class-workbook-section .block-4 .book-icon{
+	position: absolute;
+	top: 25%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: cornflowerblue;
+}
+.intro-class-workbook-section .block-4 .book-title{
+	font-family: "Poppins", sans-serif;
+	font-weight: bold;
+	position: absolute;
+	top: calc(25% - 1rem);
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 1.65rem;
+	background-color: #ffc107;
+	border-radius: 0.5rem;
+	line-height: 100%;
+	padding: 2px 2px 0 2px;
+	color: #666;
+}
+.intro-class-workbook-section .block-4 .down-icon{
+	position: absolute;
+	top: 50%;
+	font-size: 4rem;
+	color: #ddd;
+}
+.intro-class-workbook-section .block-4 .down-icon.down-left{
+	left: 30%;
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+.intro-class-workbook-section .block-4 .down-icon.down-right{
+	left: 70%;
+	transform: translate(-50%, -50%) rotate(-45deg);
+}
+.intro-class-workbook-section .block-4 .free-text{
+	position: absolute;
+	top: 85%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: red;
+}
+.intro-class-workbook-section .block-4 .money-icon{
+	position: absolute;
+	top: 85%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: green;
+}
+
+.intro-class-workbook-section .block-5 .book-icon{
+	position: absolute;
+	top: 50%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: cornflowerblue;
+}
+.intro-class-workbook-section .block-5 .book-title{
+	font-family: "Poppins", sans-serif;
+	font-weight: bold;
+	position: absolute;
+	top: calc(50% - 1rem);
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 1.65rem;
+	background-color: #ffc107;
+	border-radius: 0.5rem;
+	line-height: 100%;
+	padding: 2px 2px 0 2px;
+	color: #666;
+}
+.intro-class-workbook-section .block-5 .righ-icon{
+	position: absolute;
+	top: 50%;
+	left: 25%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: cornflowerblue;
+}
+.intro-class-workbook-section .block-5 .right-arrow-icon{
+	position: absolute;
+	top: 40%;
+	left: 60%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: #ddd;
+	z-index: 10;
+}
+.intro-class-workbook-section .block-5 .right-icon .dash-line{
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	outline: 0.5rem dashed #ddd;
+	outline-offset: -0.75rem;
+	width: 10rem;
+	height: 0.75rem;
+	overflow-x: hidden;
+}
+.intro-class-workbook-section .block-5 .left-arrow-icon{
+	position: absolute;
+	top: 60%;
+	left: 40%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: #ddd;
+}
+.intro-class-workbook-section .block-5 .left-icon .dash-line{
+	position: absolute;
+	top: 60%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	outline: 0.5rem dashed #ddd;
+	outline-offset: -0.75rem;
+	width: 10rem;
+	height: 0.75rem;
+	overflow-x: hidden;
+}
+.intro-class-workbook-section .block-5 .user-book-icon{
+	position: absolute;
+	top: 25%;
+	left: 65%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	color: violet;
+}
+.intro-class-workbook-section .block-5 .circle-line-icon .circle-line{
+	position: absolute;
+	top: 25%;
+	left: 65%;
+	transform: translate(-50%, -50%);
+	outline: 1px solid #fff;
+	height: 6rem;
+	width: 6rem;
+}
+.intro-class-workbook-section .block-5 .circle-line-icon .circle-line.line-1{
+	top: calc(25% - 3px);
+	left: calc(65% - 3px);
+	border-radius: 35% 40% 50% 40%;
+	border: 6px solid #ffc107;
+}
+.intro-class-workbook-section .block-5 .circle-line-icon .circle-line.line-2{
+	top: calc(25% - 6px);
+	left: calc(65% + 2px);
+	border-radius: 40% 50% 40% 50%;
+	border: 6px solid #ffc107;
+}
+.intro-class-workbook-section .block-5 .circle-line-icon .circle-line.line-3{
+	top: calc(25% + 2px);
+	left: calc(65% - 1px);
+	border-radius: 40% 50% 50% 50%;
+	border: 6px solid #ffc107;
+}
+
+.intro-class-workbook-section .block-5 .member-icon{
+	position: absolute;
+	top: 50%;
+	left: 75%;
+	transform: translate(-50%, -50%);
+	font-size: 6rem;
+	color: teal;
+}
+
+
+/**********************************************************
+*				intro_ssam.html
+**********************************************************/
+.intro-ssam-section .message-block > div{
+	min-height: 20rem;
+}
+/* 1.클래스 멤버십이란? 블럭 */
+.intro-ssam-section .block-1 .ssam-icon{
+	position: absolute;
+	top: 25%;
+	left: 30%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: #585174;
+}
+.intro-ssam-section .block-1 .book-icon{
+	position: absolute;
+	top: 45%;
+	left: 70%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: green;
+}
+.intro-ssam-section .block-1 .member-icon{
+	position: absolute;
+	top: 75%;
+	left: 40%;
+	transform: translate(-50%, -50%);
+	font-size: 6rem;
+	color: cadetblue;
+}
+
+.intro-ssam-section .block-2 .book-icon{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: cornflowerblue;
+}
+.intro-ssam-section .block-2 .book-title{
+	font-family: "Poppins", sans-serif;
+	font-weight: bold;
+	position: absolute;
+	top: calc(50% - 1rem);
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 1.65rem;
+	background-color: #ffc107;
+	border-radius: 0.5rem;
+	line-height: 100%;
+	padding: 2px 2px 0 2px;
+	color: #666;
+}
+.intro-ssam-section .block-2 .medal-icon{
+	position: absolute;
+	top: calc(50% - 4rem);
+	left: calc(50% + 4.5rem);
+	transform: translate(-50%, -50%);
+	font-size: 2.5rem;
+	color: #ffc107;
+}
