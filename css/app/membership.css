@@ -229,3 +229,60 @@
 	color:#005083;
 	font-size: .8rem;
 }
+
+
+
+/*------------------------------------------------------------------------------
+                    intro_membership.html
+ -----------------------------------------------------------------------------*/
+
+/**/
+.membership-item-list-section{
+	padding: 2rem 0 4rem 0
+}
+.membership-item-list-section .membership-item-block{
+	box-shadow: 0 3px 10px 1px #4141411F,0 3px 10px 1px #4141411F;
+	border-radius: 1rem;
+	margin: 0 0.5rem;
+	transition: all .3s;
+	margin-top: 0;
+	padding: 3rem;
+	transform-origin: 50% 50% 0px;
+	text-align: center;
+	background-color: #fff;
+	position:relative;
+}
+.membership-item-list-section .membership-item-block:nth-child(1){
+	margin-left: auto;
+}
+.membership-item-list-section .membership-item-block:nth-child(2){
+	margin-right: auto;
+}
+.membership-item-block .star-mark-block{
+	position: absolute;
+	right: 1.5rem;
+	top: 1.5rem;
+	font-size: 0.85rem;
+}
+.membership-item-block .item-name{
+	font-family: "Nunito Sans", "Open Sans", "helvetica neue", helvetica, arial, sans-serif;
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+.membership-item-list-section .membership-item-block:hover{
+	box-shadow: 0 0 0 4px rgba(0,0,0,0.22);
+}
+.membership-item-block button{
+	border-radius: 4em;
+	height: 4rem;
+	font-family: 'KimjungchulGothic-Bold';
+	font-weight: bold;
+	font-size: 1.25rem;
+}
+@media (max-width: 576px) {
+	.membership-item-list-section .membership-item-block:nth-child(1),
+	.membership-item-list-section .membership-item-block:nth-child(2){
+		margin-left: auto;
+		margin-right: auto;
+	}
+}

@@ -1,5 +1,4 @@
-.account-info-section,
-.membership-info{
+.account-info-section{
 	font-family: -apple-system,"Segoe UI",Roboto;
 }
 /* 나의 계좌의 코인 정보 */
@@ -665,4 +664,8 @@
 	margin-right: 0.5rem;
 	background-color: #f1f0ff;
 	height: 100%;
+}
+
+.membership-item-list-section .membership-item-block:hover{
+	box-shadow: 0 0 6px 5px rgba(255,255,255,0.25)!important;
 }
