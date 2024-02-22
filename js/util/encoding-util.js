@@ -80,7 +80,7 @@ async function aton(a) {
 			let shift = c >= 17 ? (c - 17) : (c - 17 + 127);
 			pBytes[a.length - i - 1] = shift;
 		}
-		const inflated = ab2str(null, pBytes);
+		const inflated = ab2str(pBytes);
 		return inflated;
 	});
 }
