@@ -159,6 +159,7 @@
 	.partners-menu-section .menu{
 		text-align: center;
 		margin-right: 0;
+		width: 25%;
 	}
 	.partners-menu-section .menu .icon{
 		display: block;
