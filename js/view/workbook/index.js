@@ -325,7 +325,7 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 	// [워크북 구독]---------------------------------------------------------------
 	$('.sub-btn').click(function() {
 		if(memberId == 0) {
-			confirmModal('fico 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?', () => location.assign('/auth/login'));
+			confirmModal('<span class="app-name-text">fico</span> 멤버십이 필요합니다.\n로그인 화면으로 이동하시겠습니까?', () => location.assign('/auth/login'));
 			return;
 		}
 		const _this = this;
