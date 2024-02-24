@@ -136,7 +136,7 @@
 			+ '<span class="app-name-text">fico</span>는 독해력 강화에 필요한 리소스들을 마련합니다.<br><br>'
 			+ '시간과 노력으로 학습한 나의 영어 문장들을<br>'
 			+ '인생의 일기처럼 어딘가 기록해야 한다면<br>'
-			+ '단연코 <b class="text-danger">fico</span> 워크북</b>입니다.')
+			+ '단연코 <b class="text-danger"><span class="app-name-text text-danger">fico</span> 워크북</b>입니다.')
 			.callFunction(() => $('.logo.anim-talking').remove()).start();
 		}
 	})
