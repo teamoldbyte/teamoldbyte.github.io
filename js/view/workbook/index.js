@@ -1,7 +1,7 @@
 /** workbook/index.html
  * @author LGM
  */
-function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, memberId){
+function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, memberId, isClassMember){
 	$(window).on('unload', () => $('#loadingModal').modal('hide'));
 	const masonryOptsForPassages = { itemSelector: '.passage', columnWidth: '.passage',
 			gutter: 10, percentPosition: true, horizontalOrder: true, transitionDuration: '0.8s'
@@ -90,10 +90,18 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					s.lazy.load();
 				},
 				click: function(s,e) {
+					
 					if(!s.clickedSlide) return;
 					const $overviewSection = $(s.el).closest('.workbook-section').siblings('.workbook-overview-section');
 					const bookDiv = s.clickedSlide||e.path.find(d=>d.matches('.book-unit'));
 					const classType = $overviewSection.closest('.protected-workbook-section').length > 0;
+					
+					// 클래스회원 및 P골드회원을 제외하고는 클래스워크북 안내만 보여주기
+					if(classType && !isClassMember) {
+						alertModal('클래스 멤버십 전용 워크북입니다.\n멤버십 소개 화면에서 다른 멤버십과 비교해 보세요.', () => location.assign('/membership'))
+						return;
+					}
+					
 					$('.book-section .book-unit').not(bookDiv).removeClass('active');
 					$(bookDiv).toggleClass('active');
 					// 워크북 소개글은 기본적으로 '접힘' 상태로. (길지 않은 소개글에선 펼치기 버튼 안나타남.)
