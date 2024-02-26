@@ -384,8 +384,15 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	$(document)
 	// [가입연장 모달 실행]---------------------------------------------------------
 	.on('show.bs.modal', '#done-info-modal', function() {
-		clearInterval(nextTimer);
 		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
+	})
+	.on('hide.bs.modal', '#done-info-modal', function() {
+		clearInterval(nextTimer);
+		$('#phase-2 .progress-bar').attr('aria-valuenow', 0)
+									.width('0%');
+		$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', true);
+		$('#phase-2,#phase-3').collapse('hide');
+		$('#phase-1').collapse('show');		
 	})
 	// [상품 선택 완료]------------------------------------------------------------
 	.on('submit', '#selectItemForm', function(e) {
