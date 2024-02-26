@@ -666,6 +666,6 @@
 	height: 100%;
 }
 
-.membership-item-list-section .membership-item-block:hover{
-	box-shadow: 0 0 6px 5px rgba(255,255,255,0.25)!important;
+.mypage-section .membership-item-list-section .membership-item-block:hover{
+	box-shadow: 0 0 6px 5px rgba(255,255,255,0.25);
 }
