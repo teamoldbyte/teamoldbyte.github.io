@@ -503,6 +503,21 @@
 		transition: 0.5s;
 		transform: translateX(calc(50px * 10 + 9px));
 	}
+	.workbook-menu-section .menu-icon-section ul li:nth-child(12):hover ~ .indicator{
+		display: block;
+		transition: 0.5s;
+		transform: translateX(calc(50px * 11 + 9px));
+	}
+	.workbook-menu-section .menu-icon-section ul li:nth-child(13):hover ~ .indicator{
+		display: block;
+		transition: 0.5s;
+		transform: translateX(calc(50px * 12 + 9px));
+	}
+	.workbook-menu-section .menu-icon-section ul li:nth-child(14):hover ~ .indicator{
+		display: block;
+		transition: 0.5s;
+		transform: translateX(calc(50px * 13 + 9px));
+	}
 }
 @media (max-width: 992px) {
 	.workbook-menu-section .menu-icon-section ul li:hover a .icon,
