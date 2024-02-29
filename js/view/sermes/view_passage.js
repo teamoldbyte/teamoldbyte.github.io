@@ -6,8 +6,7 @@
 		alert('비정상적 접근입니다.');
 		sessionStorage.removeItem('historyLength');
 		location.replace('/');
-	}
-	sessionStorage.setItem('historyLength', history.length);
+	}else sessionStorage.setItem('historyLength', history.length);
 	const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 	const tts = new FicoTTS({initSuccessCallback: () => {
 		// PC에선 자동재생 조작 금지
