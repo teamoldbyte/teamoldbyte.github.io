@@ -4,6 +4,7 @@
  async function pageinit(memberId, memberAlias, memberImage, memberRoleType, workbookId, ownerId, priorityId, passageId, sentenceList) {
 	if(history.length == parseInt(sessionStorage.getItem('historyLength'))) {
 		alert('비정상적 접근입니다.');
+		sessionStorage.removeItem('historyLength');
 		location.replace('/');
 	}
 	sessionStorage.setItem('historyLength', history.length);
