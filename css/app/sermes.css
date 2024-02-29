@@ -1,0 +1,83 @@
+/*------------------------------------------------------------------------------
+                    list_passages.html
+------------------------------------------------------------------------------*/
+.list-passage-section .title-section{
+	height: 5rem;
+}
+.list-passage-section .title-section .title-text{
+	font-size: 1.1rem;
+	color: #585174;
+	font-weight: 600;
+	
+}
+.list-passage-section .title-section .title-text::before{
+	content: '◼︎';
+}
+.list-passage-section .passage-block{
+	position: relative;
+	font-family: Roboto;
+	color: #5a5a5a;
+	background-color: var(--white);
+	border-radius: 0 5px 5px 5px;
+	width: calc(25% - 5px);
+	height: auto;
+	padding: 10px 15px;
+	margin-right: 5px;
+	margin-bottom: 40px;
+	cursor: pointer;
+	min-height: 10rem;
+}
+.list-passage-section .passage-block a{
+	color: #000;
+}
+.list-passage-section .passage-block:nth-child(4n){
+	margin-right: 0;
+}
+/* 워크북 타이틀 영역 */
+.workbook-title-section {
+	position: absolute;
+	top: -25px;
+	left: 0;
+	width: 280px;
+	height: 25px;
+	border-radius: 5px 5px 0 0;
+	background-color: var(--white);
+	box-shadow: #62626214 0 2px 1px 0 inset;
+	transition: all .2s cubic-bezier(0,0,.2,1);
+}
+.workbook-title-section .workbook-title{
+	position: absolute;
+	width: 270px;
+	padding-left: 15px;
+	display: block;
+	line-height: 37px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-family: Rubik;
+	font-size: .9rem;
+	font-weight: 700;
+	color: var(--fc-purple);
+}
+.list-passage-section .passage-block {
+	counter-increment: psgCounter;
+	word-break: break-all;
+	/*box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;*/
+	box-shadow: #62626214 0px 2px 1px 0px inset;
+}
+.list-passage-section .passage-block .workbook-title-section .white-block{
+	background: var(--white);
+	position: absolute;
+	bottom: -4px;
+	left: 1px;
+	height: 4px;
+	width: 278px;
+}
+.list-passage-section .workbook-title::before{
+	content: counter(psgCounter);
+	color: #fff;
+	background-color: #585174;
+	border-radius: 10px;
+	padding: 2px 5px;
+	margin-right: 5px;
+}
