@@ -37,12 +37,12 @@
 	
 	// [지문의 문장 클릭 시 해당 문장의 블럭으로 이동]------------------------------------
 	$('.sentence-link').one('click',function _aa() {
+		$('.js-toggle-menu').removeClass('pe-none');
 		$('.sentence-link').off('click', _aa).not(this).addClass('pe-none opacity-50');
 		
-		const i = $(this).index('.sentence-link');
+		const i = $(this).closest('.full-text,.sentence-list').find('.sentence-link').index(this);
 		const sentence = sentenceList[i];
 	//	$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
-		
 		$.getJSON(`/sermes/count/update/${sentence.sentenceId}`);
 		
 		let $sectionClone = $('.one-sentence-unit-section:eq(0)');
