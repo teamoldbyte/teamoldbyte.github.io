@@ -37,6 +37,7 @@
 	
 	// [지문의 문장 클릭 시 해당 문장의 블럭으로 이동]------------------------------------
 	$('.sentence-link').one('click',function _aa() {
+		$('.js-toggle-menu').removeClass('pe-none');
 		$('.sentence-link').off('click', _aa).not(this).addClass('pe-none opacity-50');
 		
 		const i = $(this).closest('.full-text,.sentence-list').find('.sentence-link').index(this);
