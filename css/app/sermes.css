@@ -2,7 +2,8 @@
                     list_passages.html
 ------------------------------------------------------------------------------*/
 .list-passage-section .title-section{
-	height: 5rem;
+	/* height: 5rem; */
+	margin-bottom: 1rem;
 }
 .list-passage-section .title-section .title-text{
 	font-size: 1.1rem;
@@ -23,7 +24,7 @@
 	height: auto;
 	padding: 10px 15px;
 	margin-right: 5px;
-	margin-bottom: 40px;
+	margin-bottom: 1rem;
 	cursor: pointer;
 	min-height: 10rem;
 	word-break: break-all;
