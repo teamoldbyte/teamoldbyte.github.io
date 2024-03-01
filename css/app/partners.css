@@ -1105,6 +1105,22 @@
 	color: #ffc107;
 }
 
+.intro-ssam-section .block-7 .ssam-icon{
+	position: absolute;
+	top: 25%;
+	left: 30%;
+	transform: translate(-50%, -50%);
+	font-size: 7rem;
+	color: #585174;
+}
+.intro-ssam-section .block-7 .doc-icon{
+	position: absolute;
+	top: 35%;
+	left: 35%;
+	transform: translate(-50%, -50%);
+	font-size: 5rem;
+	color: #be202082;
+}
 @media(max-width: 576px){
 	.intro-ssam-section .block-5 .make-money-icon{
 		font-size: 6rem;
