@@ -41,16 +41,13 @@
 }
 /* 워크북 타이틀 영역 */
 .workbook-title-section {
+	margin-bottom: 0.5rem;
 	/* border-radius: 5px 5px 0 0; */
 	background-color: var(--white);
 	/* box-shadow: #62626214 0 2px 1px 0 inset; */
 	transition: all .2s cubic-bezier(0,0,.2,1);
 }
 .workbook-title-section .workbook-title{
-	line-height: 37px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 	font-family: Rubik;
 	font-size: .9rem;
 	font-weight: 700;
