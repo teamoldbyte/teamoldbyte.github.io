@@ -39,10 +39,9 @@
 	$('.sentence-link').one('click',function _aa() {
 		$('.sentence-link').off('click', _aa).not(this).addClass('pe-none opacity-50');
 		
-		const i = $(this).index('.sentence-link');
+		const i = $(this).closest('.full-text,.sentence-list').find('.sentence-link').index(this);
 		const sentence = sentenceList[i];
 	//	$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
-		
 		$.getJSON(`/sermes/count/update/${sentence.sentenceId}`);
 		
 		let $sectionClone = $('.one-sentence-unit-section:eq(0)');
