@@ -288,7 +288,7 @@
 	top: 50%;
 	left: 25%;
 	transform: translate(-50%, -50%);
-	color: #aaa;
+	color: #bbb;
 	font-size: 3.5rem;
 }
 .intro-class-membership-section .block-3 .gold-member-icons .pen-icon{
@@ -301,20 +301,11 @@
 }
 .intro-class-membership-section .block-3 .gold-member-icons .book-icon{
 	position: absolute;
-	top: 75%;
+	top: 80%;
 	left: 25%;
 	transform: translate(-50%, -50%);
 	color: coral;
-	font-size: 3rem;
-}
-.intro-class-membership-section .block-3 .gold-member-icons .book-icon:nth-child(5){
-	left: calc(25% - 5rem);
-}
-.intro-class-membership-section .block-3 .gold-member-icons .book-icon:nth-child(6){
-	left: 25%;
-}
-.intro-class-membership-section .block-3 .gold-member-icons .book-icon:nth-child(7){
-	left: calc(25% + 5rem);
+	font-size: 4.5rem;
 }
 .intro-class-membership-section .block-3 .divide-line{
 	position: absolute;
@@ -339,7 +330,7 @@
 	top: calc(50% - 3.5rem);
 	left: 75%;
 	transform: translate(-50%, -50%);
-	color: #aaa;
+	color: #bbb;
 	font-size: 2rem;
 }
 .intro-class-membership-section .block-3 .class-member-icons .pen-icon:nth-child(3){
@@ -352,27 +343,18 @@
 }
 .intro-class-membership-section .block-3 .class-member-icons .book-icon{
 	position: absolute;
-	top: 50%;
+	top: 55%;
 	left: 75%;
 	transform: translate(-50%, -50%);
 	color: #ffc107;
-	font-size: 3rem;
+	font-size: 4rem;
 }
-.intro-class-membership-section .block-3 .class-member-icons .book-icon:nth-child(4){
-	left: calc(75% - 5rem);
-}
-.intro-class-membership-section .block-3 .class-member-icons .book-icon:nth-child(5){
-	left: 75%;
-}
-.intro-class-membership-section .block-3 .class-member-icons .book-icon:nth-child(6){
-	left: calc(75% + 5rem);
-}
-.intro-class-membership-section .block-3 .class-member-icons .down-icon:nth-child(7){
+.intro-class-membership-section .block-3 .class-member-icons .down-icon:nth-child(5){
 	position: absolute;
 	top: calc(50% + 3.5rem);
 	left: 75%;
 	transform: translate(-50%, -50%);
-	color: #aaa;
+	color: #bbb;
 	font-size: 2rem;
 }
 .intro-class-membership-section .block-3 .class-member-icons .pen-icon:nth-child(8){
@@ -389,7 +371,7 @@
 	left: 75%;
 	transform: translate(-50%, -50%);
 	color: var(--fc-purple);
-	font-size: 3rem;
+	font-size: 4rem;
 }
 /**/
 .intro-class-membership-section .block-4 .fico-logo{
@@ -411,6 +393,31 @@
 	line-height: 2rem;
 }
 
+@media(max-width: 576px){
+	.intro-class-membership-section .block-2 .ssam-icon{
+		left:25%;
+	}
+	.intro-class-membership-section .block-2 .partners-text{
+		left:70%;
+	}
+	.intro-class-membership-section .block-2 .down-icon{
+		top:50%;
+	}
+	.intro-class-membership-section .block-2 .member-icon{
+		top:75%;
+	}
+	.intro-class-membership-section .block-2 .member-icon:nth-child(4){
+		left:25%;
+	}
+	.intro-class-membership-section .block-2 .member-icon:nth-child(6){
+		left: 75%;
+	}
+
+	.intro-class-membership-section .block-4 .fico-logo{
+		width: 80%;
+		height: 100%;
+	}
+}
 
 /**********************************************************
 *				intro_class_workbook.html
@@ -470,7 +477,7 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	font-size: 5rem;
+	font-size: 4rem;
 	color: #ddd;
 }
 .intro-class-workbook-section .block-1 .ssam-icon{
@@ -479,7 +486,7 @@
 	left: 75%;
 	transform: translate(-50%, -50%);
 	font-size: 6rem;
-	color: turquoise;
+	color: rgb(20, 163, 149);
 }
 /* 2번 블럭 */
 .intro-class-workbook-section .block-2 .tool-icon{
@@ -651,7 +658,7 @@
 	border: 2px solid #ddd;
 	border-radius: 0.5rem;
 	width: 15rem;
-	height: 7.5rem;
+	height: 7rem;
 }
 .intro-class-workbook-section .block-3 .open-vocas-text{
 	position: absolute;
@@ -660,13 +667,13 @@
 	font-size: 1.125rem;
 }
 .intro-class-workbook-section .block-3 .open-vocas-text.text-1{
-	top: 25%;
+	top: 30%;
 }
 .intro-class-workbook-section .block-3 .open-vocas-text.text-2{
-	top: 50%;
+	top: 55%;
 }
 .intro-class-workbook-section .block-3 .open-vocas-text.text-3{
-	top: 75%;
+	top: 80%;
 }
 
 .intro-class-workbook-section .block-4 .book-icon{
@@ -711,7 +718,7 @@
 	left: 25%;
 	transform: translate(-50%, -50%);
 	font-size: 4rem;
-	color: red;
+	color: rgb(204, 11, 11);
 }
 .intro-class-workbook-section .block-4 .money-icon{
 	position: absolute;
@@ -835,7 +842,116 @@
 	font-size: 6rem;
 	color: teal;
 }
+@media(max-width: 576px){
+	.intro-class-workbook-section .block-2 .test-icon{
+		top: 15%;
+		font-size: 5rem;
+	}
+	.intro-class-workbook-section .block-2 .tool-icon{
+		top:20%;
+		font-size: 3rem;
+	}
+	.intro-class-workbook-section .block-2 .divide-line{
+		top:40%;
+	}
+	.intro-class-workbook-section .block-2 .note-icon{
+		top:65%;
+	}
+	.intro-class-workbook-section .block-2 .comment-icon{
+		top:40%;
+		left:85%;
+		font-size: 7rem;
+	}
+	.intro-class-workbook-section .block-2 .comment-line.line-1{
+		top:30%;
+		left: 85%;
+		width:5rem;
+	}
+	.intro-class-workbook-section .block-2 .comment-line.line-2{
+		top: calc(30% + 1rem);
+		left: 85%;
+		width: 5rem;
+	}
+	.intro-class-workbook-section .block-2 .comment-line.line-3{
+		top: calc(30% + 2rem);
+		left: 85%;
+		width: 5rem;
+	}
+	.intro-class-workbook-section .block-2 .member-icon{
+		top:80%;
+	}
+	.intro-class-workbook-section .block-2 .star-icon{
+		top:70%;
+	}
 
+	.intro-class-workbook-section .block-3 .book-icon{
+		left:20%;
+	}
+	.intro-class-workbook-section .block-3 .book-title{
+		left:20%;
+	}
+	.intro-class-workbook-section .block-3 .title-text.cut-off{
+		top: 10%;
+		z-index: 10;
+	}
+	.intro-class-workbook-section .block-3 .table-icon{
+		top:25%;
+	}
+	.intro-class-workbook-section .block-3 .plus-icon{
+		top:50%;
+	}
+	.intro-class-workbook-section .block-3 .title-text.open-vocas{
+		top:65%;
+	}
+	.intro-class-workbook-section .block-3 .open-vocas-border{
+		top:65%;
+	}
+
+	.intro-class-workbook-section .block-4 .book-icon{
+		top:20%;
+	}
+	.intro-class-workbook-section .block-4 .book-title{
+		top: calc(20% - 1rem);
+	}
+	.intro-class-workbook-section .block-4 .free-text{
+		top: 80%;
+	}
+	.intro-class-workbook-section .block-4 .money-icon{
+		top: 80%;
+	}
+
+	.intro-class-workbook-section .block-5 .book-icon{
+		left: 15%;
+	}
+	.intro-class-workbook-section .block-5 .book-title{
+		left: 15%;
+	}
+	.intro-class-workbook-section .block-3 .left-icon{
+		left: 40%;
+		font-size: 4rem;
+	}
+	.intro-class-workbook-section .block-5 .right-arrow-icon{
+		left: 70%;
+	}
+	.intro-class-workbook-section .block-5 .left-arrow-icon{
+		left: 30%;
+	}
+	.intro-class-workbook-section .block-5 .member-icon{
+		left:85%;
+	}
+	.intro-class-workbook-section .block-5 .circle-line-icon .circle-line.line-1{
+		left: calc(75% - 3px);
+	}
+	.intro-class-workbook-section .block-5 .circle-line-icon .circle-line.line-2{
+		left: calc(75% + 2px);
+	}
+	.intro-class-workbook-section .block-5 .circle-line-icon .circle-line.line-3{
+		left: calc(75% - 1px);
+	}
+	.intro-class-workbook-section .block-5 .user-book-icon{
+		left: 75%;
+	}
+}
 
 /**********************************************************
 *				intro_ssam.html
@@ -987,4 +1103,13 @@
 	font-size: 7rem;
 	font-weight: bold;
 	color: #ffc107;
+}
+
+@media(max-width: 576px){
+	.intro-ssam-section .block-5 .make-money-icon{
+		font-size: 6rem;
+	}
+	.intro-ssam-section .block-5 .coin-icon{
+		font-size: 5.5rem;
+	}
 }
