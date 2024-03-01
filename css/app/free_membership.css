@@ -70,6 +70,22 @@
 	margin: 0.5rem auto 2rem auto;
 }
 
+@media(max-width: 576px){
+	.contract-free-membership-section .animation-section{
+		margin-bottom: 0;
+	}
+	.contract-papper-block{
+		width: calc(100% - 1rem);
+		margin: 1rem 0.5rem;
+		padding: 1rem;
+	}
+	.contract-papper-block .contract-border{
+		padding: 1.5rem;
+	}
+	.contract-papper-block .content{
+		min-height: 15rem;
+	}
+}
 
 
 
@@ -174,6 +190,7 @@
 	.block-section.challenge-2 .current-winner-block{
 		position: relative;
 		padding:1rem;
+		margin-bottom: 1rem;
 	}
 }
 /**********************************************************
