@@ -130,7 +130,17 @@
 .current-winner-block .number-text{
 	color:rgb(236,242,254);
 }
+@media(max-width: 576px){
+	.current-winner-block{
+		padding: 1rem;
+	}
 
+	
+	.block-section.challenge-1 .image-section{
+		margin-top: 0;
+	}
+	
+}
 
 /**********************************************************
 *				free_membership_challenge2.html
@@ -152,7 +162,7 @@
 	position: relative;
 	margin:2rem auto;
 	font-size: 1.125rem;
-	font-family: "Nanum Myeongjo", serif;
+	/* font-family: "Nanum Myeongjo", serif; */
 	text-align: center;
 	/* width: fit-content;
 	width: -moz-fit-content; */
@@ -163,6 +173,7 @@
 @media (max-width: 767.99px){
 	.block-section.challenge-2 .current-winner-block{
 		position: relative;
+		padding:1rem;
 	}
 }
 /**********************************************************
