@@ -22,7 +22,7 @@ function pageinit(fullUsed){
 				  
 	}else {
 		$('.demo-counter').text(`0/${availableCharLength}`)
-		$('#text').attr('maxlength', availableCharLength).prop('placeholder', `하루 최대 300자, 5회까지 분석할 수 있습니다. (금일 사용량 ${todayCharLength}/${MAX_CHARS_TODAY}자, ${todayReqCount}회)`);
+		$('#text').attr('maxlength', availableCharLength).prop('placeholder', `하루 최대 300자까지 분석할 수 있습니다. (금일 사용량 ${todayCharLength}/${MAX_CHARS_TODAY}자)`);
 	}
 	
 	// [예문 자동 교체]
