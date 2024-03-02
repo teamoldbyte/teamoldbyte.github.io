@@ -2373,7 +2373,7 @@ background-size: 28.28px 28.28px;
 }
 .play-toiletto-section.active .lotto-blank-cover.same:after,
 .play-toiletto-section.active .lotto-blank-cover.different:after {
-	font-family: 'Nunito Sans','Open Sans';
+	font-family: "Font Awesome 5 Free";
 	height: 50px;
 	font-size: 35px;
 	position: absolute;
@@ -2384,12 +2384,12 @@ background-size: 28.28px 28.28px;
 	text-align: center;
 }
 .play-toiletto-section.active .lotto-blank-cover.same:after {
-	content: 'O';
+	content: '\f00c';
 	color: #2e3cbc;
 }
 .play-toiletto-section.active .lotto-blank-cover.different:after {
-	content: 'X';
-	color: #dd2138;
+	content: '\f00d';
+	color: #dc3545;
 }
 .play-toiletto-section.active .crystal-ball-section {
 	width: 100px;
@@ -2401,7 +2401,7 @@ background-size: 28.28px 28.28px;
 	height: 55px;
 	border-radius: 50%;
 	position: relative;
-	font-family: 'Baloo Bhai';
+	/* font-family: 'Baloo Bhai'; */
 	font-size: 1.5rem;
 	line-height: 60px;
 	color: #fff;
@@ -2644,7 +2644,7 @@ background-size: 28.28px 28.28px;
 	position: relative;
 	color: #1b1f40;
 	font-size: 1.3rem;
-	font-family: 'Nunito Sans';
+	/* font-family: 'Nunito Sans'; */
 	font-weight: 600;
 	line-height: 60px;
 	animation: rotating 0.3s linear;
