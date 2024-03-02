@@ -135,7 +135,7 @@
 	width: -moz-fit-content;
 	padding: 2rem;
 	border-radius: 0.5rem;
-	background-color: rgb(118,137,240);
+	background-color: var(--fc-purple);
 	z-index: 100;
 }
 .current-winner-block .title{
