@@ -112,6 +112,11 @@
 	background-color: #02849e33;
 	font-size: 1.2rem;
 }
+.check-sentence-block .info-msg{
+	text-align: right;
+	color: gray;
+	font-size: 1rem;
+}
 .block-section.challenge-1 .form-check-label{
 	font-weight: normal;
 	margin-bottom: 0.5rem;
