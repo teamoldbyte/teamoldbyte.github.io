@@ -115,7 +115,7 @@
 .check-sentence-block .info-msg{
 	text-align: right;
 	color: gray;
-	font-size: 1rem;
+	font-size: 0.8rem;
 }
 .block-section.challenge-1 .form-check-label{
 	font-weight: normal;
@@ -228,3 +228,32 @@
 }
 
 
+
+/**********************************************************
+*				kick/toiletto/start.html
+**********************************************************/
+#alertFailedModal .faild-modal-content .text-section .title{
+	padding-left: 1rem;
+	font-weight: bold;
+	color: gray;
+}
+#alertFailedModal .faild-modal-content .text-section .text{
+	display: none;
+	position: relative;
+	padding: 0.5rem 1rem;
+	background-color: var(--fc-yellow);
+	vertical-align: text-bottom;
+	border-radius: 5px;
+	margin-top: 0.5rem;
+	/* display: inline-block; */
+}
+#alertFailedModal .faild-modal-content .text-section .text::after{
+	border-top: 8px solid transparent;
+	border-left: 0px solid transparent;
+	border-right: 15px solid var(--fc-yellow);
+	border-bottom: 8px solid transparent;
+	content: "";
+	position: absolute;
+	top: 6px;
+	left: -10px;
+}
