@@ -951,6 +951,7 @@
 	cursor: pointer;
 }
 /* 워크북 오버뷰 - 북 소개 영역 */
+/*
 .workbook-overview-section .workbook-info-section .description-section{
 	cursor: pointer;
 	position: relative;
@@ -979,12 +980,12 @@
 	position: absolute;
 	bottom: 1rem;
 	padding-right: 1rem;
-}
+}*/
 .workbook-overview-section .workbook-info-section .description{
 	white-space: pre-line;
 }
 /* 소개 펼치기 아이콘의 애니메이션 */
- @-webkit-keyframes heartbeat {
+/* @-webkit-keyframes heartbeat {
 	from {
 	  -webkit-transform: scale(1);
 			  transform: scale(1);
@@ -1052,7 +1053,7 @@
 			  animation-timing-function: ease-out;
 	}
   }
-  
+*/  
 /* 워크북 작성자 */
 .workbook-overview-section .personacon img{
 	max-width: 4rem;
