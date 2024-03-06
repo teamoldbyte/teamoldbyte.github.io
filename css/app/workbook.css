@@ -961,6 +961,9 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+.edit-workbook-section .workbook-overview-section .workbook-info-section .description-section{
+	max-height: none;
+}
 .workbook-overview-section .workbook-info-section .description-section::after{
 	content: '▼';
 	position: absolute;
