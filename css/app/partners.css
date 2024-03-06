@@ -1107,16 +1107,16 @@
 
 .intro-ssam-section .block-7 .ssam-icon{
 	position: absolute;
-	top: 25%;
-	left: 30%;
+	top: 35%;
+	left: 40%;
 	transform: translate(-50%, -50%);
 	font-size: 7rem;
 	color: #585174;
 }
 .intro-ssam-section .block-7 .doc-icon{
 	position: absolute;
-	top: 35%;
-	left: 35%;
+	top: 65%;
+	left: 60%;
 	transform: translate(-50%, -50%);
 	font-size: 5rem;
 	color: #be202082;
