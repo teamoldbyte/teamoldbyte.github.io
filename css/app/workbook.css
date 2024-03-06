@@ -955,7 +955,7 @@
 	cursor: pointer;
 	position: relative;
 	margin-top:1rem;
-	max-height: 10rem;
+	/* max-height: 10rem; */
 
 	overflow: hidden;
 	text-overflow: ellipsis;
