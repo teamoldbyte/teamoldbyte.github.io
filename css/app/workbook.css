@@ -963,6 +963,7 @@
 }
 .edit-workbook-section .workbook-overview-section .workbook-info-section .description-section{
 	max-height: none;
+	white-space: normal;
 }
 .workbook-overview-section .workbook-info-section .description-section::after{
 	content: '▼';
