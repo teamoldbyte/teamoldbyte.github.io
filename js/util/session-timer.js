@@ -7,8 +7,9 @@
 const MIN_10 = 600 * 1000, MIN_5 = 300 * 1000, // 10분(사용자 활동 감지 시점), 5분(경고 시점)
 	userAct = 'keypress.session click.session scroll.session';
 let maxAlive = 1800 * 1000, lastAccessdTime, timeleft = maxAlive, sessionTimer, detectingUserActs = false, focusOutAlerted = false;
-$.getJSON('/session/valid', valid => {if(valid) {
+$.getJSON('/session/valid', sessionMaxInterval => {if(sessionMaxInterval) {
   lastAccessdTime = new Date().getTime();
+  maxAlive = sessionMaxInterval;
   // 세션 만료 알림 모달 등록
   $(document.body).append('<div class="modal fade" id="sessionAlert" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">'
 		+ '<div class="modal-dialog">'
