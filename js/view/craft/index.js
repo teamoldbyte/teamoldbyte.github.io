@@ -91,7 +91,7 @@ async function pageinit(memberId, memberRoleType) {
 	}*/
 	
 	const WANDERER = !Cookies?.get('EID') && !Cookies?.get('FMID');
-	const URL_MEMBERSHIP_FREE = '/membership/free',
+	const URL_MEMBERSHIP_FREE = '/free-membership/add',
 		URL_PLAY_BASE = '/craft/battle/';
 	let wanderingBooks = [];
 	let DB_NAME = 'findsvoc-idb'
@@ -132,7 +132,11 @@ async function pageinit(memberId, memberRoleType) {
 	$.cachedScript = $.cachedScript || function( url, options ) {
 		return $.ajax( $.extend( options || {}, { dataType: "script", cache: true, url }) );
 	};
+	
 	const GOLD_MEMBERSHIP_SERVICE_MESSAGE = '<span style="color: #ffc107;font-weight: bold;">골드 멤버십 서비스</span>입니다.\n문장 구조와 표현을 확인할 수 있는 \n<b>다양한 테스트</b>를 통해 문장을 완전히 파악해 보세요.';
+	// 슬라이드 이동거리를 일정하게 유지하기 위해 렌더링하지 않고 보관중인 워크북 목록
+	const battleBooksTobeRendered = { public: [], protected: [], classnote: [] };	
+	
 	// 무료회원 설정
 	if(memberId == 0 && Cookies.get('FMID')) {
 		$('.record-stat .alias').text(localStorage.getItem('FM_NAME'));
@@ -229,41 +233,190 @@ async function pageinit(memberId, memberRoleType) {
 		
 		const bookListEl = this.querySelector('.book-list-container');
 		if(bookListEl == null) return;
-		const paginationEl = bookListEl.nextElementSibling?.querySelector('.swiper-pagination');
+		const swiperSection = bookListEl.closest('.swiper');
+		const subscription = swiperSection.matches('.subscription');
+		let pageNum = 1;
 		$.ajax({
 			url: `/craft/battlebook/${listBookType}/list`,
-			success: bookList => {
-				if(!bookList?.pageable) {
+			success: async bookPage => {
+				if(!bookPage?.pageable) {
 					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
+					swiperSection.classList.add('d-none');
 					return;
 				}
+				battleBooksTobeRendered[listBookType] = bookPage.content;
+				if(bookPage.numberOfElements < getBookCountPerView(subscription) * 2 && !bookPage.last) {
+					await $.getJSON(`/craft/battlebook/${listBookType}/list`, { pageNum: ++pageNum }, function(bookPage) {
+						battleBooksTobeRendered[listBookType] = battleBooksTobeRendered[listBookType].concat(bookPage?.content)
+						listBooks(battleBooksTobeRendered[listBookType].splice(0, getBookCountPerView(subscription) * 2));
+					})
+				}else listBooks(battleBooksTobeRendered[listBookType].splice(0, getBookCountPerView(subscription) * 2));
+				
+				if(matchMedia('(min-width: 992px)').matches) {
+					if(subscription && bookPage.numberOfElements > 3) {
+						swiperSection.classList.add('rows-2');
+					}else if(!subscription && bookPage.numberOfElements > 5)
+						swiperSection.classList.add('rows-2');
+				}else {
+					if(subscription) {
+						swiperSection.classList.add(`rows-${Math.min(bookPage.numberOfElements,3)}`);
+					}else 
+						swiperSection.classList.add(`rows-${Math.min(Math.ceil(bookPage.numberOfElements / 3),3)}`);
+				}
+				
+				new Swiper(swiperSection, {
+					watchSlidesProgress: true,
+					resistanceRatio: 0.1,
+					watchOverflow: false,
+					grid: {
+						fill: subscription ? 'column' : 'row'
+					},
+					pagination: {
+						dynamicBullets: true,
+						dynamicMainBullets: 1,
+						el: '.swiper-pagination',
+						clickable: true,
+						renderBullet: function(index, classname) {
+							return `<span class="${classname}" data-bs-toggle="tooltip" data-bs-title="${index+1}페이지">${index + 1}</span>`;
+						}
+					},
+					breakpoints: {
+						/** [모바일]
+						 * 구독:					문법,테마:
+						 * ┌───┐					┌┬┬┐
+						 * ├───┤					├┼┼┤
+						 * ├───┤					├┼┼┤
+						 * └───┘					└┴┴┘
+						 */
+						320: {
+							slidesPerView: subscription ? 1 : 3,
+							slidesPerGroup: subscription ? 1 : 3,
+							autoHeight: bookPage.numberOfElements < (subscription ? 3 : 9),
+							spaceBetween: subscription ? 10 : 20,
+							grid: {
+								rows: subscription ? 
+								  Math.min(Math.max(1, bookPage.numberOfElements), 3)
+								: Math.min(Math.max(1, Math.ceil(bookPage.numberOfElements/3)), 3)
+							}
+						},
+						/** [데스크탑]
+						 * 구독:					문법,테마:
+						 * ┌┬┬┐						┌┬┬┬┬┐	
+						 * ├┼┼┤						├┼┼┼┼┤
+						 * └┴┴┘						└┴┴┴┴┘
+						 */
+						992: {
+							slidesPerView: subscription ? 3 : 5,
+							slidesPerGroup: subscription ? 3 : 5,
+							autoHeight: bookPage.numberOfElements <= (subscription ? 3 : 5),
+							spaceBetween: 7,
+							grid: {
+								rows: subscription ? 
+								  Math.min(Math.max(1, bookPage.numberOfElements/3), 2)
+								: Math.min(Math.max(1, Math.ceil(bookPage.numberOfElements/5)), 2)
+							}
+						}
+					},
+					on: {
+						beforeInit: function(s) {
+							s.isLast = bookPage.last;
+							if(!bookPage.last) s.pageNum = pageNum + 1;
+						},
+						afterInit: function(s) {
+							s.lazy.load();
+						},
+						slideNextTransitionStart: function(s) {
+							// 로드 중이거나, 마지막 페이지까지 로드했었거나, 슬라이드를 넘기도 나서도 한 페이지분 이상 슬라이드가 뒤에 남아있으면 취소
+							if(s.isLast || s.isLoading || (s.slides.length - s.visibleSlidesIndexes.slice(-1)[0] - 1) >= getBookCountPerView(subscription)) return;
+							else {
+								s.isLoading = true;
+								// 온전히 한 페이지를 넘기기 위해 추가로 필요한 슬라이드 수
+								const requiredNum = getBookCountPerView(subscription) - (s.slides.length - s.visibleSlidesIndexes.slice(-1)[0] - 1) % getBookCountPerView(subscription);
+								const cachedList = battleBooksTobeRendered[listBookType]?.splice(0,requiredNum * 2)??[];
+								// 서버 로드는 끝났고, 캐쉬된 것이 남았을 때
+								if(s.loadOver) {
+									s.appendSlide(createBookDOMList(cachedList, listBookType));
+									// 슬라이드 마지막임을 마크
+									s.isLast = battleBooksTobeRendered[listBookType].length == 0;
+									return;
+								}
+								// 캐쉬된 것으로도 렌더링하기에 모자라면 서버로부터 로드
+								if(cachedList.length < requiredNum) {
+									// 캐쉬목록을 모자란대로 슬라이드로 우선 추가
+									s.appendSlide(createBookDOMList(cachedList, listBookType));
+									$.getJSON(`/craft/battlebook/${listBookType}/list`, { pageNum : s.pageNum++},  function(bookPage) {
+										delete s.isLoading;
+										// 목록이 비었을 때의 메세지 삭제
+										$(s.el).find('.default-message').remove();
+										// 캐시 목록에 데이터 추가
+										battleBooksTobeRendered[listBookType] = (battleBooksTobeRendered[listBookType]??[]).concat(bookPage.content);
+										// 캐시목록에서 뷰를 채울만큼 슬라이드로 추가 
+										s.appendSlide(createBookDOMList(battleBooksTobeRendered[listBookType].splice(0,requiredNum - cachedList.length), listBookType));
+										s.update();
+										// 첫페이지면 이미지 강제로드
+										if(bookPage.first) {
+											s.lazy.load();
+										}
+										// 서버 로드는 끝났음을 마크
+										if(bookPage.last) s.loadOver = true;
+									})
+									.fail( () => alert('워크북목록 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
+								}else {
+									// 캐쉬된 것으로 뷰를 채우기 충분하면 뷰크기만큼 잘라서 슬라이드로 추가
+									delete s.isLoading;
+									s.appendSlide(createBookDOMList(cachedList, listBookType));
+									s.update();
+								}
+							}
+						}
+					}
+				});				
 				this.setAttribute('initialized', true);
-				if(!bookList || bookList?.content?.length == 0) return;
-				bookListEl.querySelectorAll('.book')?.forEach(b => b.remove());
-				bookListEl.appendChild(createBookDOMList(bookList, listBookType));
-				paginationEl?.querySelectorAll('.page-item')?.forEach(p => p.remove());
-				paginationEl?.appendChild(createElement(getPaginations(bookList)));
+				if(!bookPage || bookPage?.content?.length == 0) return;
 			},
 			
 			error: (xhr) => {
+				swiperSection.classList.add('d-none');
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
 				}else if(xhr.status == 403){
 					alertModal(GOLD_MEMBERSHIP_SERVICE_MESSAGE);
+					swiperSection.classList.add('d-none');
 				}else {
 					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
 				}
 			}
-		})
-	}).on('click', '.page-item', function() {
+		});
+		
+		function listBooks(bookList) {
+			bookListEl.querySelectorAll('.book')?.forEach(b => b.remove());
+			bookListEl.appendChild(createBookDOMList(bookList, listBookType));
+			/*if(!bookList.first) {
+				paginationEl.prepend(createElement({
+					el: 'span', className: 'page-item prev swiper-pagination-bullet', role: 'button', 'data-pagenum': bookList.number
+				}))
+			}
+			if(!bookList.last) {
+				paginationEl.append(createElement({
+					el: 'span', className: 'page-item next swiper-pagination-bullet', role: 'button', 'data-pagenum': bookList.number + 2 
+				}))
+			}*/
+		}
+	})/*.on('click', '.page-item', function() {
 		if(this.classList.contains('swiper-pagination-bullet-active')) return;
 		const paginationEl = this.closest('.pagination-section');
 		const bookType = paginationEl.dataset.content;
 		const pageNum = this.dataset.pagenum;
-		
-		const bookListEl = paginationEl.previousElementSibling;
+		const direction = this.className.match(/\bprev\b|\bnext\b/)[0];;
+		const swiperSection = this.closest('.swiper');
+		const swiper = swipers[$('.swiper').index(swiperSection)];
+		const bookListEl = swiperSection.querySelector('.book-list-container');
 		if(bookListEl == null) return;
-		const pageItemContainer = bookListEl.nextElementSibling?.querySelector('.swiper-pagination');
+		if(!cachedBooks[bookType]) cachedBooks[bookType] = [];
+		if(cachedBooks[bookType][pageNum - 1]) {
+			listBooks(cachedBooks[bookType][pageNum - 1]);
+			return;
+		}
 		$.ajax({
 			url: `/craft/battlebook/${bookType}/list`,
 			data: { pageNum },
@@ -272,23 +425,44 @@ async function pageinit(memberId, memberRoleType) {
 					alertModal('올바른 데이터를 받지 못했습니다.\n화면을 새로고침 해주세요.');
 					return;
 				}
-				bookListEl.querySelectorAll('.book')?.forEach(b => b.remove());
-				bookListEl.appendChild(createBookDOMList(bookList, bookType));
-				pageItemContainer?.querySelectorAll('.page-item')?.forEach(p => p.remove());
-				pageItemContainer?.appendChild(createElement(getPaginations(bookList)));
+				cachedBooks[bookType][pageNum - 1] = bookList;
+				listBooks(bookList);
 			},
 			
 			error: (xhr) => {
 				if(xhr.status == 401) {
 					alertModal('접속시간이 초과되었습니다.\n로그인 화면으로 이동합니다.', () => location.assign('/auth/login?destPage=/craft/main'));
-				}else if(xhr.status == 403){
+				}else if(xhr.status == 403) {
 					alertModal(GOLD_MEMBERSHIP_SERVICE_MESSAGE);
 				}else {
 					alertModal('배틀북 조회에 실패했습니다.\n화면 새로고침 후 다시 시도해 주세요.');
 				}
 			}
 		})
-	})
+		function listBooks(bookList) {
+			bookListEl.querySelectorAll('.book')?.forEach(b => b.remove());
+			bookListEl.appendChild(createBookDOMList(bookList?.content, bookType));
+			paginationEl.querySelectorAll('.page-item.prev,.page-item.next').forEach(item => item.remove());
+			swiper.update();
+			if(!bookList.first) {
+				paginationEl.prepend(createElement({
+					el: 'span', className: 'page-item prev swiper-pagination-bullet', role: 'button', 'data-pagenum': bookList.number , innerHTML: '&laquo;'
+				}))
+			}
+			if(!bookList.last) {
+				paginationEl.append(createElement({
+					el: 'span', className: 'page-item next swiper-pagination-bullet', role: 'button', 'data-pagenum': bookList.number + 2 , innerHTML: '&raquo;'
+				}))
+			}
+			
+			swiper.slideTo(direction == 'prev' ? swiper.slides.length - 1 : 0, 0);
+			swiper.isLoading = false;
+			swiper.isFirst = bookList.first;
+			swiper.isLast = bookList.last;
+			swiper.onceBegin = direction == 'next';
+			swiper.onceEnd = direction == 'prev';	
+		}
+	})*/
 	
 	// 
 	// battle-book-list의 collapse 이벤트를 적용한 직후에 collapse 이벤트 임의 발생
@@ -297,14 +471,14 @@ async function pageinit(memberId, memberRoleType) {
 	}
 	
 	function createBookDOMList(bookList, listType) {
-		return createElement(Array.from(bookList?.content, 
-				({battleBookId, bbid, title, bookType, description, imagePath, completed, price, openType},i) => {
+		return createElement(Array.from(bookList, 
+				({battleBookId, bbid, title, bookType, description, imagePath, completed, price, openType}) => {
 					const titleText = { el: 'span', className: 'title-text', textContent: title };
 					const bookCoverClass = `book-cover${!!imagePath?'':' default'}${completed?' pe-none':''}`;
 					const bookCoverStyle = !!imagePath ? {backgroundImage: `url(/resource/battlebook/cover/${imagePath})`} : {};
 					return  listType == 'subscription' 
 					// 구독 배틀북
-					? { el: 'div', className: 'book col-6 row g-0', dataset: 
+					? { el: 'div', className: 'book swiper-slide row g-0', dataset: 
 						{ bid: battleBookId||bbid, bookType: BOOKTYPE_FULLNAMES[bookType], title, completed},
 					children: [
 						{ el: 'div', className: 'col-auto', children: [
@@ -331,10 +505,10 @@ async function pageinit(memberId, memberRoleType) {
 						]}
 					]} 
 					// 구독 대상 배틀북
-					: { el: 'div', className: 'book js-open-overview col text-center', 
+					: { el: 'div', className: 'book swiper-slide js-open-overview text-center', 
 					dataset: {
 						bid: battleBookId||bbid, title, bookType: BOOKTYPE_FULLNAMES[bookType], description, imagePath: imagePath||'', completed, price, openType
-					}, style: `order: ${i}`, children: [
+					}, children: [
 							{ el: 'div', className: bookCoverClass, children: [
 								{ el: 'img', src: 'https://static.findsvoc.com/images/app/workbook/bookcover/book_paper.png', style: bookCoverStyle}
 							]},
@@ -344,61 +518,26 @@ async function pageinit(memberId, memberRoleType) {
 			}))
 	}
 	
-	/**
-	 * 조회한 목록으로 페이지네이션 정보를 표시
-	 */
-	function getPaginations(page) {
-		const totalPages = page.totalPages,	// 전체 페이지 수
-			currPage = page.number + 1,		// 현재 페이지(1부터)
-			blockLength = 10,
-			currBlock = Math.ceil(currPage / blockLength),	// 현재 페이지리스트 뭉치 번호(1부터)
-			startPage = (currBlock - 1) * blockLength + 1,				// 페이지리스트 첫번째 번호(1부터)
-			endPage = (startPage + blockLength <= totalPages) ? (startPage + blockLength - 1) : totalPages; // 페이지리스트 마지막 번호
-		
-		const pages = [];
-		for(let i = startPage; i <= endPage; i++) {
-			pages.push({
-				el: 'span', className: `page-item swiper-pagination-bullet${currPage==i?' swiper-pagination-bullet-active':''}`,
-				'data-pagenum': i
-			})
-		}
-		if(startPage > blockLength)
-			pages.unshift({
-				el: 'span', className: 'page-item', role: 'button', 'data-pagenum': startPage - 1 , innerHTML: '&laquo;'
-			})
-		if(endPage < totalPages) 
-			pages.push({
-				el: 'span', className: 'page-item', role: 'button', 'data-pagenum': endPage + 1, innerHTML: '&raquo;'
-			})
-		return pages;
-	}
-	
-	// 주제별 배틀북 개요 펼치기
-	let COLS_IN_ROW = devSize.isPhone() ? 3 : devSize.isTablet() ? 4 : 5;
-	$(window).on('resize', function() {
-		COLS_IN_ROW = devSize.isPhone() ? 3 : devSize.isTablet() ? 4 : 5;
-		$('.battlebook-overview-section').each(function() {
-			const targetBook = $(this).data('targetBook');
-			if(targetBook) {
-				this.style.order = (Math.floor(targetBook.style.order / COLS_IN_ROW) + 1) * COLS_IN_ROW;
-			}
-		})
-	})
+	// 문법별, 주제별 배틀북 개요 펼치기
 	const OPEN_TYPE_INFO = {'T': '클래스용', 'P': '회원/비회원', 'M': '회원용'}
 	$(document).on('click', '.js-open-overview', function() {
-		const $overviewSection = $(this).siblings('.battlebook-overview-section');
+		const $overviewSection = $(this).closest('.swiper').find('.battlebook-overview-section');
 		const { bid, title, description, imagePath, price, openType, completed } = this.dataset;
 		if($overviewSection.data('targetBook') == this) {
-			$overviewSection.collapse('hide');
-			$overviewSection.data('targetBook', null);
+			if($overviewSection.is('.show')) {
+				$overviewSection.collapse('hide');
+				$overviewSection.data('targetBook', null);
+			}else {
+				$overviewSection.collapse('show');
+			}
 		}else {
 			$overviewSection.data('targetBook', this);
 			// 개요 정보 가져오기(ajax)---------------------------------------------
 			$.getJSON(`/craft/battlebook/overview/${ntoa(bid)}`, sub => {
 				let listBookType = this.closest('.battle-book-list').className.match(/subscription|theme|grammar/);
 				if(listBookType) listBookType = listBookType[0];
-				const order = (Math.floor(this.style.order / COLS_IN_ROW) + 1) * COLS_IN_ROW;
-				$overviewSection.css('order',  order);
+				$overviewSection.css('top', this.offsetTop + this.offsetHeight);
+				$overviewSection.find('.overview-tail').css('left', this.offsetLeft + 0.5 * this.offsetWidth);
 				if($overviewSection.is('.show')) $overviewSection[0].scrollIntoView({behavior: 'smooth', block: 'nearest'});
 				else $overviewSection.collapse('show');
 				$overviewSection.find('.book-title').text(title);
@@ -414,8 +553,17 @@ async function pageinit(memberId, memberRoleType) {
 				$overviewSection.find('.sub-btn')
 					.toggleClass('bg-secondary', (memberId == 0 && openType != 'P' || memberId == 0 && completed == 'true') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
 					.prop('disabled', (memberId == 0 && openType != 'P' || memberId == 0 && completed == 'true') || (memberId != 0 && !!sub) || (!sub && memberRoleType == 'U'))
-					.html(memberId == 0 ? openType == 'P'? completed == 'true' ? '플레이 완료' : '<i class="fas fa-play me-3"></i>바로 플레이' :'회원 전용' 
-						: !!sub ? '구독중' : (memberRoleType == 'U') ? '구독 불가 (멤버십 만료)' : '구독');
+					.html((function(){
+						if(memberId == 0) {
+							if(openType)
+								return completed == 'true' ? '플레이 완료' : '<i class="fas fa-play me-3"></i>바로 플레이';
+							else 
+								return '회원 전용';
+						}else if(!!sub)
+							return '구독중';
+						else 
+							return (memberRoleType == 'U') ? '구독 불가 (멤버십 만료)' : '구독';
+					})());
 			})
 			.fail(() => alertModal('배틀북 정보 가져오기에 실패했습니다.\n다시 접속해 주세요.'));
 			// -----------------------------------------------------------------
@@ -457,13 +605,16 @@ async function pageinit(memberId, memberRoleType) {
 			case 'success':
 				alertModal(`"${title}"을(를) 구독하였습니다.\n개인별 학습에서 구독한 배틀북을 확인할 수 있습니다.\n녹색 플레이 버튼을 눌러 배틀을 풀어보세요`, () => {
 					$(this).prop('disabled', true).text('구독중');
+					
+					// 구독목록이 이미 초기화된 경우, 강제로 구독목록 조회
 					if($('.battle-book-list.subscription').attr('initialized')) {
 						$.getJSON('/craft/battlebook/subscription/list', bookList => {
 							$('.my-book-type.subscription .book-list-container').empty()
-							.append(createBookDOMList(bookList, 'subscription'))
+							.append(createBookDOMList(bookList?.content, 'subscription'))
 							.collapse('show');
 						})
 					}else {
+						// 펼치기를 동작시켜서 구독목록을 조회
 						$('.battle-book-list.subscription').collapse('show');
 					}
 				});
@@ -529,7 +680,7 @@ async function pageinit(memberId, memberRoleType) {
 							{"el":"div","class":"text-section mb-3 text-center text-dark","innerHTML":"<span class='app-name-text'>fico</span> 이용자 <b class='text-fc-red'>가입</b>시 테스트 <b>진행기록</b>과 <b>전적 정보</b>가 <b>저장</b>되어 다음에도 로그인없이 배틀을 <b>이어서 이용</b>할 수 있습니다."},
 							{ "el": "div", className: 'col text-center', children: [
 								{"el":"button","class":"btn btn-fico w-100","innerHTML": "<b>예</b><br><span class='fs-7'>(이용자 간편가입)</span>", onclick: () => {
-									location.assign(`/membership/free?destPage=${destPage}`);
+									location.assign(`${URL_MEMBERSHIP_FREE}?destPage=${destPage}`);
 								}}
 							]},
 							{ "el": "div", className: 'col text-center', children: [
@@ -570,4 +721,10 @@ async function pageinit(memberId, memberRoleType) {
 		})
 		
 	}
+	
+	function getBookCountPerView(subscription) {
+		return matchMedia('(min-width: 992px)').matches ? 
+			subscription ? 6 : 10
+			: subscription ? 3 : 9;
+	}		
 }	
