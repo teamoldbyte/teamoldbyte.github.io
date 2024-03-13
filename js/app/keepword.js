@@ -116,7 +116,7 @@
 							p.handleDrag(function(_evt, x, _y) {
 								if (p.getAmountClipped() > 0.85) {
 									p.removeEvents();
-									$(p.el).closest('.meaning').text($(p.bottomLayer).text());
+									$(p.el).closest('.meaning').css('verticalAlign','').text($(p.bottomLayer).text());
 								}
 								if(!initX) initX = x;
 								const t = (x - initX) / p.width;
