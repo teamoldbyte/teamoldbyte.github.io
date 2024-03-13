@@ -93,7 +93,7 @@
 					if(found) {
 						$(wordUnitSection).addClass('saved').data('keepWordId', found.keepWordId).find('.title').before($(createElement(unsaveWordBtnJson)).show());
 						$(wordUnitSection).find('.meaning').each((_, meaning) => {
-							//meaning.style.verticalAlign = 'middle';
+							meaning.style.verticalAlign = 'middle';
 							const offsetWidth = Array.from(meaning.getClientRects(),r => r.width).reduce((acc,curr) => acc + curr);
 							const offsetHeight = meaning.getClientRects()[0].height;
 							$(meaning).wrapInner('<div class="d-inline-block peel"><div class="peel-bottom"></div></div>')
