@@ -141,7 +141,7 @@ function updateSession() {
 function sessionExpiredConfirm() {
   clearInterval(sessionTimer);
   $('#sessionAlert')?.modal('hide');
-  if(confirm('개인정보 보호를 위해\n로그인 후 30분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.')) {
+  if(confirm(`개인정보 보호를 위해\n로그인 후 ${parseInt(maxAlive/60000)}분동안 서비스 이용이 없어\n자동 로그아웃 되었습니다.\n\n다시 로그인을 하시려면 확인을 눌러주세요.`)) {
 	location.assign('/auth/login');
   }
 }
