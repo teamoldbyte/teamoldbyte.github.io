@@ -98,7 +98,10 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					
 					// 클래스회원 및 P골드회원을 제외하고는 클래스워크북 안내만 보여주기
 					if(classType && !isClassMember) {
-						alertModal('클래스 멤버십 전용 워크북입니다.\n멤버십 소개 화면에서 다른 멤버십과 비교해 보세요.', () => location.assign('/membership'))
+						$('#classWorkbookAlertModal').on('hide.bs.modal', function() {
+							location.assign('/membership');
+						}).modal('show');
+//						alertModal('클래스 멤버십 전용 워크북입니다.\n멤버십 소개 화면에서 다른 멤버십과 비교해 보세요.', () => location.assign('/membership'))
 						return;
 					}
 					
