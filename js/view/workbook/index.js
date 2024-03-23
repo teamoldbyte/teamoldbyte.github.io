@@ -98,6 +98,7 @@ function pageinit(publicOpenWorkBooks, protectedOpenWorkBooks, classNoteBooks, m
 					
 					// 클래스회원 및 P골드회원을 제외하고는 클래스워크북 안내만 보여주기
 					if(classType && !isClassMember) {
+						$('#classWorkbookExampleImage').attr('src', `https://static.findsvoc.com/images/app/index/classWorkbook/class-workbook-${Math.floor(Math.random() * 6 + 1)}.png`);
 						$('#classWorkbookAlertModal').on('hide.bs.modal', function() {
 							location.assign('/membership');
 						}).modal('show');
