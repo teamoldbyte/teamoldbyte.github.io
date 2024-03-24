@@ -1597,9 +1597,9 @@
 		// 대상 문장 div 지정 (sentenceId, wordId 따기 위함)
 		$('#openVocaModal').data('sentenceUnit', $sentenceUnit).modal('show');
 		
+		toggleOpenVocaBtns('#addVoca');
 		// 등록 버튼 비활성화
 		$('#addVoca').prop('disabled', true);
-		toggleOpenVocaBtns('#addVoca');
 	})
 	// [오픈보카 유형 선택]---------------------------------------------------------
 	.on('change', 'input[name="vocaTypeCheck"]', function() {
@@ -1781,7 +1781,6 @@
 					.append(createElement(Array.from(senseTypesInWordList.filter(p => !senseTypes.includes(p)), (part, i) => {
 						return { el: 'option', selected: i == 0, value: part, textContent: partTypeMap[part]};
 					})));*/
-					$('#appendVoca').prop('disabled', false);
 					toggleOpenVocaBtns('#appendVoca');
 				}
 				// 사전으로는 등록됐지만 문장 단어 리스트에 없는 경우
@@ -1801,7 +1800,6 @@
 							return { el: 'option', selected: i == 0, value: partType, textContent: partTypeMap[partType]}
 						})));
 					}*/
-					$('#addVoca').prop('disabled', false);
 					toggleOpenVocaBtns('#addVoca');
 				}					
 			}
@@ -1811,7 +1809,6 @@
 					$('#openVocaModal .meaning').html('<p class="p-2 text-center">시스템에 등록되지 않은 어휘입니다.<br>등록을 요청할 수 있습니다.</p>')
 					$('#openVocaModal .uppercase-feedback').hide();
 					$('.part-type,.additional-meaning').prop('disabled', true);
-					$('#requestVoca').prop('disabled', false);
 					toggleOpenVocaBtns('#requestVoca');
 				}else {
 					$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
@@ -1822,7 +1819,6 @@
 							return { el: 'option', value: key, textContent: value };
 						})));
 				}*/
-					$('#addVoca').prop('disabled', false);
 					toggleOpenVocaBtns('#addVoca');
 				}
 			}
@@ -1852,14 +1848,11 @@
 			// 단어목록에 표시된 품사가 아닌 경우 등록 버튼을 '품사 변경'으로 수정
 			if(!orgPartTypes.has(this.value)) {
 				$('#changeVoca').text($('#openVocaModal .additional-meaning').val().trim().length > 0 ?'품사 변경 및 뜻 추가' : '품사 변경');
-				$('#changeVoca,#addPartVoca').prop('disabled', false);
 				toggleOpenVocaBtns('#changeVoca,#addPartVoca');
 			}else {
-				$('#appendVoca').prop('disabled', false);
 				toggleOpenVocaBtns('#appendVoca');
 			}
 		}else {
-			$('#addVoca').prop('disabled', false);
 			toggleOpenVocaBtns('#addVoca');
 		}
 	})
@@ -1890,9 +1883,15 @@
 		
 		const adding = $(this).is('#addVoca,#requestVoca,#addPartVoca');
 		const requesting = $(this).is('#requestVoca');
-		let url = adding ? `/openvocas/new/${vocaType? 'phrase':'word'}`
-			: $(this).is('#changeVoca')? '/workbook/sentence/word/change-part'
-			: '/openvocas/append/meaning';
+		let url = '';
+		
+		if(adding) {
+			url = `/openvocas/new/${vocaType? 'phrase':'word'}`;
+		}else if($(this).is('#changeVoca')) {
+			url = '/workbook/sentence/word/change-part';
+		}else {
+			url = '/openvocas/append/meaning';
+		}
 		
 		// 품사도 선택하지 않고, 추가의미가 입력된 경우
 		if(!partType && appendMeaning?.length > 0) {
@@ -1900,10 +1899,12 @@
 			return;
 		}
 		
-		// 1. '단어' 이외 유형에서 검색된 wordId도 없고 추가의미도 없거나, 
-		// 2. '단어' 유형에서 wordId는 있는데 품사 선택을 안했거나,
-		// 3. '단어' 유형에서 wordId도 있고 품사도 선택했는데 등록된 품사도 아니고 추가의미도 입력하지 않았을 때
-		if((!!vocaType && !wordId && !appendMeaning) 
+		// 1. '단어' 이외 유형에서 검색된 wordId도 없고 추가의미도 없거나,
+		// 2. '뜻 추가' 상태에서 추가한 뜻이 없거나, 
+		// 3. '단어' 유형에서 wordId는 있는데 품사 선택을 안했거나,
+		// 4. '단어' 유형에서 wordId도 있고 품사도 선택했는데 등록된 품사도 아니고 추가의미도 입력하지 않았을 때
+		if((!!vocaType && !wordId && !appendMeaning)
+		|| (_this.id == 'appendVoca' && !appendMeaning) 
 		|| (!vocaType && wordId && !partType)
 		|| (!vocaType && wordId && !!partType && !appendMeaning 
 			&& $('#openVocaModal .meaning .list-group-item').filter((_,el) =>  el.textContent.startsWith(partType)).length == 0)) {
