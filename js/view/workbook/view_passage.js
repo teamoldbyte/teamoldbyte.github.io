@@ -2823,9 +2823,12 @@
 		const selectedPart = $('#openVocaModal .part-type').val();
 		const $wordInList = $('#openVocaModal').data('sentenceUnit')
 			.find('.one-word-unit-section:visible').filter((_,w) => $(w).data('wordId') == parseInt($('#openVocaModal .word-id').val()||0));
-			
+		
+		if(selectedPart == null) {
+			return;
+		}
 		// 단어 목록에 있는 단어일 때
-		if($wordInList.length > 0) {
+		else if($wordInList.length > 0) {
 			
 			// 단어 목록에 표시된 품사 목록
 			let orgPartTypes = new Set(Array.from($wordInList.find('.part').get(), p => p?.textContent));
