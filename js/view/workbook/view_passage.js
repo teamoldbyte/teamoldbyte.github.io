@@ -1738,6 +1738,7 @@
 				$('#openVocaModal .part-type option').each((_,el) => {
 					if(legacyTypes.has(el.value)) {
 						el.style.background = 'var(--fc-yellow)';
+						el.dataset.existingPart = '';
 						if(legacyTypes.size == 1) el.selected = true;
 					}
 				})
@@ -1776,96 +1777,33 @@
 				
 				// 문장의 단어 리스트로 이미 등록된 경우
 				if(wordUnit) {
-					/*const senseTypesInWordList = Array.from($(wordUnit).find('.part').get(), part => part.textContent);
-					$('#openVocaModal .additional-sense-type')
-					.append(createElement(Array.from(senseTypesInWordList.filter(p => !senseTypes.includes(p)), (part, i) => {
-						return { el: 'option', selected: i == 0, value: part, textContent: partTypeMap[part]};
-					})));*/
 					toggleOpenVocaBtns('#appendVoca');
 				}
 				// 사전으로는 등록됐지만 문장 단어 리스트에 없는 경우
 				else {
-					/*if(!/\s/.test(text)) {
-						// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
-						$('#openVocaModal .additional-sense-type').empty()
-						.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
-							return { el: 'option', value: key, textContent: value };
-						})));
-					}else {
-						// 구를 추가할 때에는 이미 등록된 품사들 중에서 선택할 수 있도록
-						$('#openVocaModal .additional-sense-type')
-						.append(createElement(Array.from(Array.from(vocaInfoList.meaningList, meaning => {
-							return meaning.match(/[a-zA-Z-]+\./)[0];
-						}).filter(partType => !senseTypes.includes(partType)), (partType,i) => {
-							return { el: 'option', selected: i == 0, value: partType, textContent: partTypeMap[partType]}
-						})));
-					}*/
 					toggleOpenVocaBtns('#addVoca');
 				}					
 			}
 			// 사전으로 등록되지 않은 단어
 			else {
-				if(!vocaType) { // 구가 아닌 단어일 경우, 등록을 막는다.
+				if(!vocaType) { // 구가 아닌 단어일 경우, '요청' 활성화
 					$('#openVocaModal .meaning').html('<p class="p-2 text-center">시스템에 등록되지 않은 어휘입니다.<br>등록을 요청할 수 있습니다.</p>')
 					$('#openVocaModal .uppercase-feedback').hide();
 					$('.part-type,.additional-meaning').prop('disabled', true);
 					toggleOpenVocaBtns('#requestVoca');
-				}else {
+				}else { // 구일 경우, '등록' 활성화
 					$('#openVocaModal .meaning').html('<p class="p-2">시스템에 등록되지 않은 어휘입니다.</p>')
-				/*if(!/\s/.test(text)) {
-					// 구가 아닌 단어를 추가할 때 품사는 임의로 선택할 수 있도록
-					$('#openVocaModal .additional-sense-type').empty()
-					.append(createElement(Array.from(Object.entries(partTypeMap).slice(0, 9), ([key,value]) => {
-							return { el: 'option', value: key, textContent: value };
-						})));
-				}*/
 					toggleOpenVocaBtns('#addVoca');
 				}
 			}
 		})
 	})
-	/*.on('change', '#openVocaModal .meaning .form-check-input', function() {
-		if(this.checked) {
-			$('#openVocaModal .meaning .form-check-input').not(this).prop('checked', false);
-			//$('#openVocaModal .lemma').val($(this.labels[0]).find('.pv-title').text());
-			$('#openVocaModal .word-id').val(this.value);
-		}else {
-			$('#openVocaModal .word-id').val(0);
-		}
-	})*/
 	// 품사 선택
 	.on('change', '#openVocaModal .part-type', function() {
-		const $wordInList = $('#openVocaModal').data('sentenceUnit')
-			.find('.one-word-unit-section:visible').filter((_,w) => $(w).data('wordId') == parseInt($('#openVocaModal .word-id').val()||0));
-		// 단어목록에 있는 단어일 때 품사를 선택하면
-		if($wordInList.length > 0) {
-			// vi.와 vt.를 동시에 가지면 사실상 v.임
-			let orgPartTypes = new Set(Array.from($wordInList.find('.part').get(), p => p?.textContent));
-			if(orgPartTypes.has('vi.') && orgPartTypes.has('vt.')) {
-				orgPartTypes.delete('vi.'); orgPartTypes.delete('vt.');
-				orgPartTypes.add('v.');
-			}
-			// 단어목록에 표시된 품사가 아닌 경우 등록 버튼을 '품사 변경'으로 수정
-			if(!orgPartTypes.has(this.value)) {
-				$('#changeVoca').text($('#openVocaModal .additional-meaning').val().trim().length > 0 ?'품사 변경 및 뜻 추가' : '품사 변경');
-				toggleOpenVocaBtns('#changeVoca,#addPartVoca');
-			}else {
-				toggleOpenVocaBtns('#appendVoca');
-			}
-		}else {
-			toggleOpenVocaBtns('#addVoca');
-		}
+		changeOpenVocaBtns();
 	})
 	.on('input', '#openVocaModal .additional-meaning', function() {
-		const $btn = $(OPENVOCAS_SUBMIT_BUTTONS_SELECTOR).filter((_,b) => b.style.zIndex == 0);
-		$btn.each((_,btn) => {
-			if($(btn).is('#changeVoca')) {
-				$(btn).text(this.value.trim().length > 0 ? '품사 변경 및 뜻 추가' : '품사 변경')
-			}
-		})
-		
-		$('#addVoca,#appendVoca').prop('disabled', !this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
-		$('#changeVoca,#addPartVoca').prop('disabled', !!this.value.trim().length && !parseInt($('#openVocaModal .word-id').val()));
+		changeOpenVocaBtns();
 	})
 	
 	.on('click', OPENVOCAS_SUBMIT_BUTTONS_SELECTOR, async function() {
@@ -2880,6 +2818,56 @@
 		return $answerSection;
 	}
 */		
+	
+	function changeOpenVocaBtns() {
+		const selectedPart = $('#openVocaModal .part-type').val();
+		const $wordInList = $('#openVocaModal').data('sentenceUnit')
+			.find('.one-word-unit-section:visible').filter((_,w) => $(w).data('wordId') == parseInt($('#openVocaModal .word-id').val()||0));
+			
+		// 단어 목록에 있는 단어일 때
+		if($wordInList.length > 0) {
+			
+			// 단어 목록에 표시된 품사 목록
+			let orgPartTypes = new Set(Array.from($wordInList.find('.part').get(), p => p?.textContent));
+			
+			// vi.와 vt.를 동시에 가지면 사실상 v.임
+			if(orgPartTypes.has('vi.') && orgPartTypes.has('vt.')) {
+				orgPartTypes.delete('vi.'); orgPartTypes.delete('vt.');
+				orgPartTypes.add('v.');
+			}
+			// 단어 목록에 표시된 품사가 아닌 경우 등록 버튼을 '품사 변경'으로 수정
+			if(!orgPartTypes.has(selectedPart)) {
+				
+				// 추가 입력한 뜻이 있으면 '품사 변경 및 뜻 추가'로 수정
+				if($('#openVocaModal .additional-meaning').val().trim().length > 0) {
+					$('#changeVoca').text('품사 변경 및 뜻 추가');
+				}else {
+					$('#changeVoca').text('품사 변경');
+				}
+				
+				// 사전에 등록된 품사 목록
+				let dictPartTypes = new Set(Array.from($('#openVocaModal .part-type [data-existing-part]').get(), o => o.value));
+				
+				// 해당 단어에 아얘 없던 품사일 경우 '품사 추가' 활성화
+				if(!dictPartTypes.has(selectedPart)) {
+					toggleOpenVocaBtns('#addPartVoca');
+				}
+				
+				// 해당 단어에 원래 존재하던 품사면 '품사 변경(혹은 품사 변경 및 뜻 추가)' 활성화
+				else {
+					toggleOpenVocaBtns('#changeVoca');
+				}
+			}
+			// 단어 목록에 표시된 품사인 경우 '뜻 추가' 활성화
+			else {
+				toggleOpenVocaBtns('#appendVoca');
+			}
+		}
+		// 단어 목록에 없던 단어면 '등록' 활성화
+		else {
+			toggleOpenVocaBtns('#addVoca');
+		}		
+	}
 	
 	function toggleOpenVocaBtns(selectorToShow) {
 		anime({
