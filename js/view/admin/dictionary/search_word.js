@@ -23,11 +23,14 @@ function pageinit() {
 			$('#searchResult .one-word-unit-section').toggle(anyWord != null);
 			$('#searchResult .one-word-unit-section').children(':not(.title,.title-section)').remove();
 			if(anyWord) {
-				$('#searchResult .input-lemma').val(anyWord.lemma||'')[0].dataset.org = anyWord.lemma||'';
+				$('#searchResult .lemma-section').show().find('.input-lemma').val(anyWord.lemma||'')[0].dataset.org = anyWord.lemma||'';
 				$('#searchResult').get(0).dataset.wordId = anyWord.wid;
 				$('#searchResult .level').text(anyWord.level);
 				$('#searchResult .level-input').val(anyWord.level);
 				$('#searchResult .one-word-unit-section').get(0).appendChild(createElement(createSenseListAndForm(false, anyWord.senseList)));
+			}else {
+				// 검색된 어휘가 없을 경우
+				$('#searchResult .lemma-section').hide();
 			}
 			
 			// 구동사 검색 결과
