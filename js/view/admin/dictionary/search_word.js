@@ -51,6 +51,8 @@ function pageinit() {
 			}
 		}).fail((xhr, status) => {
 			if(status == 'parsererror') {
+				// 검색된 어휘가 없을 경우
+				$('#searchResult .lemma-section').hide();					
 				$('#searchResult').collapse('show');
 				$('#searchResult .saveTitle').text(title);
 				$('#searchTitle, #saveTitle').val(title);
