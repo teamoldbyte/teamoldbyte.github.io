@@ -1065,8 +1065,8 @@
 		const sameWrapper = sem?.matches(`.sem.${wrapper == 'pcl'?'advcls':wrapper}`);
 		switch (wrapper) {
 			case 'tor': case 'ger': case 'ptc': case 'ncls': {
-				
 				// 선택한 영역이 오롯이 하나의 태그와 일치할 때
+				
 				if(range.toString().length == sem?.textContent?.length) {
 					const wrapperEl = createElement({ el: 'span', class: 'sem ' + wrapper, dataset: { gc: gcomments[wrapper] }});
 					// 일치하는 태그가 성분 태그일 경우
@@ -1102,13 +1102,8 @@
 							range.insertNode(wrapperEl);
 						}
 					}
-					// 분사구는 기본 형용사구로 지정.(부사구로 지정하려면 분사구문으로)
-					if(wrapper == 'ptc') {
-						const adjphr = createElement({ el: 'span', class: 'sem adjphr', dataset: { gc: gcomments['adjphr'] }});
-						$(wrapperEl).wrap(adjphr);
-					}
 					refreshDOMs(container);
-					if(wrapper != 'ptc') floatComboBox(range, wrapper, wrapperEl);
+					floatComboBox(range, wrapper, wrapperEl);
 				}
 				break;
 			}
