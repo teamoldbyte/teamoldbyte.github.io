@@ -1,0 +1,112 @@
+<!doctype html><html lang=ko xmlns:th=http://www.thymeleaf.org><meta charset=UTF-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width"><title>출력용 화면</title><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css><link rel=stylesheet href=https://static.findsvoc.com/css/font.min.css><link rel=stylesheet href=https://static.findsvoc.com/css/app/demo.min.css><link rel=stylesheet href=https://static.findsvoc.com/css/app/tandem.min.css><script src=https://code.jquery.com/jquery-3.6.0.min.js integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin=anonymous onerror="document.write(&#34;<script src='https://static.findsvoc.com/js/public/jquery-3.6.0.min.js'><\/script>&#34;),this.remove()"></script><script src=https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js></script><script src=https://static.findsvoc.com/js/util/encoding-util.min.js defer></script><script src=https://static.findsvoc.com/js/app/tandem.min.js defer></script><script th:inline=javascript>$(document).ready(async function(){
+	const $results = $('#results');
+	// 출력할 문장 목록은 부모창(지문 상세보기)으로부터 문장목록을 가져오거나 모델로 직접 받음
+	
+	const openerModel = opener?._printModel;
+	delete opener?._printModel;
+	
+	const sentenceList = openerModel?.sentenceList||[];
+	if(!sentenceList?.length) {
+		alert('인쇄 대상을 찾을 수 없습니다.');
+		window.close();
+	}
+
+	// 워크북 타이틀 적용
+	if(openerModel?.workBookTitle)
+		$(this).find('.workbook-title').text(openerModel.workBookTitle)
+		
+	// 지문 타이틀 적용
+	if(openerModel?.passageTitle)
+		$(this).find('.passage-title-section .passage-title').text(openerModel.passageTitle);
+		
+	// 작성자 적용
+	if(openerModel?.memberAlias)
+		$(this).find('.user-name').text(openerModel.memberAlias);
+	
+	// 이 페이지의 타이틀은 '지문 출력하기'
+	if(opener?.document?.title?.includes('지문 상세보기'))
+		document.title = opener?.document?.title?.replace('지문 상세보기', '지문 출력하기');
+	
+	
+	// 문장들을 순회하며 화면에 표시
+	sentenceList?.forEach(async (sentence, i) => {
+		const $printBlock = $('#hiddenDivs .print-one-sentence').clone();
+		
+		$results.append($printBlock);
+		// 문장 번호
+		//$printBlock.find('.sentence-number').text(i + 1);
+		
+		// 구문분석 표시(첫번째만)
+		if(sentence.svocList?.length > 0) {
+			const svocBlock = await tandem.showSemanticAnalysis(sentence.text, sentence.svocList[0].svocBytes, $printBlock.find('.svoc-section'));
+			const orderSpan = document.createElement('span');
+			orderSpan.className = 'pseudo-sentence-number';
+			svocBlock.prepend(orderSpan);
+		}
+		
+		
+		// 해석 표시(첫번째만)
+		if(sentence.korList?.length > 0) {
+			$printBlock.find('.kor-section .kor').text(sentence.korList[0].kor);
+		}
+		
+		// 단어 목록 표시
+		$printBlock.find('.word-section').append(Array.from(sentence.wordList, word => {
+			const $wordBlock = $('#hiddenDivs .one-word-unit-section').clone();
+			$wordBlock.find('.title').text(word.title);
+			$wordBlock.find('.one-part-unit-section').remove();
+			$wordBlock.append(Array.from(word.senseList, sense => {
+				const $partBlock = $('#hiddenDivs .one-part-unit-section').clone();
+				$partBlock.find('.part').text(sense.partType);
+				$partBlock.find('.meaning').text(sense.meaning);
+				return $partBlock;
+			}));
+			return $wordBlock;
+		}));
+	});
+
+	// 프린트 미리보기 실행 시 헤더,푸터의 조정된 크기 반영
+	$(window).on('beforeprint', function() {
+		$('.header-space').css('height', $('#print_header').css('height'))
+		$('.footer-space').css('height', $('#print_footer').css('height'))
+	});
+	
+	$('input[name="printOrientation"]').on('change', function() {
+		const orientation = this.value;
+		document.body.style.width = orientation == 'landscape' ? '297mm' : '210mm';
+		$('#printOrientation').html(`@page{size:${orientation};}`);
+		window.dispatchEvent(new Event('resize'));
+	})
+
+	// 여백 조정
+	$('.padding-controller').on('mousedown', function(e) {
+		const startX = e.clientX, startY = e.clientY;
+		const controller = this;
+		const div = this.parentElement;
+		const startWidth = parseInt(getComputedStyle(div).width,10);
+		const startHeight = parseInt(getComputedStyle(div).height,10);
+		
+		$(document).on('mousemove', moveController).on('mouseup', stopController);
+		
+		function moveController(e) {
+			switch(true) {
+				case controller.matches('.padding-left') : 
+					$(div).css('width',`${(startWidth + e.clientX - startX)}px`);
+					break;
+				case controller.matches('.padding-right') : 
+					$(div).css('width',`${(startWidth - e.clientX + startX)}px`);
+					break;
+				case controller.matches('.padding-top') : 
+					$(div).css('height',`${(startHeight + e.clientY - startY)}px`);
+					break;
+				case controller.matches('.padding-bottom') : 
+					$(div).css('height',`${(startHeight - e.clientY + startY)}px`);
+					break;
+			}
+		}
+		function stopController() {
+			$(document).off('mousemove', moveController).off('mouseup', stopController);
+			window.dispatchEvent(new Event('resize'));
+		}
+	})
+});</script><style>:root{font-size:12px}body{background:0 0;font-size:12px;width:297mm;margin-left:auto;margin-right:auto}li{font-family:'함초롬돋움',sans-serif}.semantics-result{margin-top:1rem;word-break:break-all}#print_header,.header-space{height:calc(1.5cm + .25cm);padding-top:.125cm;padding-bottom:.125cm}#print_header{background:linear-gradient(90deg,#ebebeb 96%,rgba(88,81,116,.2) 96%,rgba(88,81,116,.2) 98%,#ebebeb 98%)}#print_footer,.footer-space{height:calc(1cm + .2cm + .25cm);padding-bottom:.25cm}#results{width:100%;margin:auto;text-align:initial}#print_footer,#print_header{position:relative;border:dashed 1px #000;overflow:hidden;width:100%;margin-left:auto;margin-right:auto}.print-padding-left,.print-padding-right{width:.5cm;position:relative}.footer-right-text-section{margin-left:auto;border-top:solid .1cm rgba(88,81,116,.1);padding:0 .25cm;width:6.5cm}.footer-right-text-section .slogan{opacity:.5;color:#585174;font-size:12px;font-family:RIDIBatang}.footer-right-text-section .web-addr{opacity:.5;color:#585174;font-size:9px;font-family:LINESeedKR-Bd;margin-top:-3px}.watermark{resize:vertical;overflow:hidden;width:50%;margin-left:auto;margin-right:auto;position:fixed;opacity:.1;bottom:0;right:0;margin-bottom:8px}.watermark .logo{bottom:-35px;position:relative}@media screen{.footer-space,.header-space{display:none}.print-padding-left,.print-padding-right{border:dashed 1px #000}.print-padding-left::before,.print-padding-right::before{position:absolute;top:2rem;left:0}.padding-controller{background:repeating-linear-gradient(45deg,#0000,#0000 10px,#888 0,#888 20px);position:absolute}.padding-controller.padding-left{width:5px;height:100%;top:0;right:0}.padding-controller.padding-right{width:5px;height:100%;top:0;left:0}.padding-controller.padding-top{visibility:hidden;width:100%;height:5px;bottom:0;left:0;cursor:row-resize}.padding-controller.padding-bottom{visibility:hidden;width:100%;height:5px;top:0;left:0;cursor:row-resize}}@media print{body,html{print-color-adjust:exact;-webkit-print-color-adjust:exact;width:100%;margin:0}.no-print{display:none}#results{width:100%}#print_footer,#print_header{position:fixed;width:100%;border:none;resize:none;left:50%;transform:translateX(-50%);text-align:center}#print_header{top:0}#print_footer{bottom:0}@page{@top-right{content:"Page " counter(pageNumber)}}.watermark{width:6.5cm;bottom:calc(1cm + .25cm);right:.5cm}}#print_footer,#print_header{padding-left:.5cm;padding-right:.5cm}#print_header .title-text{font-size:13.5px;font-family:Roboto,'Nunito Sans','Open Sans';color:#303672;margin-bottom:1.5rem}#print_header .title-text .years{font-size:16.5px;font-weight:bolder}.passage-title,.user-name,.workbook-title{font-family:'Nanum Gothic'}.workbook-title{font-size:14px;font-weight:700}.user-name{font-size:10px;font-weight:700}.passage-title{font-size:10px;text-decoration:underline;text-decoration-color:#585174;text-underline-offset:.25rem}.print-one-sentence .sentence-number-section{width:8mm;text-align:center;margin:auto}.print-one-sentence .sentence-number-section .sentence-number{font-size:11px;background-color:#5c68b6;color:#fff;display:block;width:calc(100% - 2mm);height:6mm;line-height:6mm;text-align:center;margin-right:auto;border-radius:2mm}.print-one-sentence{counter-increment:sentenceOrder}.print-one-sentence .svoc-section{margin-left:8mm;margin-bottom:.5cm}.pseudo-sentence-number{position:relative}.pseudo-sentence-number::before{content:counter(sentenceOrder);position:absolute;left:-7mm;bottom:-1mm;line-height:6mm;height:6mm;min-width:6mm;max-width:8mm;text-align:center;font-size:11px;color:#fff;background:#5c68b6;border-radius:2mm}.print-one-sentence{margin-bottom:.5cm}.print-one-sentence .kor-word-section,.print-one-sentence .svoc-section{width:calc(100% - 8mm)}.kor,.sentence-number,.word-section .meaning{font-family:'Nanum Gothic'}.semantics-result{font-size:13px}.word-section .part,.word-section .title{font-size:11px}.kor,.word-section .meaning{font-size:10px}.kor-section .kor{font-weight:700}.one-word-unit-section{word-break:break-all;display:inline-block}.word-section{position:relative;padding:0 20px}.left-curly-brace{width:5px;height:85%;position:absolute;top:7.5%;left:4px}.right-curly-brace{width:5px;height:85%;position:absolute;top:7.5%;right:4px}.brace{width:5px;height:50%}.brace:after,.brace:before{content:"";width:7px;height:25%;position:absolute;display:block;opacity:.5}.left-curly-brace .brace.top-brace:before{border-left:3px solid #585174;border-top-left-radius:10px;margin-left:-1px;top:0}.left-curly-brace .brace.top-brace:after{border-right:3px solid #585174;border-bottom-right-radius:10px;margin-left:-5px;bottom:50%}.left-curly-brace .brace.bottom-brace:before{border-right:3px solid #585174;border-top-right-radius:10px;margin-left:-5px;top:50%}.left-curly-brace .brace.bottom-brace:after{border-left:3px solid #585174;border-bottom-left-radius:10px;margin-left:-1px;margin-bottom:0;bottom:0}.right-curly-brace .brace.top-brace:before{border-right:3px solid #585174;border-top-right-radius:10px;margin-left:-5px;top:0}.right-curly-brace .brace.top-brace:after{border-left:3px solid #585174;border-bottom-left-radius:10px;margin-left:-1px;bottom:50%}.right-curly-brace .brace.bottom-brace:before{border-left:3px solid #585174;border-top-left-radius:10px;margin-left:-1px;top:50%}.right-curly-brace .brace.bottom-brace:after{border-right:3px solid #585174;border-bottom-right-radius:10px;margin-left:-5px;margin-bottom:0;bottom:0}.word-section .meaning{color:#000}.word-section .part{color:#00686a}.sem.inner{border-bottom:solid 1px;border-left:none;border-right:none;padding-bottom:.125rem;border-image:none;border-image-width:0}.sem.inner[data-rc]::before{top:1.5rem}.sem[data-rc].inner::before,.sem[data-rc].outer::before{position:absolute;border:solid 0;padding:3px;text-align:center!important;line-height:.75rem;font-style:normal;color:#fff!important;border-radius:1rem;word-break:keep-all;overflow:hidden;min-width:1.25rem!important;max-width:fit-content;font-family:'Open Sans';font-weight:900;font-size:.65rem!important}.sem.s[data-rc]::before{background:#0340dd}.sem.ss[data-rc]::before{background:#0340dd}.sem.o[data-rc]::before{background:#006379}.sem.go[data-rc]::before,.sem.po[data-rc]::before,.sem.ptco[data-rc]::before,.sem.to[data-rc]::before{background:#006379}.sem.a[data-rc]::before,.sem.c[data-rc]::before{background:#283593}.sem.v[data-rc]::before{background:#a91461}.sem.oc[data-rc]::before{background:#8080c0}.sem.appo[data-rc]::before,.sem.m[data-rc]::before{background:#0080ff}</style><body style=overflow:scroll;text-align:center;width:297mm><div th:replace=~{/incl/loading_modal::modal} style=display:block></div><div class=no-print><h1>인쇄 조정 화면</h1><button type=button onclick=print()>🖨인쇄</button> <label>인쇄 방향:</label> <label><input type=radio name=printOrientation value=landscape checked>가로</label> <label><input type=radio name=printOrientation value=portrait>세로</label><hr><span style=color:#8b0000>※ 출력 환경은 크롬 브라우저 가로 방향 출력에 최적화되어 있습니다.</span></div><div id=print_header class="row g-0"><div class="padding-controller padding-top"></div><div class="row g-0"><div class="col-4 row g-0 my-auto"><div class=col-3><img class=logo alt=logo src=https://static.findsvoc.com/images/logo/main_logo.svg></div><div class="col-12 title-text text-start mb-0"><span class=years>[[${#dates.year(#dates.createToday())}]].</span> WorkBook<div class="upper-text position-absolute d-inline-block">©</div></div></div><div class="col-4 my-auto"><div><span class=workbook-title>2023년 9월 모의고사 고1</span></div><div class=text-center><span class=user-name>꾸까꾸</span></div></div><div class="col-4 text-end my-auto"><div class=passage-title-section><span class=passage-title></span></div></div></div></div><div id=print_footer><div class="padding-controller padding-bottom"></div><div><div class="row g-0"><div class="col-4 text-start mt-auto"></div><div class="col-4 mt-auto"><span class=page-num></span></div><div class="col-4 mt-auto text-end"><div class=footer-right-text-section><span class="d-block slogan">We are making all about sentences.</span> <span class="d-block web-addr">Designed by findsvoc.com</span></div></div></div></div></div><table style=width:100%><caption style=display:none><thead><tr><td><div class=header-space></div><tfoot><tr><td><div class=footer-space></div><tbody><tr><td class=print-padding-left><div class="padding-controller padding-left"></div><td><div id=results class=portrait></div><td class=print-padding-right><div class="padding-controller padding-right"></div></table><div class=watermark><img class=logo alt=logo src=/images/common/main_logo_only_fico.svg></div><div id=hiddenDivs style=display:none><div class="print-one-sentence row g-0"><div class="row g-0"><div class=svoc-section></div></div><div class="row g-0"><div class=sentence-number-section></div><div class=kor-word-section><div class=kor-section><span class=kor></span></div><div class=word-section><div class="left-curly-brace curly-brace"><div class="top-brace brace"></div><div class="bottom-brace brace"></div></div><div class="right-curly-brace curly-brace"><div class="top-brace brace"></div><div class="bottom-brace brace"></div></div></div></div></div></div><span class=one-word-unit-section><span class="title text-nowrap"></span> <span class=one-part-unit-section><span class="part d-inline" data-bs-toggle=tooltip></span> <span class=meaning></span></span></span></div>
