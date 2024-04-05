@@ -458,7 +458,7 @@
 						sel.setBaseAndExtent(focusNode, focusOffset, anchorNode, anchorOffset);							
 						
 						const selMatch = sel.toString().trim()
-						.match(/^[iI]t( is| was|'s| had been| has been|'s been|'ll be|'ll have been| will be| will have been| can be| could be| could have been| would be| would have been) .+\S$/);
+						.match(/^[iI]t( is| was|'s| had been| has been|'s been|'ll be|'ll have been| will be| will have been| can be| could be| could have been| would be| would have been)[ ,].+\S$/);
 						if(selMatch) {
 							
 							// 이전 상태 히스토리 저장
