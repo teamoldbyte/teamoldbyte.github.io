@@ -1373,7 +1373,7 @@
 		const workBookTitle = $('.workbook-title-section:eq(0)').text().trim();
 		const passageTitle = $('.passage-title-text:eq(0)').text().trim();
 		window._printModel = { workBookTitle, passageTitle, memberAlias, sentenceList };
-		window.open('/sample/workbook/print_passage.html');
+		window.open('/workbook/passage/print');
 
 	}); 
 
