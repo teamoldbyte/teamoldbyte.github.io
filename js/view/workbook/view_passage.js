@@ -1368,21 +1368,25 @@
 		})
 	})
 	
-	// [프린트 버튼 클릭]------------------------------------------------------
+	// [프린트 버튼 클릭]-------------------------------------------------------
 	$(".js-print-button").on('click', function(){
 		const workBookTitle = $('.workbook-title-section:eq(0)').text().trim();
 		const passageTitle = $('.passage-title-text:eq(0)').text().trim();
 		window._printModel = { workBookTitle, passageTitle, memberAlias, sentenceList };
 		window.open('/workbook/passage/print');
 
-	}); 
+	});
+	// [프린트 자격 미달 안내]--------------------------------------------------
+	$('.js-print-unavailable').on('click', function() {
+		alertModal("fico 스타일 페이지 서비스는 연간 회원십 회원들에게 제공되며, 워크북의 문장 분석, 해석, 그리고 단어 목록 파트를 출력할 수 있는 기능을 지원합니다. 보다 효율적인 학습을 위해 고안된 이 서비스를 통해 원하는 내용을 쉽게 습득하고 활용해보세요.")
+	})
 
-	// [그래프 영역 펼치고 접기]------------------------------------------------------
+	// [그래프 영역 펼치고 접기]------------------------------------------------
 	/* $(".token-tree-section .btn-area").click(function(){
 		$(this).closest(".token-tree-section").find(".result-token-tree").toggle();
 	}); */
 	
-	// [나의 해석 수정]------------------------------------------------------------
+	// [나의 해석 수정]---------------------------------------------------------
 	const $transEditor = $('#hiddenDivs .trans-editor');
 	$(document).on('click', '.js-edit-trans-open', function(){
 		$transEditor.hide();
