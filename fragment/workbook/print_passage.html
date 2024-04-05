@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+<title>출력용 화면</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://static.findsvoc.com/css/font.min.css">
+<link rel="stylesheet" href="https://static.findsvoc.com/css/app/demo.min.css">
+<link rel="stylesheet" href="https://static.findsvoc.com/css/app/tandem.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"
+	onerror="document.write('<script src=\'https://static.findsvoc.com/js/public/jquery-3.6.0.min.js\'></script>');this.remove();"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="https://static.findsvoc.com/js/util/encoding-util.min.js" defer></script>
+<script type="text/javascript" src="https://static.findsvoc.com/js/app/tandem.min.js" defer></script>
+<script th:inline="javascript">
+
+$(document).ready(async function(){
+	const $results = $('#results');
+	// 출력할 문장 목록은 부모창(지문 상세보기)으로부터 문장목록을 가져오거나 모델로 직접 받음
+	
+	const openerModel = opener?._printModel;
+	delete opener?._printModel;
+	
+	const sentenceList = openerModel?.sentenceList||[];
+	if(!sentenceList?.length) {
+		alert('인쇄 대상을 찾을 수 없습니다.');
+		window.close();
+	}
+
+	// 워크북 타이틀 적용
+	if(openerModel?.workBookTitle)
+		$(this).find('.workbook-title').text(openerModel.workBookTitle)
+		
+	// 지문 타이틀 적용
+	if(openerModel?.passageTitle)
+		$(this).find('.passage-title-section .passage-title').text(openerModel.passageTitle);
+		
+	// 작성자 적용
+	if(openerModel?.memberAlias)
+		$(this).find('.user-name').text(openerModel.memberAlias);
+	
+	// 이 페이지의 타이틀은 '지문 출력하기'
+	if(opener?.document?.title?.includes('지문 상세보기'))
+		document.title = opener?.document?.title?.replace('지문 상세보기', '지문 출력하기');
+	
+	
+	// 문장들을 순회하며 화면에 표시
+	sentenceList?.forEach(async (sentence, i) => {
+		const $printBlock = $('#hiddenDivs .print-one-sentence').clone();
+		
+		$results.append($printBlock);
+		// 문장 번호
+		//$printBlock.find('.sentence-number').text(i + 1);
+		
+		// 구문분석 표시(첫번째만)
+		if(sentence.svocList?.length > 0) {
+			const svocBlock = await tandem.showSemanticAnalysis(sentence.text, sentence.svocList[0].svocBytes, $printBlock.find('.svoc-section'));
+			const orderSpan = document.createElement('span');
+			orderSpan.className = 'pseudo-sentence-number';
+			svocBlock.prepend(orderSpan);
+		}
+		
+		
+		// 해석 표시(첫번째만)
+		if(sentence.korList?.length > 0) {
+			$printBlock.find('.kor-section .kor').text(sentence.korList[0].kor);
+		}
+		
+		// 단어 목록 표시
+		$printBlock.find('.word-section').append(Array.from(sentence.wordList, word => {
+			const $wordBlock = $('#hiddenDivs .one-word-unit-section').clone();
+			$wordBlock.find('.title').text(word.title);
+			$wordBlock.find('.one-part-unit-section').remove();
+			$wordBlock.append(Array.from(word.senseList, sense => {
+				const $partBlock = $('#hiddenDivs .one-part-unit-section').clone();
+				$partBlock.find('.part').text(sense.partType);
+				$partBlock.find('.meaning').text(sense.meaning);
+				return $partBlock;
+			}));
+			return $wordBlock;
+		}));
+	});
+
+	// 프린트 미리보기 실행 시 헤더,푸터의 조정된 크기 반영
+	$(window).on('beforeprint', function() {
+		$('.header-space').css('height', $('#print_header').css('height'))
+		$('.footer-space').css('height', $('#print_footer').css('height'))
+	});
+	
+	$('input[name="printOrientation"]').on('change', function() {
+		const orientation = this.value;
+		document.body.style.width = orientation == 'landscape' ? '297mm' : '210mm';
+		$('#printOrientation').html(`@page{size:${orientation};}`);
+		window.dispatchEvent(new Event('resize'));
+	})
+
+	// 여백 조정
+	$('.padding-controller').on('mousedown', function(e) {
+		const startX = e.clientX, startY = e.clientY;
+		const controller = this;
+		const div = this.parentElement;
+		const startWidth = parseInt(getComputedStyle(div).width,10);
+		const startHeight = parseInt(getComputedStyle(div).height,10);
+		
+		$(document).on('mousemove', moveController).on('mouseup', stopController);
+		
+		function moveController(e) {
+			switch(true) {
+				case controller.matches('.padding-left') : 
+					$(div).css('width',`${(startWidth + e.clientX - startX)}px`);
+					break;
+				case controller.matches('.padding-right') : 
+					$(div).css('width',`${(startWidth - e.clientX + startX)}px`);
+					break;
+				case controller.matches('.padding-top') : 
+					$(div).css('height',`${(startHeight + e.clientY - startY)}px`);
+					break;
+				case controller.matches('.padding-bottom') : 
+					$(div).css('height',`${(startHeight - e.clientY + startY)}px`);
+					break;
+			}
+		}
+		function stopController() {
+			$(document).off('mousemove', moveController).off('mouseup', stopController);
+			window.dispatchEvent(new Event('resize'));
+		}
+	})
+});
+
+</script>
+<style type="text/css">
+:root {
+	font-size: 12px;
+}
+
+body {
+	background: none;
+	font-size: 12px;
+	width: 297mm;
+	margin-left: auto;
+	margin-right: auto;
+}
+li {
+	font-family: '함초롬돋움', sans-serif;
+}
+.semantics-result{
+	margin-top: 1rem;
+	word-break: break-all;
+}
+#print_header, .header-space{
+	/* height: 100px; */
+	height: calc(1.5cm + 0.25cm);
+	padding-top: 0.125cm;
+	padding-bottom: 0.125cm;
+
+	/* height: 1.5cm; */
+}
+#print_header{
+	/* background-color: rgba(0,0,0,0.05); */
+
+	background: linear-gradient(90deg, rgb(235,235,235) 96%, rgba(88,81,116,0.2) 96%, rgba(88,81,116,0.2) 98%, rgba(235,235,235,1) 98%);
+}
+#print_footer, .footer-space {
+	height: calc(1cm + 0.2cm + 0.25cm);
+	padding-bottom: 0.25cm;
+}
+#results {
+	width: 100%;
+	margin: auto;
+    text-align: initial;
+}
+#print_header, #print_footer {
+	position: relative;
+	border: dashed 1px black;
+	/* 조정 불허 */
+	/* resize: vertical; */
+	overflow: hidden;
+	width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.print-padding-left, .print-padding-right {
+	/* width: 15mm; */
+	width: 0.5cm;
+	/* width: 0; */
+	position: relative;
+}
+.footer-right-text-section{
+	margin-left: auto;
+	border-top: solid 0.1cm rgba(88, 81, 116, 0.1);
+	padding: 0 0.25cm;
+	width: 6.5cm;
+}
+.footer-right-text-section .slogan{
+	opacity: 0.5;
+	color: #585174;
+	font-size: 12px;
+	font-family: 'RIDIBatang';
+}
+.footer-right-text-section .web-addr{
+	opacity: 0.5;
+	color: #585174;
+	font-size: 9px;
+	font-family: "LINESeedKR-Bd";
+	margin-top: -3px;
+}
+
+/* 워터마크 영역 */
+.watermark{
+	resize: vertical;
+	overflow: hidden;
+	width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+
+	/* display: block; */
+	position: fixed;
+	opacity: 0.1;
+	bottom: 0;
+	right: 0;
+
+	margin-bottom: 8px;
+}
+.watermark .logo{
+	bottom: -35px;
+	position: relative;
+}
+@media screen {
+	.header-space, .footer-space {
+		display: none;
+	}
+	.print-padding-left, .print-padding-right {
+		/* 조정 불허 */
+		border: dashed 1px black;
+		/* resize: horizontal; */
+		/* visibility: hidden; */
+	}
+	.print-padding-left::before, .print-padding-right::before {
+		position: absolute;
+		top: 2rem;
+		left: 0;
+	}
+	/* .print-padding-left::before {
+		content: '왼쪽 여백'
+	}
+	.print-padding-right::before {
+		content: '오른쪽 여백'
+	} */
+	.padding-controller {
+		background: repeating-linear-gradient(45deg, #0000, #0000 10px, #888 0, #888 20px);
+		position: absolute;
+	}
+	.padding-controller.padding-left {
+		width: 5px;
+		height: 100%;
+		top: 0;
+		right: 0;
+		/* cursor: col-resize; */
+	}
+	.padding-controller.padding-right {
+		width: 5px;
+		height: 100%;
+		top: 0;
+		left: 0;
+		/* cursor: col-resize; */
+	}
+	.padding-controller.padding-top {
+		/* 조정 불허 */
+		visibility: hidden;
+		width: 100%;
+		height: 5px;
+		bottom: 0;
+		left: 0;
+		cursor: row-resize;
+	}
+	.padding-controller.padding-bottom {
+		/* 조정 불허 */
+		visibility: hidden;
+		width: 100%;
+		height: 5px;
+		top: 0;
+		left: 0;
+		cursor: row-resize;
+	}
+}
+@media print {
+	html, body {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+		width: 100%;
+		margin: 0;
+	}
+	.no-print {
+		display: none;
+	}
+	#results {
+		width: 100%;
+	}
+	#print_header, #print_footer {
+		position: fixed;
+		width: 100%;
+		border:none;
+		resize:none;
+		left: 50%;
+		transform: translateX(-50%);
+		text-align: center;
+		
+	}
+	#print_header {
+		top: 0;
+	}
+	#print_footer {
+		bottom: 0;
+	}
+
+	@page {
+	/* margin box at top right showing page number */
+	@top-right  {
+			content: "Page " counter(pageNumber);
+		}
+	}
+
+
+	
+	/* 오른쪽 라인 */
+	/* #results::before{
+		content: '';
+		position: fixed;
+		right: 0.5cm;
+		top: 1.5cm;
+		width: 2px;
+		height: calc(100% - 3cm - 2cm);
+		background-color: #585174;
+	}
+	#results::after{
+		content: '';
+		position: fixed;
+		right: 0.5cm;
+		bottom: 1.5cm;
+		width: 2px;
+		height: 2cm;
+		background-color: #f9d37a;
+	} */
+
+	.watermark{
+		width: 6.5cm;
+		bottom: calc(1cm + 0.25cm);
+		right: 0.5cm;
+	}
+}
+
+
+	
+#print_header, #print_footer {
+
+	padding-left: 0.5cm;
+		padding-right: 0.5cm;
+}
+
+#print_header .title-text{
+	font-size: 13.5px;
+	font-family: Roboto,'Nunito Sans','Open Sans';
+	color: #303672;
+	margin-bottom: 1.5rem;
+}
+#print_header .title-text .years{
+	font-size: 16.5px;
+	font-weight: bolder;
+}
+.workbook-title, 
+.user-name,
+.passage-title{
+	font-family: 'Nanum Gothic';
+}
+.workbook-title{
+	font-size: 14px;
+	font-weight: bold;
+}
+.user-name{
+	font-size: 10px;
+	font-weight: bold;
+}
+/* 지문 제목 */
+.passage-title{
+	font-size: 10px;
+	text-decoration: underline;
+	text-decoration-color: #585174;
+	text-underline-offset :0.25rem;
+}
+/* 문장 번호 */
+.print-one-sentence .sentence-number-section{
+	width: 8mm;
+	text-align: center;
+	margin: auto;
+}
+.print-one-sentence .sentence-number-section .sentence-number{
+	font-size: 11px;
+	background-color: #5c68b6;
+    color: #fff;
+    display: block;
+    width: calc(100% - 2mm);
+	height: 6mm;
+	line-height: 6mm;
+    text-align: center;
+    margin-right: auto;
+    border-radius: 2mm;
+}
+/* TEST */
+.print-one-sentence {
+	counter-increment: sentenceOrder;
+}
+/* 문장 분석 영역 */
+.print-one-sentence .svoc-section {
+	margin-left: 8mm;
+	margin-bottom: 0.5cm;
+}
+.pseudo-sentence-number {
+	position: relative;
+}
+.pseudo-sentence-number::before {
+	content: counter(sentenceOrder);
+    position: absolute;
+    left: -7mm;
+    bottom: -1mm;
+    line-height: 6mm;
+    height: 6mm;
+    min-width: 6mm;
+    max-width: 8mm;
+    text-align: center;
+    font-size: 11px;
+    color: #fff;
+    background: #5c68b6;
+    border-radius: 2mm;
+}
+/* TEST */
+
+/* 한 문장 단위 */
+.print-one-sentence{
+	margin-bottom: 0.5cm;
+}
+/* 문장 정보 영역 */
+.print-one-sentence .svoc-section,
+.print-one-sentence .kor-word-section{
+	width: calc(100% - 8mm);
+}
+/* 폰트 설정 */
+.sentence-number,
+.kor,
+.word-section .meaning{
+	font-family: 'Nanum Gothic';
+}
+.semantics-result{
+	font-size: 13px;
+}
+.word-section .title,
+.word-section .part{
+	font-size: 11px;
+}
+.kor,
+.word-section .meaning{
+	font-size: 10px;
+}
+.kor-section .kor{
+	font-weight: bold;
+}
+/* 단어 단위 줄 바꿈 설정 */
+.one-word-unit-section{
+	word-break: break-all;
+    display: inline-block;
+}
+/* 단어 영역의 앞뒤 표시 */
+.word-section{
+	position:relative;
+	padding: 0 20px;
+}
+/* 단순 바 모양은 없앰 */
+/* .word-section::before{
+	content: '';
+	width: 0.05cm;
+	height: 100%;
+	background-color: #585174;
+	position: absolute;
+	top:0;
+	left: -0.125cm;
+}
+.word-section::after{
+	content: '';
+	width: 0.05cm;
+	height: 100%;
+	background-color: #585174;
+	position: absolute;
+	top:0;
+	right: -0.125cm;
+} */
+/* 괄호 모양 */
+
+.left-curly-brace
+{
+  width: 5px;
+  height: 85%;
+  position: absolute;
+  top:7.5%;
+	left: 4px;
+}
+.right-curly-brace
+{
+  width: 5px;
+  height: 85%;
+  position: absolute;
+  top:7.5%;
+	right: 4px;
+}
+
+
+.brace
+{
+  /* border-left: 2px solid; */
+  /* margin: 0 10%; */
+  width: 5px;
+  /* height: calc(50% - 5px);   */
+  height: 50%;  
+  /* float: left; */
+}
+
+.brace:before,
+.brace:after
+{
+  content: "";
+  width: 7px;
+  height: 25%;
+  position: absolute;
+  display: block;
+  opacity: 0.5;
+}
+/* 왼쪽 괄호 */ 
+.left-curly-brace .brace.top-brace:before
+{  
+  border-left: 3px solid #585174;  
+  border-top-left-radius: 10px;
+  margin-left: -1px;
+  top: 0;
+}
+.left-curly-brace .brace.top-brace:after
+{
+	border-right: 3px solid #585174;
+  border-bottom-right-radius: 10px;
+  margin-left: -5px;
+  /* top: calc(50% - 10px); */
+  bottom: 50%;
+  
+}
+.left-curly-brace .brace.bottom-brace:before
+{
+	border-right: 3px solid #585174;
+  border-top-right-radius: 10px;
+  margin-left: -5px;
+  /* bottom: calc(50% - 10px); */
+  top: 50%;
+}
+.left-curly-brace .brace.bottom-brace:after
+{
+  border-left: 3px solid #585174;
+  border-bottom-left-radius: 10px;
+  margin-left: -1px;
+  margin-bottom: 0;
+  bottom: 0;
+}
+/* 오른쪽 괄호 */
+.right-curly-brace .brace.top-brace:before
+{  
+  border-right: 3px solid #585174;  
+  border-top-right-radius: 10px;
+  margin-left: -5px;
+  top: 0;
+}
+.right-curly-brace .brace.top-brace:after
+{
+	border-left: 3px solid #585174;
+  border-bottom-left-radius: 10px;
+  margin-left: -1px;
+  /* top: calc(50% - 10px); */
+  bottom: 50%;
+  
+}
+.right-curly-brace .brace.bottom-brace:before
+{
+	border-left: 3px solid #585174;
+  border-top-left-radius: 10px;
+  margin-left: -1px;
+  /* bottom: calc(50% - 10px); */
+  top: 50%;
+}
+.right-curly-brace .brace.bottom-brace:after
+{
+  border-right: 3px solid #585174;
+  border-bottom-right-radius: 10px;
+  margin-left: -5px;
+  margin-bottom: 0;
+  bottom: 0;
+}
+
+/* 프린트에 맞도록 색상 조정 */
+.word-section .meaning{
+	color: #000;
+}
+.word-section .part{
+	color: #00686a;
+}
+/* 구문분석 스타일 설정 */
+/* rc 하단 라인 */
+.sem.inner{
+	/* --dotted-border-svg: url(https://static.findsvoc.com/images/app/tandem/dotted_border_bottom.svg); */
+	border-bottom: solid 1px;
+	border-left: none;
+	border-right: none;
+	padding-bottom: 0.125rem;
+	border-image: none;
+	border-image-width: 0;
+}
+/* rc 표시 */
+.sem.inner[data-rc]::before{
+	top: 1.5rem;
+}
+/* r코멘트 모바일 타입 스타일 */
+.sem[data-rc].inner::before, .sem[data-rc].outer::before{
+	position: absolute;
+	border: solid 0;
+	padding: 3px;
+	text-align: center!important;
+	line-height: .75rem;
+	/* font-size: .6rem!important;
+	font-weight: bold; */
+	font-style: normal;
+	color: #fff!important;
+	border-radius: 1rem;
+	word-break: keep-all;
+	overflow: hidden;
+	min-width: 1.25rem!important;
+	max-width: fit-content;
+	font-family: 'Open Sans';
+	font-weight: 900;
+	font-size: 0.65rem!important;
+}
+/* 주어부 rcomment 배경색 */
+.sem.s[data-rc]::before {background: #0340dd;}
+/* 의미상주어부 rcomment 배경색 */
+.sem.ss[data-rc]::before {background: #0340dd;}
+/* 목적어부 rcomment 배경색 */
+.sem.o[data-rc]::before {background: #006379;}
+/* 전치사 목적어, 부정사 목적어, 동명사 목적어, 분사 목적어부 rcomment 배경색 */
+.sem.po[data-rc]::before,
+.sem.to[data-rc]::before,
+.sem.go[data-rc]::before,
+.sem.ptco[data-rc]::before {background: #006379;}
+/* 보어부,부사정 보충어부 rcomment 배경색 */
+.sem.c[data-rc]::before,.sem.a[data-rc]::before {background: #283593;}
+/* 동사부 rcomment 배경색 */
+.sem.v[data-rc]::before {background: #A91461;}
+/* 목적보어부 rcomment 배경색 */
+.sem.oc[data-rc]::before {background: #8080c0;}
+/* 수식어부, 동격 rcomment 배경색 */
+.sem.m[data-rc]::before,
+.sem.appo[data-rc]::before {background: #0080ff;}
+</style>
+</head>
+<body style="overflow: scroll;text-align: center;width:297mm">
+	<!-- 로딩 애니메이션 id=loadingModal -->
+	<div th:replace="~{/incl/loading_modal::modal}" style="display: block;"></div>
+	<div class="no-print">
+		<h1>인쇄 조정 화면</h1>
+		<button type="button" onclick="print()">🖨인쇄</button>
+		<label>인쇄 방향:</label>
+		<label><input type="radio" name="printOrientation" value="landscape" checked>가로</label>		
+		<label><input type="radio" name="printOrientation" value="portrait">세로</label>		
+		<hr>
+		<!-- <span style="color:darkred">※아래 크기는 가로길이 297mm입니다.</span> -->
+		<span style="color:darkred">※ 출력 환경은 크롬 브라우저 가로 방향 출력에 최적화되어 있습니다.</span>
+	</div>
+	<!-- 헤더 -->
+	<div id="print_header" class="row g-0">
+		<div class="padding-controller padding-top">
+			
+		</div><!-- padding-controller padding-top -->
+		<!-- -->
+		<div class="row g-0">
+			<!-- 왼쪽 로고 영역 --> 
+			<div class="col-4 row g-0 my-auto">
+				<div class="col-3">
+					<img class="logo" alt="logo" src="https://static.findsvoc.com/images/logo/main_logo.svg">
+				</div>
+				<div class="col-12 title-text text-start mb-0">
+					<span class="years">[[${#dates.year(#dates.createToday())}]].</span> WorkBook<div class="upper-text position-absolute d-inline-block">©</div>
+				</div>
+			</div>
+			<!-- 워크북 타이틀 영역 -->
+			<div class="col-4 my-auto">
+				<div>
+					<span class="workbook-title">2023년 9월 모의고사 고1</span>
+				</div>
+				<div class="text-center">
+					<span class="user-name">꾸까꾸</span>
+				</div>
+			</div>
+			<!-- 오른쪽 회원 별명/학원명 영역 -->
+			<div class="col-4 text-end my-auto">
+				<!-- 지문 타이틀 영역 -->
+				<div class="passage-title-section">
+					<span class="passage-title"></span>
+				</div>
+			</div>
+		</div>
+	</div><!-- end of #print_header -->
+	
+	<!-- 푸터 -->
+	<div id="print_footer">
+		<div class="padding-controller padding-bottom">
+			
+		</div><!-- padding-controller padding-bottom -->
+		<!-- -->
+		<div>
+			<!-- -->
+			<div class="row g-0">
+				<!-- -->
+				<div class="col-4 text-start mt-auto">
+					
+				</div>
+				<!-- 페이지 번호 -->
+				<div class="col-4 mt-auto">
+					<span class="page-num"></span>
+				</div>
+				<!-- 로고 -->
+				<div class="col-4 mt-auto text-end">
+					<!-- <div class="col-3 ms-auto">
+						<img class="logo" alt="logo" src="https://static.findsvoc.com/images/logo/main_logo.svg">
+					</div> -->
+					<div class="footer-right-text-section">
+						<span class="d-block slogan">We are making all about sentences.</span>
+						<span class="d-block web-addr">Designed by findsvoc.com</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div><!-- end of #print_footer -->
+	
+	<!-- 본문 -->
+	<table style="width: 100%;">
+		<caption style="display: none;"></caption>
+		<thead>
+			<tr>
+				<td>
+					<div class="header-space"></div>
+				</td>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<td>
+					<div class="footer-space"></div>
+				</td>
+			</tr>
+		</tfoot>
+		<tbody>
+			<tr>
+				<!-- 왼쪽 여백 -->
+				<td class="print-padding-left">
+					<div class="padding-controller padding-left"></div>
+				</td>
+				<!-- end of 왼쪽 여백 -->
+				<!-- 본문 내용 -->
+				<td>
+					<!-- 테스트용 -->
+					 
+					<div id="results" class="portrait">
+					</div> 
+				
+				</td>
+				<!-- 오른쪽 여백 -->
+				<td class="print-padding-right">
+					<div class="padding-controller padding-right"></div>
+				</td>
+				<!-- end of 오른쪽 여백 -->
+			</tr>
+		</tbody>
+	</table>
+	<!-- end of 본문 테이블 -->
+
+	<!-- 워터마크 -->
+	<div class="watermark">
+		<!-- <img class="logo" alt="logo" src="https://static.findsvoc.com/images/logo/main_logo.svg"> -->
+		<img class="logo" alt="logo" src="/images/common/main_logo_only_fico.svg">
+	</div>
+
+
+<div id="hiddenDivs" style="display:none;">
+	<!-- 한 문장 단위 -->
+	<div class="print-one-sentence row g-0">
+		<div class="row g-0">
+			<!-- 문장 번호 영역 -->
+			<!--<div class="sentence-number-section">
+				<span class="sentence-number"></span>
+			</div>-->
+			<!-- 구문분석 영역 -->
+			<div class="svoc-section">
+			</div>
+		</div>
+		
+		<!-- -->
+		<div class="row g-0">
+			<div class="sentence-number-section">
+			</div>
+			
+			<div class="kor-word-section">
+				<!-- 해석 영역 -->
+				<div class="kor-section">
+					<span class="kor">
+					</span>
+				</div>
+				<!-- 단어 영역 -->
+				<div class="word-section">
+					<div class="left-curly-brace curly-brace">
+						<div class="top-brace brace"></div>
+						<div class="bottom-brace brace"></div>
+					</div>
+
+
+					<div class="right-curly-brace curly-brace">
+						<div class="top-brace brace"></div>
+						<div class="bottom-brace brace"></div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>	
+	<span class="one-word-unit-section">
+		<span class="title text-nowrap"></span>
+		<span class="one-part-unit-section">
+			<span class="part d-inline" data-bs-toggle="tooltip"></span>
+			<span class="meaning"></span>
+		</span>
+	</span>	
+</div>
+</body>
+</html>
