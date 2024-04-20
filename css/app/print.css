@@ -1,0 +1,760 @@
+
+/**********************************************************
+ *			common
+ **********************************************************/
+ :root {
+	font-size: 12px;
+}
+
+body {
+	background: none;
+	font-size: 12px;
+	width: 297mm;
+	margin-left: auto;
+	margin-right: auto;
+}
+li {
+	font-family: '함초롬돋움', sans-serif;
+}
+#print_header, .header-space{
+	/* height: 100px; */
+	height: calc(1.5cm + 0.25cm);
+	padding-top: 0.125cm;
+	padding-bottom: 0.125cm;
+
+	/* height: 1.5cm; */
+}
+#print_header{
+	background-color: rgba(235,235,235);
+
+	/* background: linear-gradient(90deg, rgb(235,235,235) 96%, rgba(88,81,116,0.2) 96%, rgba(88,81,116,0.2) 98%, rgba(235,235,235,1) 98%); */
+}
+#print_footer, .footer-space {
+	height: calc(1cm + 0.2cm + 0.25cm);
+	padding-bottom: 0.25cm;
+}
+#results {
+	width: 100%;
+	margin: auto;
+    text-align: initial;
+}
+#print_header, #print_footer {
+	position: relative;
+	border: dashed 1px black;
+	/* 조정 불허 */
+	/* resize: vertical; */
+	overflow: hidden;
+	width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.print-padding-left, .print-padding-right {
+	/* width: 15mm; */
+	width: 0.5cm;
+	/* width: 0; */
+	position: relative;
+}
+.footer-right-text-section{
+	margin-left: auto;
+	border-top: solid 0.1cm rgba(88, 81, 116, 0.1);
+	padding: 0 0.25cm;
+	width: 6.5cm;
+}
+.footer-right-text-section .slogan{
+	opacity: 0.5;
+	color: #585174;
+	font-size: 12px;
+	font-family: 'RIDIBatang';
+}
+.footer-right-text-section .web-addr{
+	opacity: 0.5;
+	color: #585174;
+	font-size: 9px;
+	font-family: "LINESeedKR-Bd";
+	margin-top: -3px;
+}
+
+/* 워터마크 영역 */
+.watermark{
+	resize: vertical;
+	overflow: hidden;
+	width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+
+	/* display: block; */
+	position: fixed;
+	opacity: 0.1;
+	bottom: 0;
+	right: 0;
+
+	margin-bottom: 8px;
+}
+.watermark .logo{
+	bottom: -35px;
+	position: relative;
+}
+@media screen {
+	.header-space, .footer-space {
+		display: none;
+	}
+	.print-padding-left, .print-padding-right {
+		/* 조정 불허 */
+		border: dashed 1px black;
+		/* resize: horizontal; */
+		/* visibility: hidden; */
+	}
+	.print-padding-left::before, .print-padding-right::before {
+		position: absolute;
+		top: 2rem;
+		left: 0;
+	}
+	/* .print-padding-left::before {
+		content: '왼쪽 여백'
+	}
+	.print-padding-right::before {
+		content: '오른쪽 여백'
+	} */
+	.padding-controller {
+		background: repeating-linear-gradient(45deg, #0000, #0000 10px, #888 0, #888 20px);
+		position: absolute;
+	}
+	.padding-controller.padding-left {
+		width: 5px;
+		height: 100%;
+		top: 0;
+		right: 0;
+		/* cursor: col-resize; */
+	}
+	.padding-controller.padding-right {
+		width: 5px;
+		height: 100%;
+		top: 0;
+		left: 0;
+		/* cursor: col-resize; */
+	}
+	.padding-controller.padding-top {
+		/* 조정 불허 */
+		visibility: hidden;
+		width: 100%;
+		height: 5px;
+		bottom: 0;
+		left: 0;
+		cursor: row-resize;
+	}
+	.padding-controller.padding-bottom {
+		/* 조정 불허 */
+		visibility: hidden;
+		width: 100%;
+		height: 5px;
+		top: 0;
+		left: 0;
+		cursor: row-resize;
+	}
+}
+@media print {
+	html, body {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+		width: 100%;
+		margin: 0;
+	}
+	.no-print {
+		display: none;
+	}
+	#results {
+		width: 100%;
+	}
+	#print_header, #print_footer {
+		position: fixed;
+		width: 100%;
+		border:none;
+		resize:none;
+		left: 50%;
+		transform: translateX(-50%);
+		text-align: center;
+		
+	}
+	#print_header {
+		top: 0;
+	}
+	#print_footer {
+		bottom: 0;
+	}
+
+	@page {
+	/* margin box at top right showing page number */
+	@top-right  {
+			content: "Page " counter(pageNumber);
+		}
+	}
+
+
+	
+	/* 오른쪽 라인 */
+	/* #results::before{
+		content: '';
+		position: fixed;
+		right: 0.5cm;
+		top: 1.5cm;
+		width: 2px;
+		height: calc(100% - 3cm - 2cm);
+		background-color: #585174;
+	}
+	#results::after{
+		content: '';
+		position: fixed;
+		right: 0.5cm;
+		bottom: 1.5cm;
+		width: 2px;
+		height: 2cm;
+		background-color: #f9d37a;
+	} */
+
+	.watermark{
+		width: 6.5cm;
+		bottom: calc(1cm + 0.25cm);
+		right: 0.5cm;
+	}
+}
+
+
+	
+#print_header, #print_footer {
+
+	padding-left: 0.5cm;
+		padding-right: 0.5cm;
+}
+
+#print_header .app-domain-text{
+	font-size: 13.5px;
+	font-family: Roboto,'Nunito Sans','Open Sans';
+	color: #303672;
+	margin-bottom: 1.5rem;
+}
+#print_header .app-domain-text .years{
+	font-size: 16.5px;
+	font-weight: bolder;
+}
+.pseudo-sentence-number {
+	position: relative;
+}
+
+
+
+
+/* 단어 표시 관련 */
+/* 단어 목록의 아이콘 */
+.word-section .material-icons{
+    color: #666;
+}
+.word-section .one-word-unit-section{
+	padding-right: 15px;
+}
+.word-section .title{
+	font-family: "Apple SD Gothic Neo","Segoe UI";
+    color: #30386e;
+    font-weight: 600;
+    font-size:15px;
+	padding-right: 3px;
+	padding-left: 15px;
+}
+.word-section .title:first-child{
+	padding-left: 0px;
+}
+.word-section .part{
+	font-family: "Apple SD Gothic Neo","Segoe UI";
+    color: #019c9e;
+    font-size: 13px;
+	vertical-align: baseline;
+	display: contents;
+	width: 100%;
+	text-align: center;
+}
+.word-section .meaning{
+    font-size: 0.9rem;
+	word-break: keep-all;
+	color: #636363;
+	font-family: 'HCRDotum';
+}
+.word-section .one-part-unit-section:first-child .part{
+	margin-left: 0px;
+}
+
+
+
+/* 로고 영역 */
+.logo-section{
+	position: absolute;
+	width: 60%;
+	border: 1px dashed;
+	height: -webkit-max-content;
+	height: max-content;
+	top: 50%;
+	/* opacity: 0.5; */
+	transform: translateY(-50%);
+	right: 0;
+}
+.logo-preview-area{
+	text-align: center;
+	min-height: 1.25cm;
+	position: relative;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+.logo-preview-area .add-btn{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+@media print {
+	.logo-section{
+		border: none;
+	}
+	.logo-preview-area .add-btn{
+		display: none;
+	}
+}
+
+/**********************************************************
+ *			print_passage.html
+ **********************************************************/ 
+.workbook-title, 
+.user-name,
+.passage-title{
+	font-family: 'Nanum Gothic';
+}
+.workbook-title{
+	font-size: 14px;
+	font-weight: bold;
+}
+.user-name{
+	font-size: 10px;
+	font-weight: bold;
+}
+/* 지문 제목 */
+.passage-title{
+	font-size: 10px;
+	text-decoration: underline;
+	text-decoration-color: #585174;
+	text-underline-offset :0.25rem;
+}
+/* 문장 번호 */
+.print-one-sentence .sentence-number-section{
+	width: 8mm;
+	text-align: center;
+	margin: auto;
+}
+.print-one-sentence .sentence-number-section .sentence-number{
+	font-size: 11px;
+	background-color: #5c68b6;
+    color: #fff;
+    display: block;
+    width: calc(100% - 2mm);
+	height: 6mm;
+	line-height: 6mm;
+    text-align: center;
+    margin-right: auto;
+    border-radius: 2mm;
+}
+/* TEST */
+.print-one-sentence {
+	counter-increment: sentenceOrder;
+}
+
+
+
+/* 문장 분석 영역 */
+.print-one-sentence .svoc-section {
+	margin-left: 8mm;
+	margin-bottom: 0.5cm;
+}
+.passage-print-page .pseudo-sentence-number {
+	position: relative;
+}
+.passage-print-page .pseudo-sentence-number::before {
+	content: counter(sentenceOrder);
+    position: absolute;
+    left: -7mm;
+    bottom: -1mm;
+    line-height: 6mm;
+    height: 6mm;
+    min-width: 6mm;
+    max-width: 8mm;
+    text-align: center;
+    font-size: 11px;
+    color: #fff;
+    background: #5c68b6;
+    border-radius: 2mm;
+}
+/* TEST */
+
+/* 한 문장 단위 */
+.print-one-sentence{
+	margin-bottom: 0.5cm;
+}
+/* 문장 정보 영역 */
+.print-one-sentence .svoc-section,
+.print-one-sentence .kor-word-section{
+	width: calc(100% - 8mm);
+}
+/* 폰트 설정 */
+.passage-print-page .sentence-number,
+.passage-print-page .kor,
+.passage-print-page .word-section .meaning{
+	font-family: 'Nanum Gothic';
+}
+.semantics-result{
+	font-size: 13px;
+}
+.word-section .title,
+.word-section .part{
+	font-size: 11px;
+}
+.passage-print-page .kor,
+.passage-print-page .word-section .meaning{
+	font-size: 10px;
+}
+.kor-section .kor{
+	font-weight: bold;
+}
+/* 단어 단위 줄 바꿈 설정 */
+.one-word-unit-section{
+	word-break: break-all;
+    display: inline-block;
+}
+/* 단어 영역의 앞뒤 표시 */
+.word-section{
+	position:relative;
+	padding: 0 20px;
+}
+/* 단순 바 모양은 없앰 */
+/* .word-section::before{
+	content: '';
+	width: 0.05cm;
+	height: 100%;
+	background-color: #585174;
+	position: absolute;
+	top:0;
+	left: -0.125cm;
+}
+.word-section::after{
+	content: '';
+	width: 0.05cm;
+	height: 100%;
+	background-color: #585174;
+	position: absolute;
+	top:0;
+	right: -0.125cm;
+} */
+/* 괄호 모양 */
+
+.left-curly-brace
+{
+  width: 5px;
+  height: 85%;
+  position: absolute;
+  top:7.5%;
+	left: 4px;
+}
+.right-curly-brace
+{
+  width: 5px;
+  height: 85%;
+  position: absolute;
+  top:7.5%;
+	right: 4px;
+}
+
+
+.brace
+{
+  /* border-left: 2px solid; */
+  /* margin: 0 10%; */
+  width: 5px;
+  /* height: calc(50% - 5px);   */
+  height: 50%;  
+  /* float: left; */
+}
+
+.brace:before,
+.brace:after
+{
+  content: "";
+  width: 7px;
+  height: 25%;
+  position: absolute;
+  display: block;
+  opacity: 0.5;
+}
+/* 왼쪽 괄호 */ 
+.left-curly-brace .brace.top-brace:before
+{  
+  border-left: 3px solid #585174;  
+  border-top-left-radius: 10px;
+  margin-left: -1px;
+  top: 0;
+}
+.left-curly-brace .brace.top-brace:after
+{
+	border-right: 3px solid #585174;
+  border-bottom-right-radius: 10px;
+  margin-left: -5px;
+  /* top: calc(50% - 10px); */
+  bottom: 50%;
+  
+}
+.left-curly-brace .brace.bottom-brace:before
+{
+	border-right: 3px solid #585174;
+  border-top-right-radius: 10px;
+  margin-left: -5px;
+  /* bottom: calc(50% - 10px); */
+  top: 50%;
+}
+.left-curly-brace .brace.bottom-brace:after
+{
+  border-left: 3px solid #585174;
+  border-bottom-left-radius: 10px;
+  margin-left: -1px;
+  margin-bottom: 0;
+  bottom: 0;
+}
+/* 오른쪽 괄호 */
+.right-curly-brace .brace.top-brace:before
+{  
+  border-right: 3px solid #585174;  
+  border-top-right-radius: 10px;
+  margin-left: -5px;
+  top: 0;
+}
+.right-curly-brace .brace.top-brace:after
+{
+	border-left: 3px solid #585174;
+  border-bottom-left-radius: 10px;
+  margin-left: -1px;
+  /* top: calc(50% - 10px); */
+  bottom: 50%;
+  
+}
+.right-curly-brace .brace.bottom-brace:before
+{
+	border-left: 3px solid #585174;
+  border-top-left-radius: 10px;
+  margin-left: -1px;
+  /* bottom: calc(50% - 10px); */
+  top: 50%;
+}
+.right-curly-brace .brace.bottom-brace:after
+{
+  border-right: 3px solid #585174;
+  border-bottom-right-radius: 10px;
+  margin-left: -5px;
+  margin-bottom: 0;
+  bottom: 0;
+}
+
+/* 프린트에 맞도록 색상 조정 */
+.word-section .meaning{
+	color: #000;
+}
+.word-section .part{
+	color: #00686a;
+}
+/* 구문분석 스타일 설정 */
+/* rc 하단 라인 */
+.sem.inner{
+	/* --dotted-border-svg: url(https://static.findsvoc.com/images/app/tandem/dotted_border_bottom.svg); */
+	border-bottom: solid 1px;
+	border-left: none;
+	border-right: none;
+	padding-bottom: 0.125rem;
+	border-image: none;
+	border-image-width: 0;
+}
+/* rc 표시 */
+.sem.inner[data-rc]::before{
+	top: 1.5rem;
+}
+/* r코멘트 모바일 타입 스타일 */
+.sem[data-rc].inner::before, .sem[data-rc].outer::before{
+	position: absolute;
+	border: solid 0;
+	padding: 3px;
+	text-align: center!important;
+	line-height: .75rem;
+	/* font-size: .6rem!important;
+	font-weight: bold; */
+	font-style: normal;
+	color: #fff!important;
+	border-radius: 1rem;
+	word-break: keep-all;
+	overflow: hidden;
+	min-width: 1.25rem!important;
+	max-width: fit-content;
+	font-family: 'Open Sans';
+	font-weight: 900;
+	font-size: 0.65rem!important;
+}
+/* 주어부 rcomment 배경색 */
+.sem.s[data-rc]::before {background: #0340dd;}
+/* 의미상주어부 rcomment 배경색 */
+.sem.ss[data-rc]::before {background: #0340dd;}
+/* 목적어부 rcomment 배경색 */
+.sem.o[data-rc]::before {background: #006379;}
+/* 전치사 목적어, 부정사 목적어, 동명사 목적어, 분사 목적어부 rcomment 배경색 */
+.sem.po[data-rc]::before,
+.sem.to[data-rc]::before,
+.sem.go[data-rc]::before,
+.sem.ptco[data-rc]::before {background: #006379;}
+/* 보어부,부사정 보충어부 rcomment 배경색 */
+.sem.c[data-rc]::before,.sem.a[data-rc]::before {background: #283593;}
+/* 동사부 rcomment 배경색 */
+.sem.v[data-rc]::before {background: #A91461;}
+/* 목적보어부 rcomment 배경색 */
+.sem.oc[data-rc]::before {background: #8080c0;}
+/* 수식어부, 동격 rcomment 배경색 */
+.sem.m[data-rc]::before,
+.sem.appo[data-rc]::before {background: #0080ff;}
+
+
+
+/**********************************************************
+ *			print_battles.html
+ **********************************************************/
+ .battle-container {
+	counter-increment: battleOrder;
+	margin-left: 8mm;
+	margin-bottom: 0.5cm;
+	margin-top: 0.25cm;
+	/* font-family: 'Corbel', 'Nanum Gothic', sans-serif; */
+	font-family: 'Rubik', 'HCRDotum', sans-serif;
+	font-size: 10px;
+}
+.battle-print-page .pseudo-sentence-number::before {
+	content: counter(battleOrder);
+	position: absolute;
+	left: -7mm;
+	top: 0;
+	line-height: 5.5mm;
+	height: 5.5mm;
+	min-width: 5.5mm;
+	max-width: 8mm;
+	text-align: center;
+	font-size: 10px;
+	color: #fff;
+	background: #5c68b6;
+	border-radius: 2mm;
+}
+/* 오른쪽 상단, 학생의 이름/점수 기입란 */
+.battle-print-page .student-name-score-section{
+	padding-right: 2.5cm;
+}
+
+/* 질문 영역 텍스트 */
+.battle-print-page .ask{
+	margin-bottom: 0.2cm;
+	margin-top: 0.1cm;
+	font-family: "Noto Sans KR", sans-serif;
+}
+/* .battle-print-page .sentence{
+	font-family: 'Corbel', 'Nanum Gothic', sans-serif;
+	font-size: 13px;
+} */
+
+/* 밑줄 표시 */
+.battle-print-page .blank{
+	text-decoration: underline;
+	font-size: 20px;
+	margin-right: 0.125rem;
+	white-space: break-spaces;
+	text-decoration-thickness: 1px;
+}
+.battle-print-page .battle-6-block .blank{
+	font-size: 10px;
+	color: gray;
+	text-decoration: none;
+	padding-right: 0.5cm;
+	position: relative;
+}
+.battle-print-page .battle-6-block .blank::before{
+	position:absolute;
+	content: '';
+	border: 0.5px solid black;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+}
+
+/* 보기 영역 */
+.battle-print-page .example-btn-section{
+	margin: 0.1cm 0;
+}
+/* 빈칸 영역 */
+.battle-print-page .answer-blank{
+	padding-top: 0.25cm;
+	display: inline-block;
+}
+/* 배틀 4타입 일때 밑줄 부분 하단 공백 띄우기 */
+.battle-print-page .battle-4-block .sentence .text-decoration-underline,
+.battle-print-page .battle-5-block .answer-blank,
+.battle-print-page .battle-7-block .text-decoration-underline{
+	text-underline-offset: 0.75mm;
+}
+
+
+/**********************************************************
+ *			print_battle_commentaries.html
+ **********************************************************/
+.battle-commentaries-print-page .title-text{
+	font-size: 12px;
+	font-weight: bold;
+} 
+ .battle-commentaries-print-page .numbering{
+	line-height: 5.5mm;
+	height: 5.5mm;
+	min-width: 5.5mm;
+	max-width: 8mm;
+	text-align: center;
+	font-size: 10px;
+	color: #fff;
+	background: #5c68b6;
+	border-radius: 2mm;
+	display: inline-block;
+
+}
+/* 정답 영역 구분 */
+.battle-commentaries-print-page #briefAnswers{
+	border-bottom: 0.5px solid #ddd;
+	padding-bottom: 0.1cm;
+	margin-bottom: 0.25cm;
+	line-height: 3em;
+	font-family: 'Rubik', 'HCRDotum', sans-serif;
+	font-size: 10px;
+}
+/* 정답 목록 영역 번호 표시 */
+.battle-commentaries-print-page .brief-container{
+	margin-right: 0.125cm;
+}
+.battle-commentaries-print-page .brief-container .numbering{
+	margin-right: 0.05cm;
+}
+.battle-commentaries-print-page .brief-container:first-child .numbering{
+	margin-left: 0;
+}
+
+/**/
+.battle-commentaries-print-page .explain-container{
+	display: flex;
+	margin-bottom: 0.25cm;
+}
+.battle-commentaries-print-page .explain-container .explain-section{
+	display: inline-block;
+	margin-left: 0.1cm;
+}
+/* 단어 표시 영역 */
+.battle-commentaries-print-page .word-section{
+	padding: 0;
+}
