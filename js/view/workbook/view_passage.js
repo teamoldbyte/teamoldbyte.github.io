@@ -1383,34 +1383,37 @@
 	$(".js-print-button").on('click', function(){
 		const workBookTitle = $('.workbook-title-section:eq(0)').text().trim();
 		const passageTitle = $('.passage-title-text:eq(0)').text().trim();
-		// 지문 노트를 로드한 적이 없으면 로드 후 프린트 시도
-		// 지문 노트가 없는 것([]) ≠ 지문 노트를 로드한 적 없는 것(null)
-		if(!passageNoteList) {
-			$.getJSON(`/workbook/passage/note/list/${workbookId}/${passageId}/${memberId}`)
-			.then(notes => {
-				passageNoteList = notes;
-				tryOpenPrint(); 
-			})
-		}
-		// 모든 문장에 대해 문장 노트를 로드했으면 바로 프린트 시도
-		if(Object.keys(sentenceNoteList).length == sentenceListLen) {
-			tryOpenPrint();
-		}
-		// 문장 노트를 펼쳐보지 않은 문장이 있다면 문자 노트를 로드 후 다시 프린트 시도
-		else {
-			Promise.all(Array.from(sentenceList.filter((sentence) => !sentenceNoteList[sentence.sentenceId]), sentence => {
-				return new Promise((resolve, reject) => {
-					$.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentence.sentenceId}/${memberId}`)
+		Promise.all([
+			new Promise((resolve, reject) => {
+				if(passageNoteList)
+					resolve();
+				else
+					$.getJSON(`/workbook/passage/note/list/${workbookId}/${passageId}/${memberId}`)
 					.then(notes => {
-						sentenceNoteList[sentence.sentenceId] = notes;
+						passageNoteList = notes;
 						resolve();
 					}).fail(reject);
-				});
-			}))
-			.then(() => {
-				tryOpenPrint();
-			});
-		}
+			}),
+			new Promise((resolve, reject) => {
+				if(Object.keys(sentenceNoteList).length == sentenceListLen)
+					resolve();
+				else
+					Promise.all(sentenceList.filter((sentence) => !sentenceNoteList[sentence.sentenceId]).map( sentence => {
+						return $.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentence.sentenceId}/${memberId}`)
+						.then(notes => {
+							sentenceNoteList[sentence.sentenceId] = notes;
+							return notes;
+						});
+					})).then(() => {
+						resolve();
+					}, () => {
+						console.error('무언가 에러');
+						reject();
+					});
+			})
+		])
+		.then(tryOpenPrint)
+		.catch(() => alertModal('출력 화면을 로드하는 데 실패했습니다.'));
 		
 		function tryOpenPrint() {
 			if(passageNoteList != null && Object.keys(sentenceNoteList).length == sentenceListLen) {
