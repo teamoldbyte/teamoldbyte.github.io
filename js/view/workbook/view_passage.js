@@ -16,6 +16,11 @@
 		'n.':'명사', 'v.':'동사','vt.':'타동사','vi.':'자동사','a.':'형용사','ad.':'부사','prep.':'전치사','conj.':'접속사','int.':'감탄사', 'abbr.': '약어', 'pron.': '대명사', 'det.': '한정사',
 		'NP.' : '명사구', 'phrasal-v.': '구동사', 'VP.' : '동사구', 'PP.': '전치사구', 'ADP.': '부사구', 'AJP.': '형용사구', 'IP.': '관용어', 'CP.': '연어'
 	}
+	
+	// 지문노트,문장노트 캐시 (프린트화면 데이터 전달용)
+	let passageNoteList; // List<노트>
+	const sentenceNoteList = {}; // Map<sentenceId, 노트>
+	
 /*
 
 <!-- 분석 평가 모달 영역 -->
@@ -346,8 +351,9 @@
 		function listNotes(notes){
 			const $noteList = $noteSection.find('.note-list').empty();
 			if(notes.length > 0) {
+				passageNoteList = notes;
 				$noteList.siblings('.empty-list').hide();
-			}
+			}else passageNoteList = [];
 			for(let i = 0, notesLen = notes.length; i < notesLen; i++) {
 				const note = notes[i];
 							   //------------------
@@ -385,6 +391,8 @@
 		//--------------------------------------------------------------------
 		
 		function appendNote(note) {
+			if(passageNoteList) passageNoteList.push(note);
+			else passageNoteList = [note];
 			note['memberInfo'] = {memberId, alias: memberAlias};
 			const $noteList = $addSection.closest('.note-section').find('.note-list').show();
 			$noteList.each((_,el) => {
@@ -891,8 +899,9 @@
 		function listNotes(notes){
 			// 노트가 있으면 목록 표시
 			if(notes.length > 0 ) {
+				sentenceNoteList[sentenceId] = notes;
 				$noteSection.find('.empty-list').hide();
-			}
+			}else sentenceNoteList[sentenceId] = [];
 			const $noteList = $noteSection.find('.note-list').empty();
 			for(let i = 0, notesLen = notes.length; i < notesLen; i++) {
 				const note = notes[i];
@@ -1056,9 +1065,11 @@
 			
 			function listNotes(notes){
 				// 노트가 있으면 목록 표시
+				// 노트 조회 결과 목록을 캐시에 저장.(없으면 [])
 				if(notes.length > 0 ) {
+					sentenceNoteList[sentenceId] = notes;
 					$noteSection.find('.empty-list').hide();
-				}
+				}else sentenceNoteList[sentenceId] = [];
 				const $noteList = $noteSection.find('.note-list').empty();
 				for(let i = 0, notesLen = notes.length; i < notesLen; i++) {
 					const note = notes[i];
@@ -1372,8 +1383,41 @@
 	$(".js-print-button").on('click', function(){
 		const workBookTitle = $('.workbook-title-section:eq(0)').text().trim();
 		const passageTitle = $('.passage-title-text:eq(0)').text().trim();
-		window._printModel = { workBookTitle, passageTitle, memberAlias, sentenceList };
-		window.open('/workbook/passage/print');
+		// 지문 노트를 로드한 적이 없으면 로드 후 프린트 시도
+		// 지문 노트가 없는 것([]) ≠ 지문 노트를 로드한 적 없는 것(null)
+		if(!passageNoteList) {
+			$.getJSON(`/workbook/passage/note/list/${workbookId}/${passageId}/${memberId}`)
+			.then(notes => {
+				passageNoteList = notes;
+				tryOpenPrint(); 
+			})
+		}
+		// 모든 문장에 대해 문장 노트를 로드했으면 바로 프린트 시도
+		if(Object.keys(sentenceNoteList).length == sentenceListLen) {
+			tryOpenPrint();
+		}
+		// 문장 노트를 펼쳐보지 않은 문장이 있다면 문자 노트를 로드 후 다시 프린트 시도
+		else {
+			Promise.all(Array.from(sentenceList.filter((sentence) => !sentenceNoteList[sentence.sentenceId]), sentence => {
+				return new Promise((resolve, reject) => {
+					$.getJSON(`/workbook/sentence/note/list/${workbookId}/${sentence.sentenceId}/${memberId}`)
+					.then(notes => {
+						sentenceNoteList[sentence.sentenceId] = notes;
+						resolve();
+					}).fail(reject);
+				});
+			}))
+			.then(() => {
+				tryOpenPrint();
+			});
+		}
+		
+		function tryOpenPrint() {
+			if(passageNoteList != null && Object.keys(sentenceNoteList).length == sentenceListLen) {
+				window._printModel = { workBookTitle, passageTitle, passageNoteList, memberAlias, sentenceList, sentenceNoteList };
+				window.open('/workbook/passage/print');
+			}
+		}
 
 	});
 	// [프린트 자격 미달 안내]--------------------------------------------------
@@ -1556,6 +1600,10 @@
 		//----------------------------------------------------------------------
 		
 		function appendNote(note) {
+			// 새로 등록한 노트를 캐시에도 추가
+			if(sentenceNoteList[sentenceId]) sentenceNoteList[sentenceId].unshift(note);
+			else sentenceNoteList[sentenceId] = [note];
+			
 			note['memberInfo'] = {memberId, alias: memberAlias};
 			const $noteList = $sentenceSection.find('.note-section>.note-list');
 			$noteList.each((_,el) => {
@@ -2104,6 +2152,17 @@
 		// --------------------------------------------
 		
 		function successEditNote(note) {
+			// 수정된 노트 내용을 캐시에 반영
+			if(ofWhat == 'passage') {
+				const modIndex = passageNoteList.findIndex(note => noteId == note.noteId);
+				passageNoteList.splice(modIndex, 1, note);
+			}else {
+				let notes = sentenceNoteList[$sentenceSection.data('sentenceId')];
+				const modIndex = notes.findIndex(note => note.noteId == noteId);
+				sentenceNoteList[$sentenceSection.data('sentenceId')].splice(modIndex, 1, note);
+			}			
+			
+			
 			if($noteSection.closest('.collapse-section').length > 0) {
 				$noteSection.find('.note').toggleClass('overflow-hidden mb-4');
 			}
@@ -2127,6 +2186,15 @@
 			// ---------------------------------
 		});
 		function delCallback() {
+			// 해당 노트를 캐시에서 삭제
+			if(ofWhat == 'passage') {
+				passageNoteList = passageNoteList.filter(note => noteId != note.noteId);
+			}else {
+				let notes =  sentenceNoteList[$sentenceSection.data('sentenceId')];
+				const delIndex = notes.findIndex(note => note.noteId == noteId);
+				sentenceNoteList[$sentenceSection.data('sentenceId')].splice(delIndex, 1);
+			}
+			// 해당 노트를 화면에서 삭제
 			$noteBlock.fadeOut(function() {
 				$(this).remove();
 				if($noteSection.find('.note-block').length == 0){
