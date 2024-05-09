@@ -620,7 +620,11 @@ li {
 .sem.appo[data-rc]::before {background: #0080ff;}
 
 
-
+/*  -- 오른쪽 메모 영역  -- */
+.print-one-sentence .sentence-comment-section .note-list{
+	padding-top: 0.1cm;
+    border-top: 1px solid #ddd;
+}
 /**********************************************************
  *			print_battles.html
  **********************************************************/
@@ -753,6 +757,11 @@ li {
 .battle-commentaries-print-page .explain-container .explain-section{
 	display: inline-block;
 	margin-left: 0.1cm;
+}
+/* 구문 분석 표시 영역 */
+.battle-commentaries-print-page .explain-container .semantics-result{
+	margin-top: 0.25cm;
+	margin-bottom: 0.25cm;
 }
 /* 단어 표시 영역 */
 .battle-commentaries-print-page .word-section{
