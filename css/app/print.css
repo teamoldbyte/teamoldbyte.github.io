@@ -621,27 +621,6 @@ li {
 
 
 /*  -- 오른쪽 메모 영역  -- */
-.print-padding-right{
-	width: 30%;
-	vertical-align: baseline;
-}
-.print-padding-right::before{
-	content: '';
-	position: absolute;
-	left:0;
-	top:1cm;
-	width: 1px;
-	height: calc(100% - 1cm);
-	background-color: var(--fc-purple);
-}
-.print-padding-right .passage-comment-section,
-.print-padding-right .sentence-comment-section{
-	text-align: left;
-}
-.print-padding-right .sentence-comment-section{
-	margin-top: 0.5cm;
-}
-
 .print-one-sentence .sentence-comment-section .note-list{
 	padding-top: 0.1cm;
     border-top: 1px solid #ddd;
