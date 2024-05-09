@@ -364,7 +364,11 @@ li {
 	counter-increment: sentenceOrder;
 }
 
-
+/* white-space */
+.ws-breakspaces, .ws-breakspaces * {
+	white-space: break-spaces;
+	tab-size: 4;
+ }
 
 /* 문장 분석 영역 */
 .print-one-sentence .svoc-section {
