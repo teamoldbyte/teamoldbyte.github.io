@@ -559,7 +559,10 @@ li {
   margin-bottom: 0;
   bottom: 0;
 }
-
+/* 지문 상세보기의 문장노트와 폰트 동일하게 */
+.sentence-comment-section .note-block {
+	font-family: Frutiger, HCRDotum;
+}
 /* 프린트에 맞도록 색상 조정 */
 .word-section .meaning{
 	color: #000;
