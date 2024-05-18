@@ -562,6 +562,11 @@ li {
 /* 지문 상세보기의 문장노트와 폰트 동일하게 */
 .sentence-comment-section .note-block {
 	font-family: Frutiger, HCRDotum;
+	font-size: 10px;
+}
+/* 지문 노트 하단 여백 */
+.passage-comment-section .note-block{
+	margin-bottom: 12px;
 }
 /* 프린트에 맞도록 색상 조정 */
 .word-section .meaning{
