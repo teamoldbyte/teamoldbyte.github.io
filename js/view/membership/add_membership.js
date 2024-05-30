@@ -448,6 +448,7 @@ function pageinit(membershipCommand) {
 	
 	// phase-3 시작
 	.on('show.bs.collapse', '#phase-3', function() {
+		clearInterval(nextTimer);
 		$('#donationModalLabel').text('회원가입 정보');
 		
 		// 송금자, 이메일 정보 phase-2에서 획득
@@ -460,6 +461,20 @@ function pageinit(membershipCommand) {
 			// submit이 아닌 click 이벤트를 발생시킨 이유: 프로그래밍으로 발생시킨 제이쿼리이벤트는 originalEvent 속성을 갖지 않는다.
 			$('#membershipForm :submit').trigger('click');
 			return;
+		}else {
+			if($('#timeleftForPhase3').length == 0)
+				$('#donationModalLabel').after('<span id="timeleftForPhase3" class="position-absolute end-0 me-3 fs-5 text-warning far fa-clock"> 30:00</span>');
+			let timeleftInSeconds = 1800;
+			nextTimer = setInterval(() => {
+				$('#timeleftForPhase3').text(` ${(Math.floor(timeleftInSeconds / 60)).toString().padStart(2, '0')}:${(timeleftInSeconds % 60).toString().padStart(2, '0')}`)
+				if(timeleftInSeconds <= 0) {
+					clearInterval(nextTimer);
+					alertModal('입력 시간이 초과되었습니다.\n보안을 위해 화면을 새로고침 후 가입을 처음부터 진행합니다.', () => {
+						location.reload();
+					})
+				}
+				timeleftInSeconds--;
+			}, 1000)
 		}
 	})
 	// 비밀번호 입력시 확인패턴도 변경
