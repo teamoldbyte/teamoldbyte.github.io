@@ -236,7 +236,7 @@ async function pageinit(keepWordList, totalCount) {
 	$(document).on('click', '.js-view-sentence', function() {
 		$.get(`/memento/kick/autoplay/sentence/${this.dataset.wid}/${this.dataset.sid}`, (eng) => {
 			$(this).hide().siblings('.eng').show().html(eng).siblings('.workbook-title').show().siblings('.guide-text').show();
-		})
+		}).fail(() => alertModal('문장 조회에 실패했습니다.'))
 	})
 	// 문장 자동 조회 여부
 	$('.js-eng-auto-open').on('click', function() {
