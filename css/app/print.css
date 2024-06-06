@@ -336,7 +336,7 @@ li {
 }
 /* 지문 제목 */
 .passage-title{
-	font-size: 10px;
+	font-size: 12px;
 	text-decoration: underline;
 	text-decoration-color: #585174;
 	text-underline-offset :0.25rem;
@@ -411,15 +411,15 @@ li {
 	font-family: 'Nanum Gothic';
 }
 .semantics-result{
-	font-size: 13px;
+	font-size: 14px;
 }
 .word-section .title,
 .word-section .part{
-	font-size: 11px;
+	font-size: 12px;
 }
 .passage-print-page .kor,
 .passage-print-page .word-section .meaning{
-	font-size: 10px;
+	font-size: 12px;
 }
 .kor-section .kor{
 	font-weight: bold;
