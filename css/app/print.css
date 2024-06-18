@@ -346,6 +346,7 @@ li {
 	width: 8mm;
 	text-align: center;
 	margin: auto;
+	display: none;
 }
 .print-one-sentence .sentence-number-section .sentence-number{
 	font-size: 11px;
@@ -374,6 +375,8 @@ li {
 .print-one-sentence .svoc-section {
 	margin-left: 8mm;
 	margin-bottom: 0.5cm;
+	height: -webkit-fit-content;
+	height: fit-content;
 }
 .passage-print-page .pseudo-sentence-number {
 	position: relative;
@@ -404,6 +407,11 @@ li {
 .print-one-sentence .kor-word-section{
 	width: calc(100% - 8mm);
 }
+.print-one-sentence .kor-word-section{
+	height: -webkit-fill-available;
+	margin-top: 0.25cm;
+	margin-bottom: auto;
+}
 /* 폰트 설정 */
 .passage-print-page .sentence-number,
 .passage-print-page .kor,
@@ -411,11 +419,11 @@ li {
 	font-family: 'Nanum Gothic';
 }
 .semantics-result{
-	font-size: 14px;
+	font-size: 16px;
 }
 .word-section .title,
 .word-section .part{
-	font-size: 12px;
+	font-size: 13px;
 }
 .passage-print-page .kor,
 .passage-print-page .word-section .meaning{
