@@ -409,6 +409,8 @@ li {
 }
 .print-one-sentence .kor-word-section{
 	height: -webkit-fill-available;
+	min-height: -webkit-fit-content;
+	min-height: fit-content;
 	margin-top: 0.25cm;
 	margin-bottom: auto;
 }
@@ -423,7 +425,7 @@ li {
 }
 .word-section .title,
 .word-section .part{
-	font-size: 13px;
+	font-size: 14px;
 }
 .passage-print-page .kor,
 .passage-print-page .word-section .meaning{
@@ -441,6 +443,7 @@ li {
 .word-section{
 	position:relative;
 	padding: 0 20px;
+	margin-top: 0.125cm;
 }
 /* 단순 바 모양은 없앰 */
 /* .word-section::before{
