@@ -1417,7 +1417,10 @@
 		
 		function tryOpenPrint() {
 			if(passageNoteList != null && Object.keys(sentenceNoteList).length == sentenceListLen) {
-				window._printModel = { workBookTitle, passageTitle, passageNoteList, memberAlias, sentenceList, sentenceNoteList };
+				if(typeof print != 'undefined')
+					window._printModel = { workBookTitle, passageTitle, passageNoteList, memberAlias, sentenceList, sentenceNoteList };
+				else if(typeof ANI != 'undefined')
+					sessionStorage.setItem('printModel', JSON.stringify({ workBookTitle, passageTitle, passageNoteList, memberAlias, sentenceList, sentenceNoteList }));
 				window.open('/workbook/passage/print');
 			}
 		}
