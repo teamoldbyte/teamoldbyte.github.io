@@ -25,7 +25,7 @@ function pageinit(membershipCommand) {
 										{ el: 'label', htmlFor: 'inputName', className: 'col-form-label text-smd fw-bold', textContent: '입금자명' }
 									]},
 									{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-										{ el: 'input', type: 'text', id: 'inputName', name: 'remitter', maxLength: 10, value: membershipCommand.remitter, autocomplete: 'off', className: 'form-control', 'aria-describedby': 'nameHelpInline', pattern: '[가-힣]{2,}', required: true },
+										{ el: 'input', type: 'text', id: 'inputName', name: 'remitter', maxLength: 10, value: membershipCommand.remitter != 'fico' ? membershipCommand.remitter : '', autocomplete: 'off', className: 'form-control', 'aria-describedby': 'nameHelpInline', pattern: '[가-힣]{2,}', required: true },
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;이름을 한글로 올바르게 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -398,6 +398,12 @@ function pageinit(membershipCommand) {
 			submitBtn.toggleAttribute('disabled', false);
 			$(submitBtn).bounce();
 		}else submitBtn.toggleAttribute('disabled', true);
+	})
+	.on('input', '#inputName', function() {
+		$(this).toggleClass('is-invalid', this.value.trim() == 'fico');
+		if(this.value.trim() == 'fico') {
+			alertModal('사용할 수 없는 이름입니다.');
+		}
 	})
 	
 	// 후원자 정보 임시전송
