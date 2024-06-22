@@ -408,7 +408,8 @@ li {
 	width: calc(100% - 8mm);
 }
 .print-one-sentence .kor-word-section{
-	height: -webkit-fill-available;
+	height: -webkit-fit-content;
+	height: fit-content;
 	min-height: -webkit-fit-content;
 	min-height: fit-content;
 	margin-top: 0.25cm;
