@@ -13,14 +13,44 @@
 			bootstrap?.Tooltip?.getInstance(this)?.hide();
 		}); 
 		/* [activates Scroll Reveals] --------------------------------------- */
-		ScrollReveal({duration: 1000, reset: false, viewOffset:{top:0,bottom:0},
+    const srShowupElements = document.querySelectorAll('.sr-showup');
+    const srSlideupElements = document.querySelectorAll('.sr-slideup');
+    const observerConfig = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = entry.target;
+         anime({
+              targets: target,
+              translateY: 0,
+              opacity: 1,
+              duration: 500,
+              easing: 'easeOutExpo',
+              complete: function() {
+                $(target).removeClass('sr-slideup sr-showup');
+              }
+            });
+          observer.unobserve(target);
+        }
+      });
+    }, observerConfig);
+
+    srShowupElements.forEach(el => observer.observe(el));
+    srSlideupElements.forEach(el => observer.observe(el));		
+		
+/*		ScrollReveal({duration: 1000, reset: false, viewOffset:{top:0,bottom:0},
 			// opacity, transform 스타일 속성은 z-index 값을 0으로 만드는 것과 같아서 써머노트 등과 충돌이 있으므로,
 			// 등장 효과 끝난 후 제거하도록 한다.
 			afterReveal: function(el) { el.style.visibility = ''; el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; }});
 		ScrollReveal().reveal('.sr-showup', {delay: 100, distance: '20px', 
 			viewOffset:{top:50,bottom:50},
 			beforeReveal: function(el) { $(el).animate({opacity:1}); }});
-		ScrollReveal().reveal('.sr-slideup', {delay: 400, interval: 100, opacity: 1, distance: '100%'});
+		ScrollReveal().reveal('.sr-slideup', {delay: 400, interval: 100, opacity: 1, distance: '100%'});*/
 		/* ------------------------------------------------------------------ */	
 	})
 	// [Bootstrap Validation]---------------------------------------------------
@@ -35,12 +65,20 @@
 	/* [bouncing on click button] ------------------------------------------- */
 	$.fn.bounce = function() {
 		this.each(function() {
-			let orgTransform = getComputedStyle(this).transform;
-			orgTransform = (orgTransform != null && orgTransform.includes('matrix'))? (orgTransform + ' ') : '';
+			let orgTransform = $(this).data('orgTransform');
+			
+			if(orgTransform == null) orgTransform = getComputedStyle(this).transform;
+			
+			if(orgTransform != null && orgTransform.includes('matrix')) {
+				$(this).data('orgTransform', orgTransform);
+				orgTransform = orgTransform + ' ';
+			}else {
+				$(this).data('orgTransform', '');
+				orgTransform = '';
+			} 
 			const scaleArr = [orgTransform + 'scale3d(1, 1, 1)', orgTransform + 'scale3d(1.25, 0.75, 1)',
 							orgTransform + 'scale3d(0.75, 1.25, 1)', orgTransform + 'scale3d(1.15, 0.85, 1)',
 							orgTransform + 'scale3d(0.95, 1.05, 1)', orgTransform + 'scale3d(1.05, 0.95, 1)'];
-							
 			this.animate({"transform" : scaleArr, "-webkit-transform" : scaleArr}, 600);
 		})
 		return this;
