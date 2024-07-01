@@ -8,7 +8,7 @@
  @param options{autoplay, lang, pitch, rate, voiceIndex, initSuccessCallback, initFailCallback}
  ** autoplay - 자동재생여부. 이 모듈에서 사용하지 않음. 모듈 호출부에서 호출여부 판단시 사용. 값 저장만 모듈이 대신 해줌.
  */
- (function($, window, document) {
+(function($, window, document) {
 	/**
 	@usage
 	1. var tts = new FicoTTS(); //just initialize.. does not guarantee immediate function.
@@ -138,6 +138,7 @@
 			}			
 			let ANI_Initialized = makeFunc2Callback(() => {
 				console.info('initialize success')
+				this.initialized = true;
 				voices = JSON.parse(ANI.getVoices()).filter(v => /^en[-_]/.test(v.lang));
 				reOrderedVoices = Array.from(voices).sort((a,b) => a.name.localeCompare(b.name));
 				this.changeOptions();
@@ -154,18 +155,30 @@
 				appendModal();
 			}
 			this.changeOptions = () => {
-				ANI.changeTTSOptions(JSON.stringify(Object.assign({}, _options, {voiceIndex: voices.indexOf(reOrderedVoices[_options.voiceIndex])})));
+				if(this.initialized) {
+					ANI.changeTTSOptions(JSON.stringify(Object.assign({}, _options, {voiceIndex: voices.indexOf(reOrderedVoices[_options.voiceIndex])})));
+				}else {
+					alert('TTS 엔진을 사용할 수 없습니다. TTS엔진이 설치되지 않았다면 마켓에서 설치 후 이용해 주시기 바랍니다.');
+				}
 			}
 			
 			this.speak = (text, ...callback) => {
-				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
-				
-				ANI.ttsSpeak(text, callback);
+				if(this.initialized) {
+					if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
+					
+					ANI.ttsSpeak(text, callback);
+				}else {
+					alert('TTS 엔진을 사용할 수 없습니다. TTS엔진이 설치되지 않았다면 마켓에서 설치 후 이용해 주시기 바랍니다.');
+				}
 			}
 			
 			this.speakRepeat = (text, loopNum, interval, ...callback) => {
-				if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
-				ANI.ttsSpeakRepeat(text, loopNum, interval, callback);
+				if(this.initialized) {
+					if(callback.length > 0) callback = [makeFunc2Callback(callback[0])];
+					ANI.ttsSpeakRepeat(text, loopNum, interval, callback);
+				}else {
+					alert('TTS 엔진을 사용할 수 없습니다. TTS엔진이 설치되지 않았다면 마켓에서 설치 후 이용해 주시기 바랍니다.');
+				}
 			}
 			
 			this.speakSample = (idx, rate, pitch) => {
@@ -201,7 +214,11 @@
 						voiceTryCount = 0;
 						clearInterval(waitVoices);
 						waitVoices = null;
-						alert('목소리 목록을 가져올 수 없습니다.');
+						if(this.initialized) {
+							alert('목소리 목록을 가져올 수 없습니다.');
+						}else {
+							alert('TTS 엔진을 사용할 수 없습니다. TTS엔진이 설치되지 않았다면 마켓에서 설치 후 이용해 주시기 바랍니다.');
+						}
 						showLists();
 					}
 					//재시도 실행
