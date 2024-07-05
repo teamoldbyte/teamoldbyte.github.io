@@ -49,18 +49,18 @@ function pageinit(membershipCommand) {
 										{ el: 'label', htmlFor: 'inputEmail', className: 'col-form-label text-smd fw-bold', textContent: '이메일' }
 									]},
 									{ el: 'div', className: 'col-9 col-md-7 position-relative', children: [
-										{ el: 'input', type: 'email', id: 'inputEmail', name: 'email', value: membershipCommand.email, className: 'form-control', 'aria-describedby': 'emailHelpInline', autocomplete: 'off', required: true },
+										{ el: 'input', type: 'email', id: 'inputEmail', name: 'email', value: membershipCommand.email, className: 'form-control', 'aria-describedby': 'emailHelpInline', maxlength: 100, autocomplete: 'off', required: true },
 										{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 이메일을 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'd-none d-md-block col-12 col-md-3 text-end mb-auto', children: [
-										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxLength: 100},
+										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxlength: 100},
 										{ el: 'button', type: 'button', className: 'check-email-btn btn btn-outline-fico', disabled: true, textContent: '중복 검사' }
 									]},
 									{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
 										{ el: 'span', id: 'emailHelpInline', className: 'form-text ms-0 ms-lg-2', textContent: '생성될 계정의 이메일을 입력해 주십시오.' }
 									]},
 									{ el: 'div', className: 'd-block d-md-none col-9 text-end mb-auto ms-auto mt-1', children: [
-										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxLength: 100},
+										{ el: 'input', type: 'email', className: 'check-email-input form-control d-none', value: membershipCommand.email, required: true, maxlength: 100},
 										{ el: 'button', type: 'button', className: 'check-email-btn btn btn-outline-fico w-100', disabled: true, textContent: '중복 검사' }
 									]}
 								]},
@@ -146,7 +146,7 @@ function pageinit(membershipCommand) {
 												{ el: 'label', className: 'col-form-label text-smd fw-bold', textContent: '이메일' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'email', name: 'email', className: 'form-control', value: membershipCommand.email, 'aria-describedby': 'emailHelpInline', required: !loggedin, readOnly: true, maxLength: 100 },
+												{ el: 'input', type: 'email', name: 'email', className: 'form-control', value: membershipCommand.email, 'aria-describedby': 'emailHelpInline', required: !loggedin, readOnly: true, maxlength: 100 },
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;올바른 이메일을 입력해 주십시오.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
@@ -182,7 +182,7 @@ function pageinit(membershipCommand) {
 												{ el: 'label', className: 'col-form-label text-smd fw-bold', textContent: '이름' }
 											]},
 											{ el: 'div', className: 'col-9 col-md-10 position-relative', children: [
-												{ el: 'input', type: 'text', name: 'name', value: membershipCommand.name, className: 'form-control', 'aria-describedby': 'nameHelpInline', required: !loggedin, maxLength: 10, pattern: '[가-힣]{2,}'},
+												{ el: 'input', type: 'text', name: 'name', value: membershipCommand.name, className: 'form-control', 'aria-describedby': 'nameHelpInline', required: !loggedin, maxlength: 10, pattern: '[가-힣]{2,}'},
 												{ el: 'div', className: 'invalid-feedback', innerHTML: '&nbsp;&nbsp;이름을 한글로 올바르게 입력해 주십시오.' }
 											]},
 											{ el: 'div', className: 'help-text-section col-9 col-md-10 ms-auto my-0', children: [
