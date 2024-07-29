@@ -373,7 +373,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 							textarea.setSelectionRange(checkingPos, checkingPos + tempSentence.length);
 						})
 					}
-					if(!isSsam && tempSentence.length > MAX_SENTENCE_LENGTH) {
+					if(tempSentence.length > MAX_SENTENCE_LENGTH) {
 						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 						return;					
 					}
