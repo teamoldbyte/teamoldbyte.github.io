@@ -1,0 +1,200 @@
+fiona.css
+/*------------------------------------------------------------------------------
+                    add_question.html
+------------------------------------------------------------------------------*/
+/* 지문 텍스트 */
+.full-text {
+	font-family: Avenir;
+	border-radius: 10px;
+	padding: 1rem 1.5rem;
+	background-color: #002060;
+	color: #fff;
+	border-radius: 5px;
+}
+.full-text,
+.question-type-list,
+.question-list,
+.cancel-button-block,
+.type-check-list{
+	margin-bottom: 1rem;
+}
+
+/* 기존 문제 유형 */
+.question-type-list .type-block{
+	min-height: 3rem;
+	color: var(--fc-purple);
+	border-radius: 0.5rem;
+}
+.question-type-list .type-block > div{
+	border-radius: 0.5rem;
+	background-color: #fff;
+}
+.question-type-list .type-block > div:hover{
+	box-shadow: inset 0 0 0 3px var(--fc-purple);
+}
+.question-type-list .type-block.active > div{
+	box-shadow: inset 0 0 0 3px var(--fc-purple);
+}
+.question-type-list .type-block .type-name{
+	text-align: left;
+}
+.question-type-list .type-block .question-count{
+	text-align: right;
+}
+/* 기존 문제 유형의 아이콘 */
+.question-type-list .type-block .icon-block{
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position:center;
+	min-height: 3rem;
+	margin-top: 1rem;
+	margin-bottom: 2rem;
+	/* filter: brightness(0) invert(1);
+	-webkit-filter: brightness(0) invert(1); */
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	background-color: var(--fc-purple);
+}
+/* 어휘 */
+.question-type-list .type-block:nth-child(1) .icon-block,
+.type-check-list .type-block:nth-child(1) .icon-block{
+	-webkit-mask: url('https://static.findsvoc.com/images/app/fiona/mobile.svg') no-repeat center;
+	mask: url('https://static.findsvoc.com/images/app/fiona/mobile.svg') no-repeat center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* 빈칸 */
+.question-type-list .type-block:nth-child(2) .icon-block,
+.type-check-list .type-block:nth-child(2) .icon-block{
+	-webkit-mask: url('https://static.findsvoc.com/images/app/fiona/password.svg') no-repeat center;
+	mask: url('https://static.findsvoc.com/images/app/fiona/password.svg') no-repeat center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* 글의 주제 */
+.question-type-list .type-block:nth-child(3) .icon-block,
+.type-check-list .type-block:nth-child(3) .icon-block{
+	-webkit-mask: url('https://static.findsvoc.com/images/app/fiona/target.svg') no-repeat center;
+	mask: url('https://static.findsvoc.com/images/app/fiona/target.svg') no-repeat center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* 글의 제목 */
+.question-type-list .type-block:nth-child(4) .icon-block,
+.type-check-list .type-block:nth-child(4) .icon-block{
+	-webkit-mask: url('https://static.findsvoc.com/images/app/fiona/template.svg') no-repeat center;
+	mask: url('https://static.findsvoc.com/images/app/fiona/template.svg') no-repeat center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* 글의순서 */
+.question-type-list .type-block:nth-child(5) .icon-block,
+.type-check-list .type-block:nth-child(5) .icon-block{
+	-webkit-mask: url('https://static.findsvoc.com/images/app/fiona/boxes.svg') no-repeat center;
+	mask: url('https://static.findsvoc.com/images/app/fiona/boxes.svg') no-repeat center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+/* 문장삽입 */
+.question-type-list .type-block:nth-child(6) .icon-block,
+.type-check-list .type-block:nth-child(6) .icon-block{
+	-webkit-mask: url('https://static.findsvoc.com/images/app/fiona/truck-loading.svg') no-repeat center;
+	mask: url('https://static.findsvoc.com/images/app/fiona/truck-loading.svg') no-repeat center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+.question-type-list .type-block .type-name{
+	margin-bottom: 1rem;
+}
+/* 기존 문제 목록 영역 */
+.question-list .question-block{
+	/* border-top: 1.5px solid #ddd; */
+	border-radius: .75rem;
+	padding: 1rem;
+	min-height: 10rem;
+	background-color: #fff;
+}
+/* 기존 등록 문제 안에서 영역별 하단 여백 */
+.question-list .question-block .content-block,
+.question-list .question-block .answer-block{
+	margin-bottom: 0.5rem;
+}
+.question-list .question-block .button-block{
+	text-align: center;
+}
+/* 신규 생성할 문제 유형 영역 */
+.type-check-list .type-block{
+	min-height: 3rem;
+	color: #fff;
+	border-radius: 0.5rem;
+}
+.type-check-list .type-block .form-check-label{
+	border-radius: 0.5rem;
+	background-color: var(--fc-purple);
+}
+.type-check-list .type-block .icon-block{
+	display: none;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position:center;
+	min-height: 3rem;
+	margin-top: 1rem;
+	margin-bottom: 2rem;
+	/* filter: brightness(0) invert(1);
+	-webkit-filter: brightness(0) invert(1); */
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	background-color: #fff;
+}
+.type-check-list .type-block.active .form-check-label{
+	background-color: #fff;
+	box-shadow: inset 0 0 0 3px var(--fc-purple);
+	color: var(--fc-purple);
+}
+/* .type-check-list .type-block .form-check-label:hover{
+	box-shadow: inset 0 0 0 3px #fff;
+} */
+.type-check-list .type-block .type-name{
+	text-align: center;
+}
+
+
+
+/*------------------------------------------------------------------------------
+                    add_question_result.html
+------------------------------------------------------------------------------*/
+.add-question-result-section .type-icon-block{
+	background-color: var(--fc-purple);
+	border-radius: 0.5rem;
+	width: 10rem;
+	
+}
+.add-question-result-section .type-icon-block .icon-block{
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	min-height: 2rem;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	background-color: #fff;
+}
+.add-question-result-section .type-icon-block .icon-block.icon-빈칸추론{
+	mask: var(--mask);
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+.add-question-result-section .type-name{
+	/* border-radius: 0 0.5rem 0.5rem 0;
+	background-color: var(--fc-purple);
+	min-height: 2rem; */
+	color: #fff;
+	font-family: 'NanumSquare';
+	font-weight: bold;
+	font-size: 0.8rem;
+}
+
+.add-question-result-section .writing-type{
+	font-family: 'NanumSquare';
+	font-weight: bold;
+	font-size: 0.8rem;
+}
