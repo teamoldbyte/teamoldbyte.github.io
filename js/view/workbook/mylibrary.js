@@ -43,6 +43,9 @@ async function pageinit(myWorkBookPage) {
 			grid: {
 				fill: 'row'
 			},
+			mousewheel: {
+				forceToAxis: true
+			},
 			breakpoints: {
 				320: {
 					slidesPerGroup: 3,
