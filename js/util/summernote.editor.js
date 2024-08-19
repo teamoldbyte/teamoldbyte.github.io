@@ -107,11 +107,13 @@
 		if(typeof String.prototype.quoteNormalize == 'undefined') {
 			await $.cachedScript('https://static.findsvoc.com/js/util/text-util.min.js');
 		}
-		$input.summernote(Object.assign(options, {
+		
+		return new Promise((resolve, _) => $input.summernote(Object.assign(options, {
 			callbacks: {
 				onInit: function() {
 					$.extend($.summernote.options.tooltip, { container: 'body' });
 					$input.data('summernote').layoutInfo.editor.find('.note-table-popover .note-btn-group').addClass('d-inline-flex');
+					resolve();
 				},
 				onPaste: function(e) { onPaste($input, e); },
 				onChange: function(contents, $editable) { 
@@ -127,7 +129,7 @@
 					uploadImage(formData, $(this));
 				}
 			}
-		}));
+		})));
 	}
 	
 	window['openSummernote'] = openSummernote;
