@@ -60,12 +60,12 @@
 			}, 10);
 		}		
 	}
-	function onChange(contents, maxLength, $editable) {
+/*	function onChange(contents, maxLength, $editable) {
 		const maxContents = maxLength > 0 ? maxLength : 65000;
 		$editable.attr('data-char-count', `현재 글자 수: ${contents.length} (스타일 정보 포함) / ${maxContents}`);
 		
 		$editable.toggleClass('note-overlimit', contents.length > maxContents);
-	}
+	}*/
 	function uploadImage(formData, $input) {
 		$.ajax({
 			type: 'POST',
@@ -116,8 +116,8 @@
 					resolve();
 				},
 				onPaste: function(e) { onPaste($input, e); },
-				onChange: function(contents, $editable) { 
-					onChange(contents, this.maxLength, $editable); },
+/*				onChange: function(contents, $editable) { 
+					onChange(contents, this.maxLength, $editable); },*/
 				onImageUpload: function(files) {
 					let formData = new FormData();
 					for (let i = 0, filesLen = files.length; i < filesLen; i++) {
