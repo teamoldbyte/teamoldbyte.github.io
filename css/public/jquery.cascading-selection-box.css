@@ -108,7 +108,7 @@
 }
 
 .zd-scrollbar__wrap {
-    overflow: scroll;
+    overflow: auto;
     height: 100%;
 
 }
