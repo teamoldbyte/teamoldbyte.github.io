@@ -209,16 +209,18 @@
 						
 						// (단축키로 실행됐을 경우) 현재의 마우스 위치에서 '커서 가리키기' 이벤트 발동
 						if(sel.isCollapsed) {
+					      let containerElement;
 						  if (document.caretPositionFromPoint) {
 							range = document.caretPositionFromPoint(currX, currY);
+						    containerElement = getLeafNode(range.offsetNode);
 						  } else if (document.caretRangeFromPoint) {
 							range = document.caretRangeFromPoint(currX, currY);
+						    containerElement = range.startContainer;
 						  } else {
 							console.error("[This browser supports neither document.caretRangeFromPoint"
 									 + " nor document.caretPositionFromPoint.]");
 							return(false);
 						  }
-						  let containerElement = range.startContainer;
 						  while(containerElement.nodeType != 1) {
 							containerElement = containerElement.parentNode;
 						  }
@@ -703,7 +705,9 @@
 					indicator.className = 'mod-indicator';
 					indicator.style.position = 'absolute';
 				   	if (document.caretPositionFromPoint) {
-						range = document.caretPositionFromPoint(currX, currY);
+						range = document.createRange();
+						const offsetNode = document.caretPositionFromPoint(currX, currY).offsetNode;
+						range.selectNode(getLeafNode(offsetNode));
 					} else if (document.caretRangeFromPoint) {
 						range = document.caretRangeFromPoint(currX, currY);
 					} else {
@@ -785,7 +789,9 @@
 				   	var y = (e.type == 'touchstart') ? e.touches[0].clientY : e.clientY;
 				   	var sel, range;
 				   	if (document.caretPositionFromPoint) {
-						range = document.caretPositionFromPoint(x, y);
+						range = document.createRange();
+						const offsetNode = document.caretPositionFromPoint(currX, currY).offsetNode;
+						range.selectNode(getLeafNode(offsetNode));
 					} else if (document.caretRangeFromPoint) {
 						range = document.caretRangeFromPoint(x, y);
 					} else {
@@ -1148,6 +1154,12 @@
 				break;
 		}
 	}
+	
+	function getLeafNode(node) {
+		if(node.hasChildNodes()) {
+			return getLeafNode(node.firstChild);
+		}else return node;
+	}	
 	
 	/**
 	 * 성분을 묻는 콤보박스 표시
