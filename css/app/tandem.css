@@ -36,9 +36,9 @@
 	:root {
 		font-size: 12px;
 	}
-	.semantics-result {
+	/* .semantics-result {
 		word-break: break-all;
-	}
+	} */
 }
 /* @media (max-width: 1199.5px) {
 	.semantics-result {
