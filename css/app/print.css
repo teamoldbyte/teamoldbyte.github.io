@@ -378,6 +378,9 @@ li {
 	height: -webkit-fit-content;
 	height: fit-content;
 }
+.print-one-sentence .svoc-section .semantics-result{
+	width: calc(100% - 28px);
+}
 .passage-print-page .pseudo-sentence-number {
 	position: relative;
 }
