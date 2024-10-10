@@ -19,7 +19,7 @@
 	
 	// 지문노트,문장노트 캐시 (프린트화면 데이터 전달용)
 	let passageNoteList; // List<노트>
-	const sentenceNoteList = {}; // Map<sentenceId, 노트>
+	let sentenceNoteList = {}; // Map<sentenceId, 노트>
 	
 /*
 
@@ -1224,6 +1224,7 @@
 	// [분석 결과 추가/편집]--------------------------------------------------------
 	const unauthorizedBtns = [];
 	$(document).on('click', '.js-add-svoc, .js-edit-svoc', async function() {
+		let savedSvocText;
 		const editorOpenBtn = this;
 		let forNew = $(this).is('.js-add-svoc');
 		const isIndexFinger = !!this.closest('.js-finger-detail');
@@ -1278,6 +1279,7 @@
 		// 편집 저장 실행
 		function saveFunc(svocText) {
 			const svocId = Number($semantics.data('svocId') || 0);
+			savedSvocText = svocText;
 			const svocCommand = {sentenceId, workbookId, passageId, ownerId, memberId, encSvocText: svocText};
 			
 			if(memberId == Number($semantics.data('memberId')) && svocId > 0) {
@@ -1296,6 +1298,14 @@
 				$semantics.data('svocId', newSvocId);
 				$sentenceSection.find('.js-collapse-svoc').addClass('expanded').show();
 				$semantics.closest('.svoc-section').nextAll('.svoc-section').collapse('show');
+				
+				// 프린트 대상으로 추가
+				sentenceList.find(sentence => sentence.sentenceId == sentenceId).svocList.unshift(
+					{svocBytes: savedSvocText, sentenceId, svocId: newSvocId, writerAlias: memberAlias, image: memberImage, regDate: new Date(), memberId}
+				)
+			}else {
+				// 프린트 대상 수정
+				sentenceList.find(sentence => sentence.sentenceId == sentenceId).svocList.find(svoc => svoc.svocId == newSvocId).svocBytes = savedSvocText;
 			}
 			$semantics.closest('.svoc-section').find('.svoc-mdf-btns').show();
 			_restoreSvocAddBtns();
@@ -1344,6 +1354,10 @@
 											//------------------------------
 		// 삭제된 분석 화면에서 제거
 		function successDelSvoc() {
+			// 프린트 대상에서 제거
+			sentenceList.forEach(sentence => {
+				sentence.svocList.splice(sentence.svocList.findIndex(svoc => svoc.svocId == svocId), 1);
+			});
 			$result.closest('.svoc-section').fadeOut(() => {
 				$result.closest('.svoc-section').remove();
 				// 남은 구문분석이 1개면 접기/펼치기 버튼 숨김
@@ -1498,6 +1512,10 @@
 			if($transEditor.data('mode') == 'edit'){
 				$transBlock.find('.translation-text').text(kor).show(300);
 				$transBlock.find('.trans-mdf-btns').show(300);
+				
+				// 프린트할 내용 수정
+				sentenceList.find(sentence => sentence.sentenceId == sentenceId).korList
+					.find(korTrans => korTrans.korId == tid).kor = kor;
 			}
 			// 해석 추가면 새로운 해석 블럭을 생성하여 추가 표시
 			else{
@@ -1513,6 +1531,11 @@
 				if(devSize.isPhone() && !$transSection.find('.open-kor-btn').is('.active')) {
 					$newTrans.siblings('.ai-translation-block').removeClass('show');
 				}
+				
+				// 프린트할 내용 추가
+				sentenceList.find(sentence => sentence.sentenceId == sentenceId).korList.unshift(
+					{sentenceId, alias: memberAlias, memberId, korId: tid, kor}
+				);
 			}
 		}
 	})
@@ -1534,6 +1557,11 @@
 										// -------------------------------------
 		
 		function successDel() {
+			// 프린트 대상에서 제거
+			sentenceList.forEach(sentence => {
+				sentence.korList.splice(sentence.korList.findIndex(trans => trans.korId == Number($transBlock.data('korTid'))), 1);
+			});			
+			
 			alertModal('삭제되었습니다.');
 			if($transBlock.closest('.translation-section').find('.open-kor-btn').is('.active')) {
 				$transBlock.nextAll('.ai-translation-block')?.collapse('show');
