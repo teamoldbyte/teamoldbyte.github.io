@@ -386,7 +386,7 @@ function pageinit(memberId, isSsam) {
 						&& searchedSentence.text.includes(total.join(' ')))) continue;
 					const $item = $('#hiddenDivs .list-group-item').clone();
 					$item.data('passageId', passageDtoList[i].passageId)
-						 .html(searchedSentence.text.replaceAll(new RegExp(total.join('|').replaceAll(/[\(\)\{\}\[\]]/gm,'\\$&'),'gm'),
+						 .html(searchedSentence.text.replaceAll(new RegExp(total.join('|').replaceAll('?','\\?').replaceAll(/[\(\)\{\}\[\]]/gm,'\\$&'),'gm'),
 											'<span class="bg-fc-yellow">$&</span>'));
 					$passageList.append($item);
 					if(i == sameIndex) $sameItem = $item.addClass('same-content');
