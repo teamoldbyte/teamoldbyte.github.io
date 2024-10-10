@@ -38,7 +38,7 @@
 				"mi",
 				"Miss", "Mrs", "Mr", "Ms",
 				"Mol",
-				"Mt",
+		//		"Mt", Google NLU에서 Mt. 인식 못함
 				"mt",
 				"mts",
 				"no",
