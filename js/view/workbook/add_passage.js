@@ -458,11 +458,14 @@ function pageinit(isHelloBook, memberId, isSsam) {
 				$('.step-2 .collapse').one('shown.bs.collapse', function() {
 					if((total.length > 1 && passageDtoList.length == 0)
 					|| (total.length == 1 && sentenceDtoList.length == 0)) {
-						$('#jumpTo3').trigger('click');
+						// 입력한 문장이 복수인데 지문 결과가 없거나,
+						// 입력한 문장이 하나인데 문장 결과가 없다면 단계 건너뛰기
+						$passageList.find('#jumpTo3').trigger('click');
 					} else {
 						$passageList.masonry(masonryOptsForPassages);
 						// 검색결과가 입력내용과 동일한 지문 하나로 유일하면 자동 선택
 						if(sameIndex > -1 && $passageList.find('.list-group-item').length == 1) {
+							$passageList.find('#jumpTo3').addClass('btn disabled');
 							$sameItem?.trigger('click');
 						}
 					}
