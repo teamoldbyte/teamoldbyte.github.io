@@ -460,7 +460,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					|| (total.length == 1 && sentenceDtoList.length == 0)) {
 						// 입력한 문장이 복수인데 지문 결과가 없거나,
 						// 입력한 문장이 하나인데 문장 결과가 없다면 단계 건너뛰기
-						$passageList.find('#jumpTo3').trigger('click');
+						$('#jumpTo3').trigger('click');
 					} else {
 						$passageList.masonry(masonryOptsForPassages);
 						// 검색결과가 입력내용과 동일한 지문 하나로 유일하면 자동 선택
