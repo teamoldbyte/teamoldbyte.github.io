@@ -230,47 +230,48 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 	/**
 	 * 두 문장 간의 유사도 계산. (일부 단어들의 순서만 뒤바뀐 경우 1이 나오기도 함)
 	 */
-	window.sentenceSimilarity = function(sentence1, sentence2) {
-		function textToVector(text) {
-			const words = text.split(/\W+/);
-			const frequencyMap = {};
-			words.forEach(word => {
-				if (!frequencyMap[word]) {
-					frequencyMap[word] = 0;
-				}
-				frequencyMap[word]++;
-			});
-			return frequencyMap;
-		}
+window.sentenceSimilarity = function(sentence1, sentence2) {
+  function textToVector(text) {
+    const words = text.match(/\b\w+\b/g); // 여기에서 split을 match로 교체
+    const frequencyMap = {};
+    words.forEach(word => {
+      if (!frequencyMap[word]) {
+        frequencyMap[word] = 0;
+      }
+      frequencyMap[word]++;
+    });
+    return frequencyMap;
+  }
 
-		function dotProduct(vec1, vec2) {
-			let product = 0;
-			for (const key in vec1) {
-				if (vec1.hasOwnProperty(key) && vec2.hasOwnProperty(key)) {
-					product += vec1[key] * vec2[key];
-				}
-			}
-			return product;
-		}
+  function dotProduct(vec1, vec2) {
+    let product = 0;
+    for (const key in vec1) {
+      if (vec1.hasOwnProperty(key) && vec2.hasOwnProperty(key)) {
+        product += vec1[key] * vec2[key];
+      }
+    }
+    return product;
+  }
 
-		function magnitude(vec) {
-			let sum = 0;
-			for (const key in vec) {
-				if (vec.hasOwnProperty(key)) {
-					sum += vec[key] * vec[key];
-				}
-			}
-			return Math.sqrt(sum);
-		}
+  function magnitude(vec) {
+    let sum = 0;
+    for (const key in vec) {
+      if (vec.hasOwnProperty(key)) {
+        sum += vec[key] * vec[key];
+      }
+    }
+    return Math.sqrt(sum);
+  }
 
-		function cosineSimilarity(vec1, vec2) {
-			return dotProduct(vec1, vec2) / (magnitude(vec1) * magnitude(vec2));
-		}
+  function cosineSimilarity(vec1, vec2) {
+    return dotProduct(vec1, vec2) / (magnitude(vec1) * magnitude(vec2));
+  }
 
-		const vec1 = textToVector(sentence1);
-		const vec2 = textToVector(sentence2);
-		return cosineSimilarity(vec1, vec2);
-	}
+  const vec1 = textToVector(sentence1);
+  const vec2 = textToVector(sentence2);
+  return cosineSimilarity(vec1, vec2);
+};
+
 
 	function moveOffsetsInArray(arr, until, compareIndex, offset) {
 		arr.forEach((v, i, array) => {
