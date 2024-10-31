@@ -230,7 +230,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 	/**
 	 * 두 문장 간의 유사도 계산. (일부 단어들의 순서만 뒤바뀐 경우 1이 나오기도 함)
 	 */
-	function sentenceSimilarity(sentence1, sentence2) {
+	window.sentenceSimilarity = function(sentence1, sentence2) {
 		function textToVector(text) {
 			const words = text.split(/\W+/);
 			const frequencyMap = {};
