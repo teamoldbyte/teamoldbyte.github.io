@@ -8,11 +8,11 @@
  * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
  */
 function getTextWidth(text, font) {
-  // getTextWidth.canvas가 없으면 생성, 있으면 재사용
-  const context = (getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas")))
-					.getContext("2d");
-  context.font = font;
-  return context.measureText(text).width;
+	// getTextWidth.canvas가 없으면 생성, 있으면 재사용
+	const context = (getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas")))
+		.getContext("2d");
+	context.font = font;
+	return context.measureText(text).width;
 }
 /*
 U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
@@ -32,7 +32,7 @@ U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 const invalidEnglishRegex = /[^\u0021-\u007E\s\u2010-\u2015\u2018-\u201A\u201C-\u201D°℃℉]/gi;
 const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D°℃℉]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
-(function(window,str) {
+(function(window, str) {
 	/**
 	 * 문자열의 내용 중 [‘],[’],[‚],[“],[”]와 같이 특수한 유니코드값을 ASCII 문자로 대체하여 반환
 	 * (추가: [ ],[&nbsp;])
@@ -41,42 +41,42 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 	 * @version 2.0 by LGM
 	 */
 	str.quoteNormalize = function() {
-	  return this.replace(/[“‟”„″‶❝❞〝〞＂]/gi, "\"") // 큰따옴표
-				 .replace(/[´＇｀`‘’‛′‵❛❜]/gi, "'") // 작은따옴표
-				 .replace(/[‚،﹐﹑，､]/gi, ",") // 쉼표
-				 .replace(/[\u00A0\u2000-\u200B\u202F\u205F]/gi, " ") // 공백
-				 .replace(/[−–‒­]/g,'-') // 하이픈 및 en dash
-				 .replace(/─/g, '—'); // 표 그리기 기호(─)를 em dash(—)로
+		return this.replace(/[“‟”„″‶❝❞〝〞＂]/gi, "\"") // 큰따옴표
+			.replace(/[´＇｀`‘’‛′‵❛❜]/gi, "'") // 작은따옴표
+			.replace(/[‚،﹐﹑，､]/gi, ",") // 쉼표
+			.replace(/[\u00A0\u2000-\u200B\u202F\u205F]/gi, " ") // 공백
+			.replace(/[−–‒­]/g, '-') // 하이픈 및 en dash
+			.replace(/─/g, '—'); // 표 그리기 기호(─)를 em dash(—)로
 	};
-	
+
 	// 첫 글자를 대문자로
 	str.capitalize1st = function() {
-	  return this.charAt(0).toUpperCase() + this.slice(1);
+		return this.charAt(0).toUpperCase() + this.slice(1);
 	};
-	
+
 	/** 문자열을 정규화된 영어 문장 배열로 반환
 	 @deprecated sbd 라이브러리 사용
 	*/
 	str.parseToSentences = function() {
-	  return this.quoteNormalize().concatLines().insertSpace().shrinkSpaces().splitSentences();
+		return this.quoteNormalize().concatLines().insertSpace().shrinkSpaces().splitSentences();
 	};
 	// 줄바꿈은 이어붙임
 	// 2022.1.1 지시: 엔터키는 띄어쓰기로 치환
 	str.concatLines = function() {
-	  return this.replace(/[\r\n]/g,' ').trim();
+		return this.replace(/[\r\n]/g, ' ').trim();
 	};
 	// 문장의 끝으로 보이는 단어에 뒤이어 대문자로 시작하면 ' '을 사이에 추가
 	str.insertSpace = function() {
-	  return this.replace(/(\b[a-z]\w*\W)([A-Z]\w*)/g,'$1 $2')
+		return this.replace(/(\b[a-z]\w*\W)([A-Z]\w*)/g, '$1 $2')
 	};
 	// 1개 이상의 연속된 공백문자는 하나의 ' '으로
 	// 2022.6.3 : 구두점 앞의 공백은 없애기
 	str.shrinkSpaces = function() {
-	  return this.replace(/\s+/g, ' ').replace(/\s+([,.?!;:]+)/g, '$1');
+		return this.replace(/\s+/g, ' ').replace(/\s+([,.?!;:]+)/g, '$1');
 	};
 	// 하나의 정규화된 영어 문장으로 반환
 	str.sentenceNormalize = function() {
-	  return this.quoteNormalize().concatLines().shrinkSpaces().capitalize1st();
+		return this.quoteNormalize().concatLines().shrinkSpaces().capitalize1st();
 	}
 	/**
 	// 문장 구분 지점을 기준으로 문장 자르기(출처: https://regex101.com/r/nG1gU7/1173)
@@ -85,47 +85,47 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 	@deprecated sbd 라이브러리 사용
 	 */
 	str.splitSentences = function() {
-	  try {
-		return this.split(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s`,'gm'));  
-	  } catch (e) {
-		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
-		if(!this.match(/\s/)) return [this];
-		const sentences = [];
-		let start = 0, ends = this.matchAll(/\s/gm);
-		// lookbehind 정규식 동작을 스크립트로 구현
-		for(let point of ends) {
-		  const prev = this.charAt(point.index - 1);
-		  if(/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev) || / [A-Z]\./.test(prev))) {
-			sentences.push(this.substring(start, point.index));
-			start = point.index + 1;
-		  } else continue;
+		try {
+			return this.split(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s`, 'gm'));
+		} catch (e) {
+			console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
+			if (!this.match(/\s/)) return [this];
+			const sentences = [];
+			let start = 0, ends = this.matchAll(/\s/gm);
+			// lookbehind 정규식 동작을 스크립트로 구현
+			for (let point of ends) {
+				const prev = this.charAt(point.index - 1);
+				if (/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev) || / [A-Z]\./.test(prev))) {
+					sentences.push(this.substring(start, point.index));
+					start = point.index + 1;
+				} else continue;
+			}
+			if (start <= this.length + 1) {
+				sentences.push(this.substring(start));
+			}
+			return sentences;
 		}
-		if(start <= this.length + 1) {
-		  sentences.push(this.substring(start));
-		}
-		return sentences;
-	  }
 	};
 	// 유효한 하나의 영어 문장인지 검사
 	str.isSentence = function() {
-	  try {
-		const invalidMatched = this.match(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])`,'g'));
-		return /[A-Z\d'"]/.test(this.charAt()) && invalidMatched != null && invalidMatched.index == this.length;
-	  } catch(e) {
-		console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
-		if(/[A-Z\d'"]/.test(this.charAt()) && /[\.\?\!]['"]?$/.test(this)) {
-		  const puncts = this.matchAll(/\S+[\.\?\!]['"]?/g);
-		  for(let punct of puncts) {
-			
-			if(!(/\w\.\w.$/.test(punct[0]) || /[A-Z][a-z]\.$/.test(punct[0]))) {
-			  return (punct.index + punct[0].length == this.length);
-			}
-		  }
-		  return false;
-		} else return false;
-	  }
+		try {
+			const invalidMatched = this.match(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])`, 'g'));
+			return /[A-Z\d'"]/.test(this.charAt()) && invalidMatched != null && invalidMatched.index == this.length;
+		} catch (e) {
+			console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
+			if (/[A-Z\d'"]/.test(this.charAt()) && /[\.\?\!]['"]?$/.test(this)) {
+				const puncts = this.matchAll(/\S+[\.\?\!]['"]?/g);
+				for (let punct of puncts) {
+
+					if (!(/\w\.\w.$/.test(punct[0]) || /[A-Z][a-z]\.$/.test(punct[0]))) {
+						return (punct.index + punct[0].length == this.length);
+					}
+				}
+				return false;
+			} else return false;
+		}
 	};
-	
+
 	/** 입력란에 교정을 적용하고, 변경된 부분을 강조 표시
 	@param input 입력 문자열
 	@param inputCursor 텍스트 커서 위치
@@ -133,49 +133,49 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 	 */
 	window.extractHighlightInfo = function(input, inputCursor) {
 		let i = 0, // 8개 패턴 iterator 
-		arr = [], // 강조표시 배열
-		match; // 매칭결과(재사용)
+			arr = [], // 강조표시 배열
+			match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
 		// 정규식에 걸리지 않을 때까지 재검사
-		while((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|([−–‒­])|(─)|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
-			for(i = 1; i < 10; i++) {
-				if(match[i] != null) {
-					switch(i) {
+		while ((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|([−–‒­])|(─)|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+			for (i = 1; i < 10; i++) {
+				if (match[i] != null) {
+					switch (i) {
 						case 1: // 비정규화된 콤마를 ASCII 콤마로
-							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
-							arr.push({highlight: [match.index, match.index + 1]});
+							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1);
+							arr.push({ highlight: [match.index, match.index + 1] });
 							input = input.replace(match[0], ',');
 							break;
 						case 2: // 비정규화된 쌍따옴표를 ASCII 쌍따옴표로
-							arr.push({highlight: [match.index, match.index + 1]});
+							arr.push({ highlight: [match.index, match.index + 1] });
 							input = input.replace(match[0], '"');
 							break;
 						case 3: // 비정규화된 홑따옴표를 ASCII 홑따옴표로
-							arr.push({highlight: [match.index, match.index + 1]});
+							arr.push({ highlight: [match.index, match.index + 1] });
 							input = input.replace(match[0], '\'');
 							break;
 						case 4:	// 비정규화된 (짧은) 대쉬를 ASCII 하이픈으로
-							arr.push({highlight: [match.index, match.index + 1]});
+							arr.push({ highlight: [match.index, match.index + 1] });
 							input = input.replace(match[0], '-');
 							break;
 						case 5: // 문장에서 등장할 일이 없는 표 그리기 기호 '─'는 em dash '—'로
-							arr.push({highlight: [match.index, match.index + 1]});
+							arr.push({ highlight: [match.index, match.index + 1] });
 							input = input.replace(match[0], '—');
 							break;
 						case 6: // 구두점 앞의 하나 이상의 공백은 생략
-							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1);
-							arr.push({highlight: [match.index, match.index + 2]});
+							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1);
+							arr.push({ highlight: [match.index, match.index + 2] });
 							input = input.replace(match[0], match[i]);
 							break;
 						case 7: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
-							if(inputCursor >= match.index + 1) inputCursor += 1;
-							arr.push({highlight: [match.index + 2, match.index + 3]});
-							input = input.replace(match[0], `${match[i].substring(0,2)} ${match[i].substring(2)}`)
+							if (inputCursor >= match.index + 1) inputCursor += 1;
+							arr.push({ highlight: [match.index + 2, match.index + 3] });
+							input = input.replace(match[0], `${match[i].substring(0, 2)} ${match[i].substring(2)}`)
 							break;
 						case 8: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
 						case 9: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
-							if(inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
-							arr.push({highlight: [match.index, match.index + match[i].length]});
+							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
+							arr.push({ highlight: [match.index, match.index + match[i].length] });
 							input = input.replace(match[0], `'${match[i]}`);
 							break;
 					}
@@ -224,14 +224,60 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u2010-\\u2015\\u2018-\\u201A
 		}*/
 		// 3. 비정규 문자들(보이지 않는 문자 포함)을 × 문자로 치환
 		input = input.replaceAll(invalidEnglishRegex, '×');
-		return {input, inputCursor, arr};
+		return { input, inputCursor, arr };
 	}
+
+	/**
+	 * 두 문장 간의 유사도 계산. (일부 단어들의 순서만 뒤바뀐 경우 1이 나오기도 함)
+	 */
+	function sentenceSimilarity(sentence1, sentence2) {
+		function textToVector(text) {
+			const words = text.split(/\W+/);
+			const frequencyMap = {};
+			words.forEach(word => {
+				if (!frequencyMap[word]) {
+					frequencyMap[word] = 0;
+				}
+				frequencyMap[word]++;
+			});
+			return frequencyMap;
+		}
+
+		function dotProduct(vec1, vec2) {
+			let product = 0;
+			for (const key in vec1) {
+				if (vec1.hasOwnProperty(key) && vec2.hasOwnProperty(key)) {
+					product += vec1[key] * vec2[key];
+				}
+			}
+			return product;
+		}
+
+		function magnitude(vec) {
+			let sum = 0;
+			for (const key in vec) {
+				if (vec.hasOwnProperty(key)) {
+					sum += vec[key] * vec[key];
+				}
+			}
+			return Math.sqrt(sum);
+		}
+
+		function cosineSimilarity(vec1, vec2) {
+			return dotProduct(vec1, vec2) / (magnitude(vec1) * magnitude(vec2));
+		}
+
+		const vec1 = textToVector(sentence1);
+		const vec2 = textToVector(sentence2);
+		return cosineSimilarity(vec1, vec2);
+	}
+
 	function moveOffsetsInArray(arr, until, compareIndex, offset) {
-		arr.forEach((v,i,array) => {
-			if(i >= until) return;
-			if(v.highlight[0] >= compareIndex) v.highlight[0] += offset;
-			if(v.highlight[1] >= compareIndex) v.highlight[1] += offset;
+		arr.forEach((v, i, array) => {
+			if (i >= until) return;
+			if (v.highlight[0] >= compareIndex) v.highlight[0] += offset;
+			if (v.highlight[1] >= compareIndex) v.highlight[1] += offset;
 			arr[i] = v;
 		});
 	}
-}(this,String.prototype));
+}(this, String.prototype));
