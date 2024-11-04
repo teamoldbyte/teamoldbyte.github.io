@@ -86,9 +86,12 @@ function pageinit(memberId, isSsam) {
 		change: function(_event, ui) { // 유효한 선택지를 선택하면 자동입력
 		},
 		select: function(_event, ui) {
-			confirmModal('선택한 문장으로 지문을 검색하시겠습니까?', () =>
+			confirmModal('선택한 문장으로 지문을 검색하시겠습니까?', () => {
+				if(ui.item.value.length > this.value.trim().length) {
+					this.value = ui.item.value;
+				}
 				$('#searchBtn').trigger('click', ui.item.value)
-			);
+			});
 			return false;
 		}
 	}).autocomplete('instance');
@@ -378,16 +381,100 @@ function pageinit(memberId, isSsam) {
 				// 입력 지문과 동일한 지문의 인덱스
 				sameIndex = passageDtoList.findIndex(psg => psg.text == total.join(' '));
 				for(let i = 0, len = passageDtoList.length; i < len; i++){
-					const searchedSentence = passageDtoList[i];
-					
+
+					// 검색된 지문
+					const searchedPassage = passageDtoList[i];
+
 					// 이미 입력 지문과 동일한 지문이 나온 뒤 검색결과는 입력 지문을 포함하는 더 긴 지문만 표시
-					if(sameIndex > -1 && i != sameIndex
-					&& !(searchedSentence.text.length > total.join(' ').length 
-						&& searchedSentence.text.includes(total.join(' ')))) continue;
+					if(sameIndex > -1 && i != sameIndex && !(searchedPassage.text.length > total.join(' ').length && searchedPassage.text.includes(total.join(' ')))) 
+						continue;
 					const $item = $('#hiddenDivs .list-group-item').clone();
-					$item.data('passageId', passageDtoList[i].passageId)
-						 .html(searchedSentence.text.replaceAll(new RegExp(total.join('|').replaceAll('?','\\?').replaceAll(/[\(\)\{\}\[\]]/gm,'\\$&'),'gm'),
-											'<span class="bg-fc-yellow">$&</span>'));
+
+					const searchedSentences = tokenizer.sentences(searchedPassage.text);
+
+					const matchTargetInput = Array.from(total);
+					const matchTargetOutput = Array.from(searchedSentences);
+					let htmlText = '<span ';
+
+					const summary = []; // {text, inputPosition, outputPosition, matchType(same, similar, outputonly, inputonly)}
+					let j = 0;
+					while(matchTargetOutput.length > 0) {
+						const sentence = matchTargetOutput.shift();
+						const matchedIndex = matchTargetInput.indexOf(sentence);
+						// 동일한 문장이 포함될 경우
+						if(matchedIndex > -1) {
+							summary.push({text: sentence, inputPosition: matchedIndex, outputPosition: j, matchType: 'same'});
+							matchTargetInput[matchedIndex] = null;
+						}else {
+							const similarIndex = total.findIndex(v => {
+								return sentenceSimilarity(v, sentence) > 0.8
+							});
+							if(similarIndex > -1) {
+								summary.push({text: sentence, inputPosition: similarIndex, outputPosition: j, matchType: 'similar'});
+							}else {
+								summary.push({text: sentence, inputPosition: -1, outputPosition: j, matchType: 'outputonly'});
+							}
+						}
+						j++;
+					}
+
+					const orderByInput = summary.filter(s => s.inputPosition > -1 && s.matchType == 'same');
+					orderByInput.sort((a, b) => a.inputPosition - b.inputPosition);
+
+					if(orderByInput.length > 1) {
+						for(j = 1; j < orderByInput.length; j++) {
+							if(orderByInput[j].outputPosition < orderByInput[j - 1].outputPosition) {
+								summary[orderByInput[j].outputPosition].matchType = 'disorder';
+								summary[orderByInput[j - 1].outputPosition].matchType = 'disorder';
+							}
+						}
+					}
+
+					for(j = 0; j < total.length; j++) {
+						const sentence = total[j];
+						
+						if(orderByInput.length == 0) {
+							summary.push({text: sentence, inputPosition: j, outputPosition: -1, matchType: 'inputonly'});
+						}
+						else if(j < orderByInput[0].inputPosition) {
+							summary.splice(orderByInput[0].outputPosition, 0, {text: sentence, inputPosition: j, outputPosition: -1, matchType: 'inputonly'});
+						}
+						else if(j == orderByInput[0].inputPosition){
+							orderByInput.shift();
+						}
+					}
+
+					for(j = 0; j < summary.length; j++) {
+						const sentence = summary[j];
+						let style = '';
+						switch(sentence.matchType) {
+							case 'same': 
+								style += 'class="exact-match" data-bs-toggle="tooltip" data-bs-title="정확히 일치하는 문장"';
+								break;
+							case 'similar':
+								style += 'class="similar-sentence" data-bs-toggle="tooltip" data-bs-title="유사한 내용의 문장: ' + total[sentence.inputPosition].replaceAll('"','\\"') + '"';
+								break;
+							case 'disorder':
+								style += 'class="different-order" data-bs-toggle="tooltip" data-bs-title="다른 문장과 순서가 바뀐 문장"';
+								break;
+							case 'outputonly':
+								style += 'class="additional-sentence" data-bs-toggle="tooltip" data-bs-title="입력에는 없었지만, 검색 결과에서 새롭게 포함된 문장이 있습니다. 어떤 문장이 추가되었는지 확인해주세요."';
+								break;
+							case 'inputonly':
+								style += 'class="missing-sentence" data-bs-toggle="tooltip" data-bs-title="입력에는 포함되었으나, 검색 결과에서는 확인되지 않은 문장이 있습니다. 누락된 문장이 무엇인지 확인해주세요."';
+								break;
+						}
+						if(j > 0) {
+							if(summary[j - 1].matchType != sentence.matchType)
+								htmlText += '</span> <span ' + style + '>';
+							else htmlText += ' ';
+						}else htmlText += style + '>';
+						
+						htmlText += sentence.text;
+					}
+					htmlText += '</span>';
+
+					$item.data('passageId', searchedPassage.passageId).html(htmlText);
 					$passageList.append($item);
 					if(i == sameIndex) $sameItem = $item.addClass('same-content');
 				}
@@ -399,7 +486,7 @@ function pageinit(memberId, isSsam) {
 		
 						$item.data('sentenceId', sentenceDtoList[i].sentenceId)
 							 .html(sentenceDtoList[i].eng.replace(total, 
-									`<span class="bg-fc-yellow">${total}</span>`));
+									`<span class="exact-match" data-bs-toggle="tooltip" data-bs-title="정확히 일치하는 문장">${total}</span>`));
 						$passageList.append($item);
 					}
 				}
