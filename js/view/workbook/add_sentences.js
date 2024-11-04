@@ -418,11 +418,12 @@ function pageinit(memberId, isSsam) {
 						j++;
 					}
 
-					const orderByInput = summary.filter(s => s.inputPosition > -1 && s.matchType == 'same');
+					const orderByInput = summary.filter(s => s.inputPosition > -1 && ['same','similar'].includes(s.matchType));
 					orderByInput.sort((a, b) => a.inputPosition - b.inputPosition);
 
 					if(orderByInput.length > 1) {
 						for(j = 1; j < orderByInput.length; j++) {
+							if(orderByInput[j].matchType == 'similar') continue;
 							if(orderByInput[j].outputPosition < orderByInput[j - 1].outputPosition) {
 								summary[orderByInput[j].outputPosition].matchType = 'disorder';
 								summary[orderByInput[j - 1].outputPosition].matchType = 'disorder';
