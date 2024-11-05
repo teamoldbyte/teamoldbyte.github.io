@@ -422,8 +422,8 @@ function pageinit(isHelloBook, memberId, isSsam) {
 						alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
 						return;
 					}
-					// 가장 긴 문장을 검색문자열로 사용(검색 정확도를 높이기 위함)
-					eng = (tempSentence.length > eng.length) ? tempSentence : eng;
+					// 가장 긴 문장을 검색문자열로 사용(검색 정확도를 높이기 위함) -- 취소 -> 첫 번째 문장으로
+					// eng = (tempSentence.length > eng.length) ? tempSentence : eng;
 					checkingPos += tempSentence.length + (i < len - 1 ? 1 : 0);
 				}
 				// 유효한 제시어를 무시한 경우 3단계로 이동
