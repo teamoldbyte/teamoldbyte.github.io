@@ -466,7 +466,7 @@ function pageinit(memberId, isSsam) {
 								break;
 						}
 						if(j > 0) {
-							if(summary[j - 1].matchType != sentence.matchType)
+							if(summary[j - 1].matchType != sentence.matchType || sentence.matchType == 'similar')
 								htmlText += '</span> <span ' + style + '>';
 							else htmlText += ' ';
 						}else htmlText += style + '>';
