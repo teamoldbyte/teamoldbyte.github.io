@@ -742,7 +742,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 			let dirty = false; // dirty 플래그 초기화
 			const $selectedPassage = $('.search-result-section .list-group-item.active');
 			
-			// 선택한 지문이 있는 경우
+			// 선택한 지문 혹은 문장이 있는 경우
 			if ($selectedPassage.length > 0) {
 				const passageId = $selectedPassage.data('passageId');
 				const sentenceId = $selectedPassage.data('sentenceId');
@@ -773,38 +773,41 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					} else { // 편집 내용이 없는 경우
 						$form.find('#text').prop('disabled', true);
 						if (passageId != null) {
-							//  $form[0].action = '/workbook/passage/add';
 							createHidden($form, 'existingPassageId', passageId);
 						} else {
-							//  $form[0].action = '/workbook/passage/new';
-							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+							$form[0].action = '/workbook/passage/new';
+							$form.find('#text').prop('disabled', false).val(finalSentences.join(' '));
+							// createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 						}
 					}
 				}
 				// 편집을 안한 경우 
 				else if (passageId != null) {
-					//  $form[0].action = '/workbook/passage/add';
+					
 					createHidden($form, 'existingPassageId', passageId);
 					$form.find('#text').prop('disabled', true);
 				} else if (sentenceId != null) {
-					//  $form[0].action = '/workbook/passage/new';
-					createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
-					$form.find('#text').prop('disabled', true);
+					$form[0].action = '/workbook/passage/new';
+					// createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+					$form.find('#text').prop('disabled', false).val();
 				}
 				createHidden($form, 'dirty', dirty);
-			} else { // 선택된 지문이 없는 경우
+			} else { // 선택된 지문이나 문장이 없는 경우
 				let sentences;
 				if ($('.edit-passage').is(':visible')) { // 편집 모드인 경우
 					const $sentences = $('.edit-passage .divided-sentence');
 					sentences = Array.from($sentences.get(), el => $(el).find(':text').val().trim().sentenceNormalize());
 					
-					$sentences.each(function(i, el) {
+					$form[0].action = '/workbook/passage/new';
+					$form.find('#text').val(sentences.join(' '));
+					
+					/*$sentences.each(function(i, el) {
 						const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
 						sentencesLength += normalizedText.length;
 						createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
 					});
 					createHidden($form, 'dirty', true);
-					$form.find('#text').prop('disabled', true);
+					$form.find('#text').prop('disabled', true);*/
 				//	createHidden($form, 'text', sentences.join(' '));
 				} else { // 새로 작성된 문장을 분리
 					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
