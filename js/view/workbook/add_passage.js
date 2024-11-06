@@ -530,7 +530,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 								style += 'class="exact-match" data-bs-toggle="tooltip" data-bs-title="정확히 일치하는 문장"';
 								break;
 							case 'similar':
-								style += 'class="similar-sentence" data-bs-toggle="tooltip" data-bs-title="유사한 내용의 문장: ' + total[sentence.inputPosition].replaceAll('"', '\\"') + '"';
+								style += 'class="similar-sentence" data-bs-toggle="tooltip" data-bs-title="유사한 내용의 문장: ' + total[sentence.inputPosition].replaceAll('"', '\"') + '"';
 								break;
 							case 'disorder':
 								style += 'class="different-order" data-bs-toggle="tooltip" data-bs-title="다른 문장과 순서가 바뀐 문장"';
