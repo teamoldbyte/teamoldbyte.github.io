@@ -42,9 +42,13 @@ U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 
 2010	‐	‑	‒	–	—	―			‘	’	‚	‛	“	”
 2020									ls	ps
+
+2160	Ⅰ	Ⅱ	Ⅲ	Ⅳ	Ⅴ	Ⅵ	Ⅶ	Ⅷ	Ⅸ	Ⅹ	Ⅺ	Ⅻ	Ⅼ	Ⅽ	Ⅾ	Ⅿ
+2170	ⅰ	ⅱ	ⅲ	ⅳ	ⅴ	ⅵ	ⅶ	ⅷ	ⅸ	ⅹ	ⅺ	ⅻ	ⅼ	ⅽ	ⅾ	ⅿ
+
 */
-const invalidEnglishRegex = /[^\u0021-\u007E\s\u00C0-\u017E\u2010-\u2015\u2018-\u201A\u201C-\u201D°℃℉]/gi;
-const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D°℃℉]";
+const invalidEnglishRegex = /[^\u0021-\u007E\s\u00C0-\u017E\u2010-\u2015\u2018-\u201A\u201C-\u201D\u2160-\u217F°℃℉]/gi;
+const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D\\u2160-\\u217F°℃℉]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(window, str) {
 	/**
