@@ -661,6 +661,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		// [(워크북)최종 분석 문장/지문 표시]
 		$('.step-3 .collapse:eq(0)').on('shown.bs.collapse', async function() {
 			searchingSentenceDone = false;
+			$('#addBtn').prop('disabled', false);
 			/*			let height = 0;
 						while(height != $('#text')[0].scrollHeight) {
 							height = $('#text')[0].scrollHeight;
@@ -719,7 +720,6 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	// [지문 등록 버튼 클릭 ]
 	$('#addBtn').on('click', function() {
 		const $form = $('#passageForm');
-
 		let sentencesLength = 0;
 		if (isHelloBook) { // HelloBook 모드인 경우
 			const $inputs = $('#dividedResult :text');
@@ -772,12 +772,13 @@ function pageinit(isHelloBook, memberId, isSsam) {
 						dirty = true;
 					} else { // 편집 내용이 없는 경우
 						$form.find('#text').prop('disabled', true);
+						
 						if (passageId != null) {
 							createHidden($form, 'existingPassageId', passageId);
 						} else {
-							$form[0].action = '/workbook/passage/new';
-							$form.find('#text').prop('disabled', false).val(finalSentences.join(' '));
-							// createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+							// $form[0].action = '/workbook/passage/new';
+							// $form.find('#text').prop('disabled', false).val(finalSentences.join(' '));
+							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 						}
 					}
 				}
@@ -787,9 +788,10 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					createHidden($form, 'existingPassageId', passageId);
 					$form.find('#text').prop('disabled', true);
 				} else if (sentenceId != null) {
-					$form[0].action = '/workbook/passage/new';
+					// $form[0].action = '/workbook/passage/new';
 					// createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
-					$form.find('#text').prop('disabled', false).val();
+					$form.find('#text').prop('disabled', true);
+					dirty = true;
 				}
 				createHidden($form, 'dirty', dirty);
 			} else { // 선택된 지문이나 문장이 없는 경우
@@ -833,6 +835,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 			alertModal(`${maxChars}자가 넘는 문장은\n워크북에서 등록하실 수 있습니다.`);
 			return;
 		}
+		$('#addBtn').prop('disabled', true);
 		$('#loadingModal').modal('show');
 	});
 }
