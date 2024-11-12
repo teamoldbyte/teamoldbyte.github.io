@@ -250,7 +250,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 
 	// [문장 추가 등록]------------------------------------------------------------
 	$('.js-add').on('click', function() {
-		const sentences = tokenizer.sentences($('.add-section textarea').val());
+		const sentences = tokenizer.sentences($('.add-section textarea').val().sentenceNormalize());
 		const orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
 
 		// 문장 검사
@@ -351,7 +351,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 	$(document).on('click', '.js-edit', function() {
 		const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
 		let origin = $sentenceSection.find('.sentence-text').text();
-		const sentences = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val());
+		const sentences = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val().sentenceNormalize());
 
 
 		// 문장 검사
