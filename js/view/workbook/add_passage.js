@@ -569,7 +569,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 				}
 				if ((total.length > 1 && passageDtoList.length == 0)
 					|| (total.length == 1 && sentenceDtoList.length == 0)) {
-					$passageList.append('<li class="list-group-item pe-none">검색 결과가 없습니다.</li>');
+					$passageList.append('<li class="list-group-item pe-none no-passage">검색 결과가 없습니다.</li>');
 				} else {
 					$passageList.append($('#jumpTo3').clone(true, true));
 				}
@@ -717,8 +717,17 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	}
 
 
+	function fetchExactSentenceId(targetSentence) {
+		return new Promise((resolve, _) => {
+			$.getJSON('/sentence/search', { eng: targetSentence }, function(sentences) {
+				resolve(sentences.find(({ eng }) => eng == targetSentence)?.sentenceId ?? null);
+			}).fail(function() {
+				resolve(null);
+			})
+		})
+	}
 	// [지문 등록 버튼 클릭 ]
-	$('#addBtn').on('click', function() {
+	$('#addBtn').on('click', async function() {
 		const $form = $('#passageForm');
 		let sentencesLength = 0;
 		if (isHelloBook) { // HelloBook 모드인 경우
@@ -749,26 +758,41 @@ function pageinit(isHelloBook, memberId, isSsam) {
 				// 편집을 한 경우
 				if ($('.edit-passage').is(':visible')) {
 					const $sentences = $('.edit-passage .divided-sentence');
-					const $differs = $sentences.filter(function() {
-						return ($(this).data('orgData') != $(this).find(':text').val().trim().sentenceNormalize());
-					});
 					let finalSentences = [];
 					$sentences.each(function() {
 						finalSentences.push($(this).find(':text').val().trim());
 					});
 					// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
-					// (수정 안함: sentenceId 입력, 수정함: eng 입력)
+					// (수정하지 않음: sentenceId 입력, 수정함: eng 입력)
 					if ($selectedPassage.text() != finalSentences.join(' ')) {
-						//$form[0].action = '/workbook/passage/new';
+						
+						const searchSentencePromises = [];
 						$sentences.each(function(i, el) {
-							if ($(el).is($differs)) {
-								const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
-								sentencesLength += normalizedText.length;
-								createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
+							const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
+							if ($(this).data('orgData') != normalizedText) {
+								searchSentencePromises.push(new Promise((resolve, _) => {
+									fetchExactSentenceId(normalizedText)
+									.then((dbSentenceId) => {
+										if(dbSentenceId) {
+											createHidden($form, `existingSentenceList[${i}].sentenceId`, dbSentenceId);
+										}
+										else {
+											sentencesLength += normalizedText.length;
+											createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
+										}
+										resolve();
+									}).catch(() => {
+										sentencesLength += normalizedText.length;
+										createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
+										resolve();
+									})
+								}));
 							} else {
 								createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
 							}
 						});
+						
+						await Promise.all(searchSentencePromises);
 						dirty = true;
 					} else { // 편집 내용이 없는 경우
 						$form.find('#text').prop('disabled', true);
@@ -776,20 +800,18 @@ function pageinit(isHelloBook, memberId, isSsam) {
 						if (passageId != null) {
 							createHidden($form, 'existingPassageId', passageId);
 						} else {
-							// $form[0].action = '/workbook/passage/new';
-							// $form.find('#text').prop('disabled', false).val(finalSentences.join(' '));
+							dirty = true;
 							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 						}
 					}
 				}
 				// 편집을 안한 경우 
 				else if (passageId != null) {
-					
 					createHidden($form, 'existingPassageId', passageId);
 					$form.find('#text').prop('disabled', true);
 				} else if (sentenceId != null) {
 					// $form[0].action = '/workbook/passage/new';
-					// createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+					createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 					$form.find('#text').prop('disabled', true);
 					dirty = true;
 				}
@@ -800,17 +822,37 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					const $sentences = $('.edit-passage .divided-sentence');
 					sentences = Array.from($sentences.get(), el => $(el).find(':text').val().trim().sentenceNormalize());
 					
-					$form[0].action = '/workbook/passage/new';
-					$form.find('#text').val(sentences.join(' '));
-					
-					/*$sentences.each(function(i, el) {
-						const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
-						sentencesLength += normalizedText.length;
-						createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
-					});
-					createHidden($form, 'dirty', true);
-					$form.find('#text').prop('disabled', true);*/
-				//	createHidden($form, 'text', sentences.join(' '));
+					if($('.search-result-section .list-group-item:not(.no-passage)').length > 0) {
+						await Promise.allSettled(Array.from(sentences, sentence => {
+							return new Promise((resolve, reject) => {
+								fetchExactSentenceId(sentence)
+								.then((dbSentenceId) => {
+									if(dbSentenceId)
+										resolve(dbSentenceId);
+									else
+										reject(sentence);
+								}).catch(() => reject(sentence));
+							});
+						})).then((results) => {
+							if(results.find(result => result.status == 'fulfilled')) {
+								dirty = true;
+								$form.find('#text').prop('disabled', true);
+								Array.from(results, (result, i) => {
+									if(result.status == 'fulfilled') {
+										createHidden($form, `existingSentenceList[${i}].sentenceId`, result.value);
+									}else {
+										createHidden($form, `existingSentenceList[${i}].eng`, result.reason);
+									}
+								});
+							}else {
+								$form[0].action = '/workbook/passage/new';
+								$form.find('#text').val(sentences.join(' '));
+							}
+						})
+					} else {
+						$form[0].action = '/workbook/passage/new';
+						$form.find('#text').val(sentences.join(' '));
+					}
 				} else { // 새로 작성된 문장을 분리
 					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
 					sentences.forEach(sentence => {
@@ -829,6 +871,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 		$form.trigger('submit'); // 폼 전송
 	});
+
 
 	$('#passageForm').on('submit', function() {
 		if (!isSsam && isHelloBook && $(this).find('input[name="text"]').text().length > maxChars) {
