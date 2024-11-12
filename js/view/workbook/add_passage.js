@@ -815,7 +815,6 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					$form.find('#text').prop('disabled', true);
 					dirty = true;
 				}
-				createHidden($form, 'dirty', dirty);
 			} else { // 선택된 지문이나 문장이 없는 경우
 				let sentences;
 				if ($('.edit-passage').is(':visible')) { // 편집 모드인 경우
@@ -860,6 +859,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					});
 				}
 			}
+			createHidden($form, 'dirty', dirty);
 			// 신규 태그는 localStorage에 저장
 			const newTag = $('#tag').val().trim();
 			if (newTag.length > 0 && !taghistory.includes(newTag)) {
