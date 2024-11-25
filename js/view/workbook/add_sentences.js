@@ -110,6 +110,7 @@ function pageinit(memberId, isSsam) {
 	// [신규 지문 입력 시 비활성화된 등록 버튼 활성화]
 	let maxChars = 1000; // default 1000, 피코 추가소모로 500 늘릴 수 있음.
 	let textTooltip;
+	let correctionBlinkAnimation;
 	$(document).on('input', '#newPassageText', function() {
 		const validateResult = replaceAndHighlights();
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
@@ -117,7 +118,10 @@ function pageinit(memberId, isSsam) {
 		$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
 		$('.invalid-input-warning').toggle(validateResult[0]);
 		$('.corrected-input-info').toggle(validateResult[1]);
-		anime({
+		if(correctionBlinkAnimation != null && correctionBlinkAnimation.running.length > 0) {
+			correctionBlinkAnimation.remove('.hwt-backdrop mark.corrected');
+		}		
+		correctionBlinkAnimation = anime({
 			targets: '.hwt-backdrop mark.corrected',
 			keyframes: [
 				{opacity: 0, easing: 'linear'},
