@@ -124,13 +124,10 @@ function pageinit(memberId, isSsam) {
 		correctionBlinkAnimation = anime({
 			targets: '.hwt-backdrop mark.corrected',
 			keyframes: [
-				{opacity: 0, easing: 'linear'},
-				{opacity: 1, easing: 'linear'},
-				{opacity: 0, easing: 'linear'},
-				{opacity: 1, easing: 'linear'},
-				{opacity: 0, duration: 1000, easing: 'cubicBezier(.7, .0, 1.0, 0.3)'},
-				{display: 'none', easing: 'steps(1)'}
+				{ opacity: 0, easing: 'linear', duration: 500 },
+				{ opacity: 1, easing: 'linear', duration: 500 }
 			],
+			loop: true
 		})
 		// 입력어가 유효한 글자로 제한량 이하일 경우
 		if(isSsam || (textLen < maxChars && !validateResult[0])) {
