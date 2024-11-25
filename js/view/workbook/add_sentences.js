@@ -303,6 +303,9 @@ function pageinit(memberId, isSsam) {
 	});
 	// [지문 검색 버튼 클릭]
 	$('#searchBtn').on('click', async function(_e, paramKeyword) {
+		if(correctionBlinkAnimation != null && !correctionBlinkAnimation.paused) {
+			correctionBlinkAnimation.remove('.hwt-backdrop mark.corrected');
+		}		
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());	
 			
