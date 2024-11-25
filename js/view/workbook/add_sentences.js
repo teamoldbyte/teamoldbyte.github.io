@@ -118,7 +118,7 @@ function pageinit(memberId, isSsam) {
 		$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
 		$('.invalid-input-warning').toggle(validateResult[0]);
 		$('.corrected-input-info').toggle(validateResult[1]);
-		if(correctionBlinkAnimation != null && correctionBlinkAnimation.running.length > 0) {
+		if(correctionBlinkAnimation != null && !correctionBlinkAnimation.paused) {
 			correctionBlinkAnimation.remove('.hwt-backdrop mark.corrected');
 		}		
 		correctionBlinkAnimation = anime({
