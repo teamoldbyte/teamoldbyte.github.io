@@ -716,16 +716,6 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		}
 	}
 
-
-	function fetchExactSentenceId(targetSentence) {
-		return new Promise((resolve, _) => {
-			$.getJSON('/sentence/search', { eng: targetSentence }, function(sentences) {
-				resolve(sentences.find(({ eng }) => eng == targetSentence)?.sentenceId ?? null);
-			}).fail(function() {
-				resolve(null);
-			})
-		})
-	}
 	// [지문 등록 버튼 클릭 ]
 	$('#addBtn').on('click', async function() {
 		const $form = $('#passageForm');
@@ -775,6 +765,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 							}
 						});
 						
+						$form.find('#text').prop('disabled', true);
 						dirty = true;
 					} else { // 편집 내용이 없는 경우
 						$form.find('#text').prop('disabled', true);
@@ -803,36 +794,17 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					const $sentences = $('.edit-passage .divided-sentence');
 					sentences = Array.from($sentences.get(), el => $(el).find(':text').val().trim().sentenceNormalize());
 					
+					// 유효한(최소 1문장 일치) 지문 검색결과가 있었음에도 무시한 경우
 					if($('.search-result-section .list-group-item:not(.no-passage)').length > 0) {
-						await Promise.allSettled(Array.from(sentences, sentence => {
-							return new Promise((resolve, reject) => {
-								fetchExactSentenceId(sentence)
-								.then((dbSentenceId) => {
-									if(dbSentenceId)
-										resolve(dbSentenceId);
-									else
-										reject(sentence);
-								}).catch(() => reject(sentence));
-							});
-						})).then((results) => {
-							if(results.find(result => result.status == 'fulfilled')) {
-								dirty = true;
-								$form.find('#text').prop('disabled', true);
-								Array.from(results, (result, i) => {
-									if(result.status == 'fulfilled') {
-										createHidden($form, `existingSentenceList[${i}].sentenceId`, result.value);
-									}else {
-										createHidden($form, `existingSentenceList[${i}].eng`, result.reason);
-									}
-								});
-							}else {
-								$form[0].action = '/workbook/passage/new';
-								$form.find('#text').val(sentences.join(' '));
-							}
+						sentences.forEach((s,i) => {
+							createHidden($form, `existingSentenceList[${i}].eng`, s);
 						})
-					} else {
+						$form.find('#text').prop('disabled', true);
+					}
+					// 유효한 검색결과가 없는 경우
+					else {
 						$form[0].action = '/workbook/passage/new';
-						$form.find('#text').val(sentences.join(' '));
+						$form.find('#text').prop('disabled', false).val(sentences.join(' '));
 					}
 				} else { // 새로 작성된 문장을 분리
 					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
