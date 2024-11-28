@@ -766,33 +766,15 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					// (수정하지 않음: sentenceId 입력, 수정함: eng 입력)
 					if ($selectedPassage.text() != finalSentences.join(' ')) {
 						
-						const searchSentencePromises = [];
 						$sentences.each(function(i, el) {
 							const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
 							if ($(this).data('orgData') != normalizedText) {
-								searchSentencePromises.push(new Promise((resolve, _) => {
-									fetchExactSentenceId(normalizedText)
-									.then((dbSentenceId) => {
-										if(dbSentenceId) {
-											createHidden($form, `existingSentenceList[${i}].sentenceId`, dbSentenceId);
-										}
-										else {
-											sentencesLength += normalizedText.length;
-											createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
-										}
-										resolve();
-									}).catch(() => {
-										sentencesLength += normalizedText.length;
-										createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
-										resolve();
-									})
-								}));
+								createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
 							} else {
 								createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
 							}
 						});
 						
-						await Promise.all(searchSentencePromises);
 						dirty = true;
 					} else { // 편집 내용이 없는 경우
 						$form.find('#text').prop('disabled', true);
