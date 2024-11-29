@@ -796,6 +796,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 					
 					// 유효한(최소 1문장 일치) 지문 검색결과가 있었음에도 무시한 경우
 					if($('.search-result-section .list-group-item:not(.no-passage)').length > 0) {
+						dirty = true;
 						sentences.forEach((s,i) => {
 							createHidden($form, `existingSentenceList[${i}].eng`, s);
 						})
