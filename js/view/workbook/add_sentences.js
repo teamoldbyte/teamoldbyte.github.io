@@ -340,11 +340,11 @@ function pageinit(memberId, isSsam) {
 						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 						return;					
 					}
-					else if(!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
+					else if(!REGEX_VALID_SENTENCE_START.test(tempSentence)) {
 						alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
 						return;					
 					}
-					else if(!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+					else if(!new RegExp(REGEX_STR_VALID_SENTENCE_END).test(tempSentence)) {
 						alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
 						return;
 					}
