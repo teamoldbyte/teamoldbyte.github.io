@@ -298,7 +298,7 @@ function pageinit(memberId, isSsam) {
 	.on('click', '.js-insert-sentence-btn', async function() {
 		const $new = $('#hiddenDivs .divided-sentence').clone();
 		$(this).closest('.divided-sentence').after($new);
-		await sleep(50);
+		await sleep(67);
 		$new.fadeIn().find(':text').trigger('input')[0].focus();
 	});
 	// [지문 검색 버튼 클릭]
@@ -582,7 +582,7 @@ function pageinit(memberId, isSsam) {
 		/*let height = 0;
 		while(height != $('#text')[0].scrollHeight) {
 			height = $('#text')[0].scrollHeight;
-			await sleep(50);
+			await sleep(67);
 			$('#text').css('height', height + 'px');
 		}*/
 	});
@@ -608,7 +608,7 @@ function pageinit(memberId, isSsam) {
 		for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
 			const $sentence = $('#hiddenDivs .divided-sentence').clone();
 			$sentence.appendTo($result);
-			await sleep(50);
+			await sleep(67);
 			
 			$sentence.data('sentenceId', sentenceDtoList[i].sentenceId||0)
 				.data('orgData', sentenceDtoList[i].eng)
