@@ -358,7 +358,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		.on('click', '.js-insert-sentence-btn', async function() {
 			const $new = $('#hiddenDivs .divided-sentence').clone();
 			$(this).closest('.divided-sentence').after($new);
-			await sleep(100);
+			await sleep(50);
 			$new.fadeIn().find(':text').trigger('input');
 		});
 	// [지문 검색 버튼 클릭]
@@ -374,7 +374,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 			for (let i = 0, len = sentences.length; i < len; i++) {
 				const $sentence = $('#hiddenDivs .divided-sentence').clone();
 				$sentence.appendTo($result);
-				await sleep(100);
+				await sleep(50);
 				$sentence.fadeIn().find(':text').val(sentences[i]).trigger('input');
 			}
 			$('#beforeInput').addClass('opacity-50 pe-none');
@@ -708,7 +708,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		for (let i = 0, len = sentenceDtoList.length; i < len; i++) {
 			const $sentence = $('#hiddenDivs .divided-sentence').clone();
 			$sentence.appendTo($result);
-			await sleep(100);
+			await sleep(50);
 
 			$sentence.data('sentenceId', sentenceDtoList[i].sentenceId || 0)
 				.data('orgData', sentenceDtoList[i].eng)
