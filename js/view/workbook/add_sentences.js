@@ -271,10 +271,10 @@ function pageinit(memberId, isSsam) {
 	// [(공통)단위 문장 수정]
 	$(document).on('input', '.divided-sentence :text', function() {
 		const text = this.value.trim().quoteNormalize();
-		if(/^["']?[A-Z0-9]+/.test(text) != true) {
+		if(REGEX_VALID_SENTENCE_START.test(text) != true) {
 			$(this).siblings('.invalid-tooltip').text('문장의 시작은 영문대문자, 숫자 혹은 따옴표(" \')여야 합니다.');
 			$(this).addClass('is-invalid');
-		}else if(!new RegExp('[\.\?\!]["\']?$').test(text)) {
+		}else if(!new RegExp(REGEX_STR_VALID_SENTENCE_END).test(text)) {
 			$(this).siblings('.invalid-tooltip').text('문장의 끝은 구두점(. ? !) 혹은 따옴표(" \')여야 합니다.');
 			$(this).addClass('is-invalid');
 		}else $(this).removeClass('is-invalid');
