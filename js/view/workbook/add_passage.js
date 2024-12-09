@@ -331,10 +331,10 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	// [(공통)단위 문장 수정]
 	$(document).on('input', '.divided-sentence :text', function() {
 		const text = this.value.trim().quoteNormalize();
-		if (/^["']?[A-Z0-9]+/.test(text) != true) {
+		if (REGEX_VALID_SENTENCE_START.test(text) != true) {
 			$(this).siblings('.invalid-tooltip').text('문장의 시작은 영문대문자, 숫자 혹은 따옴표(" \')여야 합니다.');
 			$(this).addClass('is-invalid');
-		} else if (!new RegExp('[\.\?\!]["\']?$').test(text)) {
+		} else if (!new RegExp(REGEX_STR_VALID_SENTENCE_END).test(text)) {
 			$(this).siblings('.invalid-tooltip').text('문장의 끝은 구두점(. ? !) 혹은 따옴표(" \')여야 합니다.');
 			$(this).addClass('is-invalid');
 		} else $(this).removeClass('is-invalid');
@@ -414,11 +414,11 @@ function pageinit(isHelloBook, memberId, isSsam) {
 						alertAndFocusWrongSentence(`문장의 길이가 너무 길어 AI가 더욱 힘들어 합니다.`);
 						return;
 					}
-					else if (!/^["'(]?[A-Z0-9]/.test(tempSentence)) {
+					else if (!REGEX_VALID_SENTENCE_START.test(tempSentence)) {
 						alertAndFocusWrongSentence(`문장의 시작이 영문대문자나 숫자 혹은 따옴표(" ')가 아닙니다.`);
 						return;
 					}
-					else if (!new RegExp('[\.\?\!]["\']?$').test(tempSentence)) {
+					else if (!new RegExp(REGEX_STR_VALID_SENTENCE_END).test(tempSentence)) {
 						alertAndFocusWrongSentence(`문장의 끝이 구두점(. ? !)이나 따옴표(" ')가 아닙니다.`);
 						return;
 					}
