@@ -298,7 +298,7 @@ function pageinit(memberId, isSsam) {
 	.on('click', '.js-insert-sentence-btn', async function() {
 		const $new = $('#hiddenDivs .divided-sentence').clone();
 		$(this).closest('.divided-sentence').after($new);
-		await sleep(100);
+		await sleep(50);
 		$new.fadeIn().find(':text').trigger('input')[0].focus();
 	});
 	// [지문 검색 버튼 클릭]
