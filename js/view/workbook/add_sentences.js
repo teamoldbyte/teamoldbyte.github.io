@@ -608,7 +608,7 @@ function pageinit(memberId, isSsam) {
 		for(let i = 0, len = sentenceDtoList.length; i < len; i++) {
 			const $sentence = $('#hiddenDivs .divided-sentence').clone();
 			$sentence.appendTo($result);
-			await sleep(100);
+			await sleep(50);
 			
 			$sentence.data('sentenceId', sentenceDtoList[i].sentenceId||0)
 				.data('orgData', sentenceDtoList[i].eng)
