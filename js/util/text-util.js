@@ -51,6 +51,9 @@ const invalidEnglishRegex = /[^\u0021-\u007E\s\u00C0-\u017E\u2010-\u2015\u2018-\
 const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D\\u2160-\\u217F°℃℉]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(window, str) {
+	window.REGEX_VALID_SENTENCE_START = /^(["'(]|("'))?[A-Z0-9]/;
+	window.REGEX_STR_VALID_SENTENCE_END = '[\.\?\!](["\']|(\'"))?$';
+	
 	/**
 	 * 문자열의 내용 중 [‘],[’],[‚],[“],[”]와 같이 특수한 유니코드값을 ASCII 문자로 대체하여 반환
 	 * (추가: [ ],[&nbsp;])
