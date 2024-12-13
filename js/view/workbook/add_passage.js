@@ -129,6 +129,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	// [신규 지문 입력 시 비활성화된 등록 버튼 활성화]
 	let maxChars = isHelloBook ? 300 : 1000; // default 1000, 피코 추가소모로 500 늘릴 수 있음.
 	let textTooltip;
+	let correctionBlinkAnimation;	
 	$(document).on('input', '#newPassageText', function() {
 		const validateResult = replaceAndHighlights();
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
@@ -136,16 +137,17 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		$('.reset-textarea').toggle(textLen > 0); // 지우기 버튼 표시/미표시
 		$('.invalid-input-warning').toggle(validateResult[0]);
 		$('.corrected-input-info').toggle(validateResult[1]);
-		anime({
+		
+		if(correctionBlinkAnimation != null && !correctionBlinkAnimation.paused) {
+			correctionBlinkAnimation.remove('.hwt-backdrop mark.corrected');
+		}
+		correctionBlinkAnimation = anime({
 			targets: '.hwt-backdrop mark.corrected',
 			keyframes: [
-				{ opacity: 0, easing: 'linear' },
-				{ opacity: 1, easing: 'linear' },
-				{ opacity: 0, easing: 'linear' },
-				{ opacity: 1, easing: 'linear' },
-				{ opacity: 0, duration: 1000, easing: 'cubicBezier(.7, .0, 1.0, 0.3)' },
-				{ display: 'none', easing: 'steps(1)' }
+				{ opacity: 0, easing: 'linear', duration: 500 },
+				{ opacity: 1, easing: 'linear', duration: 500 }
 			],
+			loop: true
 		})
 		// 입력어가 유효한 글자로 제한량 이하일 경우
 		if (isSsam || (textLen < maxChars && !validateResult[0])) {
@@ -363,6 +365,12 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		});
 	// [지문 검색 버튼 클릭]
 	$('#searchBtn').on('click', async function(_e, paramKeyword) {
+		if(correctionBlinkAnimation != null && !correctionBlinkAnimation.paused) {
+			correctionBlinkAnimation.remove('.hwt-backdrop mark.corrected');
+		}		
+		$('.hwt-backdrop mark.corrected').remove();
+		$('.corrected-input-info').hide();
+		
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());
 		if (isHelloBook) {
