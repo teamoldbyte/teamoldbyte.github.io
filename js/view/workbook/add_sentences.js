@@ -306,6 +306,9 @@ function pageinit(memberId, isSsam) {
 		if(correctionBlinkAnimation != null && !correctionBlinkAnimation.paused) {
 			correctionBlinkAnimation.remove('.hwt-backdrop mark.corrected');
 		}		
+		$('.hwt-backdrop mark.corrected').remove();
+		$('.corrected-input-info').hide();
+		
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());	
 			
