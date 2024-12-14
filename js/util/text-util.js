@@ -27,6 +27,8 @@ U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 0080						nel
 00A0	nbsp
 
+00B0	°	±	²	³	´	µ	¶	·	¸	¹	º	»	¼	½	¾	¿
+
 00C0	À	Á	Â	Ã	Ä	Å	Æ	Ç	È	É	Ê	Ë	Ì	Í	Î	Ï
 00D0	Ð	Ñ	Ò	Ó	Ô	Õ	Ö	×	Ø	Ù	Ú	Û	Ü	Ý	Þ	ß
 00E0	à	á	â	ã	ä	å	æ	ç	è	é	ê	ë	ì	í	î	ï
@@ -43,12 +45,18 @@ U+		0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 2010	‐	‑	‒	–	—	―			‘	’	‚	‛	“	”
 2020									ls	ps
 
+2070	⁰	ⁱ			⁴	⁵	⁶	⁷	⁸	⁹	⁺	⁻	⁼	⁽	⁾	ⁿ
+2080	₀	₁	₂	₃	₄	₅	₆	₇	₈	₉	₊	₋	₌	₍	₎	 
+2090	ₐ	ₑ	ₒ	ₓ	ₔ	ₕ	ₖ	ₗ	ₘ	ₙ	ₚ	ₛ	ₜ
+
+2100	℀	℁	ℂ	℃	℄	℅	℆	ℇ	℈	℉	ℊ	ℋ	ℌ	ℍ	ℎ	ℏ
+
 2160	Ⅰ	Ⅱ	Ⅲ	Ⅳ	Ⅴ	Ⅵ	Ⅶ	Ⅷ	Ⅸ	Ⅹ	Ⅺ	Ⅻ	Ⅼ	Ⅽ	Ⅾ	Ⅿ
 2170	ⅰ	ⅱ	ⅲ	ⅳ	ⅴ	ⅵ	ⅶ	ⅷ	ⅸ	ⅹ	ⅺ	ⅻ	ⅼ	ⅽ	ⅾ	ⅿ
 
 */
-const invalidEnglishRegex = /[^\u0021-\u007E\s\u00C0-\u017E\u2010-\u2015\u2018-\u201A\u201C-\u201D\u2160-\u217F°℃℉]/gi;
-const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D\\u2160-\\u217F°℃℉]";
+const invalidEnglishRegex = /[^\u0021-\u007E\s\u00C0-\u017E\u2010-\u2015\u2018-\u201A\u201C-\u201D\u2070-\u209C\u2160-\u217F°℃℉]/gi;
+const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015\\u2018-\\u201A\\u201C-\\u201D\\u2070-\\u209C\\u2160-\\u217F°℃℉]";
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(window, str) {
 	window.REGEX_VALID_SENTENCE_START = /^(["'(]|("'))?[A-Z0-9]/;
@@ -158,7 +166,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 			match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
 		// 정규식에 걸리지 않을 때까지 재검사
-		while ((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|([−–‒­])|([─―])|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )|(?:'\s+((?:s|re|m|d|t|ll|ve)\s))|(?:\s+'((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
+		while ((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|([−–‒­])|([─―])|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )|(?:('\s+|\s+')((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
 			for (i = 1; i < 10; i++) {
 				if (match[i] != null) {
 					switch (i) {
@@ -193,8 +201,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 							arr.push({ highlight: [match.index + 2, match.index + 3] });
 							input = input.replace(match[0], `${match[i].substring(0, 2)} ${match[i].substring(2)}`)
 							break;
-						case 8: // 아포스트로피 역할의 홑따옴표와 문자 사이에는 공백 생략
-						case 9: // 아포스트로피 역할의 홑따옴표 앞의 공백은 생략
+						case 8: // 아포스트로피 역할의 홑따옴표와 앞뒤문자 사이에는 공백 생략
 							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
 							arr.push({ highlight: [match.index, match.index + match[i].length] });
 							input = input.replace(match[0], `'${match[i]}`);
