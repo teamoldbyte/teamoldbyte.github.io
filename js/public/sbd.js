@@ -456,7 +456,7 @@
 				}, [sentences[0]]);
 
 				// join tokens back together
-				return result.map(function(sentence, ii) {
+				var result2 =  result.map(function(sentence, ii) {
 					if (options.preserve_whitespace && !options.newline_boundaries && !options.html_boundaries) {
 						// tokens looks like so: [leading-space token, non-space token, space
 						// token, non-space token, space token... ]. In other words, the first
@@ -473,6 +473,13 @@
 
 					return sentence.join(" ");
 				});
+				
+				var result3 = [];
+				result2.forEach(sentence => {
+					const splitSentences = sentence.split(/(?<=[.!?]['’’”])\s+(?=[A-Z])/);
+					result3.push(...splitSentences);
+				})
+				return result3;
 			};
 
 		}, { "./Match": 1, "./stringHelper": 3, "sanitize-html": 2 }]
