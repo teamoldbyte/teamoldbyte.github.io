@@ -476,7 +476,7 @@
 				
 				var result3 = [];
 				result2.forEach(sentence => {
-					const splitSentences = sentence.split(/(?<=[.!?]['’’”])\s+(?=[A-Z])/);
+					const splitSentences = sentence.split(/(?<=[.!?]['’"”])\s+(?=[A-Z0-9])/);
 					result3.push(...splitSentences);
 				})
 				return result3;
