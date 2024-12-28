@@ -61,7 +61,17 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 (function(window, str) {
 	window.REGEX_VALID_SENTENCE_START = /^(["'(]|("'))?[A-Z0-9]/;
 	window.REGEX_STR_VALID_SENTENCE_END = '[\.\?\!](["\']|(\'"))?$';
-	
+
+	const REGEX_FIX_COMMAS = /\s*([‚،﹐﹑，､])/,
+		REGEX_FIX_QUOTES = /([“‟”„″‶❝❞〝〞＂])/,
+		REGEX_FIX_APOSTROPHES = /([´＇｀`‘’‛′‵❛❜])/,
+		REGEX_FIX_HYPHENS = /([−–‒­])/,
+		REGEX_FIX_DASHES = /([─―])/,
+		REGEX_FIX_BEFORE_PUNCTUATION = /\s+([,.!?:;]+)/,
+		REGEX_FIX_AFTER_PUNCTUATION = /((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )/,
+		REGEX_FIX_CONTRACTIONS = /(?:('\s+|\s+')((?:s|re|m|d|t|ll|ve)\s))/;		
+		
+	const REGEX_FIX_TOTAL = new RegExp([REGEX_FIX_COMMAS,REGEX_FIX_QUOTES,REGEX_FIX_APOSTROPHES,REGEX_FIX_HYPHENS,REGEX_FIX_DASHES,REGEX_FIX_BEFORE_PUNCTUATION,REGEX_FIX_AFTER_PUNCTUATION,REGEX_FIX_CONTRACTIONS].map(part => part.source).join('|'));
 	/**
 	 * 문자열의 내용 중 [‘],[’],[‚],[“],[”]와 같이 특수한 유니코드값을 ASCII 문자로 대체하여 반환
 	 * (추가: [ ],[&nbsp;])
@@ -70,12 +80,12 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	 * @version 2.0 by LGM
 	 */
 	str.quoteNormalize = function() {
-		return this.replace(/[“‟”„″‶❝❞〝〞＂]/gi, "\"") // 큰따옴표
-			.replace(/[´＇｀`‘’‛′‵❛❜]/gi, "'") // 작은따옴표
-			.replace(/[‚،﹐﹑，､]/gi, ",") // 쉼표
+		return this.replace(new RegExp(REGEX_FIX_QUOTES, 'g'), "\"") // 큰따옴표
+			.replace(new RegExp(REGEX_FIX_APOSTROPHES, 'g'), "'") // 작은따옴표
+			.replace(new RegExp(REGEX_FIX_COMMAS, 'g'), ",") // 쉼표
 			.replace(/[\u00A0\u2000-\u200B\u202F\u205F]/gi, " ") // 공백
-			.replace(/[−–‒­]/g, '-') // 하이픈 및 en dash
-			.replace(/─―/g, '—'); // 표 그리기 기호(─) 및 수평바(―)를 em dash(—)로
+			.replace(new RegExp(REGEX_FIX_HYPHENS, 'g'), '-') // 하이픈 및 en dash
+			.replace(new RegExp(REGEX_FIX_DASHES, 'g'), '—'); // 표 그리기 기호(─) 및 수평바(―)를 em dash(—)로
 	};
 
 	// 첫 글자를 대문자로
@@ -101,7 +111,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	// 1개 이상의 연속된 공백문자는 하나의 ' '으로
 	// 2022.6.3 : 구두점 앞의 공백은 없애기
 	str.shrinkSpaces = function() {
-		return this.replace(/\s+/g, ' ').replace(/\s+([,.?!;:]+)/g, '$1');
+		return this.replace(/\s+/g, ' ').replace(new RegExp(REGEX_FIX_BEFORE_PUNCTUATION, 'g'), '$1');
 	};
 	// 하나의 정규화된 영어 문장으로 반환
 	str.sentenceNormalize = function() {
@@ -166,45 +176,46 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 			match; // 매칭결과(재사용)
 		// 1. 공백과 구두점, 따옴표 교정
 		// 정규식에 걸리지 않을 때까지 재검사
-		while ((match = /\s*([‚،﹐﹑，､])|([“‟”„″‶❝❞〝〞＂])|([´＇｀`‘’‛′‵❛❜])|([−–‒­])|([─―])|\s+([,.!?:;])|((?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:(?:\w[!?;]\w+|[A-z][:,]\w+|[0-9][:,][A-z]+)|(?:[A-z]\.(?:[A-Z][A-z]{1,}|\d+|I'[a-z]+))|\d\.[A-Z][A-z]*) )|(?:('\s+|\s+')((?:s|re|m|d|t|ll|ve)\s))/.exec(input)) != null) {
-			for (i = 1; i < 10; i++) {
+		
+		while ((match = REGEX_FIX_TOTAL.exec(input)) != null) {
+			for (i = 1; i < 9; i++) {
 				if (match[i] != null) {
 					switch (i) {
 						case 1: // 비정규화된 콤마를 ASCII 콤마로
 							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({ highlight: [match.index, match.index + 1] });
-							input = input.replace(match[0], ',');
+							input = input.replace(REGEX_FIX_COMMAS, ',');
 							break;
 						case 2: // 비정규화된 쌍따옴표를 ASCII 쌍따옴표로
 							arr.push({ highlight: [match.index, match.index + 1] });
-							input = input.replace(match[0], '"');
+							input = input.replace(REGEX_FIX_QUOTES, '"');
 							break;
 						case 3: // 비정규화된 홑따옴표를 ASCII 홑따옴표로
 							arr.push({ highlight: [match.index, match.index + 1] });
-							input = input.replace(match[0], '\'');
+							input = input.replace(REGEX_FIX_APOSTROPHES, '\'');
 							break;
 						case 4:	// 비정규화된 (짧은) 대쉬를 ASCII 하이픈으로
 							arr.push({ highlight: [match.index, match.index + 1] });
-							input = input.replace(match[0], '-');
+							input = input.replace(REGEX_FIX_HYPHENS, '-');
 							break;
 						case 5: // 수평바 기호 '―' 및 문장에서 등장할 일이 없는 표 그리기 기호 '─'는 em dash '—'로
 							arr.push({ highlight: [match.index, match.index + 1] });
-							input = input.replace(match[0], '—');
+							input = input.replace(REGEX_FIX_DASHES, '—');
 							break;
 						case 6: // 구두점 앞의 하나 이상의 공백은 생략
 							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1);
 							arr.push({ highlight: [match.index, match.index + 2] });
-							input = input.replace(match[0], match[i]);
+							input = input.replace(REGEX_FIX_BEFORE_PUNCTUATION, match[i]);
 							break;
 						case 7: // 구두점 뒤의 영문자(숫자 및 알파벳)가 오면 반드시 구두점 뒤에서 한 칸 띄우도록 (p.m. 형태나 1970.1.1 형태는 무시)
 							if (inputCursor >= match.index + 1) inputCursor += 1;
 							arr.push({ highlight: [match.index + 2, match.index + 3] });
-							input = input.replace(match[0], `${match[i].substring(0, 2)} ${match[i].substring(2)}`)
+							input = input.replace(REGEX_FIX_AFTER_PUNCTUATION, `${match[i].substring(0, 2)} ${match[i].substring(2)}`)
 							break;
 						case 8: // 아포스트로피 역할의 홑따옴표와 앞뒤문자 사이에는 공백 생략
 							if (inputCursor >= match.index) inputCursor -= (match[0].length - 1 - match[i].length);
 							arr.push({ highlight: [match.index, match.index + match[i].length] });
-							input = input.replace(match[0], `'${match[i]}`);
+							input = input.replace(REGEX_FIX_CONTRACTIONS, '\'$2');
 							break;
 					}
 					break;
