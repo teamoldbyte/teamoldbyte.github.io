@@ -151,9 +151,10 @@
 			};
 
 			// Match urls / emails
-			// http://stackoverflow.com/a/3809435/951517
+			// Matching url ref: https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url/3809435#comment139285381_3809435
+			
 			exports.isURL = function(str) {
-				return str.match(/([-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)|[\w-]+@[\w-]+\.[\w-]{2,4})/);
+				return str.match(/([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)|[\w-]+@[\w-]+\.[\w-]{2,4})/);
 			};
 
 			// Starting a new sentence if beginning with capital letter
