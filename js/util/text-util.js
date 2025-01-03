@@ -63,7 +63,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	window.REGEX_STR_VALID_SENTENCE_END = '[\.\?\!](["\']|(\'"))?$';
 
 	const REGEX_FIX_COMMAS = /\s*([‚،﹐﹑，､])/,
-		REGEX_FIX_QUOTES = /([“‟”„″‶❝❞〝〞＂])/,
+		REGEX_FIX_QUOTES = /([“‟”„″‶❝❞〝〞＂]|'')/,
 		REGEX_FIX_APOSTROPHES = /([´＇｀`‘’‛′‵❛❜])/,
 		REGEX_FIX_HYPHENS = /([−–‒­])/,
 		REGEX_FIX_DASHES = /([─―])/,
