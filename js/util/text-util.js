@@ -164,6 +164,15 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 			} else return false;
 		}
 	};
+	const REGEX_LF = /(?<!\r)\n/mg;
+	/**
+	 * @description	\n문자가 서버를 통해 MySQL 레코드로 등록되는 과정에 \r\n으로 바뀌는 것을 염두하여
+	 * 				미리 \r\n으로 바뀌었을 때의 문자열 길이를 파악하기 위한 함수
+	 * @author LGM
+	 */
+	str.lf2crlf = function() {
+		return this.replace(REGEX_LF, '\r\n');
+	}
 
 	/** 입력란에 교정을 적용하고, 변경된 부분을 강조 표시
 	@param input 입력 문자열
