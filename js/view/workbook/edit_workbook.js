@@ -95,6 +95,7 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 	});
 	
 	// 편집 입력칸 클릭 시 수정 활성화 및 버튼 표시
+	const MAX_DB_TEXT_LENGTH = 65536;
 	$(document).on('focus click', '.edit-hover:not(.active) *', function(e) {
 		e.stopImmediatePropagation();
 		e.stopPropagation();
@@ -108,7 +109,17 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			$input.prop('readonly', false);
 			if($input.is('#description')) {
 				$input.siblings('.description-preview').hide(0);
-				openSummernote($input);
+				
+				openSummernote($input).then(() => {
+					const textencoder = new TextEncoder();
+					$input.on('summernote.change', (_, contents, $editable) => {
+						const isOverlimit = textencoder.encode(contents).byteLength > MAX_DB_TEXT_LENGTH;
+						$editable
+							.attr('data-char-count', isOverlimit ? '최대 입력 글자수를 초과했습니다.' : '')
+							.toggleClass('note-overlimit', isOverlimit);
+						$block.find('.mdf-btns :submit').prop('disabled', isOverlimit);
+					})
+				});
 			}
 			$input.data('originData', $input.is(':radio')
 									? $input.filter(':checked').val() : $input.val());
