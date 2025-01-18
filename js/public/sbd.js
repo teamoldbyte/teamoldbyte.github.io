@@ -85,7 +85,7 @@
 			}
 
 			exports.isCommonAbbreviation = function(str) {
-				var noSymbols = str.replace(/[-'`~!@#$%^&*()_|+=?;:'",.<>\{\}\[\]\\\/]/gi, "");
+				var noSymbols = str.replace(/[-'`~!@#$%^&*()_|+=?;:'",.<>{}[\]\\/]/gi, "");
 
 				return ~abbreviations.indexOf(noSymbols);
 			}
@@ -283,8 +283,8 @@
 
 
 				// Split the text into words
-				var words;
-				var tokens;
+				let words;
+				let tokens;
 
 				// Split the text into words
 				if (options.preserve_whitespace) {
@@ -302,18 +302,18 @@
 				}
 
 
-				var wordCount = 0;
-				var index = 0;
-				var temp = [];
-				var sentences = [];
-				var current = [];
+				let wordCount = 0;
+				let index = 0;
+				let temp = [];
+				let sentences = [];
+				let current = [];
 
 				// If given text is only whitespace (or nothing of \S+)
 				if (!words || !words.length) {
 					return [];
 				}
 
-				for (var i = 0, L = words.length; i < L; i++) {
+				for (let i = 0, L = words.length; i < L; i++) {
 					wordCount++;
 					// Add the word to current sentence
 					current.push(words[i]);
@@ -437,8 +437,8 @@
 					return s.length > 0;
 				});
 
-				var result = sentences.slice(1).reduce(function(out, sentence) {
-					var lastSentence = out[out.length - 1];
+				const result = sentences.slice(1).reduce(function(out, sentence) {
+					const lastSentence = out[out.length - 1];
 
 					// Single words, could be "enumeration lists"
 					if (lastSentence.length === 1 && /^.{1,2}[.]$/.test(lastSentence[0])) {
@@ -457,13 +457,13 @@
 				}, [sentences[0]]);
 
 				// join tokens back together
-				var result2 =  result.map(function(sentence, ii) {
+				const result2 =  result.map(function(sentence, ii) {
 					if (options.preserve_whitespace && !options.newline_boundaries && !options.html_boundaries) {
 						// tokens looks like so: [leading-space token, non-space token, space
 						// token, non-space token, space token... ]. In other words, the first
 						// item is the leading space (or the empty string), and the rest of
 						// the tokens are [non-space, space] token pairs.
-						var tokenCount = sentence.length * 2;
+						let tokenCount = sentence.length * 2;
 
 						if (ii === 0) {
 							tokenCount += 1;
@@ -475,9 +475,9 @@
 					return sentence.join(" ");
 				});
 				
-				var result3 = [];
+				let result3 = [];
 				result2.forEach(sentence => {
-					const splitSentences = sentence.split(/(?<=[.!?]['’"”])\s+(?=[A-Z0-9])/);
+					const splitSentences = sentence.split(/(?<=[.!?]['’"”]?['’"”])\s+(?=['‘"“]*[A-Z0-9])/);
 					result3.push(...splitSentences);
 				})
 				return result3;
