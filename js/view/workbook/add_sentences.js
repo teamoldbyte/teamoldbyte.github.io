@@ -312,15 +312,15 @@ function pageinit(memberId, isSsam) {
 		const textarea = document.getElementById('newPassageText');
 		const sentences = tokenizer.sentences(textarea.value.sentenceNormalize());	
 			
-			const total = Array.from(sentences, sentence => {
-				// 아래와 같은 경우 번호 삭제
-				// 426. I was
-				// was bored." 427.
-				return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
-							.replace(/(['"])\s+\d+[?!.]$/, '$1')
-			}).filter(sentence => {
-				return /[a-zA-Z\s]/.test(sentence);
-			});
+		const total = wrapQuotes(/*Array.from(*/sentences/*, sentence => {
+			// 아래와 같은 경우 번호 삭제
+			// 426. I was
+			// was bored." 427.
+			return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
+				.replace(/(['"])\s+\d+[?!.]$/, '$1')
+		})*/.filter(sentence => {
+			return /[a-zA-Z\s]/.test(sentence);
+		}));
 			let eng = total[0];
 			textarea.value = total.join(' ');
 			
