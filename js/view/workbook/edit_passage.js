@@ -250,21 +250,19 @@ function pageinit(sentenceList, memberId, isSsam) {
 
 	// [문장 추가 등록]------------------------------------------------------------
 	$('.js-add').on('click', function() {
-		const sentences = wrapQuotes(tokenizer.sentences($('.add-section textarea').val().sentenceNormalize()));
+		const sentences = tokenizer.sentences($('.add-section textarea').val().sentenceNormalize());
 		const orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
 
 		// 문장 검사
-		const filteredSentences = sentences.map(sentence => {
+		const filteredSentences = wrapQuotes(/*Array.from(*/sentences/*, sentence => {
 			// 아래와 같은 경우 번호 삭제
 			// 426. I was
 			// was bored." 427.
-			const trimmedSentence = sentence.trim();
-			const match = trimmedSentence.match(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/);
-			const sentenceWithoutNumber = match ? match[1] : trimmedSentence;
-			return sentenceWithoutNumber.replace(/(['"])\s+\d+[?!.]$/, '$1');
-		}).filter(sentence => {
+			return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
+				.replace(/(['"])\s+\d+[?!.]$/, '$1')
+		})*/.filter(sentence => {
 			return /[a-zA-Z\s]/.test(sentence);
-		});
+		}));
 
 		if (filteredSentences.length === 0) {
 			return;
@@ -351,19 +349,19 @@ function pageinit(sentenceList, memberId, isSsam) {
 	$(document).on('click', '.js-edit', function() {
 		const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
 		let origin = $sentenceSection.find('.sentence-text').text();
-		const sentences = wrapQuotes(tokenizer.sentences($sentenceSection.find('.edit-section textarea').val().sentenceNormalize()));
+		const sentences = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val().sentenceNormalize());
 
 
 		// 문장 검사
-		const total = Array.from(sentences, sentence => {
+		const total = wrapQuotes(/*Array.from(*/sentences/*, sentence => {
 			// 아래와 같은 경우 번호 삭제
 			// 426. I was
 			// was bored." 427.
 			return sentence.replace(/^['"]?[^a-zA-Z]+\. (['"]?[A-Z])/, '$1')
-						.replace(/(['"])\s+\d+[?!.]$/, '$1')
-		}).filter(sentence => {
+				.replace(/(['"])\s+\d+[?!.]$/, '$1')
+		})*/.filter(sentence => {
 			return /[a-zA-Z\s]/.test(sentence);
-		});
+		}));
 		let text = total.join(' ').capitalize1st();
 		const textarea = $sentenceSection.find('.edit-section textarea').get(0);
 		textarea.value = text;
