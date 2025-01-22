@@ -60,7 +60,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 // String 타입에 빌더형으로 사용가능한 함수 정의
 (function(window, str) {
 	window.REGEX_VALID_SENTENCE_START = /^(["'(]|("'))?[A-Z0-9]/;
-	window.REGEX_STR_VALID_SENTENCE_END = '[\.\?\!](["\']|(\'"))?$';
+	window.REGEX_STR_VALID_SENTENCE_END = '("?[.?!](\'|\'")?|\'?[.?!]("|"\')?)$';
 
 	const REGEX_FIX_COMMAS = /\s*([‚،﹐﹑，､])/,
 		REGEX_FIX_QUOTES = /([“‟”„″‶❝❞〝〞＂]|'')/,
@@ -117,53 +117,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	str.sentenceNormalize = function() {
 		return this.quoteNormalize().concatLines().shrinkSpaces().capitalize1st();
 	}
-	/**
-	// 문장 구분 지점을 기준으로 문장 자르기(출처: https://regex101.com/r/nG1gU7/1173)
-	// 설명: 공백문자 앞의 글자가 p.m.이나 a.m. 혹은 Mr.나 Dr. 같은 형태가 아닌 구두점(.!?)이면 문장의 끝으로 인식.
-	// #이슈: 얼마든지 규격 외의 약자나 호칭 줄임말 등이 있을 수 있다. 
-	@deprecated sbd 라이브러리 사용
-	 */
-	str.splitSentences = function() {
-		try {
-			return this.split(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<! [A-Z]\\.)(?<=[\\.\\!\\?"])\\s`, 'gm'));
-		} catch (e) {
-			console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
-			if (!this.match(/\s/)) return [this];
-			const sentences = [];
-			let start = 0, ends = this.matchAll(/\s/gm);
-			// lookbehind 정규식 동작을 스크립트로 구현
-			for (let point of ends) {
-				const prev = this.charAt(point.index - 1);
-				if (/[\.\!\?]/.test(prev) && !(/\w\.\w./.test(prev) || /[A-Z][a-z]\./.test(prev) || / [A-Z]\./.test(prev))) {
-					sentences.push(this.substring(start, point.index));
-					start = point.index + 1;
-				} else continue;
-			}
-			if (start <= this.length + 1) {
-				sentences.push(this.substring(start));
-			}
-			return sentences;
-		}
-	};
-	// 유효한 하나의 영어 문장인지 검사
-	str.isSentence = function() {
-		try {
-			const invalidMatched = this.match(new RegExp(`(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=[\\.\\!\\?])`, 'g'));
-			return /[A-Z\d'"]/.test(this.charAt()) && invalidMatched != null && invalidMatched.index == this.length;
-		} catch (e) {
-			console.warn('This browser does not support the RegExp "(?<=X)" and "(?<!X)", so it takes longer than other browsers...');
-			if (/[A-Z\d'"]/.test(this.charAt()) && /[\.\?\!]['"]?$/.test(this)) {
-				const puncts = this.matchAll(/\S+[\.\?\!]['"]?/g);
-				for (let punct of puncts) {
 
-					if (!(/\w\.\w.$/.test(punct[0]) || /[A-Z][a-z]\.$/.test(punct[0]))) {
-						return (punct.index + punct[0].length == this.length);
-					}
-				}
-				return false;
-			} else return false;
-		}
-	};
 	const REGEX_LF = /(?<!\r)\n/mg;
 	/**
 	 * @description	\n문자가 서버를 통해 MySQL 레코드로 등록되는 과정에 \r\n으로 바뀌는 것을 염두하여
@@ -172,6 +126,92 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	 */
 	str.lf2crlf = function() {
 		return this.replace(REGEX_LF, '\r\n');
+	}
+	
+	window.wrapQuotes = function(sentences) {
+		const fullText = sentences.join(' ');
+		// 시작하는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
+		const quoteOpenings = Array.from(fullText.matchAll(/((?<![^\s"])(?<="?)'(?=[^'\s\t\b]+))|((?<![^\s'])(?<='?)"(?=[^"\s\t\b]+))/gm)).map(matched => ({type: 'open', text: matched[0], index: matched.index}));
+		// 끝나는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
+		const quoteClosings = Array.from(fullText.matchAll(/(?<=[^"'\s\t\b]"?)'(?!\w)|(?<=[^"'\s\t\b]'?)"(?!\w)/gm)).map(matched => ({type: 'close', text: matched[0], index: matched.index}));
+		
+		const totalQuotes = quoteOpenings.concat(quoteClosings);
+		// 위치 기준으로 정렬
+		totalQuotes.sort((a, b) => a.index - b.index);
+		// 시작 따옴표 없이 바로 끝 따옴표가 나오면 제외
+		while(totalQuotes.length > 0 && totalQuotes[0].type == 'close') totalQuotes.shift();
+		// 최소 한 쌍(2개)의 따옴표가 없으면 입력문장 그대로 반환 
+		if(totalQuotes.length < 2) return sentences;
+		
+		const quoteStack = [];
+		if(totalQuotes[0].type == 'open') quoteStack.push(totalQuotes.shift());
+		
+		const wrappedSentences = [];
+		let index = 0;
+		sentences.forEach(sentence => {
+			let wrappedSentence = '';
+			
+			console.log(quoteStack, totalQuotes)
+			// 따옴표쌍 속에서 다시 시작 따옴표가 발견될 때 quoteStack에 담기
+			// (따옴표쌍이 최대 이중으로 겹친다고 가정)
+			if(totalQuotes.length > 0 && totalQuotes[0].type == 'open' && totalQuotes[0].index < index + sentence.length) {
+				console.log('dd')
+				quoteStack.push(totalQuotes.shift());
+			}
+			// 한 문장 안에서 강조를 위한 따옴표 쌍이 존재할 경우 통과 
+			while(quoteStack.length > 0 && totalQuotes.length > 0 && totalQuotes[0].type == 'close' 
+			&& quoteStack.slice(-1)[0].text == totalQuotes[0].text 
+			&& index < quoteStack.slice(-1)[0].index && totalQuotes[0].index < index + sentence.length) {
+				quoteStack.pop();
+				totalQuotes.shift();
+				while(totalQuotes.length > 0 && totalQuotes[0].type == 'open') 
+					quoteStack.push(totalQuotes.shift());
+			}
+			if(quoteStack.length == 0) {
+				wrappedSentences.push(sentence);
+			}
+			else {
+				// 이 문장이 포함되는 따옴표쌍의 시작점이 문장 이전에 나왔을 경우 이 문장의 시작에도 따옴표를 추가
+				if(quoteStack.slice(-1)[0].index < index && totalQuotes.length > 0) {
+					console.log(quoteStack.slice(-1)[0].index, index)
+					wrappedSentence += quoteStack.slice(-1)[0].text;
+				}
+				
+				// 문장의 내용 추가
+				wrappedSentence += sentence;
+				
+				// 이 문장이 포함되는 따옴표쌍의 끝점이 문장 이후에 있을 경우 이 문장의 끝에도 따옴표를 추가
+				if(quoteStack.slice(-1)[0].index< index + sentence.length && totalQuotes.length > 0
+				&& index + sentence.length < totalQuotes[0].index) {
+					wrappedSentence += quoteStack.slice(-1)[0].text;
+				}
+				
+				// 따옴표쌍의 끝점이 발견되면 따옴표쌍을 통과 처리
+				while(totalQuotes.length > 0 && totalQuotes[0].type == 'close'
+				// 따옴표쌍 끝점이 문장의 내에 존재	
+				&& totalQuotes[0].index < index + sentence.length) {
+					// 따옴표쌍의 끝점이 시작점과 동일한 따옴표
+					if(totalQuotes[0].text == quoteStack.slice(-1)[0].text) {
+						console.log('quote ends');
+						quoteStack.pop();
+						totalQuotes.shift();
+					}
+					// 축약 등의 역할을 하는 '아포스트로피'로 취급 -> 통과하고 넘어가기
+					else {
+						console.log('contraction detected');
+						totalQuotes.shift();
+					}
+					while(totalQuotes.length > 0 && totalQuotes[0].type == 'open')
+						quoteStack.push(totalQuotes.shift());
+				}
+				console.log(wrappedSentence)
+				wrappedSentences.push(wrappedSentence);
+			}
+			
+			index += 1 + sentence.length;
+		});
+		
+		return wrappedSentences;
 	}
 
 	/** 입력란에 교정을 적용하고, 변경된 부분을 강조 표시
@@ -231,45 +271,6 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 				}
 			}
 		}
-		// 2. 인용구 교정(인용부호가 쌍으로 있을 경우만)
-		/*const prevArrLen = arr.length;
-		// 아포스트로피 축약어는 인용부호에서 제외하고 동일한 인용부호의 쌍으로 감싼 문자열을 찾는다.
-		const quotes = input.matchAll(/(["'])(?:(?!s|re|m|d|t|ll|ve)\s)((?:\u0021|[\u0023-\u0026]|[\u0028-\u007E]|\s|(?:'(?:s|re|m|d|t|ll|ve)\s))+)\1(?!(?:(?:s|re|m|d|t|ll|ve) ))/g);
-		for(const quote of quotes) {
-			let substr = '', content = quote[2], lastIndex = quote.index + quote[0].length;
-			// 시작 인용부호 앞이 공백이 아니라면 공백을 추가한다.
-			if(quote.index != 0 && !/\s/.test(input[quote.index - 1])) {
-				moveOffsetsInArray(arr, prevArrLen, quote.index, 1);
-				arr.push({highlight: [quote.index, quote.index + 1]});
-				if(inputCursor >= quote.index) inputCursor++;
-				substr += ' ';
-				lastIndex++;
-			}
-			// 인용구에 trimStart 적용
-			if(content.startsWith(' ')) {
-				moveOffsetsInArray(arr, prevArrLen, quote.index, -1);
-				if(inputCursor >= quote.index) inputCursor--;
-				content = content.trimStart();
-				lastIndex--;
-			}
-			// 인용구에 trimEnd 적용
-			if(content.endsWith(' ')) {
-				moveOffsetsInArray(arr, prevArrLen, quote.index + content.length, -1);
-				if(inputCursor >= quote.index + content.length) inputCursor--;
-				content = content.trimEnd();
-				lastIndex--;
-			}
-			// 인용부호 + 인용구 변경
-			substr += quote[1] + content + quote[1];
-			// 끝 인용부호 뒤가 공백 혹은 구두점이 아니라면 공백을 추가한다.
-			if(input[quote.index + quote[0].length] != null && !/\s|[,.!?:;]/.test(input[quote.index + quote[0].length])) {
-				moveOffsetsInArray(arr, prevArrLen, lastIndex + 1, 1);
-				arr.push({highlight: [lastIndex, lastIndex + 1]});
-				if(inputCursor >= lastIndex + 1) inputCursor++;
-				substr += ' ';
-			}
-			input = input.replace(quote[0], substr);
-		}*/
 		// 3. 비정규 문자들(보이지 않는 문자 포함)을 × 문자로 치환
 		input = input.replaceAll(invalidEnglishRegex, '×');
 		return { input, inputCursor, arr };
@@ -278,47 +279,47 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	/**
 	 * 두 문장 간의 유사도 계산. (일부 단어들의 순서만 뒤바뀐 경우 1이 나오기도 함)
 	 */
-window.sentenceSimilarity = function(sentence1, sentence2) {
-  function textToVector(text) {
-    const words = text.match(/\b\w+\b/g); // 여기에서 split을 match로 교체
-    const frequencyMap = {};
-    words.forEach(word => {
-      if (!frequencyMap[word]) {
-        frequencyMap[word] = 0;
-      }
-      frequencyMap[word]++;
-    });
-    return frequencyMap;
-  }
+	window.sentenceSimilarity = function(sentence1, sentence2) {
+		function textToVector(text) {
+			const words = text.match(/\b\w+\b/g); // 여기에서 split을 match로 교체
+			const frequencyMap = {};
+			words.forEach(word => {
+				if (!frequencyMap[word]) {
+					frequencyMap[word] = 0;
+				}
+				frequencyMap[word]++;
+			});
+			return frequencyMap;
+		}
 
-  function dotProduct(vec1, vec2) {
-    let product = 0;
-    for (const key in vec1) {
-      if (vec1.hasOwnProperty(key) && vec2.hasOwnProperty(key)) {
-        product += vec1[key] * vec2[key];
-      }
-    }
-    return product;
-  }
+		function dotProduct(vec1, vec2) {
+			let product = 0;
+			for (const key in vec1) {
+				if (vec1.hasOwnProperty(key) && vec2.hasOwnProperty(key)) {
+					product += vec1[key] * vec2[key];
+				}
+			}
+			return product;
+		}
 
-  function magnitude(vec) {
-    let sum = 0;
-    for (const key in vec) {
-      if (vec.hasOwnProperty(key)) {
-        sum += vec[key] * vec[key];
-      }
-    }
-    return Math.sqrt(sum);
-  }
+		function magnitude(vec) {
+			let sum = 0;
+			for (const key in vec) {
+				if (vec.hasOwnProperty(key)) {
+					sum += vec[key] * vec[key];
+				}
+			}
+			return Math.sqrt(sum);
+		}
 
-  function cosineSimilarity(vec1, vec2) {
-    return dotProduct(vec1, vec2) / (magnitude(vec1) * magnitude(vec2));
-  }
+		function cosineSimilarity(vec1, vec2) {
+			return dotProduct(vec1, vec2) / (magnitude(vec1) * magnitude(vec2));
+		}
 
-  const vec1 = textToVector(sentence1);
-  const vec2 = textToVector(sentence2);
-  return cosineSimilarity(vec1, vec2);
-};
+		const vec1 = textToVector(sentence1);
+		const vec2 = textToVector(sentence2);
+		return cosineSimilarity(vec1, vec2);
+	};
 
 
 	function moveOffsetsInArray(arr, until, compareIndex, offset) {
