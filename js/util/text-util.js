@@ -151,32 +151,32 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 		sentences.forEach(sentence => {
 			let wrappedSentence = '';
 			
-			console.log(quoteStack, totalQuotes)
 			// 따옴표쌍 속에서 다시 시작 따옴표가 발견될 때 quoteStack에 담기
 			// (따옴표쌍이 최대 이중으로 겹친다고 가정)
 			if(totalQuotes.length > 0 && totalQuotes[0].type == 'open' && totalQuotes[0].index < index + sentence.length) {
-				console.log('dd')
 				quoteStack.push(totalQuotes.shift());
 			}
-			// 한 문장 안에서 강조를 위한 따옴표 쌍이 존재할 경우 통과 
+			// 한 문장 안에서 따옴표 쌍이 온전히 존재할 경우 통과 
 			while(quoteStack.length > 0 && totalQuotes.length > 0 && totalQuotes[0].type == 'close' 
 			&& quoteStack.slice(-1)[0].text == totalQuotes[0].text 
-			&& index < quoteStack.slice(-1)[0].index && totalQuotes[0].index < index + sentence.length) {
+			&& index <= quoteStack.slice(-1)[0].index && totalQuotes[0].index <= index + sentence.length) {
 				quoteStack.pop();
 				totalQuotes.shift();
-				while(totalQuotes.length > 0 && totalQuotes[0].type == 'open') 
+				while(totalQuotes.length > 0 && totalQuotes[0].type == 'open') {
 					quoteStack.push(totalQuotes.shift());
+				}
 			}
-			if(quoteStack.length == 0) {
+			// 이 문장이 따옴표쌍의 밖에 있거나 따옴표쌍이 없을 경우 문장 그대로.
+			if(quoteStack.length == 0 || totalQuotes.length  == 0 
+			|| quoteStack.slice(-1)[0].index > index + sentence.length
+			|| totalQuotes[0].index < index) {
 				wrappedSentences.push(sentence);
 			}
 			else {
 				// 이 문장이 포함되는 따옴표쌍의 시작점이 문장 이전에 나왔을 경우 이 문장의 시작에도 따옴표를 추가
 				if(quoteStack.slice(-1)[0].index < index && totalQuotes.length > 0) {
-					console.log(quoteStack.slice(-1)[0].index, index)
 					wrappedSentence += quoteStack.slice(-1)[0].text;
 				}
-				
 				// 문장의 내용 추가
 				wrappedSentence += sentence;
 				
@@ -192,19 +192,16 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 				&& totalQuotes[0].index < index + sentence.length) {
 					// 따옴표쌍의 끝점이 시작점과 동일한 따옴표
 					if(totalQuotes[0].text == quoteStack.slice(-1)[0].text) {
-						console.log('quote ends');
 						quoteStack.pop();
 						totalQuotes.shift();
 					}
 					// 축약 등의 역할을 하는 '아포스트로피'로 취급 -> 통과하고 넘어가기
 					else {
-						console.log('contraction detected');
 						totalQuotes.shift();
 					}
 					while(totalQuotes.length > 0 && totalQuotes[0].type == 'open')
 						quoteStack.push(totalQuotes.shift());
 				}
-				console.log(wrappedSentence)
 				wrappedSentences.push(wrappedSentence);
 			}
 			
