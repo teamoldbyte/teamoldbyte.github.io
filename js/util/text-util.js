@@ -130,68 +130,99 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 	
 	window.wrapQuotes = function(sentences) {
 		const fullText = sentences.join(' ');
-		// 시작하는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
-		const quoteOpenings = Array.from(fullText.matchAll(/((?<![^\s"])(?<="?)'(?=[^'\s\t\b]+))|((?<![^\s'])(?<='?)"(?=[^"\s\t\b]+))/gm)).map(matched => ({type: 'open', text: matched[0], index: matched.index}));
-		// 끝나는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
-		const quoteClosings = Array.from(fullText.matchAll(/(?<=[^"'\s\t\b]"?)'(?!\w)|(?<=[^"'\s\t\b]'?)"(?!\w)/gm)).map(matched => ({type: 'close', text: matched[0], index: matched.index}));
 		
-		const totalQuotes = quoteOpenings.concat(quoteClosings);
-		// 위치 기준으로 정렬
-		totalQuotes.sort((a, b) => a.index - b.index);
+		function extractQuotes(regex, type) {
+			return Array.from(fullText.matchAll(regex)).map(matched => ({
+				type,
+				text: matched[0],
+				index: matched.index,
+			}));
+		}		
+		// 시작하는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
+		const quoteOpenings = extractQuotes(/((?<![^\s"])(?<="?)'(?=[^'\s\t\b]+))|((?<![^\s'])(?<='?)"(?=[^"\s\t\b]+))/gm, 'open');
+		// 끝나는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
+		const quoteClosings = extractQuotes(/(?<=[^"'\s\t\b]"?)'(?!\w)|(?<=[^"'\s\t\b]'?)"(?!\w)/gm, 'close');
+
+		// 모든 따옴표를 하나의 배열로 합치고 위치 순서대로 정렬
+		const totalQuotes = [...quoteOpenings, ...quoteClosings].sort((a, b) => a.index - b.index);
+		
 		// 시작 따옴표 없이 바로 끝 따옴표가 나오면 제외
-		while(totalQuotes.length > 0 && totalQuotes[0].type == 'close') totalQuotes.shift();
+		while(totalQuotes.length > 0 && totalQuotes[0].type == 'close') 
+			totalQuotes.shift();
+		
 		// 최소 한 쌍(2개)의 따옴표가 없으면 입력문장 그대로 반환 
 		if(totalQuotes.length < 2) return sentences;
 		
 		const quoteStack = [];
-		if(totalQuotes[0].type == 'open') quoteStack.push(totalQuotes.shift());
+		if(totalQuotes[0].type == 'open') {
+			quoteStack.push(totalQuotes.shift());
+		}
 		
 		const wrappedSentences = [];
-		let index = 0;
+		let currentIndex = 0;
 		sentences.forEach(sentence => {
 			let wrappedSentence = '';
+			const sentenceEnd = currentIndex + sentence.length;
 			
 			// 따옴표쌍 속에서 다시 시작 따옴표가 발견될 때 quoteStack에 담기
 			// (따옴표쌍이 최대 이중으로 겹친다고 가정)
-			if(totalQuotes.length > 0 && totalQuotes[0].type == 'open' && totalQuotes[0].index < index + sentence.length) {
+			if(totalQuotes.length > 0 && totalQuotes[0].type == 'open' && totalQuotes[0].index < sentenceEnd) {
 				quoteStack.push(totalQuotes.shift());
 			}
 			// 한 문장 안에서 따옴표 쌍이 온전히 존재할 경우 통과 
-			while(quoteStack.length > 0 && totalQuotes.length > 0 && totalQuotes[0].type == 'close' 
-			&& quoteStack.slice(-1)[0].text == totalQuotes[0].text 
-			&& index <= quoteStack.slice(-1)[0].index && totalQuotes[0].index <= index + sentence.length) {
+			while(
+				quoteStack.length > 0 && 
+				totalQuotes.length > 0 && 
+				totalQuotes[0].type == 'close' && 
+				quoteStack[quoteStack.length - 1].text == totalQuotes[0].text && 
+				currentIndex <= quoteStack[quoteStack.length - 1].index && 
+				totalQuotes[0].index <= sentenceEnd
+			) {
 				quoteStack.pop();
 				totalQuotes.shift();
+				
 				while(totalQuotes.length > 0 && totalQuotes[0].type == 'open') {
 					quoteStack.push(totalQuotes.shift());
 				}
 			}
+			
 			// 이 문장이 따옴표쌍의 밖에 있거나 따옴표쌍이 없을 경우 문장 그대로.
-			if(quoteStack.length == 0 || totalQuotes.length  == 0 
-			|| quoteStack.slice(-1)[0].index > index + sentence.length
-			|| totalQuotes[0].index < index) {
+			if(
+				quoteStack.length == 0 || 
+				totalQuotes.length  == 0 || 
+				quoteStack[quoteStack.length - 1].index > sentenceEnd ||
+				totalQuotes[0].index < currentIndex
+			) {
 				wrappedSentences.push(sentence);
 			}
 			else {
 				// 이 문장이 포함되는 따옴표쌍의 시작점이 문장 이전에 나왔을 경우 이 문장의 시작에도 따옴표를 추가
-				if(quoteStack.slice(-1)[0].index < index && totalQuotes.length > 0) {
-					wrappedSentence += quoteStack.slice(-1)[0].text;
+				if(
+					quoteStack[quoteStack.length - 1].index < currentIndex && 
+					totalQuotes.length > 0
+				) {
+					wrappedSentence += quoteStack[quoteStack.length - 1].text;
 				}
 				// 문장의 내용 추가
 				wrappedSentence += sentence;
 				
 				// 이 문장이 포함되는 따옴표쌍의 끝점이 문장 이후에 있을 경우 이 문장의 끝에도 따옴표를 추가
-				if(quoteStack.slice(-1)[0].index< index + sentence.length && totalQuotes.length > 0
-				&& index + sentence.length < totalQuotes[0].index) {
-					wrappedSentence += quoteStack.slice(-1)[0].text;
+				if(
+					quoteStack[quoteStack.length - 1].index< sentenceEnd && 
+					totalQuotes.length > 0 && 
+					sentenceEnd < totalQuotes[0].index
+				) {
+					wrappedSentence += quoteStack[quoteStack.length - 1].text;
 				}
 				
 				// 따옴표쌍의 끝점이 발견되면 따옴표쌍을 통과 처리
-				while(totalQuotes.length > 0 && totalQuotes[0].type == 'close'
-				// 따옴표쌍 끝점이 문장의 내에 존재	
-				&& totalQuotes[0].index < index + sentence.length) {
+				while(
+					totalQuotes.length > 0 && 
+					totalQuotes[0].type == 'close' &&
+					// 따옴표쌍 끝점이 문장의 내에 존재	
+					totalQuotes[0].index < sentenceEnd) {
 					// 따옴표쌍의 끝점이 시작점과 동일한 따옴표
-					if(totalQuotes[0].text == quoteStack.slice(-1)[0].text) {
+					if(totalQuotes[0].text == quoteStack[quoteStack.length - 1].text) {
 						quoteStack.pop();
 						totalQuotes.shift();
 					}
@@ -205,9 +236,8 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 				wrappedSentences.push(wrappedSentence);
 			}
 			
-			index += 1 + sentence.length;
+			currentIndex += sentence.length + 1;
 		});
-		
 		return wrappedSentences;
 	}
 
