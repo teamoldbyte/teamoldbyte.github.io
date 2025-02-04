@@ -137,7 +137,8 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 				text: matched[0],
 				index: matched.index,
 			}));
-		}		
+		}
+		
 		// 시작하는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
 		const quoteOpenings = extractQuotes(/((?<![^\s"])(?<="?)'(?=[^'\s\t\b]+))|((?<![^\s'])(?<='?)"(?=[^"\s\t\b]+))/gm, 'open');
 		// 끝나는 따옴표 모음(인용문, 대화, 축약어, 강조 등 모두 포함)
@@ -145,7 +146,6 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 
 		// 모든 따옴표를 하나의 배열로 합치고 위치 순서대로 정렬
 		const totalQuotes = [...quoteOpenings, ...quoteClosings].sort((a, b) => a.index - b.index);
-		
 		// 시작 따옴표 없이 바로 끝 따옴표가 나오면 제외
 		while(totalQuotes.length > 0 && totalQuotes[0].type == 'close') 
 			totalQuotes.shift();
@@ -154,21 +154,21 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 		if(totalQuotes.length < 2) return sentences;
 		
 		const quoteStack = [];
-		if(totalQuotes[0].type == 'open') {
-			quoteStack.push(totalQuotes.shift());
-		}
-		
 		const wrappedSentences = [];
 		let currentIndex = 0;
+		function stackOpeningQuotes(start, end) {
+			for(const quoteSymbol of totalQuotes) {
+				if(quoteSymbol.index < start || quoteSymbol.index > end || quoteSymbol.type == 'close') break;
+				quoteStack.push(quoteSymbol);
+				totalQuotes.shift();
+			}			
+		}
 		sentences.forEach(sentence => {
 			let wrappedSentence = '';
 			const sentenceEnd = currentIndex + sentence.length;
+			// 문장 안에서 시작 따옴표가 발견될 때 quoteStack에 담기
+			stackOpeningQuotes(currentIndex, sentenceEnd);
 			
-			// 따옴표쌍 속에서 다시 시작 따옴표가 발견될 때 quoteStack에 담기
-			// (따옴표쌍이 최대 이중으로 겹친다고 가정)
-			if(totalQuotes.length > 0 && totalQuotes[0].type == 'open' && totalQuotes[0].index < sentenceEnd) {
-				quoteStack.push(totalQuotes.shift());
-			}
 			// 한 문장 안에서 따옴표 쌍이 온전히 존재할 경우 통과 
 			while(
 				quoteStack.length > 0 && 
@@ -181,9 +181,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 				quoteStack.pop();
 				totalQuotes.shift();
 				
-				while(totalQuotes.length > 0 && totalQuotes[0].type == 'open') {
-					quoteStack.push(totalQuotes.shift());
-				}
+				stackOpeningQuotes(currentIndex, sentenceEnd);
 			}
 			
 			// 이 문장이 따옴표쌍의 밖에 있거나 따옴표쌍이 없을 경우 문장 그대로.
@@ -230,8 +228,7 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 					else {
 						totalQuotes.shift();
 					}
-					while(totalQuotes.length > 0 && totalQuotes[0].type == 'open')
-						quoteStack.push(totalQuotes.shift());
+					stackOpeningQuotes(currentIndex, sentenceEnd);
 				}
 				wrappedSentences.push(wrappedSentence);
 			}
