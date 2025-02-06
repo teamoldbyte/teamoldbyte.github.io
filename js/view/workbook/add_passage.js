@@ -634,9 +634,25 @@ function pageinit(isHelloBook, memberId, isSsam) {
 				Array.from(
 					tokenizer.sentences(
 						$('#newPassageText').val().trim()).filter(s => /[a-zA-Z]/.test(s))
-					, s => { return { eng: s.sentenceNormalize() } }));
-			/*			$('#editPassage, .edit-passage').hide();
-						$('.final-pssage').show();*/
+					, s => { return { eng: s.sentenceNormalize() } }))
+			.then(() => {
+				const sentenceSet = new Set();
+				let $duplicateList = $();
+				$('.step-3 .divided-sentence').each((_, d) => {
+					const sentence = $(d).find(':text').val();
+					if(sentenceSet.has(sentence)) {
+						$duplicateList = $duplicateList.add($(d));
+					}else {
+						sentenceSet.add(sentence);
+					}
+				});
+				if($duplicateList.length > 0) {
+					$duplicateList.find('input:text').addClass('bg-warning');
+					alertModal('중복된 문장 ' + Array.from($duplicateList, d => $(d).index() + 1).toString() + '번째 문장은 제거됩니다.', () => {
+						$duplicateList.remove();
+					})
+				}
+			});
 		});
 		$('.step-2 .collapse:eq(0)').on('shown.bs.collapse hidden.bs.collapse', function() {
 			$('#jumpTo3').fadeToggle();
