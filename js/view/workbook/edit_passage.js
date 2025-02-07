@@ -250,8 +250,9 @@ function pageinit(sentenceList, memberId, isSsam) {
 
 	// [문장 추가 등록]------------------------------------------------------------
 	$('.js-add').on('click', function() {
-		const sentences = tokenizer.sentences($('.add-section textarea').val().sentenceNormalize());
-		const orderNum = Number($(`${ONE_SENTENCE_SELECTOR}:last`)[0]?.dataset?.ordernum || 0) + 1000;
+		const inputText = $('.add-section textarea').val().sentenceNormalize();
+		const sentences = tokenizer.sentences(inputText);
+		const orderNum = Number($(ONE_SENTENCE_SELECTOR + ':last')[0]?.dataset?.ordernum || 0) + 1000;
 
 		// 문장 검사
 		const filteredSentences = wrapQuotes(/*Array.from(*/sentences/*, sentence => {
@@ -268,8 +269,21 @@ function pageinit(sentenceList, memberId, isSsam) {
 			return;
 		}
 		const total = filteredSentences.join(' ').capitalize1st();
+		
+		let duplicated = false;
+		$(ONE_SENTENCE_SELECTOR + ' .sentence-text').each((index, d) => {
+			if(inputText.indexOf(d.textContent) > -1) {
+				alertModal((index + 1) + '번째 문장 내용과 중복됩니다.');
+				duplicated = true;
+				return false;
+			}
+		})
+
+		if(duplicated) return;
+		
 		const textarea = $('.add-section textarea').get(0);
 		textarea.value = total;
+		
 		let checkingPos = 0;
 		// 입력된 문장들 각각을 검사.
 		for (let i = 0, len = filteredSentences.length; i < len; i++) {
@@ -346,11 +360,38 @@ function pageinit(sentenceList, memberId, isSsam) {
 	});
 
 	// [문장 수정]----------------------------------------------------------------
-	$(document).on('click', '.js-edit', function() {
+	$(document).on('click', '.js-edit', async function() {
 		const $sentenceSection = $(this.closest(ONE_SENTENCE_SELECTOR));
 		let origin = $sentenceSection.find('.sentence-text').text();
-		const sentences = tokenizer.sentences($sentenceSection.find('.edit-section textarea').val().sentenceNormalize());
+		const inputText = $sentenceSection.find('.edit-section textarea').val().sentenceNormalize();
+		
+		if(inputText == origin) {
+			alertModal('원문과 내용이 동일합니다.');
+			return;
+		}
+		
+		let duplicated = false;
+		$(ONE_SENTENCE_SELECTOR + ' .sentence-text').each((index, d) => {
+			if(inputText.indexOf(d.textContent) > -1) {
+				alertModal((index + 1) + '번째 문장 내용과 중복됩니다.');
+				duplicated = true;
+				return false;
+			}
+		})
+		
+		if(duplicated) return;
+		
+		const sentences = tokenizer.sentences(inputText);
 
+		if(sentences.length > 1 && $sentenceSection.index() < $(ONE_SENTENCE_SELECTOR).length - 1) {
+			let confirmed = await new Promise((resolve, reject) => {
+				confirmModal('현재 문장을 여러 개의 문장으로 수정할 경우 지문의 문장 순서가 변경될 수 있습니다.\n먼저<b>추가 문장 등록</b>을 완료한 후, <b>위치 이동</b>을 진행하는 것을 권장합니다.\n단일 문장이 확실하다면 \'확인\'을 눌러 계속하세요.',
+					() => resolve(true),
+					() => resolve(false)
+				);
+			});
+			if(!confirmed) return;
+		}
 
 		// 문장 검사
 		const total = wrapQuotes(/*Array.from(*/sentences/*, sentence => {
