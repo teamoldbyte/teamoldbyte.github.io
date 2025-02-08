@@ -149,7 +149,6 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 		// 시작 따옴표 없이 바로 끝 따옴표가 나오면 제외
 		while(totalQuotes.length > 0 && totalQuotes[0].type == 'close') 
 			totalQuotes.shift();
-		
 		// 최소 한 쌍(2개)의 따옴표가 없으면 입력문장 그대로 반환 
 		if(totalQuotes.length < 2) return sentences;
 		
@@ -157,10 +156,12 @@ const invalidEnglishString = "[^\\u0021-\\u007E\\s\\u00C0-\\u017E\\u2010-\\u2015
 		const wrappedSentences = [];
 		let currentIndex = 0;
 		function stackOpeningQuotes(start, end) {
-			for(const quoteSymbol of totalQuotes) {
+			for(let i = 0; i < totalQuotes.length; i++) {
+				const quoteSymbol = totalQuotes[i];
 				if(quoteSymbol.index < start || quoteSymbol.index > end || quoteSymbol.type == 'close') break;
 				quoteStack.push(quoteSymbol);
 				totalQuotes.shift();
+				i--;
 			}			
 		}
 		sentences.forEach(sentence => {
