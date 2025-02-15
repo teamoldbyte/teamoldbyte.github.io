@@ -118,12 +118,12 @@ function pageinit(membershipCommand) {
 									{ el: 'span', className: 'fw-bold d-block', textContent: '입금 계좌 안내' }
 								]},
 								{ el: 'div', children: [
-									{ el: 'span', className: 'name fw-bold', textContent: '카카오뱅크' },
-									{ el: 'span', className: 'account-num pe-1', textContent: '3333-04-8952631' },
-									{ el: 'input', type: 'hidden', id: 'accountNum', value: '3333-04-8952631' },
+									{ el: 'span', className: 'name fw-bold', textContent: '하나은행' },
+									{ el: 'span', className: 'account-num pe-1', textContent: '540-910385-85507' },
+									{ el: 'input', type: 'hidden', id: 'accountNum', value: '540-910385-85507' },
 									{ el: 'button', className: 'btn btn-warning btn-copy far fa-copy', onclick: () => window.navigator.clipboard.writeText($('#accountNum').val()),
 										'data-bs-container': 'body', 'data-bs-toggle': 'popover', 'data-bs-placement': 'top', 'data-bs-content': 'copied', textContent: '복사' },
-									{ el: 'span', className: 'name d-block', textContent: '[예금주: 이승렬]' }
+									{ el: 'span', className: 'name d-block', textContent: '[예금주: 강한별]' }
 								]}
 							]},
 							{ el: 'div', className: 'progress', children: [
