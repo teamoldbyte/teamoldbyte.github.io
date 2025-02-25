@@ -33,12 +33,42 @@
 	if(!/Mobi/.test(navigator?.userAgent) || !screen.orientation ) {
 		$('.js-rotate-btn').remove();
 	}
+	
+	/* 페이지 로딩 이후 효과 */
+	let sentenceIndicatorInterval = setInterval(() => {
+		$('.arrow-indicator').bounce();
+	}, 600);
+	setTimeout(() => {
+		$('.view-passage-section .full-text .sentence-link').each((i, el) => {
+		    anime({
+		        targets: el,
+		        delay: i * 1000,
+				color: ['#ffffff','#0a58ca'],
+		        direction: 'alternate',
+		        duration: 500
+		    })
+		});
+		
+	}, 500);
+	
 /* ------------------------------- 지문 관련 ---------------------------------- */
 	
 	// [지문의 문장 클릭 시 해당 문장의 블럭으로 이동]------------------------------------
-	$('.sentence-link').one('click',function _aa() {
+	$('.sentence-link').one('click', async function _aa() {
+		// 문장선택 화살표 제거
+		clearInterval(sentenceIndicatorInterval);
+		$('.arrow-indicator').remove();
+		// 문장 깜빡임 제거
+		anime.remove('.view-passage-section .full-text .sentence-link')
+		
+		await new Promise((resolve) => {
+			$('#sermesMembershipModal').modal('show');
+			setTimeout(() => {
+				$('#sermesMembershipModal').on('hidden.bs.modal', resolve).modal('hide');
+			}, 2000);
+		});
 		$('.js-toggle-menu').removeClass('pe-none');
-		$('.sentence-link').off('click', _aa).not(this).addClass('pe-none opacity-50');
+		$('.sentence-link').off('click', _aa).not(this).css('color','#ffffff').addClass('pe-none opacity-50');
 		
 		const i = $(this).closest('.full-text,.sentence-list').find('.sentence-link').index(this);
 		const sentence = sentenceList[i];
