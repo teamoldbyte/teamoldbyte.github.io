@@ -61,11 +61,12 @@
 		// 문장 깜빡임 제거
 		anime.remove('.view-passage-section .full-text .sentence-link')
 		
+		// 멤버십 관련 소개 모달 표시 먼저(3.5초간)
 		await new Promise((resolve) => {
 			$('#sermesMembershipModal').modal('show');
 			setTimeout(() => {
 				$('#sermesMembershipModal').on('hidden.bs.modal', resolve).modal('hide');
-			}, 2000);
+			}, 3500);
 		});
 		$('.js-toggle-menu').removeClass('pe-none');
 		$('.sentence-link').off('click', _aa).not(this).css('color','#ffffff').addClass('pe-none opacity-50');
