@@ -403,7 +403,12 @@ li {
 
 /* 한 문장 단위 */
 .print-one-sentence{
-	margin-bottom: 0.5cm;
+	margin-bottom: 0.25cm;
+	padding-top: .25cm;
+	border-top: 1px solid #ddd;
+}
+.print-one-sentence:first{
+	border-top: none;
 }
 /* 문장 정보 영역 */
 .print-one-sentence .svoc-section,
@@ -648,10 +653,10 @@ li {
 
 
 /*  -- 오른쪽 메모 영역  -- */
-.print-one-sentence .sentence-comment-section .note-list{
+/* .print-one-sentence .sentence-comment-section .note-list{
 	padding-top: 0.1cm;
     border-top: 1px solid #ddd;
-}
+} */
 /**********************************************************
  *			print_battles.html
  **********************************************************/
