@@ -50,7 +50,7 @@ li {
 }
 .print-padding-left, .print-padding-right {
 	/* width: 15mm; */
-	width: 0.5cm;
+	width: 0.75cm;
 	/* width: 0; */
 	position: relative;
 }
@@ -221,9 +221,8 @@ li {
 
 	
 #print_header, #print_footer {
-
-	padding-left: 0.5cm;
-		padding-right: 0.5cm;
+	padding-left: 0.75cm;
+	padding-right: 0.75cm;
 }
 
 #print_header .app-domain-text{
@@ -407,7 +406,7 @@ li {
 	padding-top: .25cm;
 	border-top: 1px solid #ddd;
 }
-.print-one-sentence:first{
+#results .print-one-sentence:first-child{
 	border-top: none;
 }
 /* 문장 정보 영역 */
