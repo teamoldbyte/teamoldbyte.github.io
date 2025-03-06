@@ -583,6 +583,7 @@ li {
 .sentence-comment-section .note-block {
 	font-family: Frutiger, HCRDotum;
 	font-size: 10px;
+	table-layout: fixed;
 }
 /* 지문 노트 하단 여백 */
 .passage-comment-section{
