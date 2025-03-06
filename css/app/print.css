@@ -375,6 +375,7 @@ li {
 }
 .print-one-sentence .svoc-section .semantics-result{
 	width: calc(100% - 28px);
+	break-inside: avoid;
 }
 .passage-print-page .pseudo-sentence-number {
 	position: relative;
