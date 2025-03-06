@@ -263,18 +263,17 @@ li {
 }
 .word-section .part{
 	font-family: "Apple SD Gothic Neo","Segoe UI";
-    color: #019c9e;
-    font-size: 13px;
+    color: #00686a;
+    font-size: 11px;
 	vertical-align: baseline;
 	display: contents;
 	width: 100%;
 	text-align: center;
 }
 .word-section .meaning{
-    font-size: 0.9rem;
 	word-break: keep-all;
-	color: #636363;
-	font-family: 'HCRDotum';
+	color: #000;
+	font-size: 11px;
 }
 .word-section .one-part-unit-section:first-child .part{
 	margin-left: 0px;
@@ -359,10 +358,6 @@ li {
     margin-right: auto;
     border-radius: 2mm;
 }
-/* TEST */
-.print-one-sentence {
-	counter-increment: sentenceOrder;
-}
 
 /* white-space */
 .ws-breakspaces, .ws-breakspaces * {
@@ -398,29 +393,35 @@ li {
     background: #5c68b6;
     border-radius: 2mm;
 }
-/* TEST */
-
 /* 한 문장 단위 */
 .print-one-sentence{
-	margin-bottom: 0.25cm;
-	padding-top: .25cm;
+	margin-bottom: 0.5cm;
+	padding-top: .5cm;
 	border-top: 1px solid #ddd;
+}
+.print-one-sentence {
+	counter-increment: sentenceOrder;
 }
 #results .print-one-sentence:first-child{
 	border-top: none;
 }
 /* 문장 정보 영역 */
 .print-one-sentence .svoc-section,
-.print-one-sentence .kor-word-section{
+.print-one-sentence .kor-note-section{
 	width: calc(100% - 8mm);
 }
-.print-one-sentence .kor-word-section{
+.print-one-sentence .kor-note-section{
+	padding-left: 8mm;
 	height: -webkit-fit-content;
 	height: fit-content;
 	min-height: -webkit-fit-content;
 	min-height: fit-content;
 	margin-top: 0.25cm;
 	margin-bottom: auto;
+}
+/**/
+.print-one-sentence .kor-note-section .kor-section{
+	margin-bottom: 0.5cm;
 }
 /* 폰트 설정 */
 .passage-print-page .sentence-number,
@@ -431,12 +432,10 @@ li {
 .semantics-result{
 	font-size: 16px;
 }
-.word-section .title,
-.word-section .part{
-	font-size: 14px;
+.word-section .title{
+	font-size: 13px;
 }
-.passage-print-page .kor,
-.passage-print-page .word-section .meaning{
+.passage-print-page .kor{
 	font-size: 12px;
 }
 .kor-section .kor{
@@ -450,7 +449,6 @@ li {
 /* 단어 영역의 앞뒤 표시 */
 .word-section{
 	position:relative;
-	padding: 0 20px;
 	margin-top: 0.125cm;
 }
 /* 단순 바 모양은 없앰 */
@@ -579,21 +577,23 @@ li {
   bottom: 0;
 }
 /* 지문 상세보기의 문장노트와 폰트 동일하게 */
+.sentence-comment-section p{
+	margin-bottom: 0;
+}
 .sentence-comment-section .note-block {
 	font-family: Frutiger, HCRDotum;
 	font-size: 10px;
+	table-layout: fixed;
 }
 /* 지문 노트 하단 여백 */
+.passage-comment-section{
+	margin-top: 1cm;
+}
 .passage-comment-section .note-block{
 	margin-bottom: 12px;
+	break-inside: avoid;
 }
-/* 프린트에 맞도록 색상 조정 */
-.word-section .meaning{
-	color: #000;
-}
-.word-section .part{
-	color: #00686a;
-}
+
 /* 구문분석 스타일 설정 */
 /* rc 하단 라인 */
 .sem.inner{
