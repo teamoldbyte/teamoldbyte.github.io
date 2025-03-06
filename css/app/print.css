@@ -21,6 +21,7 @@ li {
 	height: calc(1.5cm + 0.25cm);
 	padding-top: 0.125cm;
 	padding-bottom: 0.125cm;
+	margin-bottom: 0.5cm;
 
 	/* height: 1.5cm; */
 }
@@ -254,7 +255,7 @@ li {
 	font-family: "Apple SD Gothic Neo","Segoe UI";
     color: #30386e;
     font-weight: 600;
-    font-size:15px;
+    font-size: 12px;
 	padding-right: 3px;
 	padding-left: 15px;
 }
@@ -273,7 +274,7 @@ li {
 .word-section .meaning{
 	word-break: keep-all;
 	color: #000;
-	font-size: 11px;
+	font-size: 10px;
 }
 .word-section .one-part-unit-section:first-child .part{
 	margin-left: 0px;
@@ -403,6 +404,7 @@ li {
 	counter-increment: sentenceOrder;
 }
 #results .print-one-sentence:first-child{
+	padding-top:0;
 	border-top: none;
 }
 /* 문장 정보 영역 */
@@ -431,9 +433,6 @@ li {
 }
 .semantics-result{
 	font-size: 16px;
-}
-.word-section .title{
-	font-size: 13px;
 }
 .passage-print-page .kor{
 	font-size: 12px;
@@ -588,10 +587,10 @@ li {
 /* 지문 노트 하단 여백 */
 .passage-comment-section{
 	margin-top: 1cm;
+	break-inside: avoid;
 }
 .passage-comment-section .note-block{
 	margin-bottom: 12px;
-	break-inside: avoid;
 }
 
 /* 구문분석 스타일 설정 */
