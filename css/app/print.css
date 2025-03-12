@@ -2,13 +2,10 @@
 /**********************************************************
  *			common
  **********************************************************/
- :root {
-	font-size: 12px;
-}
 
 body {
 	background: none;
-	font-size: 12px;
+	font-size: 14px;
 	width: 297mm;
 	margin-left: auto;
 	margin-right: auto;
@@ -584,6 +581,9 @@ li {
 	font-family: Frutiger, HCRDotum;
 	font-size: 10px;
 	table-layout: fixed;
+}
+.sentence-comment-section .note-block .table{
+	break-inside: avoid;
 }
 /* 지문 노트 하단 여백 */
 .passage-comment-section{
