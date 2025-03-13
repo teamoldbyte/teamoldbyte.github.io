@@ -13,7 +13,7 @@ body {
 li {
 	font-family: '함초롬돋움', sans-serif;
 }
-#print_header, .header-space{
+#print_header, .header-space{ 
 	/* height: 100px; */
 	height: calc(1.5cm + 0.25cm);
 	padding-top: 0.125cm;
@@ -650,6 +650,10 @@ li {
 .sem.m[data-rc]::before,
 .sem.appo[data-rc]::before {background: #0080ff;}
 
+
+.sem.outer .sem.inner.odd[data-rc]::before {
+	bottom: -1.625rem!important;	/* 모바일 버전 스타일과 동일한 위치 조정 필요 */
+}
 
 /*  -- 오른쪽 메모 영역  -- */
 /* .print-one-sentence .sentence-comment-section .note-list{
