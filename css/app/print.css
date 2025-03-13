@@ -652,7 +652,7 @@ li {
 
 
 .sem.outer .sem.inner.odd[data-rc]::before {
-	bottom: -1.625rem!important;	/* 모바일 버전 스타일과 동일한 위치 조정 필요 */
+	bottom: -1.625rem;	/* 모바일 버전 스타일과 동일한 위치 조정 필요 */
 }
 
 /*  -- 오른쪽 메모 영역  -- */
