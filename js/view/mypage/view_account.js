@@ -369,7 +369,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	
 	
 	// [코인 충전 혹은 멤버십 연장 버튼을 눌러 결제 모달 표시]------------------------------
-	$('.js-open-extend').tooltip('show').click(function() {
+	$('.js-open-extend').click(function() {
 		if($('#modalDiv').children().length == 0) {
 			$('#modalDiv').load('/mypage/membership/extend .modal', displayModal);
 		}else displayModal();
@@ -468,6 +468,10 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	fitWindowSize();
 	window.addEventListener('resize', fitWindowSize);
 	
+	// 계정 닫힘 툴팁 강제 표시. 바로 실행 시 툴팁 위치가 깨지므로 딜레이 적용.
+	setTimeout(() => {
+		$('.js-open-extend').tooltip('show');
+	}, 100);
 	document.body.append(createElement([
 		{ "el": "div", "class": "modal fade", "id": "egg-explain-modal", "tabindex": "-1", 
 			"aria-labelledby": "eggExplainModalLabel", "aria-hidden": true, "children": [
