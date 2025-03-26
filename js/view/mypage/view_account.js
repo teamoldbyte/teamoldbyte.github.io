@@ -369,7 +369,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	
 	
 	// [코인 충전 혹은 멤버십 연장 버튼을 눌러 결제 모달 표시]------------------------------
-	$('.js-open-extend').click(function() {
+	$('.js-open-extend').tooltip('show').click(function() {
 		if($('#modalDiv').children().length == 0) {
 			$('#modalDiv').load('/mypage/membership/extend .modal', displayModal);
 		}else displayModal();
