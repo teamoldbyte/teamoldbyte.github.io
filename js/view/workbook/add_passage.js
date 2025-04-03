@@ -31,7 +31,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	}
 
 	function _verifyUsageLimit() {
-		if (!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15000998 && memberId != 15001122 && memberId != 15001021 && memberId != 15001905 && memberId != 15001515 && memberId!= 15002176 && memberId != 15002181 && memberdId != 15002185 && memberId != 15002196 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		if (!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15000998 && memberId != 15001122 && memberId != 15001021 && memberId != 15001905 && memberId != 15001515 && memberId!= 15002176 && memberId != 15002181 && memberId != 15002185 && memberId != 15002196 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('#inputComplete, .ocr-btn').prop('disabled', true);
 			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
 			alertModal(`일일 분석량<span class="text-red-700">(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
