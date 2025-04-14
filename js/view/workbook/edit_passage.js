@@ -85,7 +85,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 	 * 현재 문장 분석량 확인. 초과시 경고 메세지 표시
 	 */
 	function _verifyUsageLimit(callback) {
-		if(!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15000998 && memberId != 15001122 && memberId != 15001021 && memberId != 15001905 && memberId != 15001515 && memberId!= 15002176 && memberId != 15002181 && memberId != 15002185 && memberId != 15002196 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		if(!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15000998 && memberId != 15001122 && memberId != 15001021 && memberId != 15001905 && memberId != 15001515 && memberId!= 15002176 && memberId != 15002181 && memberId != 15002185 && memberId != 15002196 && memberId != 15002227 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('.js-open-add-sentence,.edit-icon-section').attr('data-toggle','tooltip').attr('title', '일일 사용량을 초과하여 문장의 추가 및 수정이 불가합니다.').prop('disabled', true);
 			$('.origin-sentence').removeAttr('data-toggle');
 			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;
