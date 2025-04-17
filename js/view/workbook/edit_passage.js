@@ -59,7 +59,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 
 // --------------------------- 사용량 측정 Start --------------------------------
 
-	const MAX_SENTENCE_LENGTH_PER_DAY = 5000, 
+	const MAX_SENTENCE_LENGTH_PER_DAY = 10000, 
 		STR_MSLPD = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
 	
 	const TODAY_DATE = new Date().format('yyyy-MM-dd');
@@ -71,21 +71,25 @@ function pageinit(sentenceList, memberId, isSsam) {
 	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
 	
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
+	
+	let unlockedMembers = [];
+	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json').done(members => unlockedMembers = members)];	
+	
 	if (myFicoUsages.user !== ntoa(memberId) || myFicoUsages.date !== TODAY_DATE) {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
 		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0};
-		$.getJSON('/workbook/passage/usage')
-			.done(length => Object.assign(myFicoUsages, { length }))
-			.always(() => _verifyUsageLimit());
-	} else {
-		_verifyUsageLimit();
+		promises.push($.getJSON('/workbook/passage/usage').done(length => Object.assign(myFicoUsages, { length })));
 	}
+	
+	Promise.allSettled(promises).then(() => {
+		_verifyUsageLimit();
+	})	
 	
 	/**
 	 * 현재 문장 분석량 확인. 초과시 경고 메세지 표시
 	 */
 	function _verifyUsageLimit(callback) {
-		if(!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15000998 && memberId != 15001122 && memberId != 15001021 && memberId != 15001905 && memberId != 15001515 && memberId!= 15002176 && memberId != 15002181 && memberId != 15002185 && memberId != 15002196 && memberId != 15002227 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+		if(!isSsam && !unlockedMembers.includes(memberId) && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('.js-open-add-sentence,.edit-icon-section').attr('data-toggle','tooltip').attr('title', '일일 사용량을 초과하여 문장의 추가 및 수정이 불가합니다.').prop('disabled', true);
 			$('.origin-sentence').removeAttr('data-toggle');
 			oneSentenceJSON.children[0].children[0].children[2]['disabled'] = true;

@@ -8,7 +8,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 	};
 	const MAX_SENTENCE_LENGTH = 500,
-		MAX_SENTENCE_LENGTH_PER_DAY = 5000,
+		MAX_SENTENCE_LENGTH_PER_DAY = 10000,
 		MAX_SENTENCE_LENGTH_PER_DAY_STR = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
 
 	const TODAY_DATE = new Date().format('yyyy-MM-dd');
@@ -20,18 +20,21 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
 
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
-	if (myFicoUsages.user == ntoa(memberId) && myFicoUsages.date == TODAY_DATE) {
-		_verifyUsageLimit();
-	} else {
+	
+	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json')];
+	if (myFicoUsages.user != ntoa(memberId) || myFicoUsages.date != TODAY_DATE) {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
 		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0 };
-		$.getJSON('/workbook/passage/usage')
-			.done(length => Object.assign(myFicoUsages, { length }))
-			.always(() => _verifyUsageLimit());
+		promises.push($.getJSON('/workbook/passage/usage').done(length => Object.assign(myFicoUsages, { length })));
 	}
+	
+	Promise.allSettled(promises).then(([{ value }, _]) => {
+		_verifyUsageLimit(value);
+	})
 
-	function _verifyUsageLimit() {
-		if (!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15000998 && memberId != 15001122 && memberId != 15001021 && memberId != 15001905 && memberId != 15001515 && memberId!= 15002176 && memberId != 15002181 && memberId != 15002185 && memberId != 15002196 && memberId != 15002227 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+	function _verifyUsageLimit(members) {
+		
+		if (!isSsam && !members.includes(memberId) && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('#inputComplete, .ocr-btn').prop('disabled', true);
 			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
 			alertModal(`일일 분석량<span class="text-red-700">(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
@@ -769,74 +772,59 @@ function pageinit(isHelloBook, memberId, isSsam) {
 			if ($selectedPassage.length > 0) {
 				const passageId = $selectedPassage.data('passageId');
 				const sentenceId = $selectedPassage.data('sentenceId');
-				// 편집을 한 경우
-				if ($('.edit-passage').is(':visible')) {
-					const $sentences = $('.edit-passage .divided-sentence');
-					let finalSentences = [];
-					$sentences.each(function() {
-						finalSentences.push($(this).find(':text').val().trim());
-					});
-					// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
-					// (수정하지 않음: sentenceId 입력, 수정함: eng 입력)
-					if ($selectedPassage.text() != finalSentences.join(' ')) {
-						
-						$sentences.each(function(i, el) {
-							const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
-							if ($(this).data('orgData') != normalizedText) {
-								createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
-							} else {
-								createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
-							}
-						});
-						
-						$form.find('#text').prop('disabled', true);
-						dirty = true;
-					} else { // 편집 내용이 없는 경우
-						$form.find('#text').prop('disabled', true);
-						
-						if (passageId != null) {
-							createHidden($form, 'existingPassageId', passageId);
+				const $sentences = $('.edit-passage .divided-sentence');
+				let finalSentences = [];
+				$sentences.each(function() {
+					finalSentences.push($(this).find(':text').val().trim());
+				});
+				// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
+				// (수정하지 않음: sentenceId 입력, 수정함: eng 입력)
+				if ($selectedPassage.text() != finalSentences.join(' ')) {
+					
+					$sentences.each(function(i, el) {
+						const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
+						if ($(this).data('orgData') != normalizedText) {
+							createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
 						} else {
-							dirty = true;
-							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+							createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
 						}
-					}
-				}
-				// 편집을 안한 경우 
-				else if (passageId != null) {
-					createHidden($form, 'existingPassageId', passageId);
-					$form.find('#text').prop('disabled', true);
-				} else if (sentenceId != null) {
-					// $form[0].action = '/workbook/passage/new';
-					createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+					});
+					
 					$form.find('#text').prop('disabled', true);
 					dirty = true;
-				}
-			} else { // 선택된 지문이나 문장이 없는 경우
-				let sentences;
-				if ($('.edit-passage').is(':visible')) { // 편집 모드인 경우
-					const $sentences = $('.edit-passage .divided-sentence');
-					sentences = Array.from($sentences.get(), el => $(el).find(':text').val().trim().sentenceNormalize());
+				} else { // 편집 내용이 없는 경우
+					$form.find('#text').prop('disabled', true);
 					
-					// 유효한(최소 1문장 일치) 지문 검색결과가 있었음에도 무시한 경우
-					if($('.search-result-section .list-group-item:not(.no-passage)').length > 0) {
+					if (passageId != null) {
+						createHidden($form, 'existingPassageId', passageId);
+					} else {
 						dirty = true;
-						sentences.forEach((s,i) => {
-							createHidden($form, `existingSentenceList[${i}].eng`, s);
-						})
-						$form.find('#text').prop('disabled', true);
+						createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 					}
-					// 유효한 검색결과가 없는 경우
-					else {
-						$form[0].action = '/workbook/passage/new';
-						$form.find('#text').prop('disabled', false).val(sentences.join(' '));
-					}
-				} else { // 새로 작성된 문장을 분리
-					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
-					sentences.forEach(sentence => {
-						sentencesLength += sentence.length;
-					});
 				}
+				sentencesLength += finalSentences.join(' ').length;
+				
+			} 
+			// 선택된 지문이나 문장이 없는 경우
+			else { 
+				let sentences;
+				const $sentences = $('.edit-passage .divided-sentence');
+				sentences = Array.from($sentences.get(), el => $(el).find(':text').val().trim().sentenceNormalize());
+				
+				// 유효한(최소 1문장 일치) 지문 검색결과가 있었음에도 무시한 경우
+				if($('.search-result-section .list-group-item:not(.no-passage)').length > 0) {
+					dirty = true;
+					sentences.forEach((s,i) => {
+						createHidden($form, `existingSentenceList[${i}].eng`, s);
+					})
+					$form.find('#text').prop('disabled', true);
+				}
+				// 유효한 검색결과가 없는 경우
+				else {
+					$form[0].action = '/workbook/passage/new';
+					$form.find('#text').prop('disabled', false).val(sentences.join(' '));
+				}
+				sentencesLength += sentences.join(' ').length;
 			}
 			createHidden($form, 'dirty', dirty);
 			// 신규 태그는 localStorage에 저장

@@ -8,7 +8,7 @@ function pageinit(memberId, isSsam) {
 			gutter: 10, percentPosition: true, transitionDuration: '0.8s'
 		};
 	const MAX_SENTENCE_LENGTH = 500,
-		MAX_SENTENCE_LENGTH_PER_DAY = 5000, 
+		MAX_SENTENCE_LENGTH_PER_DAY = 10000, 
 		MAX_SENTENCE_LENGTH_PER_DAY_STR = MAX_SENTENCE_LENGTH_PER_DAY.toLocaleString();
 	
 	const TODAY_DATE = new Date().format('yyyy-MM-dd');
@@ -20,25 +20,27 @@ function pageinit(memberId, isSsam) {
 	const encodedData = localStorage.getItem(MY_FICO_USAGES_KEY);
 	
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
-	if (myFicoUsages.user == ntoa(memberId) && myFicoUsages.date == TODAY_DATE) {
-		_verifyUsageLimit();
-	} else {
-		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
-		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0};
-		$.getJSON('/workbook/passage/usage')
-			.done(length => Object.assign(myFicoUsages, { length }))
-			.always(() => _verifyUsageLimit());
-	}
 	
-	function _verifyUsageLimit() {
-		if(!isSsam && memberId != 15000550 && memberId != 15000590 && memberId != 15001021 && memberId != 15002176 && memberId != 15002185 && memberId != 15002196 && memberId != 15002227 && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
+	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json')];
+	if (myFicoUsages.user != ntoa(memberId) || myFicoUsages.date != TODAY_DATE) {
+		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
+		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0 };
+		promises.push($.getJSON('/workbook/passage/usage').done(length => Object.assign(myFicoUsages, { length })));
+	}	
+	
+	Promise.allSettled(promises).then(([{ value }, _]) => {
+		_verifyUsageLimit(value);
+	})
+	
+	function _verifyUsageLimit(members) {
+		
+		if (!isSsam && !members.includes(memberId) && myFicoUsages.length >= MAX_SENTENCE_LENGTH_PER_DAY) {
 			$('#inputComplete, .ocr-btn').prop('disabled', true);
 			$('#newPassageText').prop('disabled', true).addClass('form-control').attr('placeholder', `일일 분석량(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)을 모두 소진했습니다. 내일 다시 찾아와 주세요.`);
 			alertModal(`일일 분석량<span class="text-red-700">(${MAX_SENTENCE_LENGTH_PER_DAY_STR}자)</span>을 모두 <span class="text-red-700">소진</span>했습니다.\n내일 다시 찾아와 주세요.`);
 		}
 		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 	}
-	
 	
 	// [각 단계별 이동]
 	$('[class^=step-] .title-section').on('click', function() {
@@ -651,49 +653,38 @@ function pageinit(memberId, isSsam) {
 			if($selectedPassage.length > 0) {
 				const passageId = $selectedPassage.data('passageId');
 				const sentenceId = $selectedPassage.data('sentenceId');
-				// 편집을 한 경우
-				if($('.edit-passage').is(':visible')) {
-					const $sentences = $('.edit-passage .divided-sentence');
-					const $differs = $sentences.filter(function() {
-						return ($(this).data('orgData') != $(this).find(':text').val().trim().sentenceNormalize());
-					});
-					let finalSentences = [];
-					$sentences.each(function() {
-						finalSentences.push($(this).find(':text').val().trim());
-					});
-					// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
-					// (수정 안함: sentenceId 입력, 수정함: eng 입력)
-					if($selectedPassage.text() != finalSentences.join(' ')) {
-						$('#text').val(finalSentences.join(' '));
-						$sentences.each(function(i, el) {
-							if($(el).is($differs)) {
-								const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
-								sentencesLength += normalizedText.length;
-								createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
-							} else {
-								createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
-							}
-						});
-						dirty = true;
-					} else {
-						$form.find('#text').prop('disabled', true);
-						if(passageId != null) {
-							createHidden($form, 'existingPassageId', passageId);
+				const $sentences = $('.edit-passage .divided-sentence');
+				const $differs = $sentences.filter(function() {
+					return ($(this).data('orgData') != $(this).find(':text').val().trim().sentenceNormalize());
+				});
+				let finalSentences = [];
+				$sentences.each(function() {
+					finalSentences.push($(this).find(':text').val().trim());
+				});
+				// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
+				// (수정 안함: sentenceId 입력, 수정함: eng 입력)
+				if($selectedPassage.text() != finalSentences.join(' ')) {
+					$('#text').val(finalSentences.join(' '));
+					$sentences.each(function(i, el) {
+						if($(el).is($differs)) {
+							const normalizedText = $(el).find(':text').val().trim().sentenceNormalize();
+							sentencesLength += normalizedText.length;
+							createHidden($form, `existingSentenceList[${i}].eng`, normalizedText);
 						} else {
-							createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
+							createHidden($form, `existingSentenceList[${i}].sentenceId`, $(el).data('sentenceId'));
 						}
+					});
+					dirty = true;
+				} else {
+					$form.find('#text').prop('disabled', true);
+					if(passageId != null) {
+						createHidden($form, 'existingPassageId', passageId);
+					} else {
+						createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
 					}
 				}
-				// 편집을 안한 경우 
-				else if(passageId != null) {
-					createHidden($form, 'existingPassageId', passageId);
-					$form.find('#text').prop('disabled', true);
-				} else if(sentenceId != null){
-					createHidden($form, 'existingSentenceList[0].sentenceId', sentenceId);
-					$form.find('#text').prop('disabled', true);
-				}
 				createHidden($form, 'dirty', dirty);
-				
+				sentencesLength += finalSentences.join(' ').length;
 			}else {
 				let sentences;
 				if($('.edit-passage').is(':visible')) {
@@ -705,7 +696,7 @@ function pageinit(memberId, isSsam) {
 					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
 				}
 				sentences.forEach(sentence => {
-					sentencesLength += sentence.length;
+					sentencesLength += sentence.join(' ').length;
 				})
 			}	
 		myFicoUsages.length += sentencesLength;
