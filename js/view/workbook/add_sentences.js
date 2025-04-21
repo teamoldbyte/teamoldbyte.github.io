@@ -695,9 +695,7 @@ function pageinit(memberId, isSsam) {
 				}else {
 					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
 				}
-				sentences.forEach(sentence => {
-					sentencesLength += sentence.join(' ').length;
-				})
+				sentencesLength += sentences.join(' ').length;
 			}	
 		myFicoUsages.length += sentencesLength;
 		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
