@@ -484,7 +484,10 @@ function pageinit(memberId, isSsam) {
 					}
 					htmlText += '</span>';
 
-					$item.data('passageId', searchedPassage.passageId).html(htmlText);
+					$item.data({
+						passageId: searchedPassage.passageId,
+						text: searchedPassage.text
+					}).html(htmlText);
 					$passageList.append($item);
 					if(i == sameIndex) $sameItem = $item.addClass('same-content');
 				}
@@ -664,7 +667,7 @@ function pageinit(memberId, isSsam) {
 				// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
 				// (수정 안함: sentenceId 입력, 수정함: eng 입력)
 				$form.find('#text').prop('disabled', true);
-				if($selectedPassage.text() != finalSentences.join(' ')) {
+				if($selectedPassage.data('text') != finalSentences.join(' ')) {
 					$('#text').val(finalSentences.join(' '));
 					$sentences.each(function(i, el) {
 						if($(el).is($differs)) {
@@ -696,7 +699,7 @@ function pageinit(memberId, isSsam) {
 					sentences = tokenizer.sentences($form.find('#text').val().trim().sentenceNormalize());
 				}
 				sentencesLength += sentences.join(' ').length;
-			}	
+			}
 		myFicoUsages.length += sentencesLength;
 		localStorage.setItem(MY_FICO_USAGES_KEY, btoa(JSON.stringify(myFicoUsages)));
 		$form.trigger('submit');
