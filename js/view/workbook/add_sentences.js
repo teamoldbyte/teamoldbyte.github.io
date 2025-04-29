@@ -663,6 +663,7 @@ function pageinit(memberId, isSsam) {
 				});
 				// 선택한 지문과 다른 경우(문장 삭제 혹은 수정) 수정사항이 확인되는 것과 안되는 것을 구분
 				// (수정 안함: sentenceId 입력, 수정함: eng 입력)
+				$form.find('#text').prop('disabled', true);
 				if($selectedPassage.text() != finalSentences.join(' ')) {
 					$('#text').val(finalSentences.join(' '));
 					$sentences.each(function(i, el) {
@@ -676,7 +677,6 @@ function pageinit(memberId, isSsam) {
 					});
 					dirty = true;
 				} else {
-					$form.find('#text').prop('disabled', true);
 					if(passageId != null) {
 						createHidden($form, 'existingPassageId', passageId);
 					} else {
