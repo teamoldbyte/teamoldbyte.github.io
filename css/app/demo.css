@@ -1839,7 +1839,7 @@
     border-radius: 10px;
     resize: none;
     padding: 10px;
-	width: calc(100vw - 20rem);
+	width: 100%;
 	max-width: 100%;
 }
 .ai-translation-section{
