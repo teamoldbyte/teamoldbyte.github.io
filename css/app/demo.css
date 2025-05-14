@@ -1840,6 +1840,7 @@
     resize: none;
     padding: 10px;
 	width: calc(100vw - 20rem);
+	max-width: 100%;
 }
 .ai-translation-section{
 	display: inline-block;
