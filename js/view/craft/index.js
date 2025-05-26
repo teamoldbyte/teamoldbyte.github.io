@@ -91,7 +91,7 @@ async function pageinit(memberId, memberRoleType) {
 	}*/
 	
 	const WANDERER = !Cookies?.get('EID') && !Cookies?.get('FMID');
-	const URL_MEMBERSHIP_FREE = '/free-membership/add',
+	const URL_MEMBERSHIP = '/membership',
 		URL_PLAY_BASE = '/craft/battle/';
 	let wanderingBooks = [];
 	let DB_NAME = 'findsvoc-idb'
@@ -213,11 +213,18 @@ async function pageinit(memberId, memberRoleType) {
 		overCount = parseInt($('#overCount').val());
 		localStorage.setItem(countStoreName,JSON.stringify({date: new Date().toLocaleDateString(), count: overCount}));
 	}
-	if(overCount >= 50) {
-		$('.js-play-step').addClass('disabled').removeAttr('onclick')
+	// 2025-04-23 수정자: 이광민
+	// 무료가입은 더티데이터의 증가만 야기하므로 막는다.
+	// 이로 인해 비회원에겐 단계별 배틀 진행 버튼을 비활성화한다.
+	if(WANDERER || overCount >= 50) {
+		$(document).off('click', '.js-play-step');
+		const tooltipMessage = WANDERER ? '문법별/테마별 학습을 진행하거나<br>회원이시면 로그인을 해주세요.'
+										: '일일 최대 플레이 횟수에 도달하였습니다.<br>내일 다시 찾아와 주세요.'
+		$('.js-play-step').addClass('disabled')
+		.parent()
 			.attr('data-bs-toggle', 'tooltip')
 			.attr('data-bs-html', 'true')
-			.attr('title', '일일 최대 플레이 횟수에 도달하였습니다.<br>내일 다시 찾아와 주세요.')
+			.attr('title', tooltipMessage)
 			.tooltip();
 	}
 	
@@ -642,8 +649,8 @@ async function pageinit(memberId, memberRoleType) {
 	// 배틀 플레이 버튼 동작
 	$(document)
 	.on('click', '.js-play-step', function() {
-		// 단계별 배틀은 비회원가입이라도 해야 플레이 할 수 있다.
-		if(WANDERER) location.assign(URL_MEMBERSHIP_FREE);
+		// 단계별 배틀은 무료가입이라도 해야 플레이 할 수 있다.
+		if(WANDERER) location.assign(URL_MEMBERSHIP);
 		else if(!memberId && Cookies?.get('EID')) location.assign('/auth/login?destPage=/craft/main');
 		else location.assign(`${URL_PLAY_BASE}step/b?title=단계별 학습&bookType=step&wanderer=${WANDERER}`);
 	})
@@ -677,10 +684,13 @@ async function pageinit(memberId, memberRoleType) {
 							{"el":"button","class":"btn fas fa-times text-light p-0","data-bs-dismiss":"modal","aria-label":"Close"}
 						]},
 						{"el":"div","class":"modal-body row g-0","children":[
-							{"el":"div","class":"text-section mb-3 text-center text-dark","innerHTML":"<span class='app-name-text'>fico</span> 이용자 <b class='text-fc-red'>가입</b>시 테스트 <b>진행기록</b>과 <b>전적 정보</b>가 <b>저장</b>되어 다음에도 로그인없이 배틀을 <b>이어서 이용</b>할 수 있습니다."},
+							{"el":"div","class":"text-section mb-3 text-center text-dark","innerHTML":"<span class='app-name-text'>fico</span> 멤버십 <b class='text-fc-red'>가입</b>시 테스트 <b>진행기록</b>과 <b>전적 정보</b>가 <b>저장</b>되어 다음에도 배틀을 <b>이어서 이용</b>할 수 있습니다."},
 							{ "el": "div", className: 'col text-center', children: [
-								{"el":"button","class":"btn btn-fico w-100","innerHTML": "<b>예</b><br><span class='fs-7'>(이용자 간편가입)</span>", onclick: () => {
-									location.assign(`${URL_MEMBERSHIP_FREE}?destPage=${destPage}`);
+								// 2025-04-23 수정자: 이광민
+								// 무료가입은 이제 막기 때문에
+								// 무료가입으로 이동하는 버튼을 멤버십가입으로 이동하도록 수정.
+								{"el":"button","class":"btn btn-fico w-100 h-100","innerHTML": "<b>예</b>", onclick: () => {
+									location.assign(`${URL_MEMBERSHIP}?destPage=${destPage}`);
 								}}
 							]},
 							{ "el": "div", className: 'col text-center', children: [
