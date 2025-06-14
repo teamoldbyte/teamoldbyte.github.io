@@ -180,8 +180,14 @@ li {
 		bottom: 0;
 	}
 
-	
-
+	/* margin box at top right showing page number */
+	/*
+	@page {
+	@top-right  {
+			content: "Page " counter(pageNumber);
+		}
+	}
+*/
 
 	
 	/* 오른쪽 라인 */
