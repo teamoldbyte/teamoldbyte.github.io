@@ -21,7 +21,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
 	
-	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json')];
+	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json?time=' + Date.now().toString())];
 	if (myFicoUsages.user != ntoa(memberId) || myFicoUsages.date != TODAY_DATE) {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
 		myFicoUsages = { user: ntoa(memberId), date: TODAY_DATE, length: 0 };
