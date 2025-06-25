@@ -73,7 +73,7 @@ function pageinit(sentenceList, memberId, isSsam) {
 	let myFicoUsages = encodedData ? JSON.parse(atob(encodedData)) : {};
 	
 	let unlockedMembers = [];
-	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json').done(members => unlockedMembers = members)];	
+	let promises = [$.getJSON('https://static.findsvoc.com/data/member/unlockedLimitMembers.json?time=' + Date.now().toString()).done(members => unlockedMembers = members)];	
 	
 	if (myFicoUsages.user !== ntoa(memberId) || myFicoUsages.date !== TODAY_DATE) {
 		// 사용량 정보 객체의 사용자가 불일치하거나 날짜정보가 다르다면 서버로부터 사용량 조회하여 세팅.
