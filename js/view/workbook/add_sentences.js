@@ -113,6 +113,7 @@ function pageinit(memberId, isSsam) {
 	let maxChars = 2000; // default 1000(--> 2000. 실사용에선 1000자를 조금 넘겨서 두 개의 지문이 되는 경우가 많음.[2025.07.01]), 피코 추가소모로 500 늘릴 수 있음.
 	let textTooltip;
 	let correctionBlinkAnimation;
+	$('.demo-counter').text(`0/${maxChars}`);
 	$(document).on('input', '#newPassageText', function() {
 		const validateResult = replaceAndHighlights();
 		const text = this.value.trim().quoteNormalize(), textLen = text.length;
