@@ -130,7 +130,7 @@ function pageinit(isHelloBook, memberId, isSsam) {
 	};
 
 	// [신규 지문 입력 시 비활성화된 등록 버튼 활성화]
-	let maxChars = isHelloBook ? 300 : 1000; // default 1000, 피코 추가소모로 500 늘릴 수 있음.
+	let maxChars = isHelloBook ? 300 : 2000; // default 1000(--> 2000. 실사용에선 1000자를 조금 넘겨서 두 개의 지문이 되는 경우가 많음.[2025.07.01]), 피코 추가소모로 500 늘릴 수 있음.
 	let textTooltip;
 	let correctionBlinkAnimation;	
 	$(document).on('input', '#newPassageText', function() {
@@ -231,12 +231,12 @@ function pageinit(isHelloBook, memberId, isSsam) {
 		});
 
 		// [지문 입력 글자 수 증가(TBD:피코 소모를 통해 해제)]
-		$('.demo-counter').one('click', function() {
+		/*$('.demo-counter').one('click', function() {
 			maxChars += 500;
 			textTooltip?.disable();
 			textTooltip = null;
 			$('#newPassageText').trigger('input');
-		})
+		})*/
 		// 지문 최대 갯수 도달. 워크북 추가로 이동
 		const passageIdList = JSON.parse(sessionStorage.getItem('passageIdList'));
 		if (passageIdList?.length >= 33) {
