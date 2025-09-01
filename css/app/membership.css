@@ -97,14 +97,10 @@
 	border-bottom: 2px solid rgba(255,255,255,0.25);
 }
 #done-info-modal .modal-content{
-	color: #fff;
-	background: #323857bf;
-	backdrop-filter: blur( 7px );
-	-webkit-backdrop-filter: blur( 7px );
-	border: 1px solid rgba(255,255,255,.05);
+	color: var(--fc-purple);
 }
 #done-info-modal .input-form-section .help-text-section span{
-	color: #dadada
+	color: gray;
 }
 #done-info-modal .payment-phase .qr-images-section .text-danger{
 	font-weight: bold;
