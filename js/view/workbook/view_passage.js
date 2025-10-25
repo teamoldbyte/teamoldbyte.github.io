@@ -403,11 +403,56 @@
 			})
 			$textInput.val('');
 			$addSection.toggle(300, function() {
-				$(this).siblings('.empty-list').hide();
+				$addSection.siblings('.empty-list').hide();
 				$addSection.closest('.note-section').find('.add-icon').prop('disabled', false);
 			});
 		}
 	});
+	
+	$('.js-generate-passage-note').on('click', function() {
+		const text = Array.from(sentenceList, sentence => sentence.text).join(' ');
+		if(text.length == 0) return;
+		$('#ai-passage-note-modal').modal('hide');
+		$('#loadingModal').modal('show');
+		// 지문 노트 추가(ajax)--------------------------------------------------
+		$.ajax({
+			url: '/workbook/passage/note/generate', type: 'POST', contentType: 'application/json',
+			data: JSON.stringify({workbookId, passageId, memberId, text}),
+			success: (response) => {
+				if(response == 'insufficient') {
+					$('#loadingModal').modal('hide');
+					alertModal('잔여 gold egg가 부족합니다.');
+				}else {
+					$('#loadingModal').one('hidden.bs.modal', () => {
+						appendNote(response);
+					}).modal('hide');
+				}
+			},
+			error: (jqxhr) => {
+				$('#loadingModal').modal('hide');
+				if(jqxhr.status == 403)
+					location.assign('/membership/expired');
+				else
+					alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.')
+			}
+		})
+		//--------------------------------------------------------------------
+
+		function appendNote(note) {
+			if(passageNoteList) passageNoteList.push(note);
+			else passageNoteList = [note];
+			note['memberInfo'] = {memberId, alias: memberAlias};
+			const $noteList = $('#passageNotes .note-list').show();
+			$noteList.each((_,el) => {
+						   //-----------------------
+				const newNote = createNoteDOM(note);
+						   //-----------------------
+				$(newNote).appendTo($(el))[0].focus();
+			})
+			$('#passageNotes .empty-list').hide();
+			$('#passageNotes .add-icon').prop('disabled', false);
+		}		
+	})
 	
 	// [지문의 질문 목록 가져오기(1회)]--------------------------------------------------
 	$('#passageQnas').one('show.bs.collapse', function(){
@@ -657,7 +702,6 @@
 		}
 		// 5. 단어 표시 
 		const wordList = sentence.wordList;
-		
 		if(wordList != null && wordList.length > 0) {
 			const wordListLen = wordList.length,
 //				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
@@ -1393,7 +1437,7 @@
 		})
 	})
 	
-	// [프린트 버튼 클릭]-------------------------------------------------------
+	// [프린트 버튼 클릭]------------------------------------------------------
 	$(".js-print-button").on('click', function(){
 		const workBookTitle = $('.workbook-title-section:eq(0)').text().trim();
 		const passageTitle = $('.passage-title-text:eq(0)').text().trim();
@@ -1452,12 +1496,12 @@
 		+ "<br>원하는 내용을 쉽게 습득하고 활용해보세요.");
 	})
 
-	// [그래프 영역 펼치고 접기]------------------------------------------------
+	// [그래프 영역 펼치고 접기]------------------------------------------------------
 	/* $(".token-tree-section .btn-area").click(function(){
 		$(this).closest(".token-tree-section").find(".result-token-tree").toggle();
 	}); */
 	
-	// [나의 해석 수정]---------------------------------------------------------
+	// [나의 해석 수정]------------------------------------------------------------
 	const $transEditor = $('#hiddenDivs .trans-editor');
 	$(document).on('click', '.js-edit-trans-open', function(){
 		$transEditor.hide();
@@ -1656,6 +1700,58 @@
 				$noteSection.find('.empty-list').hide();
 			})
 		}
+	})
+	// [문장의 생성형 노트 추가]------------------------------------------------
+	.on('show.bs.modal', '#ai-sentence-note-modal', function(e) {
+		$(this).data('sentenceSection', $(e.relatedTarget).closest('.one-sentence-unit-section'));
+	})
+	.on('click', '.js-generate-sentence-note', function() {
+		
+		const $sentenceSection = $('#ai-sentence-note-modal').data('sentenceSection'); 
+		const sentenceId = Number($sentenceSection.data('sentenceId'));
+		const text = $sentenceSection.find('.origin-sentence .sentence-text').text();
+		$('#ai-sentence-note-modal').modal('hide');
+		$('#loadingModal').modal('show');
+		// 문장 노트 추가(ajax)----------------------------------------------------
+		$.ajax({
+			url: '/workbook/sentence/note/generate', type: 'POST', contentType: 'application/json',
+			data: JSON.stringify({workbookId, sentenceId, memberId, text}),
+			success: (response) => {
+				if(response == 'insufficient') {
+					$('#loadingModal').modal('hide');
+					alertModal('잔여 gold egg가 부족합니다.');
+				}else {
+					$('#loadingModal').one('hidden.bs.modal', () => {
+						appendNote(response);
+					}).modal('hide');
+				}
+			},
+			error: (jqxhr) => {
+				$('#loadingModal').modal('hide');
+				if(jqxhr.status == 403)
+					location.assign('/membership/expired');
+				else
+					alertModal('노트 등록에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.')
+			}
+		})
+		//----------------------------------------------------------------------
+
+		function appendNote(note) {
+			// 새로 등록한 노트를 캐시에도 추가
+			if(sentenceNoteList[sentenceId]) sentenceNoteList[sentenceId].unshift(note);
+			else sentenceNoteList[sentenceId] = [note];
+			
+			note['memberInfo'] = {memberId, alias: memberAlias};
+			const $noteList = $sentenceSection.find('.note-section>.note-list');
+			$noteList.each((_,el) => {
+			 			   //------------------
+				$(el).prepend(createNoteDOM(note));
+						   //------------------
+			})
+			const $noteSection = $sentenceSection.find('.note-section');
+			$noteSection.find('.add-icon').prop('disabled', false);
+			$noteSection.find('.empty-list').hide();
+		}		
 	});
 	// [문장의 오픈보카 폼]---------------------------------------------------------
 	const OPENVOCAS_SUBMIT_BUTTONS_SELECTOR = '#addVoca,#appendVoca,#requestVoca,#changeVoca,#addPartVoca';
