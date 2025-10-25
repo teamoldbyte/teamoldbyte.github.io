@@ -380,7 +380,7 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		
 	});
 	let nextTimer; 
-	let orderItemList = [];
+	const orderItem = {};
 	$(document)
 	// [가입연장 모달 실행]---------------------------------------------------------
 	.on('show.bs.modal', '#done-info-modal', function() {
@@ -388,77 +388,62 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	})
 	.on('hide.bs.modal', '#done-info-modal', function() {
 		clearInterval(nextTimer);
-		$('#phase-2 .progress-bar').attr('aria-valuenow', 0)
-									.width('0%');
-		$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', true);
+		$('#phase-1 form').removeClass('was-validated');
+		FicoPaymentHandler?.destroy();
+
 		$('#phase-2,#phase-3').collapse('hide');
 		$('#phase-1').collapse('show');		
 	})
-	// [상품 선택 완료]------------------------------------------------------------
-	.on('submit', '#selectItemForm', function(e) {
-		if(this.checkValidity()) {
-			e.preventDefault();
-			const $item = $('#phase-1 [name=orderItem]:checked');
-			const itemName = $item.data('itemname');
-			const price = $item.next('.membership-block').find('.price').text();
-			
-			$('#totalAmount').val(price.replace(/\D+/g,''));
-			orderItemList = [$item.val()];
-			$('#phase-2 .payment-info .name').text(itemName);
-			$('#phase-2 .payment-info .price').text(price);
-			$('#phase-1,#phase-2').collapse('toggle');
-		}
+	// [상품 선택 변경]------------------------------------------------------------
+	.on('change', ':radio[name="orderItem"]', function(e) {
+		$('#totalAmount').val(parseInt($(this).data('price')));
+		orderItem['name'] = $(this).data('itemname');
+		orderItem['id'] = $(this).val()
 	})
 	// [멤버십 선택]---------------------------------------------------------------
 	.on('show.bs.collapse', '#modalDiv #phase-1', function() {
 		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
 	})
-	// [결제 대기]----------------------------------------------------------------
-	.on('show.bs.collapse', '#modalDiv #phase-2', function() {
-		
-		$('#donationModalLabel').text('송금을 진행해 주세요.');
-		$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', true);
-		clearInterval(nextTimer);
-		$('#phase-2 .progress-bar').attr('aria-valuenow', 0).width(0);
-		let progress = 0;
-		const startTime = Date.now();
-		nextTimer = setInterval(() => {
-			progress = Math.min(100, (Date.now() - startTime) / 1000);
-			$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
-									.width(`${progress}%`);
-			$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').prop('disabled', progress < 100);
-			if(progress >= 100) {
-				clearInterval(nextTimer);
-				$('#phase-2 [data-bs-target="#phase-2,#phase-3"]').trigger('click');
-			}
-		}, 500);
-	})
-	// [가입정보 확인 및 수정]-------------------------------------------------------
-	.on('show.bs.collapse', '#modalDiv #phase-3', function() {
-		$('#donationModalLabel').text('회원가입 정보');
-	})
-	// [추가정보 입력 완료]---------------------------------------------------------
-	.on('submit', '#paymentForm', function(e) {
+	// [멤버십 주문 진행]---------------------------------------------------------
+	.on('submit', '#membershipForm', function(e) {
 		e.preventDefault();
 		const submitter = e.originalEvent.submitter;
 		const data = Object.fromEntries(new FormData(this).entries());
+		data['orderItemList'] = [orderItem['id']];
+		
 		if(this.checkValidity()) {
 			submitter.disabled = true;
-			$('#modalDiv .modal').modal('hide');
-			data["orderItemList"] = orderItemList;
+			$('#order-processing').show();
+			$('#payment-methods,#phase-2 :submit').hide();
+			$('#phase-1,#phase-2').collapse('toggle');
 			$.ajax({
-				url: '/membership', type: 'POST', 
-				data: JSON.stringify(data),
-				contentType: 'application/json', 
-				success: () => {
-					alertModal('멤버십이 연장되었습니다.\n다시 로그인해 주세요.', () => document.forms.logout.submit());
+				url: '/membership/order', type: 'POST', data: JSON.stringify(data),
+				contentType: 'application/json',
+				success: async ({memberId56, orderId56}) => {
+					await FicoPaymentHandler.renderWidget('#payment-methods', {
+						orderId: orderId56, orderName: orderItem['name'],
+						amount: parseInt($('#totalAmount').val()),
+						customerKey: memberId56, 
+						customerName: $('#name').val(),
+						customerEmail: $('#email').val(),
+						customerMobilePhone: $('#phone').val()
+					});					
+					$('#order-processing').hide();
+					$('#payment-methods,#phase-2 :submit').show();
 				},
 				error: () => {
-					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'));
+					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'))
 				},
 				complete: () => submitter.disabled = false
-			})
+			});					
 		}
+	})
+	// [결제 진행]----------------------------------------------------------------
+	.on('show.bs.collapse', '#modalDiv #phase-2', function() {
+		$('#donationModalLabel').text('결제');
+	})
+	.on('click', '#phase-2 :submit', function() {
+		FicoPaymentHandler.requestPayment();			
 	})
 	// 모바일 화면일 경우 에그 내역 페이지네이션을 작게
 	function fitWindowSize() {
@@ -472,102 +457,18 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 	setTimeout(() => {
 		$('.js-open-extend').tooltip('show');
 	}, 100);
-	document.body.append(createElement([
-		{ "el": "div", "class": "modal fade", "id": "egg-explain-modal", "tabindex": "-1", 
-			"aria-labelledby": "eggExplainModalLabel", "aria-hidden": true, "children": [
-			{ "el": "div", "class": "modal-dialog modal-dialog-centered", "children": [
-				{ "el": "div", "class": "modal-content", "children": [
-					{ "el": "div", "class": "modal-header", "children": [
-						{ "el": "button",
-							"type": "button",
-							"class": "btn-close",
-							"data-bs-dismiss": "modal",
-							"aria-label": "Close"
-						}
-					]},
-					{ "el": "div", "class": "modal-body", "children": [
-						{ "el": "p", "children": [
-							{ "el": "h5", "textContent": "에그는 무엇인가요?" },
-
-							"에그는 ",
-							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
-							"에서 사용되는 포인트입니다.",{ "el": "br" },
-							{ "el": "b", "textContent": "총 9개" },
-							"로 구성되며 에그마다 다른 확률로 무작위로 배포됩니다.",{ "el": "br" },
-							"골드 에그는 ",
-							{ "el": "span", "class": "app-name-text", "textContent": "fico" },
-							" 코인으로서 ",
-							{ "el": "b", "textContent": "골드 콘텐츠 결제" },
-							"에 사용할 수 있습니다.",{ "el": "br" },
-							{ "el": "br" },
-
-							{ "el": "h5", "textContent": "에그를 모을 수 있는 방법?" },
-							"1. 나의 워크북 공개하기",{ "el": "br" },
-							"2. 잘못된 구문 분석 수정하기",{ "el": "br" },
-							"3. 배틀 북에서 정답 맞히기",{ "el": "br" },
-							{ "el": "span", "class": "text-smd", "textContent": "다양한 콘텐츠에서 에그를 수집할 수 있도록 지속적으로 제공하겠습니다." },{ "el": "br" },
-							{ "el": "br" },
-
-							{ "el": "h5", "textContent": "에그를 모아서 무엇을 할 수 있나요?" },
-							"무작위로 수집한 플레인 에그를 ",
-							{ "el": "b", "textContent": "골드 에그로 변경" },
-							"할 수 있습니다.",{ "el": "br" },
-							"골드 에그를 모아 ",
-							{ "el": "b", "textContent": "골드 콘텐츠 결제" },
-							"에 사용하세요.",{ "el": "br" },
-						]}
-					]}
-				]}
-			]}
-		]},
-		/*{ el: 'div', className: 'bucket-detail-section modal', id: 'bucket-modal', tabIndex: '-1', children: [
-			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
-				{ el: 'div', className: 'modal-content', children: [
-					{ el: 'div', className: 'modal-header', children: [
-						{ el: 'h5', textContent: '획득 버킷'},
-						{ el: 'button', type:'button', className: 'btn-close', 'data-bs-dismiss': 'modal'},
-					]},
-					{ el: 'div', className: 'modal-body px-1 px-md-5', children: [
-						{ el: 'div', className: 'bucket-history row g-0', children: bucketHistory }
-					]}
-				]}
-			]}
-		]},*/
-		{ el: 'div', className: 'egg-detail-section' + (devSize.isPhone() ? ' top-50 translate-middle-y' : ''), style: { display: 'none', position: 'absolute', zIndex: 1062 }, children: [
-			{ el: 'div', className: 'btn btn-close position-absolute end-3', onclick: () => {
-				if(devSize.isPhone() && window.history.state == 'eggModal') {
-					window.history.back();
-				}else {
-					$('.egg-detail-section').hide(100);
-				}} },
-			{ el: 'div', className: 'row g-0', children: [
-				{ el: 'div', className: 'col-12 col-md-8', children: [
-					{ el: 'div', className: 'egg-wrapper', children: [
-						{ el: 'div', className: 'shadow', children: [
-							//{ el: 'div', className: 'main' },
-							{ el: 'div', className: 'secondary'}
-						]},
-						{ el: 'div', className: 'egg', children: [
-							{ el: 'div', className: 'fill' },
-							{ el: 'div', className: 'shading' },
-							{ el: 'div', className: 'key' },
-							{ el: 'div', className: 'highlight' }
-						]}
-					]}
-				]},
-				{ el: 'div', className: 'egg-text-info-section col-12 col-md-4 mt-5 mt-md-0', children: [
-					{ el: 'h4', className: 'name' },
-					{ el: 'span', className: 'title' },
-					{ el: 'span', className: 'desc' },
-					{ el: 'span', className: 'writer', textContent: '- Alalos Eggsy -' },
-					{ el: 'div', className: 'footer-text', children: [
-						{ el: 'span', className: 'count-text mb-0', children: [
-							'Hatching D-Day : ', { el: 'span', className: 'egg-count' }, ' left.'
-						]},
-						{ el: 'span', className: 'hatching-info', textContent: '에그를 부화시켜 마법사 에그시가 숨겨놓은 선물을 받아가세요.' }
-					]},
-				]}
-			]}
-		]}
-	]));
+	
+	// 필요 모달 html 호출하여 렌더링
+	$.get('https://static.findsvoc.com/fragment/mypage/explain_egg_modal.html', fragment => {
+		$(document.body).append(fragment);
+		
+		$('.egg-detail-section').toggleClass('top-50 translate-middle-y', devSize.isPhone())
+		.children('.btn').on('click', () => {
+			if(devSize.isPhone() && window.history.state == 'eggModal') {
+				window.history.back();
+			}else {
+				$('.egg-detail-section').hide(100);
+			}
+		});
+	})
 } //end of ready
