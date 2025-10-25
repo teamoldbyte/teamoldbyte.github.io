@@ -3,11 +3,10 @@
  */
 function pageinit(membershipCommand) {
 	const loggedin = membershipCommand.mid != 0;
-	
 	let nextTimer; 
 	let orderItemList = [];
 	
-	const donationModalJson = {
+/*	const donationModalJson = {
 		el: 'div', id: 'done-info-modal', className: 'modal fade done-info-modal', tabIndex: '-1',
 		'data-bs-backdrop': 'static', 'data-bs-keyboard': 'false', 'aria-labelledby': 'donationModalLabel', ariaHidden: 'true', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
@@ -65,7 +64,7 @@ function pageinit(membershipCommand) {
 									]}
 								]},
 								// 동의 체크
-								/*
+								
 								<div class="mt-4">
 									<div class="form-check">
 										<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> <label
@@ -78,7 +77,7 @@ function pageinit(membershipCommand) {
 											개인정보제공 동의 </label>
 									</div>
 								</div>								
-								 */
+								 
 								{ el: 'div', className: 'button-section text-end mt-2', children: [
 									{ el: 'button', type: 'submit', className: 'btn btn-fico', disabled: true, textContent: '다음' }
 								]}
@@ -224,7 +223,7 @@ function pageinit(membershipCommand) {
 											]}
 										]},
 										// 동의 체크
-										/*<div class="mt-4">
+										<div class="mt-4">
 											<div class="form-check">
 												<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> <label
 													class="form-check-label" for="flexCheckDefault">
@@ -235,7 +234,7 @@ function pageinit(membershipCommand) {
 													class="form-check-label" for="flexCheckChecked">
 													개인정보제공 동의 </label>
 											</div>
-										</div>*/
+										</div>
 										{ el: 'div', className: 'button-section text-end mt-2', children: [
 											{ el: 'button', type: 'button', className: 'btn btn-outline-fico', 'data-bs-toggle': 'collapse', 'data-bs-target': '#phase-2,#phase-3', textContent: '이전' },
 											{ el: 'button', type: 'submit', className: 'btn btn-fico', textContent: '완료'}
@@ -248,8 +247,8 @@ function pageinit(membershipCommand) {
 			]}
 		]
 	}
-
-	const desktopInfoMOdalJson = {
+*/
+/*	const desktopInfoMOdalJson = {
 		el: 'div', id: 'guide-modal', className: 'modal fade', tabIndex: '-1', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
 				{ el: 'div', className: 'modal-content', children: [
@@ -275,9 +274,9 @@ function pageinit(membershipCommand) {
 				]}
 			]}
 		]
-	};
+	};*/
 
-	const emailDuplicateModalJson = {
+/*	const emailDuplicateModalJson = {
 		el: 'div', id: 'check-modal', className: 'check-modal-section modal fade', tabIndex: '-1', 'data-bs-backdrop': 'static', children: [
 			{ el: 'div', className: 'modal-dialog modal-dialog-centered', children: [
 				{ el: 'div', className: 'modal-content border-0', children: [
@@ -306,7 +305,16 @@ function pageinit(membershipCommand) {
 				]}
 			]}
 		]
-	}
+	}*/
+	
+	// 멤버십 목록 월/연 토글 동작
+	$('.membership-item-list-section .toggle-block').on('click', '.monthly,.yearly', function() {
+		if($(this).is('.monthly.is-monthly,.yearly.is-yearly')) return;
+		// 목록에 나타난 카드들의 월/연 클래스명 토글
+		$(this).siblings().add(this).add('.membership-item-list-section .membership-item-block').toggleClass('is-monthly is-yearly')
+		// 골드멤버십의 월/연 가격 토글
+		$('.membership-item-block.gold-membership .price-block').toggle();
+	})
 
 	// [모바일] 선택한 골드멤버십에 따른 표시 전환
 	$('.membership-item-block.gold-membership .toggle-block').on('click', '.monthly,.yearly', function() {
@@ -320,36 +328,51 @@ function pageinit(membershipCommand) {
 		$itemBlock.find('.item-full-name').val(this.dataset.itemName);
 		$itemBlock.find('.item-real-price').val(this.dataset.price);
 	});
-	
+//	const tossPayments = TossPayments(clientKey);
 	$(document).on('show.bs.modal', '#done-info-modal', function(e) {
 		const button = e.relatedTarget;
-		const memberShipInfoDiv = button.closest('.membership-item-block');
-		const iid = memberShipInfoDiv.querySelector('.iid').value;
-		const itemName = memberShipInfoDiv.querySelector('.item-full-name').value;
-		const price = memberShipInfoDiv.querySelector('.item-real-price').value;
+		const $memberShipInfoDiv = $(button).closest('.membership-item-block').find('.price-block:visible');
+		const iid = $memberShipInfoDiv.find('.iid').val();
+		const itemName = $memberShipInfoDiv.find('.item-full-name').val();
+		const price = $memberShipInfoDiv.find('.item-real-price').val();
 		
 		orderItemList = [iid];
 		$(this).find('.btn-close').show();
-		this.querySelector('.payment-info .name').innerHTML = itemName.replace(/(-.+)/,'<span class="d-inline-block">$1</span>');
-		this.querySelector('.payment-info .price').innerHTML = price;
+//		this.querySelector('.payment-info .name').innerHTML = itemName.replace(/(-.+)/,'<span class="d-inline-block">$1</span>');
+//		this.querySelector('.payment-info .price').innerHTML = price;
 		$('#totalAmount').val(price.replace(/\D/g,''));
+		$('#orderName').val(itemName);
 		// 이미 로그인한 경우(회원임) 이메일 고정.
-		$('#inputEmail').prop('readonly', loggedin).trigger('input');
 		$('#phase-1 form').toggleClass('was-validated', loggedin);
-		if(loggedin) $('.check-email-btn').prop('disabled', true);
-		
+		$('#passwd,#passwdCheck').prop('required', !loggedin).prop('readonly', loggedin);
+		if(loggedin) {
+			$('.check-email-btn').prop('disabled', true);
+			$('#inputName').val(membershipCommand.remitter != 'fico' ? membershipCommand.remitter : '');
+			$('#inputPhone').val(membershipCommand.phone);
+			$('#inputEmail,.check-email-input').val(membershipCommand.email);
+			$('#inputEmail').prop('readonly', loggedin);
+			
+			Array.from(['mid','phone','remitter','memberRoleName'], att => {
+				$(`#${att}`).val(membershipCommand[att??'']);
+			});
+			$(`[name="sex"][value="${membershipCommand.sex}"]`).prop('checked', true);
+			$(`.input-birth option[value="${membershipCommand.birthYear}"]`).prop('selected', true);
+			
+			$('#phase-1 form :submit').prop('disabled', !$('#membershipForm')[0].checkValidity());
+			if(membershipCommand.remitter != 'fico') {
+				$('#phase-1 form :submit').trigger('click');
+			}
+		}
 	})
 	// 모달이 닫힐 때 초기화
 	.on('hide.bs.modal', '#done-info-modal', function(e) {
-		$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
 		clearTimeout(nextTimer);
-		document.querySelector('#phase-1 form').classList.remove('was-validated');
-		
-		
-		if(!loggedin) document.querySelector('#phase-1 form').reset();
+		$('#phase-1 form').removeClass('was-validated');
+		FicoPaymentHandler?.destroy();
+				
+		if(!loggedin) $('#phase-1 form')[0].reset();
 		$('#inputEmail').trigger('input');
-		document.querySelector('#phase-3 form').reset();
-		$('#donationModalLabel').text('입금자 정보');
+		$('#donationModalLabel').text('회원 정보 입력');
 		$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', true);
 		$('#phase-2,#phase-3').collapse('hide');
 		$('#phase-1').collapse('show');
@@ -359,19 +382,11 @@ function pageinit(membershipCommand) {
 		confirmModal('가입 진행을 취소하시겠습니까?\n진행 중이던 정보는 저장되지 않습니다.', 
 		() => $('#done-info-modal').modal('hide'));
 	})
-	.on('click', '#cancelPayment', function() {
-		confirmModal('입금 대기 및 처리 중입니다. 가입을 취소하시겠습니까?', () => {
-			$('#phase-2 .progress-bar').attr('aria-valuenow', 0);
-			clearTimeout(nextTimer);
-			$('#phase-1,#phase-2').collapse('toggle');
-			$('#done-info-modal').modal('hide');
-		});
-	})
 	
 	// phase-1 시작
 	.on('show.bs.collapse', '#phase-1', function() {
 	   $('#done-info-modal .btn-close').show();
-	   $('#donationModalLabel').text('입금자 정보');
+//	   $('#donationModalLabel').text('입금자 정보');
 	})
 	
 	// 이메일 중복검사
@@ -410,18 +425,32 @@ function pageinit(membershipCommand) {
 	.on('submit', '#phase-1 form', function(e) {
 		e.preventDefault();
 		const submitter = e.originalEvent.submitter;
+		this.querySelector('[name="remitter"]').value 
+				= this.querySelector('[name="name"]').value = $('#inputName').val().trim();
+				this.querySelector('[name=email]').value = $('#inputEmail').val().trim();
+				this.querySelector('[name=phone]').value = $('#inputPhone').val().trim();
 		const data = Object.fromEntries(new FormData(this).entries());
 		if(this.checkValidity()) {
-			if(loggedin) {
-				$('#phase-1,#phase-2').collapse('toggle');
-				return;
-			}
 			submitter.disabled = true;
+			$('#order-processing').show();
+			$('#payment-methods, #phase-2 :submit').hide()
+			$('#phase-1,#phase-2').collapse('toggle');
+			data["orderItemList"] = orderItemList;
 			$.ajax({
-				url: '/temp/membership', type: 'POST', data: JSON.stringify(data),
+				url: '/membership/order', type: 'POST', data: JSON.stringify(data),
 				contentType: 'application/json',
-				success: () => {
-					$('#phase-1,#phase-2').collapse('toggle');
+				success: async ({memberId56, orderId56}) => {
+					await FicoPaymentHandler.renderWidget('#payment-methods', {
+						orderId: orderId56, orderName: $('#orderName').val(),
+						amount: parseInt($('#totalAmount').val()),
+						customerKey: memberId56, 
+						customerName: $('#inputName').val(),
+						customerEmail: $('#inputEmail').val(),
+						customerMobilePhone: $('#phone').val(),
+					});
+					
+					$('#order-processing').hide();
+					$('#payment-methods, #phase-2 :submit').show();
 				},
 				error: () => {
 					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'))
@@ -430,58 +459,13 @@ function pageinit(membershipCommand) {
 			});				
 		}
 	})
+	.on('click', '#phase-2 :submit', function() {
+		FicoPaymentHandler.requestPayment();	
+	})
 	
 	// phase-2 시작
 	.on('show.bs.collapse', '#phase-2', function() {
-		$('#done-info-modal .btn-close').hide();
-		$('#donationModalLabel').text('송금을 진행해주세요.');
-		clearInterval(nextTimer);
-		let progress = 0;
-		const FULL_PROGRESS = 100;
-		const startTime = Date.now();
-		nextTimer = setInterval(() => {
-			progress = Math.min(FULL_PROGRESS, (Date.now() - startTime) / 1000);
-			$('#phase-2 .progress-bar').attr('aria-valuenow', progress)
-									.width(`${progress * 100 / FULL_PROGRESS}%`);
-			$('#phase-2 [data-bs-toggle=collapse]').prop('disabled', progress < FULL_PROGRESS);
-			if(progress >= FULL_PROGRESS) {
-				clearInterval(nextTimer);
-				$('#phase-2 [data-bs-toggle=collapse]').trigger('click');
-			}
-		}, 500);
-	})
-	// phase-2 완료
-	
-	// phase-3 시작
-	.on('show.bs.collapse', '#phase-3', function() {
-		clearInterval(nextTimer);
-		$('#donationModalLabel').text('회원가입 정보');
-		
-		// 송금자, 이메일 정보 phase-2에서 획득
-		this.querySelector('[name="remitter"]').value 
-		= this.querySelector('[name="name"]').value = $('#inputName').val().trim();
-		this.querySelector('[name=email]').value = $('#inputEmail').val().trim();
-		this.querySelector('[name=phone]').value = $('#inputPhone').val().trim();
-		if(loggedin) {
-			$('[name="passwd"]').removeAttr('name');
-			// submit이 아닌 click 이벤트를 발생시킨 이유: 프로그래밍으로 발생시킨 제이쿼리이벤트는 originalEvent 속성을 갖지 않는다.
-			$('#membershipForm :submit').trigger('click');
-			return;
-		}else {
-			if($('#timeleftForPhase3').length == 0)
-				$('#donationModalLabel').after('<span id="timeleftForPhase3" class="position-absolute end-0 me-3 fs-5 text-warning far fa-clock"> 30:00</span>');
-			let timeleftInSeconds = 1800;
-			nextTimer = setInterval(() => {
-				$('#timeleftForPhase3').text(` ${(Math.floor(timeleftInSeconds / 60)).toString().padStart(2, '0')}:${(timeleftInSeconds % 60).toString().padStart(2, '0')}`)
-				if(timeleftInSeconds <= 0) {
-					clearInterval(nextTimer);
-					alertModal('입력 시간이 초과되었습니다.\n보안을 위해 화면을 새로고침 후 가입을 처음부터 진행합니다.', () => {
-						location.reload();
-					})
-				}
-				timeleftInSeconds--;
-			}, 1000)
-		}
+		$('#donationModalLabel').text('결제')
 	})
 	// 비밀번호 입력시 확인패턴도 변경
 	.on('input', '#passwd,#passwdCheck', function() {
@@ -489,48 +473,24 @@ function pageinit(membershipCommand) {
 			$('#passwdCheck').toggleClass('is-invalid', $('#passwd').val() != $('#passwdCheck').val());
 		}
 	})
-	// phase-3 완료
-	.on('submit', '#membershipForm', function(e) {
-		e.preventDefault();
-		const submitter = e.originalEvent.submitter;
-		const data = Object.fromEntries(new FormData(this).entries());
-		if(this.checkValidity()) {
-			if(!loggedin) $('#passwdCheck').toggleClass('is-invalid', $('#passwd').val() != $('#passwdCheck').val());
-			
-			if(this.querySelector('.is-invalid')) return;
-			
-			data["orderItemList"] = orderItemList;
-			submitter.disabled = true;
-			$.ajax({
-				url: '/membership', type: 'POST', data: JSON.stringify(data),
-				contentType: 'application/json',
-				success: msg => {
-					Cookies.remove('FMID');
-					alertModal(loggedin ? `${msg}\n'확인'을 누르면 로그아웃 됩니다.\n다시 로그인해 주세요.` : `${msg}\n'확인'을 누르면 로그인 화면으로 이동합니다.`, () => {
-						// 모달 초기화
-						$(document.body).css({ paddingRight: '', overflow: ''}).removeClass('modal-open');
-						$('.modal-backdrop').remove();
-						$('#done-info-modal').removeClass('show')
-							.removeAttr('aria-modal','role')
-							.attr('aria-hidden', true)
-							.trigger('hide.bs.modal')
-							.hide().modal('dispose');
-						if(loggedin)
-							document.forms.logout.submit();
-						else
-							location.assign('/auth/login');
-					});
-				},
-				error: () => {
-					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', 
-						() => $('#done-info-moal').modal('hide')
-					);
-				},
-				complete: () => submitter.disabled = false
-			});
-		}
-	});
 	
-	document.querySelector('.membership-section').appendChild(createElement(donationModalJson));
-	document.querySelector('.tandem-layout-content-section').appendChild(createElement([desktopInfoMOdalJson, emailDuplicateModalJson]))
+	// 필요 모달 html 호출하여 렌더링
+	$.get('https://static.findsvoc.com/fragment/membership/incl/order_modal.html', fragment => {
+		const $wrapper = $('<div>').append(fragment);
+		
+		// 올해를 기준으로 출생년도 목록 세팅
+		const $birthSelect = $wrapper.find('.input-birth select');
+		const currentYear = new Date().getFullYear();
+		const startYear = currentYear - 14;
+		const endYear = currentYear - 101;
+		const length = startYear - endYear + 1;
+		Array.from({ length }, (_, i) => {
+			$birthSelect.append(`<option value="${startYear - i}">${startYear - i}</option>`);
+		});
+		// 출생년도 기본 선택은 없음으로
+		$birthSelect.find('option[disabled]').prop('selected', true)
+
+		$('.membership-section').append($wrapper.find('#done-info-modal'));
+		$('.tandem-layout-content-section').append($wrapper.find('#check-modal'));
+	}, 'html');
 }
