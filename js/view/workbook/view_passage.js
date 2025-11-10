@@ -419,13 +419,13 @@
 			url: '/workbook/passage/note/generate', type: 'POST', contentType: 'application/json',
 			data: JSON.stringify({workbookId, passageId, memberId, text}),
 			success: (response) => {
-				if(response == 'insufficient') {
-					$('#loadingModal').modal('hide');
-					alertModal('잔여 gold egg가 부족합니다.');
-				}else {
+				if(response.success) {
 					$('#loadingModal').one('hidden.bs.modal', () => {
-						appendNote(response);
+						appendNote(response.data);
 					}).modal('hide');
+				}else {
+					$('#loadingModal').modal('hide');
+					alertModal(response.message);
 				}
 			},
 			error: (jqxhr) => {
@@ -1717,13 +1717,13 @@
 			url: '/workbook/sentence/note/generate', type: 'POST', contentType: 'application/json',
 			data: JSON.stringify({workbookId, sentenceId, memberId, text}),
 			success: (response) => {
-				if(response == 'insufficient') {
-					$('#loadingModal').modal('hide');
-					alertModal('잔여 gold egg가 부족합니다.');
-				}else {
+				if(response.success) {
 					$('#loadingModal').one('hidden.bs.modal', () => {
-						appendNote(response);
+						appendNote(response.data);
 					}).modal('hide');
+				}else {
+					$('#loadingModal').modal('hide');
+					alertModal(response.message);
 				}
 			},
 			error: (jqxhr) => {
