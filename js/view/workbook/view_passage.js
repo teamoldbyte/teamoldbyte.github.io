@@ -1683,14 +1683,14 @@
 		
 		function appendNote(note) {
 			// 새로 등록한 노트를 캐시에도 추가
-			if(sentenceNoteList[sentenceId]) sentenceNoteList[sentenceId].unshift(note);
+			if(sentenceNoteList[sentenceId]) sentenceNoteList[sentenceId].push(note);
 			else sentenceNoteList[sentenceId] = [note];
 			
 			note['memberInfo'] = {memberId, alias: memberAlias};
 			const $noteList = $sentenceSection.find('.note-section>.note-list');
 			$noteList.each((_,el) => {
 			 			   //------------------
-				$(el).prepend(createNoteDOM(note));
+				$(el).append(createNoteDOM(note));
 						   //------------------
 			})
 			$addSection.find('.text-input').val('').summernote('destroy');
@@ -1738,14 +1738,14 @@
 
 		function appendNote(note) {
 			// 새로 등록한 노트를 캐시에도 추가
-			if(sentenceNoteList[sentenceId]) sentenceNoteList[sentenceId].unshift(note);
+			if(sentenceNoteList[sentenceId]) sentenceNoteList[sentenceId].push(note);
 			else sentenceNoteList[sentenceId] = [note];
 			
 			note['memberInfo'] = {memberId, alias: memberAlias};
 			const $noteList = $sentenceSection.find('.note-section>.note-list');
 			$noteList.each((_,el) => {
 			 			   //------------------
-				$(el).prepend(createNoteDOM(note));
+				$(el).append(createNoteDOM(note));
 						   //------------------
 			})
 			const $noteSection = $sentenceSection.find('.note-section');
@@ -2348,7 +2348,8 @@
 			// ---------------------------------------------
 		$addSection.show(300, function() {
 			$section.find('.empty-list').hide();
-		});
+			$addSection[0].scrollIntoView();
+		})
 		
 	})
 	// [지문/문장 노트 추가 폼 닫기]----------------------------------------------------
