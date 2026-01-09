@@ -192,7 +192,7 @@ function confirmModal(msg, confirmedCallback, deniedCallback) {
 	modal.addEventListener('hidden.bs.modal', onHide);
 	
 	function onEnter(event) {
-		if((event.key == 'Enter' || event.key == ' ') && modal.matches('.show')) {
+		if((event.key == 'Enter' || (event.key == ' ' && modal.querySelector('input') == null)) && modal.matches('.show')) {
 			window.removeEventListener('keydown', onEnter);
 			if(bootstrap?.Modal?.getInstance(modal)._isTransitioning) {
 				modal.addEventListener('shown.bs.modal', immediatelyHide);
