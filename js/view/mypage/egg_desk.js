@@ -119,11 +119,11 @@ function pageinit(tray, normalNumber, goldNumber) {
 								]},
 								{ el: 'div', children: [
 									{ el: 'span', className: 'name fw-bold', textContent: '카카오뱅크' },
-									{ el: 'span', className: 'account-num px-1', textContent: '3333-04-8952631' },
-									{ el: 'input', type: 'hidden', id: 'accountNum', value: '3333-04-8952631' },
-									{ el: 'button', className: 'btn btn-warning btn-copy far fa-copy', onclick: () => window.navigator.clipboard.writeText('3333-04-8952631'),
+									{ el: 'span', className: 'account-num px-1', textContent: '3333-33-2062712' },
+									{ el: 'input', type: 'hidden', id: 'accountNum', value: '3333-33-2062712' },
+									{ el: 'button', className: 'btn btn-warning btn-copy far fa-copy', onclick: () => window.navigator.clipboard.writeText('3333-33-2062712'),
 										'data-bs-container': 'body', 'data-bs-toggle': 'popover', 'data-bs-placement': 'top', 'data-bs-content': 'copied', textContent: '복사' },
-									{ el: 'span', className: 'name d-block', textContent: '[예금주: 이승렬]' }
+									{ el: 'span', className: 'name d-block', textContent: '[예금주: 강한별]' }
 								]}
 							]},
 							{ el: 'div', className: 'progress', children: [
