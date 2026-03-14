@@ -439,11 +439,11 @@ function pageinit(membershipCommand) {
 			$.ajax({
 				url: '/membership/order', type: 'POST', data: JSON.stringify(data),
 				contentType: 'application/json',
-				success: async ({memberId56, orderId56}) => {
+				success: async ({ordererId56, orderId56}) => {
 					await FicoPaymentHandler.renderWidget('#payment-methods', {
 						orderId: orderId56, orderName: $('#orderName').val(),
 						amount: parseInt($('#totalAmount').val()),
-						customerKey: memberId56, 
+						customerKey: ordererId56, 
 						customerName: $('#inputName').val(),
 						customerEmail: $('#inputEmail').val(),
 						customerMobilePhone: $('#phone').val(),
