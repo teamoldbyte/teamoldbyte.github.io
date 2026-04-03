@@ -2387,10 +2387,12 @@
 		width: auto;
 	}
 
+	/* summernote 줄바꿈 메커니즘 수정으로 인한 변경
 	.view-passage-section .note-section .note-text p,
 	.passage-sentence-nav .note-section .note-text p{
 		margin-bottom: 0;
 	}
+	*/
 
 }
 
@@ -2693,9 +2695,11 @@
 	}
 
 	/* 노트 영역 - 노트 본문 영역 */
+	/* summernote 줄바꿈 메커니즘 수정으로 인한 변경
 	.view-passage-section .note-section .note-text p{
 		margin-bottom: 0;
 	}
+	*/
 
 	/* 노트 영역 - 노트 에디터 영역 */
 	/* .collapse-section .note-edit-btns{
