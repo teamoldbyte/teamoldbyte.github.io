@@ -14,14 +14,28 @@
         factory(window.jQuery);
     }
 }(function ($) {
-	/*$.extend($.summernote.options, {
-		enterHtml: '<br>' // 기본 개행 태그를 <br>로 설정
-	});*/
-	// use <br> instead of <p> when 'Enter' pressed.
+	const targetNode = document.body; // 모달이 생성되는 부모 요소
+	const config = { childList: true, subtree: true };
+
+	const observer = new MutationObserver((mutationsList) => {
+		for (const mutation of mutationsList) {
+		  if (mutation.type === 'childList') {
+			// 'help-list-item' 클래스를 가진 모달이 추가되었는지 확인
+			const $helpModal = $('.help-list-item:visible');
+			if($helpModal.length == 28) {
+				const prefixKey = (navigator?.appVersion?.indexOf('Mac') > -1) ? 'fn+CTRL' : 'SHIFT'
+				$('<div class="help-list-item"></div><label style="width: 180px; margin-right: 10px;"><kbd>' + prefixKey + '+ENTER</kbd></label><span>문단 내 줄바꿈</span>').insertBefore($helpModal.eq(2))
+			}
+		  }
+		}
+	});
+	observer.observe(targetNode, config);
+		  
+				
 	$.extend($.summernote.plugins, {
 		'extraButtons': function(context){
-			const arrows = ['🡆', '→', '▮', '•', '·', '※', '≠'];
 			// 편의기호 드롭다운 표시
+			const arrows = ['🡆', '→', '▮', '•', '·', '※', '≠'];
 			context.memo('button.extSymbols', function() {
 
 				// Create button
