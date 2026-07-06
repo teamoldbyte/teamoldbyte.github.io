@@ -1080,15 +1080,15 @@
 			playBtn.dataset.playing = 'off';
 		})
 	}
-	$(document).on('shown.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
+	$(document).on('show.bs.collapse', '.one-sentence-unit-section>.collapse', function(e) {
 		// 문장/구문분석이 펼쳐지면 구문분석 스타일 새로고침
 		if(e.target.matches('.removable-section') && e.target == e.currentTarget) {
 			const $sentenceSection = $(this).closest('.one-sentence-unit-section'); 
 			const sentenceId = $sentenceSection.data('sentenceId');
 
-			$(e.target).find('.semantics-result').filter(':visible').each(function() {
-				tandem.correctMarkLine(this);
-			});
+			//$(e.target).find('.semantics-result')/*.filter(':visible')*/.each(function() {
+			//	tandem.correctMarkLine(this);
+			//});
 			if(!$sentenceSection.data('metaEvaluated')) {
 				$(e.target).find('.dashboard-section').collapse('show');
 			}
@@ -1161,9 +1161,9 @@
 			$(this).removeClass('loading').addClass('loaded');
 		});
 	})
-	.on('shown.bs.collapse', '.svoc-section', function() {
-		tandem.correctMarkLine(this.querySelector('.semantics-result'));
-	})
+//	.on('show.bs.collapse', '.svoc-section', function() {
+//		tandem.correctMarkLine(this.querySelector('.semantics-result'));
+//	})
 	// 평가 대시보드 펼치기
 	$(document).on('show.bs.collapse', '.dashboard-section', function() {
 		$(this).prev('.result-semantic-section').addClass('border-bottom-0');
