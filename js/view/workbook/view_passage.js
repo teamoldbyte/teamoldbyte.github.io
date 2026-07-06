@@ -536,226 +536,229 @@
 	if(sentenceListLen == 0) {
 		$('#loadingModal').modal('hide');
 	}
-	for(let i = 0; i < sentenceListLen; i++){
-		const sentence = sentenceList[i];
-	//	$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
-		
-		
-		let $sectionClone;
-		if(i > 0) {
-			$sectionClone = $copySection.clone();
-			$results.append($sectionClone);
-		}else {
-			$sectionClone = $('.one-sentence-unit-section:eq(0)');
-		}
-		// 문장 Id 설정
-		$sectionClone.data('sentenceId', sentence.sentenceId).attr('id','sentence' + (i+1))
-					.data('metaEvaluated', ['S','F'].includes(sentence.metaStatus))
-					.find('.origin-sentence-section')
-		$sectionClone.on('click', '.origin-sentence-section', function(e) {
-				if(e.target.closest('[class*="js-tts"]')) return;
-				$sectionClone.children('.collapse').collapse('toggle')
-			});	
-		/*if(!isMobile) {
-			// 접기/펼치기 설정
-			$sectionClone.find('.removable-section').addClass('collapse');
+	(async function(){
+		for(let i = 0; i < sentenceListLen; i++){
+			const sentence = sentenceList[i];
+		//	$results.append(createElement(sentenceViewer.completeSentenceSection(sentence, i)));
+			
+			
+			let $sectionClone;
+			if(i > 0) {
+				$sectionClone = $copySection.clone();
+				$results.append($sectionClone);
+			}else {
+				$sectionClone = $('.one-sentence-unit-section:eq(0)');
+			}
+			// 문장 Id 설정
+			$sectionClone.data('sentenceId', sentence.sentenceId).attr('id','sentence' + (i+1))
+						.data('metaEvaluated', ['S','F'].includes(sentence.metaStatus))
+						.find('.origin-sentence-section')
 			$sectionClone.on('click', '.origin-sentence-section', function(e) {
-				if(e.target.closest('[class*="js-tts"]')) return;
-				$sectionClone.children('.collapse').collapse('toggle')
-			});
-		}*/
-		
-		// 탭 설정
-		/*$sectionClone.find('.sentence-ext-section').each(function() {
-			const tabType = this.dataset.type;
-			this.dataset.bsTarget = '#sentence' + (i+1) + ' .' + tabType + '-section';
-			const tabTrigger = new bootstrap.Tab(this);
-			const $tabBtn = $(this);
-			const $target = $(this.dataset.bsTarget);
-			$tabBtn.on('click', e => { 
-				e.preventDefault();
-				if(!$tabBtn.is('.active')) {
-					tabTrigger.show();
-				}else{
-					$target.collapse('hide');
-				}
-			}).one('shown.bs.tab', function() {
-				// 로딩 표시
-				$target.find('.ailoading').prepend(createElement(aiLoadingIconJson));
-				setTimeout(() => {
-		               // 로딩 제거
-		               $target.find('.ailoading').remove();
-		               $target.find('.afterload').fadeIn(300);
-	            }, 1000);
-			}).on('shown.bs.tab', function() {
-				$target.collapse('show');
-			}).on('hidden.bs.tab', function() {
-				$target.removeClass('show');
-			});
-			$target.on('hidden.bs.collapse', function(e) {
-				// collapse 이벤트는 부모까지 전파되므로 자기 자신에게 일어난 이벤트인지 확인.
-				if(e.target != $target.get(0)) return;
-				$target.removeClass('active');
-				$tabBtn.removeClass('active').attr('aria-selected', false).blur();
-			})
-		});*/
-		// 단어/노트/배틀 접고 펼치기
-		
-		$sectionClone.find('.collapse-btn').each(function() {
-			this.dataset.bsTarget = `#sentence${i+1} ${this.dataset.collapseSelector}`;
-		})
-		
-		// 1. 원문 표시--------------------------------------------------------
-		$sectionClone.find('.origin-sentence').append($(WORKBOOK_ELEMENTS).children('.origin-sentence-container').clone(true).children())
-		.find('.numbering-text').text((i + 1)).next('.sentence-text').text(sentence.text)
-			
-		// 2. SVOC 표시------------------------------------------------
-		const text = sentence.text, svocList = sentence.svocList,
-			svocListLen = svocList?.length;
-		// 구문분석 접기 버튼 추가. 2개 이상의 분석이 있으면 접기
-		$sectionClone.find('.js-collapse-svoc').toggle((svocListLen > 1));
-
-		$sectionClone.find('.result-semantic-section').append($(WORKBOOK_ELEMENTS).children('.svoc-menu-section').clone(true))
-					.find('.js-open-dashboard').attr('data-bs-target', `#sentence${i+1} .dashboard-section`);
-		
-		for(let j = 0; j < svocListLen; j++) {
-			let svocTag = svocList[j];
-			const $svocBlock = $(WORKBOOK_ELEMENTS).children('.svoc-section').clone(true);
-			$svocBlock.appendTo($sectionClone.find('.result-semantic-section'));
-			tandem.showSemanticAnalysis(text, svocTag.svocBytes, $svocBlock.find('.svoc-block'))
-			.then(div => {
-				$(div).data('svocId', svocTag.svocId)
-						.data('memberId', svocTag.memberId);
-				$svocBlock.find('.writer-section')
-						.find('.personacon-alias').text(svocTag.writerAlias);
-				$svocBlock.find('.writer-section')
-					.attr('data-bs-target', `#sentence${i+1} .dashboard-section`)
-				
-				let $mdfBtns = $svocBlock.find('.svoc-mdf-btns');
-				$mdfBtns.find('[data-seq]').attr('data-seq', div.dataset.seq);
-				if(memberId != svocTag.memberId) {
-					$mdfBtns.remove();
-				}
-				const $personacon = $('#hiddenDivs .member-personacon').clone(true);
-				if(svocTag.image) {
-					const profile = $personacon.find('.personacon-profile')
-										.removeClass('profile-default')[0];
-					profile.style.background = 'url(/resource/profile/images/'
-								+ svocTag.image + ') center/cover no-repeat';
-				}
-				$svocBlock.find('.writer-section').prepend($personacon);
-				
-				if(memberId != null && memberId > 0
-				&& window['tandem'] != undefined && tandem['meta'] != undefined
-				&& j + 1 == svocListLen && sentence.metaStatus != null && sentence.metaStatus == 'N') {
-					// gramMeta 저장(ajax)---------------------------------------
-					tandem.meta.saveGramMetaFromDOM(sentence.sentenceId, div, false, 'workbook');
-					// ---------------------------------------------------------
-				}
-				if(j > 0) $(div).closest('.svoc-section').addClass('collapse');
-				if(j + 1 == svocListLen && i + 1 == sentenceListLen) {
-					$('#loadingModal').modal('hide')
-				}
-			});
-		}
-		
-		// 3. 분석 평가 표시
-		const expression = getMetaStatusExpression(sentence.metaStatus);
-		$sectionClone.find('.dashboard-section .meta-status')
-			.text(expression.icon)
-			.attr('title', expression.msg)
-			
-		// 4. 해석 표시 
-		
-		const korList = sentence.korList;
-		if(korList != null && korList.length > 0) {
-			const korListLen = korList.length,
-				// PC면 .sentence-ext-section 안의 블럭을, 모바일이면 그 밖의 블럭을 선택
-				$aiTransSection = $sectionClone.find('.ai-translation-section')
-					/*.filter((_i,s)=> isMobile ^ (s.closest('.sentence-ext-section') != null))*/.show().empty();
-			
-			// PC에서 해석 블럭은 접고 펼치기 기능 없음
-			/*if(!isMobile)
-				$transCopyBlock.removeClass('collapse');*/
-				
-			for(let j = 0; j < korListLen; j++) {
-				const $transBlock = $transCopyBlock.clone();
-				const korTrans = korList[j];
-				$transBlock.data('korTid', korTrans.korId);
-				
-				if(korTrans.alias != 'Translator') {
-					$transBlock.addClass('user-trans').find('.translator').text(` ${korTrans.alias}`);
-				}else {
-					$transBlock.addClass('ai-trans');
-				}
-				$transBlock.find('.translation-text').text(korTrans.kor);
-				if(memberId == korTrans.memberId) {
-					$transBlock.append($(WORKBOOK_ELEMENTS).find('.trans-mdf-btns').clone(true));
-				}
-				$aiTransSection.append($transBlock);
-			}
-			// 모바일에서 각각의 해석 블럭에 접고 펼치기가 적용돼있는데, 기본으로 펼쳐두고 접힐 때는 맨 위에 하나 남기도록
-
-				$aiTransSection.closest('.translation-section').find('.open-kor-btn').addClass('active');
-				$aiTransSection.find('.ai-translation-block').collapse('show');
-			
-		}
-		// 5. 단어 표시 
-		const wordList = sentence.wordList;
-		if(wordList != null && wordList.length > 0) {
-			const wordListLen = wordList.length,
-//				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
-				$wordSection = $sectionClone.find('.collapse-section .word-section, .sentence-ext-section .word-section .one-block').empty();
-			// 구 형태의 어휘가 있으면 has-user-vocas 클래스 추가
-			$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.senseList.some(s=>/[A-Z]|phrasal-v/.test(s.partType))));
-			
-			for(let j = 0; j < wordListLen; j++) {
-				const word = wordList[j], $wordBlock = $wordCopySection.clone();
-				
-				// 구 형태의 파트타입을 가지면 user-vocas-word 클래스 추가
-				$wordBlock.toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]|phrasal-v/.test(s.partType)))
-				
-				// wordId, sentenceId, workbookId를 할당(단어모듈용)
-				$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId, sentenceWordId: word.sentenceWordId});
-				
-				// 우선 복사 원본의 뜻 부분들을 삭제
-				$wordBlock.find('.one-part-unit-section').remove();
-				
-				// 단어의 품사별 뜻 새로 표시
-				$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
-						e.stopPropagation();
-						const on = this.dataset.playing == 'on';
-						if(on) {
-							stopAllTTS();
-						}else {
-							stopAllTTS(this);
-							this.dataset.playing = 'on';
-							this.classList.add('tts-playing','blink-2');
-							tts.speakRepeat(word.title, 2, 500, () => {
-								this.classList.remove('tts-playing', 'blink-2');
-								this.dataset.playing = 'off';
-							});
-						}
+					if(e.target.closest('[class*="js-tts"]')) return;
+					$sectionClone.children('.collapse').collapse('toggle')
+				});	
+			/*if(!isMobile) {
+				// 접기/펼치기 설정
+				$sectionClone.find('.removable-section').addClass('collapse');
+				$sectionClone.on('click', '.origin-sentence-section', function(e) {
+					if(e.target.closest('[class*="js-tts"]')) return;
+					$sectionClone.children('.collapse').collapse('toggle')
 				});
-				const senseList = word.senseList;
-				if(senseList == null) continue;
-				let senseListLen = senseList.length;
+			}*/
+			
+			// 탭 설정
+			/*$sectionClone.find('.sentence-ext-section').each(function() {
+				const tabType = this.dataset.type;
+				this.dataset.bsTarget = '#sentence' + (i+1) + ' .' + tabType + '-section';
+				const tabTrigger = new bootstrap.Tab(this);
+				const $tabBtn = $(this);
+				const $target = $(this.dataset.bsTarget);
+				$tabBtn.on('click', e => { 
+					e.preventDefault();
+					if(!$tabBtn.is('.active')) {
+						tabTrigger.show();
+					}else{
+						$target.collapse('hide');
+					}
+				}).one('shown.bs.tab', function() {
+					// 로딩 표시
+					$target.find('.ailoading').prepend(createElement(aiLoadingIconJson));
+					setTimeout(() => {
+			               // 로딩 제거
+			               $target.find('.ailoading').remove();
+			               $target.find('.afterload').fadeIn(300);
+		            }, 1000);
+				}).on('shown.bs.tab', function() {
+					$target.collapse('show');
+				}).on('hidden.bs.tab', function() {
+					$target.removeClass('show');
+				});
+				$target.on('hidden.bs.collapse', function(e) {
+					// collapse 이벤트는 부모까지 전파되므로 자기 자신에게 일어난 이벤트인지 확인.
+					if(e.target != $target.get(0)) return;
+					$target.removeClass('active');
+					$tabBtn.removeClass('active').attr('aria-selected', false).blur();
+				})
+			});*/
+			// 단어/노트/배틀 접고 펼치기
+			
+			$sectionClone.find('.collapse-btn').each(function() {
+				this.dataset.bsTarget = `#sentence${i+1} ${this.dataset.collapseSelector}`;
+			})
+			
+			// 1. 원문 표시--------------------------------------------------------
+			$sectionClone.find('.origin-sentence').append($(WORKBOOK_ELEMENTS).children('.origin-sentence-container').clone(true).children())
+			.find('.numbering-text').text((i + 1)).next('.sentence-text').text(sentence.text)
 				
-				for(let k = 0; k < senseListLen; k++) {
-					const sense = senseList[k], $partBlock = $partCopySection.clone();
+			// 2. SVOC 표시------------------------------------------------
+			const text = sentence.text, svocList = sentence.svocList,
+				svocListLen = svocList?.length;
+			// 구문분석 접기 버튼 추가. 2개 이상의 분석이 있으면 접기
+			$sectionClone.find('.js-collapse-svoc').toggle((svocListLen > 1));
+	
+			$sectionClone.find('.result-semantic-section').append($(WORKBOOK_ELEMENTS).children('.svoc-menu-section').clone(true))
+						.find('.js-open-dashboard').attr('data-bs-target', `#sentence${i+1} .dashboard-section`);
+			
+			for(let j = 0; j < svocListLen; j++) {
+				let svocTag = svocList[j];
+				const $svocBlock = $(WORKBOOK_ELEMENTS).children('.svoc-section').clone(true);
+				$svocBlock.appendTo($sectionClone.find('.result-semantic-section'));
+				await tandem.showSemanticAnalysis(text, svocTag.svocBytes, $svocBlock.find('.svoc-block'))
+				.then(div => {
+					$(div).data('svocId', svocTag.svocId)
+							.data('memberId', svocTag.memberId);
+					$svocBlock.find('.writer-section')
+							.find('.personacon-alias').text(svocTag.writerAlias);
+					$svocBlock.find('.writer-section')
+						.attr('data-bs-target', `#sentence${i+1} .dashboard-section`)
 					
-					$wordBlock.append($partBlock);
-					$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
-					$partBlock.find('.meaning').text(sense.meaning);
-				}
-				$wordSection.append($wordBlock);
+					let $mdfBtns = $svocBlock.find('.svoc-mdf-btns');
+					$mdfBtns.find('[data-seq]').attr('data-seq', div.dataset.seq);
+					if(memberId != svocTag.memberId) {
+						$mdfBtns.remove();
+					}
+					const $personacon = $('#hiddenDivs .member-personacon').clone(true);
+					if(svocTag.image) {
+						const profile = $personacon.find('.personacon-profile')
+											.removeClass('profile-default')[0];
+						profile.style.background = 'url(/resource/profile/images/'
+									+ svocTag.image + ') center/cover no-repeat';
+					}
+					$svocBlock.find('.writer-section').prepend($personacon);
+					
+					if(memberId != null && memberId > 0
+					&& window['tandem'] != undefined && tandem['meta'] != undefined
+					&& j + 1 == svocListLen && sentence.metaStatus != null && sentence.metaStatus == 'N') {
+						// gramMeta 저장(ajax)---------------------------------------
+						tandem.meta.saveGramMetaFromDOM(sentence.sentenceId, div, false, 'workbook');
+						// ---------------------------------------------------------
+					}
+					if(j > 0) $(div).closest('.svoc-section').addClass('collapse');
+					if(j + 1 == svocListLen && i + 1 == sentenceListLen) {
+						$('#loadingModal').modal('hide')
+					}
+				});
 			}
-			// 데스크탑에서는 단어리스트 미리 표시
-			if(!devSize.isPhone())
-				$sectionClone.find('.nav-link[data-type="word-list"]').tab('show');
+			
+			// 3. 분석 평가 표시
+			const expression = getMetaStatusExpression(sentence.metaStatus);
+			$sectionClone.find('.dashboard-section .meta-status')
+				.text(expression.icon)
+				.attr('title', expression.msg)
+				
+			// 4. 해석 표시 
+			
+			const korList = sentence.korList;
+			if(korList != null && korList.length > 0) {
+				const korListLen = korList.length,
+					// PC면 .sentence-ext-section 안의 블럭을, 모바일이면 그 밖의 블럭을 선택
+					$aiTransSection = $sectionClone.find('.ai-translation-section')
+						/*.filter((_i,s)=> isMobile ^ (s.closest('.sentence-ext-section') != null))*/.show().empty();
+				
+				// PC에서 해석 블럭은 접고 펼치기 기능 없음
+				/*if(!isMobile)
+					$transCopyBlock.removeClass('collapse');*/
+					
+				for(let j = 0; j < korListLen; j++) {
+					const $transBlock = $transCopyBlock.clone();
+					const korTrans = korList[j];
+					$transBlock.data('korTid', korTrans.korId);
+					
+					if(korTrans.alias != 'Translator') {
+						$transBlock.addClass('user-trans').find('.translator').text(` ${korTrans.alias}`);
+					}else {
+						$transBlock.addClass('ai-trans');
+					}
+					$transBlock.find('.translation-text').text(korTrans.kor);
+					if(memberId == korTrans.memberId) {
+						$transBlock.append($(WORKBOOK_ELEMENTS).find('.trans-mdf-btns').clone(true));
+					}
+					$aiTransSection.append($transBlock);
+				}
+				// 모바일에서 각각의 해석 블럭에 접고 펼치기가 적용돼있는데, 기본으로 펼쳐두고 접힐 때는 맨 위에 하나 남기도록
+	
+					$aiTransSection.closest('.translation-section').find('.open-kor-btn').addClass('active');
+					$aiTransSection.find('.ai-translation-block').collapse('show');
+				
+			}
+			// 5. 단어 표시 
+			const wordList = sentence.wordList;
+			if(wordList != null && wordList.length > 0) {
+				const wordListLen = wordList.length,
+	//				$wordSection = $sectionClone.find(`${isMobile?'.collapse-section .word-section':'.sentence-ext-section .word-section .one-block'}`).empty();
+					$wordSection = $sectionClone.find('.collapse-section .word-section, .sentence-ext-section .word-section .one-block').empty();
+				// 구 형태의 어휘가 있으면 has-user-vocas 클래스 추가
+				$wordSection.closest('.word-list-section').toggleClass('has-user-vocas', wordList.some(w => w.senseList.some(s=>/[A-Z]|phrasal-v/.test(s.partType))));
+				
+				for(let j = 0; j < wordListLen; j++) {
+					const word = wordList[j], $wordBlock = $wordCopySection.clone();
+					
+					// 구 형태의 파트타입을 가지면 user-vocas-word 클래스 추가
+					$wordBlock.toggleClass('user-vocas-word', word.senseList.some(s=>/[A-Z]|phrasal-v/.test(s.partType)))
+					
+					// wordId, sentenceId, workbookId를 할당(단어모듈용)
+					$wordBlock.data({wordId: word.wid, sentenceId: sentence.sentenceId, workbookId, sentenceWordId: word.sentenceWordId});
+					
+					// 우선 복사 원본의 뜻 부분들을 삭제
+					$wordBlock.find('.one-part-unit-section').remove();
+					
+					// 단어의 품사별 뜻 새로 표시
+					$wordBlock.find('.title').text(word.title).attr('data-playing','off').click(function(e){
+							e.stopPropagation();
+							const on = this.dataset.playing == 'on';
+							if(on) {
+								stopAllTTS();
+							}else {
+								stopAllTTS(this);
+								this.dataset.playing = 'on';
+								this.classList.add('tts-playing','blink-2');
+								tts.speakRepeat(word.title, 2, 500, () => {
+									this.classList.remove('tts-playing', 'blink-2');
+									this.dataset.playing = 'off';
+								});
+							}
+					});
+					const senseList = word.senseList;
+					if(senseList == null) continue;
+					let senseListLen = senseList.length;
+					
+					for(let k = 0; k < senseListLen; k++) {
+						const sense = senseList[k], $partBlock = $partCopySection.clone();
+						
+						$wordBlock.append($partBlock);
+						$partBlock.find('.part').text(sense.partType).attr('title', partTypeMap[sense.partType]);
+						$partBlock.find('.meaning').text(sense.meaning);
+					}
+					$wordSection.append($wordBlock);
+				}
+				// 데스크탑에서는 단어리스트 미리 표시
+				if(!devSize.isPhone())
+					$sectionClone.find('.nav-link[data-type="word-list"]').tab('show');
+			}
+			
 		}
 		
-	}
+	})();
 	let scrollDirectionPrev = 0;
 	let lastScrollTop = $('.view-passage-section')[0].scrollTop;
 	const $topMenu = $('.workbook-menu-section');
