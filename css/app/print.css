@@ -81,6 +81,7 @@ li {
     margin-right: auto;
 
 	/* display: block; */
+	pointer-events: none;
 	position: fixed;
 	opacity: 0.1;
 	bottom: 0;
@@ -180,14 +181,13 @@ li {
 		bottom: 0;
 	}
 
-	/* margin box at top right showing page number */
-	/*
-	@page {
+/*	@page {
+	 margin box at top right showing page number 
 	@top-right  {
 			content: "Page " counter(pageNumber);
 		}
-	}
-*/
+	}*/
+
 
 	
 	/* 오른쪽 라인 */
