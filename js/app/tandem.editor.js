@@ -832,7 +832,7 @@
 					// this.closest('.edit-svoc').dataset.mode = 'mod';
 					// $('.semantic-edit-guide-msg').text('수식어 위치를 클릭 하세요.');
 					
-					tandem.checkGCDepth(this);
+					tandem.correctMarkLine(this);
 				})
 				// =========================================================== /
 				//						 gcomment 추가 기능					   /
