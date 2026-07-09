@@ -775,33 +775,48 @@
 		// 2. Read Phase: DOM을 수정하지 않고 좌표 정보만 수집
 		const updates = elements.map(el => {
 			const rects = el.getClientRects();
-			let update = { el, isOdd: false, indent: null, indentMin: null };
+            let state = 'center'; // 기본값 (rects.length <= 1 일 때)
+            let indent = null;
+            let indentMin = null;
 			if (rects.length > 1) {
 				if (el.matches('.rcm') || rects[0].width < 10) {
 					/* 단어가 위 아래 두 그룹으로 분리되었으나 첫 번째 그룹에 코멘트를 표기하기 어려울 경우
 					  첫 번째 그룹은 무시하고 두 번째 그룹에 가운데 정렬 적용.(=.odd)  
 					  left위치는 첫번째 그룹을 기준으로 적용되므로 
 					  첫 번째, 두 번째 그룹의 left값 차이만큼 왼쪽으로 이동. */
-					const indent = (el.matches('.rcm') ? rects[rects.length - 1].right : rects[1].left) - rects[0].left;
-					update.isOdd = true;
-					update.indent = `${indent}px`;
-					update.indentMin = `${el.matches('.rcm') ? indent : (indent + rects[1].width / 2)}px`;
+                    state = 'odd'; // 그룹 분리 + 코멘트 예외 처리
+					const indentVal = (el.matches('.rcm') ? rects[rects.length - 1].right : rects[1].left) - rects[0].left;
+					indent = `${indentVal}px`;
+					indentMin = `${el.matches('.rcm') ? indentVal : (indentVal + rects[1].width / 2)}px`;
+				}else {
+					state = 'start' // 일반적인 다중 줄 처리
 				}
 			}
-			return update;
+			return { el, state, indent, indentMin };
 		});
 
 		// 3. Write Phase: 수집된 정보를 바탕으로 일괄 DOM 업데이트
-		updates.forEach(({ el, isOdd, indent, indentMin }) => {
-			if (isOdd) {
-				el.style.setProperty('--indent', indent);
-				el.style.setProperty('--indent-min', indentMin);
-				el.classList.add('cmnt-align-center', 'odd');
-			} else {
-				el.style.removeProperty('--indent');
-				el.style.removeProperty('--indent-min');
-				el.classList.add('cmnt-align-start');
-			}
+		updates.forEach(({ el, state, indent, indentMin }) => {
+			switch (state) {
+				case 'odd':
+                    el.style.setProperty('--indent', indent);
+                    el.style.setProperty('--indent-min', indentMin);
+                    el.classList.add('cmnt-align-center', 'odd');
+                    break;
+
+                case 'start':
+                    el.style.removeProperty('--indent');
+                    el.style.removeProperty('--indent-min');
+                    el.classList.add('cmnt-align-start');
+                    break;
+
+                case 'center': // 기본값 (rects.length <= 1 인 경우)
+                default:
+                    el.style.removeProperty('--indent');
+                    el.style.removeProperty('--indent-min');
+                    el.classList.add('cmnt-align-center');
+                    break;
+            }
 		});
 
 		// 🌟 100% 완벽한 크기가 확보된 상태에서 체이닝 순차 실행
