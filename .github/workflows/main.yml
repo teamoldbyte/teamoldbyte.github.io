@@ -1,49 +1,58 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so auto-minify job can access it
-      - uses: actions/checkout@v3
-      
-      - name: HTML/CSS/JS Minifier
-        uses: docker://devatherock/minify-js:1.0.3
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          directory: 'fragment'      # Optional
+          fetch-depth: 2 # 최적화: 직전 커밋과의 비교를 위한 최소한의 히스토리만 조회 (속도 향상)
 
-      - name: Auto Minify
-        uses: nizarmah/auto-minify@v2.1
+      - name: Get Target Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
         with:
-          directory: 'js'
-          js_engine: uglify-js
-      - name: Auto Minify
-        uses: nizarmah/auto-minify@v2.1
-        with:
-          directory: 'css'
+          # 최적화: 쉘 스크립트 대신 액션 레벨에서 미리 대상 파일만 필터링
+          files: |
+            fragment/*.html
+            js/*.js
+            css/*.css
 
-      # Auto commits minified files to the repository
-      # Ignore it if you don't want to commit the files to the repository 
+      - name: Minify Target Files Only
+        # 변경된 대상 파일이 존재할 때만 실행하여 불필요한 프로세스 방지
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            # 파일이 실제로 존재하고 + 중간에 .min. 키워드가 없는 경우에만 진행
+            if [ -f "$file" ] && [[ "$file" != *".min."* ]]; then
+            
+              if [[ "$file" == fragment/*.html ]]; then
+                echo "⚡ HTML 압축 중: $file"
+                npx html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true -o "$file" "$file"
+              
+              elif [[ "$file" == js/*.js ]]; then
+                echo "⚡ JS 압축 중: $file"
+                npx uglify-js "$file" -c -m -o "$file"
+              
+              elif [[ "$file" == css/*.css ]]; then
+                echo "⚡ CSS 압축 중: $file"
+                npx clean-css-cli -o "$file" "$file"
+              fi
+
+            fi
+          done
+
       - name: Auto committing minified files
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Github Action: Auto Minified JS and CSS files"
-          branch: ${{ github.ref }}
+          commit_message: "Github Action: Auto Minified Changed Resources"
+          branch: ${{ github.head_ref || github.ref_name }}
