@@ -64,6 +64,7 @@ function pageinit() {
 			
 			$detailSection.find('.template-title-info').text($(thisRow).find('.template-title-data').text());
 			$detailSection.find('.template-wid-info').text(info.wid);
+			
 			const $passageList = $detailSection.find('.list-passage-section').empty();
 			for(let i = 0, len = passages?.length; i < len; i++) {
 				const $passage = $('#hiddenDivs .passage').clone();
@@ -80,19 +81,74 @@ function pageinit() {
 				
 				$passageList.append($passage)/*.masonry('appended', $passage)*/;
 			}
-			if(Masonry.data($passageList[0])) $passageList.masonry('destroy');
-			$passageList.masonry({
-				// options
-				itemSelector: '.passage',
-				columnWidth: '.passage',
-				gutter: 10,
-				percentPosition: true,
-				horizontalOrder: true,
-				// slow transitions
-				transitionDuration: '0.8s'
-			});		
+			$passageList.sortable({
+				classes: {
+					"ui-sortable-helper": "shadow-lg"
+				},
+				cursor: 'move',
+				update: (_event, ui) => {
+					if (confirm('문장을 여기로 이동하겠습니까?')) {
+						let $prev = ui.item.prev('.passage'),
+							$next = ui.item.next('.passage');
+						// 다음 문장이 없으면 이전문장의 ordernum + 1000
+						if ($next.length == 0) {
+							ui.item[0].dataset.orderNum = Number($prev[0].dataset.orderNum) + 1000;
+						}
+						// 이전 문장이 없으면 다음 문장의 ordernum / 2
+						else if ($prev.length == 0) {
+							const nextOrder = Number($next[0].dataset.orderNum),
+								newOrder = Math.round(nextOrder / 2);
+							if (newOrder == nextOrder) {
+								alertModal('더이상 이동할 수 없습니다.');
+								$passageList.sortable('cancel');
+								return;
+							}
+							else ui.item[0].dataset.orderNum = newOrder;
+						}
+						// 그 외엔 이전 문장과 다음 문장의 ordernum 사잇값
+						else {
+							const prevOrder = Number($prev[0].dataset.orderNum),
+								nextOrder = Number($next[0].dataset.orderNum),
+								newOrder = Math.round((prevOrder + nextOrder) / 2);
+							if ([prevOrder, nextOrder].indexOf(newOrder) > -1) {
+								alertModal('더이상 이동할 수 없습니다.');
+								$passageList.sortable('cancel');
+								return;
+							}
+							else ui.item[0].dataset.orderNum = newOrder;
+						}
+	
+						// 전송 내용 생성.
+						const command = { workbookId: parseInt($('#templateDetailSection .template-wid-info').text()),
+							passageId: parseInt(ui.item[0].dataset.pid), 
+							orderNum: parseInt(ui.item[0].dataset.orderNum)
+						};
+	
+						// 지문 순서 수정(ajax)----------------------
+						$.ajax({
+							url: '/workbook/passage/order/edit',
+							type: 'POST',
+							data: JSON.stringify(command),
+							contentType: 'application/json',
+							success: () => alertModal('지문 순서가 성공적으로 변경되었습니다.'),
+							error: () => alertModal('지문 순서 변경이 실패했습니다.', () => {
+								$passageList.sortable('cancel');
+							})
+						})
+	
+					} else {
+						$passageList.sortable('cancel');
+					}
+				}
+			});
 		}
 	});
+	
+	// [템플릿 개요편집 이동]-------------------------------------------------------
+	$('#editTemplate').on('click', function() {
+		const workbookId = parseInt($('#templateDetailSection .template-wid-info').text());
+		location.assign(`/workbook/mybook/edit/${ntoa(workbookId)}`);
+	})
 	
 	// [템플릿 상태 변경]
 	$('#changeBookType').on('click', function() {
@@ -117,7 +173,7 @@ function pageinit() {
 	// [지문 목차 등록으로 이동]-----------------------------------------------------
 	$('#addPassageTitles').on('click', function() {
 		const workbookId = parseInt($('#templateDetailSection .template-wid-info').text().trim());
-		const title = $('#templateDetailSection .template-title-info').text().trim();
+		const title = encodeURIComponent($('#templateDetailSection .template-title-info').text().trim());
 		location.assign(`/adminxyz/template/passagetitle/batch/${ntoa(workbookId)}?wtitle=${title}`);
 	})
 	
@@ -144,7 +200,7 @@ function pageinit() {
 		//-----------------------------------------------
 	}).on('click', '.js-cancel-ptitle', function() {
 		const titleSection = this.closest('.passage-title-section');
-		const $title = $(titleSection).find('.passage-title').show();
+		const $title = $(titleSection).find('.passage-title').removeAttr('style');
 		$(titleSection).removeClass('edit');
 		$(titleSection).find('.title-input').val($title.text()).hide();
 		$(titleSection).find('.title-edit-btn-section').hide();
@@ -164,7 +220,7 @@ function pageinit() {
 		
 		function successDelete() {
 			alertModal('지문이 삭제되었습니다.');
-			$listSection.masonry('remove', $passage).masonry('layout');
+			$passage.remove();
 		}
 	})	
 }
