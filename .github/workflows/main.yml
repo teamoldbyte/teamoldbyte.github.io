@@ -21,11 +21,11 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v44
         with:
-          # 최적화: 쉘 스크립트 대신 액션 레벨에서 미리 대상 파일만 필터링
+          # 수정 포인트: **를 사용하여 모든 하위 디렉토리 내의 파일을 포함합니다.
           files: |
-            fragment/*.html
-            js/*.js
-            css/*.css
+            fragment/**/*.html
+            js/**/*.js
+            css/**/*.css
 
       - name: Minify Target Files Only
         # 변경된 대상 파일이 존재할 때만 실행하여 불필요한 프로세스 방지
@@ -35,15 +35,16 @@ jobs:
             # 파일이 실제로 존재하고 + 중간에 .min. 키워드가 없는 경우에만 진행
             if [ -f "$file" ] && [[ "$file" != *".min."* ]]; then
             
-              if [[ "$file" == fragment/*.html ]]; then
+              # 수정 포인트: 쉘 스크립트 분기문도 하위 디렉토리를 인식하도록 패턴 매칭 수정
+              if [[ "$file" == fragment/*.html || "$file" == fragment/**/*.html ]]; then
                 echo "⚡ HTML 압축 중: $file"
                 npx html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true -o "$file" "$file"
               
-              elif [[ "$file" == js/*.js ]]; then
+              elif [[ "$file" == js/*.js || "$file" == js/**/*.js ]]; then
                 echo "⚡ JS 압축 중: $file"
                 npx uglify-js "$file" -c -m -o "$file"
               
-              elif [[ "$file" == css/*.css ]]; then
+              elif [[ "$file" == css/*.css || "$file" == css/**/*.css ]]; then
                 echo "⚡ CSS 압축 중: $file"
                 npx clean-css-cli -o "$file" "$file"
               fi
