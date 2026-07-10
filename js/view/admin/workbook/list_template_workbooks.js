@@ -210,7 +210,6 @@ function pageinit() {
 	$(document).on('click', '.js-del-passage', function() {
 		const $passage = $(this.closest('.passage'));
 		const passageId = $passage.data('pid');
-		const $listSection = $passage.closest('.list-passage-section');
 		if(confirm('이 지문을 삭제하시겠습니까?')) {
 			const command = {workbookId: parseInt($('#templateDetailSection .template-wid-info').text()), passageId};
 			// 지문 삭제(ajax)-----------------------------------
