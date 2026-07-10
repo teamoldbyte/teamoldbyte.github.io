@@ -213,12 +213,8 @@
 						  if (document.caretPositionFromPoint) {
 							range = document.caretPositionFromPoint(currX, currY);
 						    containerElement = getLeafNode(range.offsetNode);
-						  } else if (document.caretRangeFromPoint) {
-							range = document.caretRangeFromPoint(currX, currY);
-						    containerElement = range.startContainer;
 						  } else {
-							console.error("[This browser supports neither document.caretRangeFromPoint"
-									 + " nor document.caretPositionFromPoint.]");
+							console.error("[This browser does not support document.caretRangeFromPoint.]");
 							return(false);
 						  }
 						  while(containerElement.nodeType != 1) {
@@ -708,11 +704,8 @@
 						range = document.createRange();
 						const offsetNode = document.caretPositionFromPoint(currX, currY).offsetNode;
 						range.selectNode(getLeafNode(offsetNode));
-					} else if (document.caretRangeFromPoint) {
-						range = document.caretRangeFromPoint(currX, currY);
 					} else {
-						console.error("[This browser supports neither document.caretRangeFromPoint"
-					 				 + " nor document.caretPositionFromPoint.]");
+						console.error("[This browser does not support document.caretRangeFromPoint.]");
 						return(false);
 					}
 					if(typeof Selection.prototype.modify === 'function'){
@@ -785,18 +778,15 @@
 					rcm.className = `sem rcm mfd-${containerSequence}-${rcmMaxNum + 1}`;
 					rcm.dataset.gc = '수식';
 					// 커서가 위치한 문자열 선택
-					var x = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
-				   	var y = (e.type == 'touchstart') ? e.touches[0].clientY : e.clientY;
+					//var x = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
+				   	//var y = (e.type == 'touchstart') ? e.touches[0].clientY : e.clientY;
 				   	var sel, range;
 				   	if (document.caretPositionFromPoint) {
 						range = document.createRange();
 						const offsetNode = document.caretPositionFromPoint(currX, currY).offsetNode;
 						range.selectNode(getLeafNode(offsetNode));
-					} else if (document.caretRangeFromPoint) {
-						range = document.caretRangeFromPoint(x, y);
 					} else {
-						console.error("[This browser supports neither document.caretRangeFromPoint"
-					 				 + " nor document.caretPositionFromPoint.]");
+						console.error("[This browser does not support document.caretRangeFromPoint.]");
 						return(false);
 					}
 					sel = getSelection();
@@ -1174,7 +1164,7 @@
 	}
 	
 	function refreshDOMs(container) {
-		$(container).find('.sem').filter((i,sem)=>
+		$(container).find('.sem').filter((_,sem)=>
 			sem.textContent.length == 0).remove();
 			
 		tandem.checkPOSDepth(container);
