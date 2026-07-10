@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -7,8 +7,17 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +30,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v44
         with:
-          # 수정 포인트: **를 사용하여 모든 하위 디렉토리 내의 파일을 포함합니다.
+          # **를 사용하여 모든 하위 디렉토리 내의 파일을 포함합니다.
           files: |
             fragment/**/*.html
             js/**/*.js
@@ -57,3 +66,17 @@ jobs:
         with:
           commit_message: "Github Action: Auto Minified Changed Resources"
           branch: ${{ github.head_ref || github.ref_name }}
+      # 깃허브 페이지 시스템 인지
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 루트('.')의 정적 파일들을 배포용 파일로 패키징
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' 
+
+      # 최종 배포
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
