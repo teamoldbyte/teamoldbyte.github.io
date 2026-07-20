@@ -308,6 +308,7 @@ function pageinit(membershipCommand) {
 	}*/
 	
 	// 멤버십 목록 월/연 토글 동작
+	/*
 	$('.membership-item-list-section .toggle-block').on('click', '.monthly,.yearly', function() {
 		if($(this).is('.monthly.is-monthly,.yearly.is-yearly')) return;
 		// 목록에 나타난 카드들의 월/연 클래스명 토글
@@ -315,6 +316,7 @@ function pageinit(membershipCommand) {
 		// 골드멤버십의 월/연 가격 토글
 		$('.membership-item-block.gold-membership .price-block').toggle();
 	})
+	*/
 
 	// [모바일] 선택한 골드멤버십에 따른 표시 전환
 	$('.membership-item-block.gold-membership .toggle-block').on('click', '.monthly,.yearly', function() {
@@ -329,15 +331,14 @@ function pageinit(membershipCommand) {
 		$itemBlock.find('.item-real-price').val(this.dataset.price);
 	});
 //	const tossPayments = TossPayments(clientKey);
-	$(document).on('show.bs.modal', '#done-info-modal', function(e) {
-		const button = e.relatedTarget;
-		const $memberShipInfoDiv = $(button).closest('.membership-item-block').find('.price-block:visible');
+	$(document).on('click', '.js-open-order', function() {
+		const $memberShipInfoDiv = $(this).closest('.membership-item-block').find('.price-block:visible');
 		const iid = $memberShipInfoDiv.find('.iid').val();
 		const itemName = $memberShipInfoDiv.find('.item-full-name').val();
 		const price = $memberShipInfoDiv.find('.item-real-price').val();
 		
 		orderItemList = [iid];
-		$(this).find('.btn-close').show();
+		$('#done-info-modal').find('.btn-close').show();
 //		this.querySelector('.payment-info .name').innerHTML = itemName.replace(/(-.+)/,'<span class="d-inline-block">$1</span>');
 //		this.querySelector('.payment-info .price').innerHTML = price;
 		$('#totalAmount').val(price.replace(/\D/g,''));
@@ -359,9 +360,13 @@ function pageinit(membershipCommand) {
 			$(`.input-birth option[value="${membershipCommand.birthYear}"]`).prop('selected', true);
 			
 			$('#phase-1 form :submit').prop('disabled', !$('#membershipForm')[0].checkValidity());
-			if(membershipCommand.remitter != 'fico') {
+			if(membershipCommand.remitter == 'fico') {
+				$('#done-info-modal').modal('show');
+			}else{
 				$('#phase-1 form :submit').trigger('click');
 			}
+		}else {
+			$('#done-info-modal').modal('show');
 		}
 	})
 	// 모달이 닫힐 때 초기화
@@ -434,26 +439,61 @@ function pageinit(membershipCommand) {
 			submitter.disabled = true;
 			$('#order-processing').show();
 			$('#payment-methods, #phase-2 :submit').hide()
-			$('#phase-1,#phase-2').collapse('toggle');
+			$('#phase-1').collapse('hide');
+			$('#phase-2').collapse('show');
 			data["orderItemList"] = orderItemList;
 			$.ajax({
 				url: '/membership/order', type: 'POST', data: JSON.stringify(data),
 				contentType: 'application/json',
-				success: async ({ordererId56, orderId56}) => {
-					await FicoPaymentHandler.renderWidget('#payment-methods', {
-						orderId: orderId56, orderName: $('#orderName').val(),
-						amount: parseInt($('#totalAmount').val()),
-						customerKey: ordererId56, 
-						customerName: $('#inputName').val(),
-						customerEmail: $('#inputEmail').val(),
-						customerMobilePhone: $('#phone').val(),
-					});
+				success: async ({success, data, message}) => {
+					if(success) {
+						const {ordererId56, orderId56} = data;
+						const orderName = $('#orderName').val();
+						if(orderName.includes("SUBSCRIPTION")) {
+								$('#order-processing').hide();
+								if($('#done-info-modal').is('.show')) 
+									$('#done-info-modal').modal('hide');
+								FicoPaymentHandler.requestBillingAuth({
+									customerKey: ordererId56,
+									customerName: $('#inputName').val(),
+									customerEmail: $('#inputEmail').val(),
+								}, {orderId: orderId56});
+						}else {
+							if($('#done-info-modal').hasClass('show')) {
+									await FicoPaymentHandler.renderWidget('#payment-methods', {
+										orderId: orderId56, orderName,
+										amount: parseInt($('#totalAmount').val()),
+										customerKey: ordererId56, 
+										customerName: $('#inputName').val(),
+										customerEmail: $('#inputEmail').val(),
+										customerMobilePhone: $('#phone').val(),
+									});
+									$('#order-processing').hide();
+									$('#payment-methods, #phase-2 :submit').show();
+							}else {
+								$('#done-info-modal').one('show.bs.modal', async function() {
+									await FicoPaymentHandler.renderWidget('#payment-methods', {
+										orderId: orderId56, orderName,
+										amount: parseInt($('#totalAmount').val()),
+										customerKey: ordererId56, 
+										customerName: $('#inputName').val(),
+										customerEmail: $('#inputEmail').val(),
+										customerMobilePhone: $('#phone').val(),
+									});
+									$('#order-processing').hide();
+									$('#payment-methods, #phase-2 :submit').show();
+								})
+								.modal('show');
+								
+							}
+						}
+					}else {
+						alertModal(message);
+					}
 					
-					$('#order-processing').hide();
-					$('#payment-methods, #phase-2 :submit').show();
 				},
 				error: () => {
-					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'))
+					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-modal').modal('hide'))
 				},
 				complete: () => submitter.disabled = false
 			});				
