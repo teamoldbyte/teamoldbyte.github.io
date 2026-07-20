@@ -375,11 +375,10 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		}else displayModal();
 		
 		function displayModal() {
-			$('#modalDiv .modal').modal('show');
+			$('#done-info-modal').modal('show');
 		}
 		
 	});
-	let nextTimer; 
 	const orderItem = {};
 	$(document)
 	// [가입연장 모달 실행]---------------------------------------------------------
@@ -387,7 +386,6 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 		$('#donationModalLabel').text('멤버십을 선택해 주세요.');
 	})
 	.on('hide.bs.modal', '#done-info-modal', function() {
-		clearInterval(nextTimer);
 		$('#phase-1 form').removeClass('was-validated');
 		FicoPaymentHandler?.destroy();
 
@@ -415,24 +413,42 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 			submitter.disabled = true;
 			$('#order-processing').show();
 			$('#payment-methods,#phase-2 :submit').hide();
-			$('#phase-1,#phase-2').collapse('toggle');
+			$('#phase-1').collapse('hide');
+			$('#phase-2').collapse('show');
 			$.ajax({
 				url: '/membership/order', type: 'POST', data: JSON.stringify(data),
 				contentType: 'application/json',
-				success: async ({ordererId56, orderId56}) => {
-					await FicoPaymentHandler.renderWidget('#payment-methods', {
-						orderId: orderId56, orderName: orderItem['name'],
-						amount: parseInt($('#totalAmount').val()),
-						customerKey: ordererId56, 
-						customerName: $('#name').val(),
-						customerEmail: $('#email').val(),
-						customerMobilePhone: $('#phone').val()
-					});					
-					$('#order-processing').hide();
-					$('#payment-methods,#phase-2 :submit').show();
+				success: async ({success, data, message}) => {
+					if(success) {
+						const {ordererId56, orderId56} = data;
+						const orderName = orderItem['name'];
+						if(orderName.includes('SUBSCRIPTION')) {
+							$('#order-processing').hide();
+							FicoPaymentHandler.requestBillingAuth({
+								customerKey: ordererId56,
+								customerName: $('#name').val(),
+								customerEmail: $('#email').val(),
+							}, {orderId: orderId56})
+							.finally(() => $('#done-info-modal').modal('hide'));
+						}else {
+							await FicoPaymentHandler.renderWidget('#payment-methods', {
+								orderId: orderId56, orderName,
+								amount: parseInt($('#totalAmount').val()),
+								customerKey: ordererId56, 
+								customerName: $('#name').val(),
+								customerEmail: $('#email').val(),
+								customerMobilePhone: $('#phone').val()
+							});					
+							$('#order-processing').hide();
+							$('#payment-methods,#phase-2 :submit').show();
+						}
+						
+					}else {
+						alertModal(message, () => $('#done-info-modal').modal('hide'));
+					}
 				},
 				error: () => {
-					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-moal').modal('hide'))
+					alertModal('가입 처리 중 오류가 발생하였습니다.\nteamoldbyte@gmail.com 로 문의 바랍니다.', () => $('#done-info-modal').modal('hide'))
 				},
 				complete: () => submitter.disabled = false
 			});					
