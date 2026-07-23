@@ -43,19 +43,23 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             # 파일이 실제로 존재하고 + 중간에 .min. 키워드가 없는 경우에만 진행
             if [ -f "$file" ] && [[ "$file" != *".min."* ]]; then
-            
+              dir=$(dirname "$file")
+              base=$(basename "$file")
+              name="${base%.*}"
+              ext="${base##*.}"
+              minfile="$dir/$name.min.$ext"
               # 수정 포인트: 쉘 스크립트 분기문도 하위 디렉토리를 인식하도록 패턴 매칭 수정
               if [[ "$file" == fragment/*.html || "$file" == fragment/**/*.html ]]; then
-                echo "⚡ HTML 압축 중: $file"
-                npx html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true -o "$file" "$file"
+                echo "⚡ HTML 압축 중: $file → $minfile"
+                npx html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true -o "$minfile" "$file"
               
               elif [[ "$file" == js/*.js || "$file" == js/**/*.js ]]; then
-                echo "⚡ JS 압축 중: $file"
-                npx uglify-js "$file" -c -m -o "$file"
+                echo "⚡ JS 압축 중: $file → $minfile"
+                npx uglify-js "$file" -c -m -o "$minfile"
               
               elif [[ "$file" == css/*.css || "$file" == css/**/*.css ]]; then
-                echo "⚡ CSS 압축 중: $file"
-                npx clean-css-cli -o "$file" "$file"
+                echo "⚡ CSS 압축 중: $file → $minfile"
+                npx clean-css-cli -o "$minfile" "$file"
               fi
 
             fi
