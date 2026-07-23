@@ -85,10 +85,7 @@
 		 * 각 꾸밈 요소들끼리 상호 영향을 받으므로, 일정 시간 간격으로 차례로 실행.
 		 * (코멘트 수평정렬, 코멘트 수직정렬, 수식선, 줄 높이 자동 조절)
 		 */
-		correctMarkLine(div);
-		
-        // 💡 비동기 함수(correctMarkLine)를 await 하지 않으므로 즉시 반환됨.
-		// 이후 브라우저는 div를 렌더링하고, 잠시 뒤 correctMarkLine 내부의 await가 풀리면 수식선을 마저 그림.
+		await correctMarkLine(div);
         return div;
 	}
 
