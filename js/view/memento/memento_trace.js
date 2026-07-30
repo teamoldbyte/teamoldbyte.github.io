@@ -202,12 +202,16 @@ async function pageinit(initialTraceList, totalCount, isLast) {
 									keepWordId, eggColor, gold: eggColor == 9
 								}]),
 								contentType: 'application/json',
-								success: () => {
-									luckyEggInfo.luckies.splice(indexFound, 1, "LUCKY");
-									if(indexFound == 0)
-									luckyEggInfo.achievement = true;
-									luckyEggInfo.try = luckyEggInfo.try + 1;
-									localStorage.setItem(LOCAL_STORAGE_LUCK_KEY, JSON.stringify(luckyEggInfo));
+								success: ({success, message}) => {
+									if(success) {
+										luckyEggInfo.luckies.splice(indexFound, 1, "LUCKY");
+										if(indexFound == 0)
+										luckyEggInfo.achievement = true;
+										luckyEggInfo.try = luckyEggInfo.try + 1;
+										localStorage.setItem(LOCAL_STORAGE_LUCK_KEY, JSON.stringify(luckyEggInfo));
+									}else {
+										alertModal(message);
+									}
 								},
 								error: () => {
 									alertModal('일시적 오류로 에그 획득에 실패했습니다.');
