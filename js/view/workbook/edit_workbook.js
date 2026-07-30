@@ -193,20 +193,31 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 											: $input.val().trim();
 			
 			// 워크북 정보 수정(ajax)--------------------------------
-			editWorkbookPlainInfo(form.action, command, successEdit);
+			$.ajax({
+				url: form.action,
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(command),
+				success: (response) => {
+					if(response.success) {
+						alertModal('수정되었습니다.');
+						if($input.is('#description')) {
+							$input.siblings('.description-preview').html($input.summernote('code')).show(0);
+							$input.summernote('destroy');
+						}
+						$block.removeClass('active').find('.edit-badge').show().removeAttr('style');
+						$block.find('.mdf-btns').hide()
+							.find('button:not(.js-edit-cancel)').prop('disabled', true);
+						$('.update-date').text(new Date().toLocaleDateString());
+					}else {
+						alertModal(response.message);
+					}
+				},
+				error: () => {
+					alertModal('수정에 실패했습니다.');
+				}
+			})
 			//---------------------------------------------------
-		}
-		
-		function successEdit() {
-			alertModal('수정되었습니다.');
-			if($input.is('#description')) {
-				$input.siblings('.description-preview').html($input.summernote('code')).show(0);
-				$input.summernote('destroy');
-			}
-			$block.removeClass('active').find('.edit-badge').show().removeAttr('style');
-			$block.find('.mdf-btns').hide()
-				.find('button:not(.js-edit-cancel)').prop('disabled', true);
-			$('.update-date').text(new Date().toLocaleDateString());
 		}
 	});
 	}
@@ -373,6 +384,17 @@ function pageinit(workbookId, workbookCover, helloBook, passageIdList, sampleCou
 			})
 		return pages;
 	}	
+	
+	$('#printPaperBtn').on('click', function() {
+		location.assign('/workbook/print/' + location.pathname.match(/(?:\/workbook\/mybook\/edit\/)(\w+)/)[1]);
+	});
+	$('#tooltipPrintPaperBtn').on('click', function(){
+		alertModal("<span class='app-name-text'>fico</span> 스타일 페이지 서비스는 <b>연간 멤버십 회원</b>들에게 제공되며,"
+				+ "<br>워크북의 문장 <b>분석</b>, <b>해석</b>, <b>단어</b>를 <b class='text-red-700'>출력</b>할 수 있는 기능을 지원합니다."
+				+ "<br><br>보다 효율적인 학습을 위해 고안된 이 서비스를 통해"
+				+ "<br>원하는 내용을 쉽게 습득하고 활용해보세요.");
+	});
+	
 	// [(헬로북)지문 등록하기 화면으로 이동]
 	if(helloBook) {
 		$('.js-add-passage-open').click(function() {
