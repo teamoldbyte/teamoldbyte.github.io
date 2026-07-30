@@ -577,56 +577,61 @@
 				$.ajax({
 					url: '/craft/battle/evaluation/add',
 					type: 'GET', contentType: 'application/json', data: command,
-					success: async() => { 
-						if(!!_memberId || !!memberId56) {
-							if(correct) { 
-								_battleRecord.correct++;
-							}
-							if(_memberId == 0) {
-								const db = await idb.openDB(DB_NAME, DB_VERSION);
-								const tx = db.transaction(storeName, 'readwrite');
-								const store = tx.objectStore(storeName);
-								const index = store.index('bid');
-								
-								for await(const cursor of index.iterate(ntoa(currentBattle.bid))) {
-									const record = { ...cursor.value, solve: (correct ? 'O': 'X')}
-									cursor.update(record);
+					success: async({success, message}) => { 
+						if(success) {
+							if(!!_memberId || !!memberId56) {
+								if(correct) { 
+									_battleRecord.correct++;
 								}
-								await tx.done;
-								
-								//const item = { data: battle2Bytes(currentBattle) };							
-								//item.solve = correct? 'O': 'X';
-								//await db.put(storeName, item, keyPath);
-								/*req = indexedDB.open(DB_NAME, DB_VERSION);
-								req.onsuccess = function() {
-									idb = this.result;
-									const tx = idb.transaction(['StepBattle'], 'readwrite');
-									tx.onabort = idbAbort;												
-									idbstore = tx.objectStore('StepBattle');
-									idbstore.index('bid').openCursor().onsuccess = function() {
-										let cursor = this.result;
-										if(cursor) {
-											if(cursor.key == currentBattle.bid) {
-												const record = cursor.value;
-												record.solve = correct? 'O': 'X';
-												cursor.update(record);
+								if(_memberId == 0) {
+									const db = await idb.openDB(DB_NAME, DB_VERSION);
+									const tx = db.transaction(storeName, 'readwrite');
+									const store = tx.objectStore(storeName);
+									const index = store.index('bid');
+									
+									for await(const cursor of index.iterate(ntoa(currentBattle.bid))) {
+										const record = { ...cursor.value, solve: (correct ? 'O': 'X')}
+										cursor.update(record);
+									}
+									await tx.done;
+									
+									//const item = { data: battle2Bytes(currentBattle) };							
+									//item.solve = correct? 'O': 'X';
+									//await db.put(storeName, item, keyPath);
+									/*req = indexedDB.open(DB_NAME, DB_VERSION);
+									req.onsuccess = function() {
+										idb = this.result;
+										const tx = idb.transaction(['StepBattle'], 'readwrite');
+										tx.onabort = idbAbort;												
+										idbstore = tx.objectStore('StepBattle');
+										idbstore.index('bid').openCursor().onsuccess = function() {
+											let cursor = this.result;
+											if(cursor) {
+												if(cursor.key == currentBattle.bid) {
+													const record = cursor.value;
+													record.solve = correct? 'O': 'X';
+													cursor.update(record);
+												}
+												cursor.continue();
 											}
-											cursor.continue();
-										}
-									};
-								};	*/
+										};
+									};	*/
+								}
+								moveSolveBtn(true);
+								if(_progressNum != null) _progressNum++;
+								calcProgress();
+								// (리뷰/오답/보관 제외)배틀을 끝까지 다 풀었으면 lastBattleId = -1 호출
+								if(bookMarkCommand.markType === 'b' && _progressNum >= _battleSize) {
+									$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
+									//solveAllsOfBook();
+								}
+							}else {
+								moveSolveBtn(true);
+								if(_progressNum != null) _progressNum++;
 							}
-							moveSolveBtn(true);
-							if(_progressNum != null) _progressNum++;
-							calcProgress();
-							// (리뷰/오답/보관 제외)배틀을 끝까지 다 풀었으면 lastBattleId = -1 호출
-							if(bookMarkCommand.markType === 'b' && _progressNum >= _battleSize) {
-								$.getJSON(`/craft/battlebook/${_bookTypeStr}`, {...bookMarkCommand, lastBattleId: -1});
-								//solveAllsOfBook();
-							}
+							
 						}else {
-							moveSolveBtn(true);
-							if(_progressNum != null) _progressNum++;
+							alertModal(message);
 						}
 					},
 					error: () => alert('채점 전송에 실패했습니다. 재로그인 후 다시 시도해 주세요.'),
