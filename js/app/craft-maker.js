@@ -580,87 +580,93 @@
 			type: 'POST',
 			contentType: 'application/json',
 			data: JSON.stringify(command),
-			success: function(response) {
-				// 난이도 선택 영역에 강제로 이벤트를 발생시켜서 툴팁을 안보이게
-				$(addSection).find('.battle-diffLevel-section').trigger('hide.bs.collapse');
-				// 태그 캐시 갱신
-				pushToCache(askTag, cachedAskTags);
-				// 출처 캐시 갱신
-				/*pushToCache(source, cachedSources);*/
-				// 카테고리-태그 갱신
-				cachedCateAskTagMap[categoryId] = askTag;
-				// 커스텀 해석 삭제
-				if(addSection.querySelector('.select-kor .custom-trans')) {
-					addSection.querySelector('.select-kor .custom-trans').remove();
-					addSection.querySelector('.select-kor').classList.remove('pe-none');
-				}
-				
-				if(!document.getElementById('craftResultModal')) {
-					document.body.appendChild($(MAKER_TEMPLATES).find('#craftResultModal').clone(true)[0]);
-				}
-				
-				$(addSection).find('textarea.comment').summernote('reset');
-				
-				$('#craftResultModal .battle-id').text(response.battleId);
-				$('#craftResultModal .group-count').text(response.groupCount);
-				
-				
-				// 워크북 내에서 등록한 경우 북타입 기본값 지정.
-				battlebook_selection = { type: addSection.querySelector('.select-book-type').value, bookId: battleBookId };
-				
-				// 워크북 내에서 등록한 경우 배틀 출처 기본값 지정.
-				/*if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
-					workbook_battleSource = command.source;
-				}*/
-				
-				battleContext.replaceChildren(battleContext.textContent);
-				
-				command.battleId = response.battleId;
-				command.grammarTitle = categories.find(c => c.cid == categoryId).title;
-				/*if(command.battleType == '7') {
-					command.kor = (command.answer != null) 
-						? command.ask 
-						: $(battlePanel).data('transList').find(t => t.id == parseInt(command.ask)).text.trim();
-				}*/
-				const battleList = battlePanel.querySelector('.existing-battles-section');
-				const newBattle = previewBattle($(battlePanel).data('eng'), command);
-				let battleGroupBtn = battleList.querySelector(`.js-open-existing-battle[${BATTLE_TYPE_SELECTOR}="${battleType}"]`);
-				let battleGroupBlock;
-				// 유형 그룹이 없을 경우
-				if(!battleGroupBtn) {
-					// 문장에서의 첫 등록
-					if(!battleList.querySelector(`[${BATTLE_TYPE_SELECTOR}]`)) {
-						// 배틀 미등록 문구 삭제
-						battleList.replaceChildren();
+			success: function({success, data, message}) {
+				if(success) {
+					const {battleId, groupCount} = data;
+					// 난이도 선택 영역에 강제로 이벤트를 발생시켜서 툴팁을 안보이게
+					$(addSection).find('.battle-diffLevel-section').trigger('hide.bs.collapse');
+					// 태그 캐시 갱신
+					pushToCache(askTag, cachedAskTags);
+					// 출처 캐시 갱신
+					/*pushToCache(source, cachedSources);*/
+					// 카테고리-태그 갱신
+					cachedCateAskTagMap[categoryId] = askTag;
+					// 커스텀 해석 삭제
+					if(addSection.querySelector('.select-kor .custom-trans')) {
+						addSection.querySelector('.select-kor .custom-trans').remove();
+						addSection.querySelector('.select-kor').classList.remove('pe-none');
 					}
-					const randId = Date.now() + 1;
-					[battleGroupBtn, battleGroupBlock] = makeExistingBattle(battleType,1,randId,[]);
-					battleGroupBtn = createElement(battleGroupBtn);
-					battleGroupBlock = createElement(battleGroupBlock);
-					battleList.append(battleGroupBtn);
-					$(battleGroupBtn).css('height',0).animate({height:'100%'}, 500, function() { this.style.height = 'auto';});
-					battleGroupBtn.appendChild(createElement({el: 'span', class: 'badge bg-danger', textContent: 'New'}))
-					// 유형 그룹 추가
-					battleList.append(battleGroupBlock)
+					
+					if(!document.getElementById('craftResultModal')) {
+						document.body.appendChild($(MAKER_TEMPLATES).find('#craftResultModal').clone(true)[0]);
+					}
+					
+					$(addSection).find('textarea.comment').summernote('reset');
+					
+					$('#craftResultModal .battle-id').text(battleId);
+					$('#craftResultModal .group-count').text(groupCount);
+					
+					
+					// 워크북 내에서 등록한 경우 북타입 기본값 지정.
+					battlebook_selection = { type: addSection.querySelector('.select-book-type').value, bookId: battleBookId };
+					
+					// 워크북 내에서 등록한 경우 배틀 출처 기본값 지정.
+					/*if(!workbook_battleSource && command.source.length > 0 && window.location.pathname.startsWith('/workbook/passage')) {
+						workbook_battleSource = command.source;
+					}*/
+					
+					battleContext.replaceChildren(battleContext.textContent);
+					
+					command.battleId = battleId;
+					command.grammarTitle = categories.find(c => c.cid == categoryId).title;
+					/*if(command.battleType == '7') {
+						command.kor = (command.answer != null) 
+							? command.ask 
+							: $(battlePanel).data('transList').find(t => t.id == parseInt(command.ask)).text.trim();
+					}*/
+					const battleList = battlePanel.querySelector('.existing-battles-section');
+					const newBattle = previewBattle($(battlePanel).data('eng'), command);
+					let battleGroupBtn = battleList.querySelector(`.js-open-existing-battle[${BATTLE_TYPE_SELECTOR}="${battleType}"]`);
+					let battleGroupBlock;
+					// 유형 그룹이 없을 경우
+					if(!battleGroupBtn) {
+						// 문장에서의 첫 등록
+						if(!battleList.querySelector(`[${BATTLE_TYPE_SELECTOR}]`)) {
+							// 배틀 미등록 문구 삭제
+							battleList.replaceChildren();
+						}
+						const randId = Date.now() + 1;
+						[battleGroupBtn, battleGroupBlock] = makeExistingBattle(battleType,1,randId,[]);
+						battleGroupBtn = createElement(battleGroupBtn);
+						battleGroupBlock = createElement(battleGroupBlock);
+						battleList.append(battleGroupBtn);
+						$(battleGroupBtn).css('height',0).animate({height:'100%'}, 500, function() { this.style.height = 'auto';});
+						battleGroupBtn.appendChild(createElement({el: 'span', class: 'badge bg-danger', textContent: 'New'}))
+						// 유형 그룹 추가
+						battleList.append(battleGroupBlock)
+					}
+					else {
+						// 기존 유형 그룹에 추가
+						const battleCountBlock = battleGroupBtn.querySelector('.battle-count');
+						battleGroupBtn.appendChild(createElement({el: 'span', class: 'badge bg-danger', textContent: 'New'}))
+						battleCountBlock.textContent = parseInt(battleCountBlock.textContent) + 1;
+						battleGroupBlock = document.querySelector(battleGroupBtn.dataset.bsTarget);
+					}
+					const newBattleBlock = createElement(newBattle);
+					$(newBattleBlock).find('.js-delete-battle').after(createElement({el: 'span', class: 'badge bg-danger', textContent: 'New'}))
+					battleGroupBlock.append(newBattleBlock);
+					$(newBattleBlock).css('display','none').slideDown();
+					$('#craftResultModal').modal('show').on('hidden.bs.modal', () => {
+						$(addSection).slideUp(() => {
+							$(addSection).remove();
+							$(battlePanel).find('.open-add-battle-section').slideDown();
+						})
+						battleGroupBtn.scrollIntoView({behavior: 'instant', block: 'nearest'});
+					});
+					
+				}else {
+					alertModal(message);
 				}
-				else {
-					// 기존 유형 그룹에 추가
-					const battleCountBlock = battleGroupBtn.querySelector('.battle-count');
-					battleGroupBtn.appendChild(createElement({el: 'span', class: 'badge bg-danger', textContent: 'New'}))
-					battleCountBlock.textContent = parseInt(battleCountBlock.textContent) + 1;
-					battleGroupBlock = document.querySelector(battleGroupBtn.dataset.bsTarget);
-				}
-				const newBattleBlock = createElement(newBattle);
-				$(newBattleBlock).find('.js-delete-battle').after(createElement({el: 'span', class: 'badge bg-danger', textContent: 'New'}))
-				battleGroupBlock.append(newBattleBlock);
-				$(newBattleBlock).css('display','none').slideDown();
-				$('#craftResultModal').modal('show').on('hidden.bs.modal', () => {
-					$(addSection).slideUp(() => {
-						$(addSection).remove();
-						$(battlePanel).find('.open-add-battle-section').slideDown();
-					})
-					battleGroupBtn.scrollIntoView({behavior: 'instant', block: 'nearest'});
-				});
 			},
 			error: function(err) {
 				alertModal(err);
