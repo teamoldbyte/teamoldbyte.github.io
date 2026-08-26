@@ -1,6 +1,7 @@
 
 const FicoPaymentHandler = (() => {
 	const CLIENT_KEY = 'live_gck_P9BRQmyarYxp6gP1xd07VJ07KzLN';
+	const BILLING_CLIENT_KEY = 'live_ck_jExPeJWYVQ1AmYbMWgmPV49R5gvN';
 	const allowedRequestPaymentKeys = [
 		"method", "orderId", "orderName", "successUrl", "failUrl", "customerName", "customerEmail", "customerMobilePhone"
 	]
@@ -20,7 +21,7 @@ const FicoPaymentHandler = (() => {
 	});
 	
 	const billingSDKPromise = $.getScript('https://js.tosspayments.com/v2/standard', () => {
-		_tossBillingPayments = TossPayments("test_ck_6BYq7GWPVveEgElQbqxa3NE5vbo1");
+		_tossBillingPayments = TossPayments(BILLING_CLIENT_KEY);
 	});
 
 	/**
