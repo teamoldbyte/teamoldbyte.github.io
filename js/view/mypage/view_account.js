@@ -420,21 +420,20 @@ function pageinit(tray, normalEggCount, goldEggCount) {
 				contentType: 'application/json',
 				success: async ({success, data, message}) => {
 					if(success) {
-						const {ordererId56, orderId56} = data;
+						const {customerKey, orderId56, ordererId56} = data;
 						const orderName = orderItem['name'];
 						if(orderName.includes('SUBSCRIPTION')) {
 							$('#order-processing').hide();
 							FicoPaymentHandler.requestBillingAuth({
-								customerKey: ordererId56,
+								customerKey,
 								customerName: $('#name').val(),
 								customerEmail: $('#email').val(),
-							}, {orderId: orderId56})
+							}, {orderId: orderId56, ordererId: ordererId56})
 							.finally(() => $('#done-info-modal').modal('hide'));
 						}else {
 							await FicoPaymentHandler.renderWidget('#payment-methods', {
-								orderId: orderId56, orderName,
+								orderId: orderId56, orderName, customerKey,
 								amount: parseInt($('#totalAmount').val()),
-								customerKey: ordererId56, 
 								customerName: $('#name').val(),
 								customerEmail: $('#email').val(),
 								customerMobilePhone: $('#phone').val()
