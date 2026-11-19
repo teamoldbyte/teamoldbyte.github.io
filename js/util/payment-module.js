@@ -70,6 +70,11 @@ const FicoPaymentHandler = (() => {
 				searchParams.append(key, extParams[key]);
 			});
 			params.successUrl = successUrl.toString();
+			
+			const failUrl = new URL(params.failUrl);
+			failUrl.searchParams.append('orderId', extParams.orderId);
+			
+			params.failUrl = failUrl.toString();
 		}
 		return _billingPayments.requestBillingAuth(params);
 	}
