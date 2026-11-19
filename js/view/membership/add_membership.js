@@ -447,23 +447,22 @@ function pageinit(membershipCommand) {
 				contentType: 'application/json',
 				success: async ({success, data, message}) => {
 					if(success) {
-						const {ordererId56, orderId56} = data;
+						const {customerKey, ordererId56, orderId56} = data;
 						const orderName = $('#orderName').val();
 						if(orderName.includes("SUBSCRIPTION")) {
 								$('#order-processing').hide();
 								if($('#done-info-modal').is('.show')) 
 									$('#done-info-modal').modal('hide');
 								FicoPaymentHandler.requestBillingAuth({
-									customerKey: ordererId56,
+									customerKey,
 									customerName: $('#inputName').val(),
 									customerEmail: $('#inputEmail').val(),
-								}, {orderId: orderId56});
+								}, {orderId: orderId56, ordererId: ordererId56});
 						}else {
 							if($('#done-info-modal').hasClass('show')) {
 									await FicoPaymentHandler.renderWidget('#payment-methods', {
-										orderId: orderId56, orderName,
+										orderId: orderId56, orderName, customerKey, 
 										amount: parseInt($('#totalAmount').val()),
-										customerKey: ordererId56, 
 										customerName: $('#inputName').val(),
 										customerEmail: $('#inputEmail').val(),
 										customerMobilePhone: $('#phone').val(),
@@ -473,9 +472,8 @@ function pageinit(membershipCommand) {
 							}else {
 								$('#done-info-modal').one('show.bs.modal', async function() {
 									await FicoPaymentHandler.renderWidget('#payment-methods', {
-										orderId: orderId56, orderName,
+										orderId: orderId56, orderName, customerKey, 
 										amount: parseInt($('#totalAmount').val()),
-										customerKey: ordererId56, 
 										customerName: $('#inputName').val(),
 										customerEmail: $('#inputEmail').val(),
 										customerMobilePhone: $('#phone').val(),
