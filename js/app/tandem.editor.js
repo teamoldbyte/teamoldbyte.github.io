@@ -30,13 +30,14 @@
 		65:'[value="phr"]',
 		83:'[value="advphr"]',
 		68:'[value="adjphr"]',
-		70:'[value="conj"]',
-		71:'[value="ccls"]',
-		72:'[value="pcls"]',
-		74:'[value="ncls"]',
-		75:'[value="acls"]',
-		76:'[value="advcls"]',
-		186:'[value="pcl"]',
+		70:'[value="appphr"]',
+		71:'[value="conj"]',
+		72:'[value="ccls"]',
+		74:'[value="pcls"]',
+		75:'[value="ncls"]',
+		76:'[value="acls"]',
+		186:'[value="advcls"]',
+		222:'[value="pcl"]',
 		90:'[value="mod"]',
 		88:'[value="erasing"]',
 		67:'[value="comment"]',
@@ -63,7 +64,8 @@
 			po: '전치사 목적어절', to: 'to부정사 목적어절', go: '동명사 목적어절', ptco: '분사 목적어절', appo: '동격 =>',
 			interr: '의문사절 접속사', nrp: '명사적 관계사', nclc: ''
 		},
-		acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',ptcphr:'부사구(분사구문)',ccls:'등위절',pcls:'병렬절',pcl:'삽입절'};
+		acls:'형용사절',advcls:'부사절',phr:'전치사구',adjphr:'형용사구',advphr:'부사구',appphr:'동격 => ',ptcphr:'부사구(분사구문)',ccls:'등위절',pcls:'병렬절',pcl:'삽입절'};
+	const WRAPPER_CLASS = {pcl: 'advcls', appphr: 'adjphr'};
 	/**
 	 * SVOC 편집기 표시. 
 		저장함수 function(svocEncText)와 취소함수 function()를 인자로 받음
@@ -101,7 +103,7 @@
 				const rem = parseFloat(getComputedStyle(document.body).fontSize);
 				//=============================================================/
 				// 						[단축키 설정]
-				$(document).on('keydown', function(e){
+				$(document).on('keyup', function(e){
 					if($(e.target).is('input') 
 					&& $(e.target).closest('.edit-comment').length > 0
 					&& e.keyCode == 27/*ESC*/) {
@@ -1122,7 +1124,8 @@
 			default:
 				// 품사를 표시한다.
 				const el2 = document.createElement('span');
-				el2.classList.add('sem', wrapper=='pcl'?'advcls':wrapper);
+				el2.classList.add('sem', WRAPPER_CLASS[wrapper] ?? wrapper);
+				
 				if(gcomments[wrapper]) el2.dataset.gc = gcomments[wrapper];
 				try {
 					range.surroundContents(el2);
@@ -1139,8 +1142,13 @@
 				&& Array.from(el2.parentElement.childNodes).filter(n => n.textContent.length > 0).length === 1) {
 					tandem.swapParentAndChild(el2.parentElement, el2);
 				}
-				
 				refreshDOMs(container);
+				// 동격구는 '동격'이라는 성분을 표시하지 않고 형용사구로 표시 후 gcomment 수정으로 넘어간다. 
+				if(wrapper == 'appphr') {
+					getSelection().removeAllRanges();
+					$(el2).addClass('comment-target').trigger('click');
+					$('.edit-comment :text').val('동격 => ');
+				}
 				break;
 		}
 	}
